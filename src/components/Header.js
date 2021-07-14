@@ -1,31 +1,43 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from 'react-router-dom';
 import { pages } from '../pages';
+import headerStyles from './header.module.css'
 
 function Header() {
   const history = useHistory();
 
   return (
-    <header>
-      <ul>
-        <li>
-          <NavLink to={pages.Home} exact activeClassName="active-link">Home</NavLink>
-        </li>
+    <nav>
+      <div className={headerStyles.nav}>
+        <h4 className={headerStyles.title}>Vessels</h4>
 
-        <li>
-          <NavLink to={pages.SignIn} activeClassName="active-link">Inloggen</NavLink>
-        </li>
+        <ul className={headerStyles.ul}>
+          <li>
+            <NavLink to={pages.Home} exact activeClassName="active-link">Home</NavLink>
+          </li>
 
-        <li>
-          <NavLink to={pages.SignUp} activeClassName="active-link">Registreren</NavLink>
-        </li>
+          <li>
+            <NavLink to={pages.SignUp} activeClassName="active-link">Registreren</NavLink>
+          </li>
 
-        <li>
-          <NavLink to={pages.Profile} activeClassName="active-link">Profiel</NavLink>
-        </li>
-      </ul>
-      <div>
+          <li>
+            <NavLink to={pages.SignIn} activeClassName="active-link">Inloggen</NavLink>
+          </li>
+
+          <li>
+            <NavLink to={pages.Profile} activeClassName="active-link">Profiel</NavLink>
+          </li>
+        </ul>
+      </div>
+
+    </nav>
+  );
+};
+
+export default Header;
+
+/*
+     <div>
         <button
             type="button"
             onClick={() => history.push(pages.Home)}
@@ -45,8 +57,5 @@ function Header() {
           Registreren
         </button>
       </div>
-    </header>
-  );
-};
 
-export default Header;
+ */

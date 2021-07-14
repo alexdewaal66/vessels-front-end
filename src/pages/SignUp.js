@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import {useForm} from 'react-hook-form';
 // import axios from 'axios';
-import { now, postRequest } from '../Helpers/utils';
-// import { requestStates } from '../Helpers/utils';
+import { now, postRequest } from '../helpers/utils';
+// import { requestStates } from '../helpers/utils';
 import { pages } from './index';
-import { useRequestState } from '../Helpers/customHooks';
-import { endpoints } from '../Helpers/endpoints';
+import { useRequestState } from '../helpers/customHooks';
+import { endpoints } from '../helpers/endpoints';
 
 function SignUp() {
     const {handleSubmit, register} = useForm();

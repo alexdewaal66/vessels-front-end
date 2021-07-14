@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
-import { now, postRequest } from '../Helpers/utils';
-import { useRequestState } from '../Helpers/customHooks';
-import { endpoints } from '../Helpers/endpoints';
+import { now, postRequest } from '../helpers/utils';
+import { useRequestState } from '../helpers/customHooks';
+import { endpoints } from '../helpers/endpoints';
 // import { pages } from './index';
 
 function SignIn() {

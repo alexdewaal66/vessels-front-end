@@ -1,23 +1,43 @@
 import React from 'react';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+} from 'react-router-dom';
+
 import './assets/fonts/stylesheet.css'
 import './App.css';
-import layout from './app.module.css';
+import layout from './layout.module.css';
 import { Colors } from './dev/Colors';
+import Header from './components/Header';
+import { pages } from './pages';
+import { Home } from './pages/Home';
+import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
+import Profile from './pages/Profile';
 
 function App() {
     return (
-        <div className={"App " + layout.app}>
-            <header className={layout.header}>HEADER </header>
-            <div className={layout.container}>
-                <main className={layout.content}>
-                    CENTER
-                    <Colors/>
-                </main>
-                <nav className={layout.nav}>NAV</nav>
-                <aside className={layout.aside}>ASIDE</aside>
+        <Router>
+            <div className={"App " + layout.app}>
+                <Header className={layout.header}>HEADER</Header>
+                <Switch>
+                    <Route exact path={pages.Home}>
+                        <Home/>
+                    </Route>
+                    <Route path={pages.SignUp}>
+                        <SignUp/>
+                    </Route>
+                    <Route path={pages.SignIn}>
+                        <SignIn/>
+                    </Route>
+                    <Route path={pages.Profile}>
+                        <Profile/>
+                    </Route>
+                </Switch>
+                <footer className={layout.footer}>FOOTER</footer>
             </div>
-            <footer className={layout.footer}>FOOTER</footer>
-        </div>
+        </Router>
     );
 }
 

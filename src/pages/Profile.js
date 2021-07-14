@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { addJwtToHeaders, getRequest, now, persistentVars } from '../Helpers/utils';
-import { useRequestState } from '../Helpers/customHooks';
-import { endpoints } from '../Helpers/endpoints';
+import { addJwtToHeaders, getRequest, now, persistentVars } from '../helpers/utils';
+import { useRequestState } from '../helpers/customHooks';
+import { endpoints } from '../helpers/endpoints';
 
 function Profile() {
     const [privateContent, setPrivateContent] = useState({});
