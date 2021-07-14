@@ -1,0 +1,50 @@
+html, body {
+    height: 100%;
+    --padding: 10px;
+}
+
+.app {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.header, .footer {
+    border: blue 1px solid;
+    flex: none;
+}
+
+.container {
+    display: flex;
+    flex: 1 0 auto; /* 2 */
+    flex-direction: row;
+}
+
+.content {
+    flex-grow: 3;
+    margin-top: var(--padding);
+    padding: var(--padding);
+}
+.nav {
+    flex-grow: 0;
+    order: -1;
+}
+
+.aside {
+    flex-grow: 1;
+}
+
+.nav, .aside {
+    border: red 1px solid;
+    padding: var(--padding);
+    border-radius: 3px;
+    color: var(--alt1-color-normal);
+    background: var(--alt1-color-bg-normal);
+}
+
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+    }
+
+}
