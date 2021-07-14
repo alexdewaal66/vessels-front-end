@@ -1,85 +1,100 @@
 
 .container p {
     padding: 5px;
-    border: 2px dashed white;
+    border: 2px dashed transparent;
 }
 
 p.main-color-darker{
     color: var(--main-color-darker);
     background-color: var(--main-color-bg-darker);
-    border-color: var(--main-color-em-darker);
+    border-top-color: var(--main-color-em-darker);
+    border-bottom-color: var(--main-color-de-darker);
 }
 p.main-color-normal {
     color: var(--main-color-normal);
     background-color: var(--main-color-bg-normal);
-    border-color: var(--main-color-em-normal);
+    border-top-color: var(--main-color-em-normal);
+    border-bottom-color: var(--main-color-de-normal);
 }
 p.main-color-light {
     color: var(--main-color-light);
     background-color: var(--main-color-bg-light);
-    border-color: var(--main-color-em-light);
+    border-top-color: var(--main-color-em-light);
+    border-bottom-color: var(--main-color-de-light);
 }
 
 p.compl-color-darker{
     color: var(--compl-color-darker);
     background-color: var(--compl-color-bg-darker);
-    border-color: var(--compl-color-em-darker);
+    border-top-color: var(--compl-color-em-darker);
+    border-bottom-color: var(--compl-color-de-darker);
 }
 p.compl-color-normal {
     color: var(--compl-color-normal);
     background-color: var(--compl-color-bg-normal);
-    border-color: var(--compl-color-em-normal);
+    border-top-color: var(--compl-color-em-normal);
+    border-bottom-color: var(--compl-color-de-normal);
 }
 p.compl-color-light {
     color: var(--compl-color-light);
     background-color: var(--compl-color-bg-light);
-    border-color: var(--compl-color-em-light);
+    border-top-color: var(--compl-color-em-light);
+    border-bottom-color: var(--compl-color-de-light);
 }
 
 p.input-color-darker {
     color: var(--input-color-darker);
     background-color: var(--input-color-bg-darker);
-    border-color: var(--input-color-em-darker);
+    border-top-color: var(--input-color-em-darker);
+    border-bottom-color: var(--input-color-de-darker);
 }
 p.input-color-normal {
     color: var(--input-color-normal);
     background-color: var(--input-color-bg-normal);
-    border-color: var(--input-color-em-normal);
+    border-top-color: var(--input-color-em-normal);
+    border-bottom-color: var(--input-color-de-normal);
 }
 p.input-color-light {
     color: var(--input-color-light);
     background-color: var(--input-color-bg-light);
-    border-color: var(--input-color-em-light);
+    border-top-color: var(--input-color-em-light);
+    border-bottom-color: var(--input-color-de-light);
 }
 
 p.alt1-color-darker {
     color: var(--alt1-color-darker);
     background-color: var(--alt1-color-bg-darker);
-    border-color: var(--alt1-color-em-darker);
+    border-top-color: var(--alt1-color-em-darker);
+    border-bottom-color: var(--alt1-color-de-darker);
 }
 p.alt1-color-normal {
     color: var(--alt1-color-normal);
     background-color: var(--alt1-color-bg-normal);
-    border-color: var(--alt1-color-em-normal);
+    border-top-color: var(--alt1-color-em-normal);
+    border-bottom-color: var(--alt1-color-de-normal);
 }
 p.alt1-color-light {
     color: var(--alt1-color-light);
     background-color: var(--alt1-color-bg-light);
-    border-color: var(--alt1-color-em-light);
+    border-top-color: var(--alt1-color-em-light);
+    border-bottom-color: var(--alt1-color-de-light);
 }
 
 p.alt2-color-darker {
     color: var(--alt2-color-darker);
     background-color: var(--alt2-color-bg-darker);
-    border-color: var(--alt2-color-em-darker);
+    border-top-color: var(--alt2-color-em-darker);
+    border-bottom-color: var(--alt2-color-de-darker);
 }
 p.alt2-color-normal {
     color: var(--alt2-color-normal);
     background-color: var(--alt2-color-bg-normal);
-    border-color: var(--alt2-color-em-normal);
+    border-top-color: var(--alt2-color-em-normal);
+    border-bottom-color: var(--alt2-color-de-normal);
 }
 p.alt2-color-light {
     color: var(--alt2-color-light);
     background-color: var(--alt2-color-bg-light);
-    border-color: var(--alt2-color-em-light);
+    border-top-color: var(--alt2-color-em-light);
+    border-bottom-color: var(--alt2-color-de-light);
 }

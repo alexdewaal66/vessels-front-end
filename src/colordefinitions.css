@@ -1,8 +1,10 @@
 :root {
     --main-hue: 190;
     --input-hue: 170;
-    --alt1-hue: 180;
+    --alt1-hue: 220;
     --alt2-hue: 200;
+
+    /*  em:emphasis  / de:de-emphasis / bg:background */
 
     --base-sat: 50%;
     --em-sat: 100%;
@@ -12,9 +14,13 @@
     --normal: 20%;
     --light: 25%;
 
-    --bg-darker: 80%;
-    --bg-normal: 85%;
-    --bg-light: 90%;
+    --de-darker: 65%;
+    --de-normal: 70%;
+    --de-light: 75%;
+
+    --bg-darker: 85%;
+    --bg-normal: 90%;
+    --bg-light: 95%;
 
     --main-color-darker:    hsl(var(--main-hue), var(--base-sat), var(--darker));
     --main-color-normal:    hsl(var(--main-hue), var(--base-sat), var(--normal));
@@ -22,6 +28,9 @@
     --main-color-em-darker: hsl(var(--main-hue), var(--em-sat), var(--darker));
     --main-color-em-normal: hsl(var(--main-hue), var(--em-sat), var(--normal));
     --main-color-em-light:  hsl(var(--main-hue), var(--em-sat), var(--light));
+    --main-color-de-darker: hsl(var(--main-hue), var(--bg-sat), var(--de-darker));
+    --main-color-de-normal: hsl(var(--main-hue), var(--bg-sat), var(--de-normal));
+    --main-color-de-light:  hsl(var(--main-hue), var(--bg-sat), var(--de-light));
     --main-color-bg-darker: hsl(var(--main-hue), var(--bg-sat), var(--bg-darker));
     --main-color-bg-normal: hsl(var(--main-hue), var(--bg-sat), var(--bg-normal));
     --main-color-bg-light:  hsl(var(--main-hue), var(--bg-sat), var(--bg-light));
@@ -32,6 +41,9 @@
     --compl-color-em-darker: hsl(calc(180 + var(--main-hue)), var(--em-sat), var(--darker));
     --compl-color-em-normal: hsl(calc(180 + var(--main-hue)), var(--em-sat), var(--normal));
     --compl-color-em-light:  hsl(calc(180 + var(--main-hue)), var(--em-sat), var(--light));
+    --compl-color-de-darker: hsl(calc(180 + var(--main-hue)), var(--bg-sat), var(--de-darker));
+    --compl-color-de-normal: hsl(calc(180 + var(--main-hue)), var(--bg-sat), var(--de-normal));
+    --compl-color-de-light:  hsl(calc(180 + var(--main-hue)), var(--bg-sat), var(--de-light));
     --compl-color-bg-darker: hsl(calc(180 + var(--main-hue)), var(--bg-sat), var(--bg-darker));
     --compl-color-bg-normal: hsl(calc(180 + var(--main-hue)), var(--bg-sat), var(--bg-normal));
     --compl-color-bg-light:  hsl(calc(180 + var(--main-hue)), var(--bg-sat), var(--bg-light));
@@ -42,6 +54,9 @@
     --input-color-em-darker: hsl(var(--input-hue), var(--em-sat), var(--darker));
     --input-color-em-normal: hsl(var(--input-hue), var(--em-sat), var(--normal));
     --input-color-em-light:  hsl(var(--input-hue), var(--em-sat), var(--light));
+    --input-color-de-darker: hsl(var(--input-hue), var(--bg-sat), var(--de-darker));
+    --input-color-de-normal: hsl(var(--input-hue), var(--bg-sat), var(--de-normal));
+    --input-color-de-light:  hsl(var(--input-hue), var(--bg-sat), var(--de-light));
     --input-color-bg-darker: hsl(var(--input-hue), var(--bg-sat), var(--bg-darker));
     --input-color-bg-normal: hsl(var(--input-hue), var(--bg-sat), var(--bg-normal));
     --input-color-bg-light:  hsl(var(--input-hue), var(--bg-sat), var(--bg-light));
@@ -52,6 +67,9 @@
     --alt1-color-em-darker: hsl(var(--alt1-hue), var(--em-sat), var(--darker));
     --alt1-color-em-normal: hsl(var(--alt1-hue), var(--em-sat), var(--normal));
     --alt1-color-em-light:  hsl(var(--alt1-hue), var(--em-sat), var(--light));
+    --alt1-color-de-darker: hsl(var(--alt1-hue), var(--bg-sat), var(--de-darker));
+    --alt1-color-de-normal: hsl(var(--alt1-hue), var(--bg-sat), var(--de-normal));
+    --alt1-color-de-light:  hsl(var(--alt1-hue), var(--bg-sat), var(--de-light));
     --alt1-color-bg-darker: hsl(var(--alt1-hue), var(--bg-sat), var(--bg-darker));
     --alt1-color-bg-normal: hsl(var(--alt1-hue), var(--bg-sat), var(--bg-normal));
     --alt1-color-bg-light:  hsl(var(--alt1-hue), var(--bg-sat), var(--bg-light));
@@ -62,6 +80,9 @@
     --alt2-color-em-darker: hsl(var(--alt2-hue), var(--em-sat), var(--darker));
     --alt2-color-em-normal: hsl(var(--alt2-hue), var(--em-sat), var(--normal));
     --alt2-color-em-light:  hsl(var(--alt2-hue), var(--em-sat), var(--light));
+    --alt2-color-de-darker: hsl(var(--alt2-hue), var(--bg-sat), var(--de-darker));
+    --alt2-color-de-normal: hsl(var(--alt2-hue), var(--bg-sat), var(--de-normal));
+    --alt2-color-de-light:  hsl(var(--alt2-hue), var(--bg-sat), var(--de-light));
     --alt2-color-bg-darker: hsl(var(--alt2-hue), var(--bg-sat), var(--bg-darker));
     --alt2-color-bg-normal: hsl(var(--alt2-hue), var(--bg-sat), var(--bg-normal));
     --alt2-color-bg-light:  hsl(var(--alt2-hue), var(--bg-sat), var(--bg-light));

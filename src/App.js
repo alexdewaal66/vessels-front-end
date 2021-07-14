@@ -1,4 +1,5 @@
 import React from 'react';
+import './assets/fonts/stylesheet.css'
 import './App.css';
 import layout from './app.module.css';
 import { Colors } from './dev/Colors';

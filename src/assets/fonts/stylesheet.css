@@ -1,0 +1,192 @@
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-LightItalic.eot');
+    src: local('Marine Light Italic'), local('Marine-LightItalic'),
+        url('Marine-LightItalic.eot?#iefix') format('embedded-opentype'),
+        url('Marine-LightItalic.woff2') format('woff2'),
+        url('Marine-LightItalic.woff') format('woff'),
+        url('Marine-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-Bold.eot');
+    src: local('Marine Bold'), local('Marine-Bold'),
+        url('Marine-Bold.eot?#iefix') format('embedded-opentype'),
+        url('Marine-Bold.woff2') format('woff2'),
+        url('Marine-Bold.woff') format('woff'),
+        url('Marine-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-LightOblicua.eot');
+    src: local('Marine Light Oblicua'), local('Marine-LightOblicua'),
+        url('Marine-LightOblicua.eot?#iefix') format('embedded-opentype'),
+        url('Marine-LightOblicua.woff2') format('woff2'),
+        url('Marine-LightOblicua.woff') format('woff'),
+        url('Marine-LightOblicua.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-BoldItalic.eot');
+    src: local('Marine Bold Italic'), local('Marine-BoldItalic'),
+        url('Marine-BoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('Marine-BoldItalic.woff2') format('woff2'),
+        url('Marine-BoldItalic.woff') format('woff'),
+        url('Marine-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-BoldOblicua.eot');
+    src: local('Marine Bold Oblicua'), local('Marine-BoldOblicua'),
+        url('Marine-BoldOblicua.eot?#iefix') format('embedded-opentype'),
+        url('Marine-BoldOblicua.woff2') format('woff2'),
+        url('Marine-BoldOblicua.woff') format('woff'),
+        url('Marine-BoldOblicua.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-Black.eot');
+    src: local('Marine Black'), local('Marine-Black'),
+        url('Marine-Black.eot?#iefix') format('embedded-opentype'),
+        url('Marine-Black.woff2') format('woff2'),
+        url('Marine-Black.woff') format('woff'),
+        url('Marine-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-RegularOblicua.eot');
+    src: local('Marine Regular Oblicua'), local('Marine-RegularOblicua'),
+        url('Marine-RegularOblicua.eot?#iefix') format('embedded-opentype'),
+        url('Marine-RegularOblicua.woff2') format('woff2'),
+        url('Marine-RegularOblicua.woff') format('woff'),
+        url('Marine-RegularOblicua.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-UPBlack.eot');
+    src: local('Marine UP Black'), local('Marine-UPBlack'),
+        url('Marine-UPBlack.eot?#iefix') format('embedded-opentype'),
+        url('Marine-UPBlack.woff2') format('woff2'),
+        url('Marine-UPBlack.woff') format('woff'),
+        url('Marine-UPBlack.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-RegularItalic.eot');
+    src: local('Marine Regular Italic'), local('Marine-RegularItalic'),
+        url('Marine-RegularItalic.eot?#iefix') format('embedded-opentype'),
+        url('Marine-RegularItalic.woff2') format('woff2'),
+        url('Marine-RegularItalic.woff') format('woff'),
+        url('Marine-RegularItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-UPLight.eot');
+    src: local('Marine UP Light'), local('Marine-UPLight'),
+        url('Marine-UPLight.eot?#iefix') format('embedded-opentype'),
+        url('Marine-UPLight.woff2') format('woff2'),
+        url('Marine-UPLight.woff') format('woff'),
+        url('Marine-UPLight.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-Light.eot');
+    src: local('Marine Light'), local('Marine-Light'),
+        url('Marine-Light.eot?#iefix') format('embedded-opentype'),
+        url('Marine-Light.woff2') format('woff2'),
+        url('Marine-Light.woff') format('woff'),
+        url('Marine-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-BlackItalic.eot');
+    src: local('Marine Black Italic'), local('Marine-BlackItalic'),
+        url('Marine-BlackItalic.eot?#iefix') format('embedded-opentype'),
+        url('Marine-BlackItalic.woff2') format('woff2'),
+        url('Marine-BlackItalic.woff') format('woff'),
+        url('Marine-BlackItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-UPRegular.eot');
+    src: local('Marine UP Regular'), local('Marine-UPRegular'),
+        url('Marine-UPRegular.eot?#iefix') format('embedded-opentype'),
+        url('Marine-UPRegular.woff2') format('woff2'),
+        url('Marine-UPRegular.woff') format('woff'),
+        url('Marine-UPRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-Regular.eot');
+    src: local('Marine Regular'), local('Marine-Regular'),
+        url('Marine-Regular.eot?#iefix') format('embedded-opentype'),
+        url('Marine-Regular.woff2') format('woff2'),
+        url('Marine-Regular.woff') format('woff'),
+        url('Marine-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-BlackOblicua.eot');
+    src: local('Marine Black Oblicua'), local('Marine-BlackOblicua'),
+        url('Marine-BlackOblicua.eot?#iefix') format('embedded-opentype'),
+        url('Marine-BlackOblicua.woff2') format('woff2'),
+        url('Marine-BlackOblicua.woff') format('woff'),
+        url('Marine-BlackOblicua.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Marine';
+    src: url('Marine-UPBold.eot');
+    src: local('Marine UP Bold'), local('Marine-UPBold'),
+        url('Marine-UPBold.eot?#iefix') format('embedded-opentype'),
+        url('Marine-UPBold.woff2') format('woff2'),
+        url('Marine-UPBold.woff') format('woff'),
+        url('Marine-UPBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+

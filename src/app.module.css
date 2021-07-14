@@ -1,5 +1,6 @@
 html, body {
     height: 100%;
+    margin: 0;
     --padding: 10px;
 }
 
@@ -9,9 +10,19 @@ html, body {
     flex-direction: column;
 }
 
+.header {
+    border-bottom: 1px solid var(--compl-color-de-normal);
+}
+
+.footer {
+    border-top: 1px solid var(--compl-color-de-normal);
+}
+
 .header, .footer {
-    border: blue 1px solid;
     flex: none;
+    color: var(--compl-color-normal);
+    background-color: var(--compl-color-bg-normal);
+    padding: var(--padding);
 }
 
 .container {
@@ -22,22 +33,26 @@ html, body {
 
 .content {
     flex-grow: 3;
-    margin-top: var(--padding);
+    /*margin-top: var(--padding);*/
     padding: var(--padding);
+    color: var(--main-color-normal);
+    background-color: var(--main-color-bg-normal);
 }
+
 .nav {
     flex-grow: 0;
     order: -1;
+    border-right: 1px solid var(--alt1-color-de-normal);
 }
 
 .aside {
     flex-grow: 1;
+    border-left: 1px solid var(--alt1-color-de-normal);
 }
 
 .nav, .aside {
-    border: red 1px solid;
     padding: var(--padding);
-    border-radius: 3px;
+    /*border-radius: 3px;*/
     color: var(--alt1-color-normal);
     background: var(--alt1-color-bg-normal);
 }
