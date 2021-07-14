@@ -2,12 +2,13 @@ import React from 'react';
 import { NavLink, useHistory } from 'react-router-dom';
 import { pages } from '../pages';
 import headerStyles from './header.module.css'
+import layout from '../layouts/layout.module.css';
 
 function Header() {
   const history = useHistory();
 
   return (
-    <nav>
+    <nav className={layout.header}>
       <div className={headerStyles.nav}>
         <h4 className={headerStyles.title}>Vessels</h4>
 

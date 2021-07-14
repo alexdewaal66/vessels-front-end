@@ -1,7 +1,7 @@
 import React from 'react';
-import layout from '../layout.module.css';
+import layout from '../layouts/layout.module.css';
 import { Colors } from '../dev/Colors';
-import { Main, Command, Aside } from '../components/layouts';
+import { Main, Command, Aside } from '../layouts';
 
 export function Home() {
     return (

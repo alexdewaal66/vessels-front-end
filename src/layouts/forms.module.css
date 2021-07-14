@@ -1,0 +1,15 @@
+.form {
+}
+
+.fieldset {
+    display: table;
+    border-spacing: 0.5em;
+}
+
+.fieldline {
+    display: table-row;
+}
+
+.description, .input {
+    display: table-cell;
+}

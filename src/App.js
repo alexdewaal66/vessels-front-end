@@ -7,7 +7,7 @@ import {
 
 import './assets/fonts/stylesheet.css'
 import './App.css';
-import layout from './layout.module.css';
+import layout from './layouts/layout.module.css';
 import { Colors } from './dev/Colors';
 import Header from './components/Header';
 import { pages } from './pages';
@@ -20,7 +20,7 @@ function App() {
     return (
         <Router>
             <div className={"App " + layout.app}>
-                <Header className={layout.header}>HEADER</Header>
+                <Header />
                 <Switch>
                     <Route exact path={pages.Home}>
                         <Home/>
