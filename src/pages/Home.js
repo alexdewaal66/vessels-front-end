@@ -3,7 +3,7 @@ import layout from '../layouts/layout.module.css';
 import { Colors } from '../dev/Colors';
 import { Main, Command, Aside } from '../layouts';
 
-export function Home() {
+export default function Home() {
     return (
         <div className={layout.container}>
             <Main>

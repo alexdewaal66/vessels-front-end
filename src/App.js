@@ -8,19 +8,14 @@ import {
 import './assets/fonts/stylesheet.css'
 import './App.css';
 import layout from './layouts/layout.module.css';
-import { Colors } from './dev/Colors';
 import Header from './components/Header';
-import { pages } from './pages';
-import { Home } from './pages/Home';
-import SignUp from './pages/SignUp';
-import SignIn from './pages/SignIn';
-import Profile from './pages/Profile';
+import { Home, SignUp, SignIn, Profile, pages } from './pages';
 
 function App() {
     return (
         <Router>
             <div className={"App " + layout.app}>
-                <Header />
+                <Header/>
                 <Switch>
                     <Route exact path={pages.Home}>
                         <Home/>
