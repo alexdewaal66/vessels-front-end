@@ -56,6 +56,7 @@ export function AuthContextProvider({children}) {
 
     function logout() {
         console.log(now() + ' logout()');
+        // todo: delete token ??
     }
 
     function isTokenValid(JWT) {

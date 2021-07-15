@@ -1,10 +1,10 @@
 import React from 'react';
 import layout from './layout.module.css';
 
-export function Aside({children, ...rest}) {
+export function Content({children}) {
     return (
-        <aside className={layout.aside} {...rest}>
+        <div className={layout.container}>
             {children}
-        </aside>
+        </div>
     );
 }

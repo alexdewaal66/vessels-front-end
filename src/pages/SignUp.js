@@ -1,13 +1,14 @@
-import React, {useState} from 'react';
-import {Link, useHistory} from 'react-router-dom';
-import {useForm} from 'react-hook-form';
+import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { now, postRequest } from '../helpers/utils';
 import { pages } from './index';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import layout from '../layouts/layout.module.css';
 import forms from '../layouts/forms.module.css';
-import { Aside, Command, Main } from '../layouts';
+import { Aside, Command, Main, Content } from '../layouts';
+import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../layouts';
 
 function SignUp() {
     const {handleSubmit, register} = useForm();
@@ -32,10 +33,11 @@ function SignUp() {
 
     return (
         <>
-            <div className={layout.container}>
+            <Content>
                 <Main>
                     <h1>Registreren</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias cum debitis dolor dolore fuga id
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias cum debitis dolor dolore fuga
+                        id
                         molestias qui quo unde?</p>
 
                     {requestState.isPending && (
@@ -48,43 +50,43 @@ function SignUp() {
                         <>Registreren is niet gelukt. Probeer het opnieuw. ({requestState.error})</>
                     )}
                     {!requestState.isSuccess && (
-                        <form
-                            onSubmit={handleSubmit(onSubmit)}
-                            className={forms.fieldset}
-                        >
-                            <label className={forms.fieldline}>
-                                <span className={forms.description}>Email:</span>
-                                <input
-                                    className={forms.input}
-                                    type="email"
-                                    id="email-field"
-                                    name="email"
-                                    {...register("email")}
-                                />
-                            </label>
-                            <label className={forms.fieldline}>
-                                <span className={forms.description}>Gebruikersnaam:</span>
-                                <input
-                                    className={forms.input}
-                                    type="text"
-                                    id="username-field"
-                                    name="username"
-                                    {...register("username")}
-                                />
-                            </label>
+                        <Form onSubmit={handleSubmit(onSubmit)}><Fieldset>
+                            <FieldRow>
+                                <FieldDesc>Email:</FieldDesc>
+                                <FieldEl>
+                                    <input
+                                        type="email"
+                                        id="email-field"
+                                        name="email"
+                                        {...register("email")}
+                                    />
+                                </FieldEl>
+                            </FieldRow>
+                            <FieldRow>
+                                <FieldDesc>Gebruikersnaam:</FieldDesc>
+                                <FieldEl>
+                                    <input
+                                        type="text"
+                                        id="username-field"
+                                        name="username"
+                                        {...register("username")}
+                                    />
+                                </FieldEl>
+                            </FieldRow>
 
-                            <label className={forms.fieldline}>
-                                <span className={forms.description}>Wachtwoord:</span>
-                                <input
-                                    className={forms.input}
-                                    type="password"
-                                    id="password-field"
-                                    name="password"
-                                    {...register("password")}
-                                />
-                            </label>
-                            <div className={forms.fieldline}>
-                                <span className={forms.input}>
+                            <FieldRow>
+                                <FieldDesc>Wachtwoord:</FieldDesc>
+                                <FieldEl>
+                                    <input
+                                        type="password"
+                                        id="password-field"
+                                        name="password"
+                                        {...register("password")}
+                                    />
+                                </FieldEl>
+                            </FieldRow>
+                            <FieldRow>
+                                <FieldEl>
                                     <button
                                         type="submit"
                                         className="form-button"
@@ -92,9 +94,9 @@ function SignUp() {
                                     >
                                         Maak account aan
                                     </button>
-                                </span>
-                            </div>
-                        </form>
+                                </FieldEl>
+                            </FieldRow>
+                        </Fieldset></Form>
                     )}
 
                     <p>Heb je al een account? Je kunt je <Link to={pages.SignIn}>hier</Link> inloggen.</p>
@@ -105,7 +107,7 @@ function SignUp() {
                 <Aside>
                     ASIDE
                 </Aside>
-            </div>
+            </Content>
 
         </>
     );

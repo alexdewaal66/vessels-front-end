@@ -35,10 +35,10 @@ html, body {
 
 .content {
     flex-grow: 3;
-    /*margin-top: var(--padding);*/
     padding: var(--padding);
     color: var(--main-color-normal);
     background-color: var(--main-color-bg-normal);
+    border-color: var(--main-color-de-normal);
 }
 
 .command {

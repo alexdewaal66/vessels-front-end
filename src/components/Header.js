@@ -36,27 +36,3 @@ function Header() {
 };
 
 export default Header;
-
-/*
-     <div>
-        <button
-            type="button"
-            onClick={() => history.push(pages.Home)}
-        >
-          Home
-        </button>
-        <button
-            type="button"
-            onClick={() => history.push(pages.SignIn)}
-        >
-          Log in
-        </button>
-        <button
-          type="button"
-          onClick={() => history.push(pages.SignUp)}
-        >
-          Registreren
-        </button>
-      </div>
-
- */

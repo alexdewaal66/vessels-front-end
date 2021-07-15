@@ -5,7 +5,7 @@ import { addJwtToHeaders, getRequest, now, persistentVars } from '../helpers/uti
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import layout from '../layouts/layout.module.css';
-import { Aside, Command, Main } from '../layouts';
+import { Aside, Command, Main, Content } from '../layouts';
 import { Colors } from '../dev/Colors';
 
 function Profile() {
@@ -30,7 +30,7 @@ function Profile() {
 
     return (
         <>
-            <div className={layout.container}>
+            <Content>
                 <Main>
                     <h1>Profielpagina</h1>
                     <section>
@@ -58,7 +58,7 @@ function Profile() {
                 <Aside>
                     ASIDE
                 </Aside>
-            </div>
+            </Content>
 
         </>
     );

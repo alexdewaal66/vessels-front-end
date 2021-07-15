@@ -1,15 +1,20 @@
 .form {
+    border-color: inherit;
 }
 
-.fieldset {
+.table {
+    border: 1px;
+    border-style:  solid;
+    border-color: inherit;
+    width: fit-content;
     display: table;
     border-spacing: 0.5em;
 }
 
-.fieldline {
+.row {
     display: table-row;
 }
 
-.description, .input {
+.cell {
     display: table-cell;
 }

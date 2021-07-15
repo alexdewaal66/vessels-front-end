@@ -1,8 +1,9 @@
 export const endpoints = {
     baseURL: 'http://localhost:8080/',
-    // signIn: '/login',
+    signIn: '/authenticate',
     // signUp: '/register',
     user: '/users/',
+    xyzs: '/xyzs',
 };
 
 // ₀₁₂₃₄₅₆₇₈₉

@@ -64,10 +64,10 @@ export function getRequest({url, headers, requestState, setResult, onSuccess}) {
     })
 }
 
-async function makeRequest({method, url, headers, payload, requestState, setResult, onSuccess}) {
+export async function makeRequest({method, url, headers, payload, requestState, setResult, onSuccess}) {
     requestState.setAtPending();
     console.log(now() + ' makeRequest()');
-    console.log(`arguments=`, {method, url, headers, payload, requestState, setResult, onSuccess});
+    console.log('request arguments=\n\t', {method, url, headers, payload, requestState, setResult, onSuccess});
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,

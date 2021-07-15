@@ -9,7 +9,7 @@ import './assets/fonts/stylesheet.css'
 import './App.css';
 import layout from './layouts/layout.module.css';
 import Header from './components/Header';
-import { Home, SignUp, SignIn, Profile, pages } from './pages';
+import { Home, SignUp, SignIn, Profile, Entity, pages, pageObjects } from './pages';
 
 function App() {
     return (
@@ -17,7 +17,8 @@ function App() {
             <div className={"App " + layout.app}>
                 <Header/>
                 <Switch>
-                    <Route exact path={pages.Home}>
+                    {/*<Route exact path={pages.Home}>*/}
+                    <Route exact={pageObjects.homePage.exact} path={pageObjects.homePage.path}>
                         <Home/>
                     </Route>
                     <Route path={pages.SignUp}>

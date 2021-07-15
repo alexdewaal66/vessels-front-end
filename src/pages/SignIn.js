@@ -5,10 +5,9 @@ import { AuthContext } from "../contexts/AuthContext";
 import { now, postRequest } from '../helpers/utils';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
-import layout from '../layouts/layout.module.css';
 import forms from '../layouts/forms.module.css';
 import { Aside, Command, Main } from '../layouts';
-import { Colors } from '../dev/Colors';
+import { Content } from '../layouts/Content';
 // import { pages } from './index';
 
 function SignIn() {
@@ -33,7 +32,7 @@ function SignIn() {
 
     return (
         <>
-            <div className={layout.container}>
+            <Content>
                 <Main>
                     <h1>Inloggen</h1>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias cum debitis dolor dolore fuga id
@@ -52,12 +51,12 @@ function SignIn() {
                     {!requestState.isSuccess && (
                         <form
                             onSubmit={handleSubmit(onSubmit)}
-                            className={forms.fieldset}
+                            className={forms.table}
                         >
-                            <label className={forms.fieldline}>
-                                <span className={forms.description}>Emailadres:</span>
+                            <label className={forms.row}>
+                                <span className={forms.cell}>Emailadres:</span>
                                 <input
-                                    className={forms.input}
+                                    className={forms.cell}
                                     type="email"
                                     id="email-field"
                                     name="email"
@@ -65,17 +64,28 @@ function SignIn() {
                                 />
                             </label>
 
-                            <label className={forms.fieldline}>
-                                <span className={forms.description}>Wachtwoord:</span>
+                            <label className={forms.row}>
+                                <span className={forms.cell}>Username:</span>
                                 <input
-                                    className={forms.input}
+                                    className={forms.cell}
+                                    type="text"
+                                    id="username-field"
+                                    name="username"
+                                    {...register("username")}
+                                />
+                            </label>
+
+                            <label className={forms.row}>
+                                <span className={forms.cell}>Wachtwoord:</span>
+                                <input
+                                    className={forms.cell}
                                     type="password"
                                     id="password-field"
                                     name="password"
                                     {...register("password")}
                                 />
                             </label>
-                            <span className={forms.input}>
+                            <span className={forms.cell}>
                                 <button
                                     type="submit"
                                     className="form-button"
@@ -95,7 +105,7 @@ function SignIn() {
                 <Aside>
                     ASIDE
                 </Aside>
-            </div>
+            </Content>
 
         </>
     );
