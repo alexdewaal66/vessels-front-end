@@ -1,7 +1,3 @@
-export * from './Main';
-export * from './Command';
-export * from './Aside';
-export * from './Content';
 export * from './Form';
 export * from './Fieldset';
 export * from './FieldRow';

@@ -48,6 +48,14 @@ export function addJwtToHeaders(headers, token) {
     };
 }
 
+function addCorsToHeaders(headers) {
+    return {
+        ...headers,
+        'Access-Control-Allow-Origin': '*',
+        // crossorigin: true,
+    }
+}
+
 /******************************************/
 
 export function postRequest({url, payload, requestState, setResult, onSuccess}) {
@@ -71,7 +79,9 @@ export async function makeRequest({method, url, headers, payload, requestState, 
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,
-            method, url, headers,
+            method,
+            url,
+            headers, //: addCorsToHeaders(headers),
             data: payload,
             timeout: 5_000,
         });

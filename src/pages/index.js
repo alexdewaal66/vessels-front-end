@@ -4,22 +4,21 @@ import SignIn from './SignIn';
 import Profile from './Profile';
 import Entity from './Entity';
 
-const pages = {Home: '/', Profile: '/profile', SignIn: '/signin', SignUp: '/signup'};
-
 const pageObjects = {
-    homePage: {name: 'Home', path: '/', component: Home, exact: true},
-    profilePage: {name: 'Profiel', path: '/profile', component: Profile},
-    signUpPage: {name: 'Registreren', path: '/signup', component: SignUp},
-    signInPage: {name: 'Inloggen', path: '/signin', component: SignIn},
-    entityPage: {name: 'Entiteit', path: '/entity', component: Entity},
+    home: {name: 'home', path: '/', component: Home, exact: true},
+    profile: {name: 'Profiel', path: '/profile', component: Profile},
+    signUp: {name: 'Registreren', path: '/signup', component: SignUp},
+    signIn: {name: 'Inloggen', path: '/signin', component: SignIn},
+    entity: {name: 'Entiteit', path: '/entity', component: Entity},
 };
+
 pageObjects.pageOrder= [
-    pageObjects.homePage,
-    pageObjects.entityPage,
-    pageObjects.signUpPage,
-    pageObjects.signInPage,
-    pageObjects.profilePage,
+    pageObjects.home,
+    pageObjects.entity,
+    pageObjects.signUp,
+    pageObjects.signIn,
+    pageObjects.profile,
 ];
 
 
-export { Home, SignUp, SignIn, Profile, Entity, pages, pageObjects };
+export { Home, SignUp, SignIn, Profile, Entity, pageObjects };

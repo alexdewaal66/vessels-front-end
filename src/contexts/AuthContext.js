@@ -1,10 +1,11 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { addJwtToHeaders, getRequest, now, persistentVars } from '../helpers/utils';
 import jwt_decode from 'jwt-decode';
-import { pages } from '../pages';
+import { pageObjects } from '../pages';
 import { useHistory } from 'react-router-dom';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
+import layout from '../pageLayouts/layout.module.css'
 
 export const AuthContext = createContext({});
 
@@ -25,7 +26,7 @@ export function AuthContextProvider({children}) {
     function fetchUserData(JWT, id) {
         console.log('in fetchUserData()');
         getRequest({
-            url: `${endpoints.user}${id}`,
+            url: `${endpoints.users}${id}`,
             headers: addJwtToHeaders({}, JWT),
             requestState: requestState,
             onSuccess: (result) => {
@@ -39,24 +40,25 @@ export function AuthContextProvider({children}) {
                     },
                     status: authStates.DONE,
                 });
-                history.push(pages.Profile);
+                history.push(pageObjects.profile.path);
             },
         })
     }
 
     function login(JWT) {
-        console.log(now() + ' login()');
+        const userID = getUserID(JWT);
+        fetchUserData(JWT, userID);
+    }
+
+    function getUserID(JWT) {
         localStorage.setItem(persistentVars.JWT, JWT);
         const decodedToken = jwt_decode(JWT);
-        console.log(`decodedToken=`, decodedToken);
-        const userID = decodedToken.sub; //
-
-        fetchUserData(JWT, userID);
+        return decodedToken.sub;
     }
 
     function logout() {
         console.log(now() + ' logout()');
-        // todo: delete token ??
+        // todo: delete token ??+
     }
 
     function isTokenValid(JWT) {
@@ -69,11 +71,11 @@ export function AuthContextProvider({children}) {
         const JWT = localStorage.getItem(persistentVars.JWT);
 
         if (!authState.user && JWT && isTokenValid(JWT)) {
-            // geen user, wel een geldige token
+            // geen users, wel een geldige token
             const decodedToken = jwt_decode(JWT);
             fetchUserData(JWT, decodedToken.sub)
         } else {
-            // geen user, geen geldige token
+            // geen users, geen geldige token
             setAuthState({
                 user: null,
                 status: authStates.DONE
@@ -85,16 +87,16 @@ export function AuthContextProvider({children}) {
         <AuthContext.Provider value={authData}>
             <>
                 {requestState.isIdle && (
-                    <span className="statusbar">FF lekker niksen...</span>
+                    <span className={layout.statusbar}>authenticatie nog niet gestart</span>
                 )}
                 {requestState.isPending && (
-                    <span className="statusbar">We zijn onderweg.</span>
+                    <span className={layout.statusbar}>authenticatie is bezig</span>
                 )}
                 {requestState.isError && (
-                    <span className="statusbar">Foutje, bedankt! ({requestState.errorMsg})</span>
+                    <span className={layout.statusbar}>authenticatie mislukt, ({requestState.errorMsg})</span>
                 )}
                 {requestState.isSuccess && (
-                    <span className="statusbar">Gelukt!!</span>
+                    <span className={layout.statusbar}>authenticatie geslaagd</span>
                 )}
                 {authState.status === authStates.PENDING
                     ? <p>Loading...</p>

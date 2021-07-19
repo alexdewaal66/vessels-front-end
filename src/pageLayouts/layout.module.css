@@ -27,18 +27,22 @@ html, body {
     padding: var(--padding);
 }
 
-.container {
+.content {
     display: flex;
     flex: 1 0 auto; /* 2 */
     flex-direction: row;
 }
 
-.content {
+.main {
     flex-grow: 3;
     padding: var(--padding);
     color: var(--main-color-normal);
     background-color: var(--main-color-bg-normal);
     border-color: var(--main-color-de-normal);
+    background-image: url("../assets/anchor.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
 }
 
 .command {
@@ -60,8 +64,19 @@ html, body {
 }
 
 @media (max-width: 600px) {
-    .container {
+    .content {
         flex-direction: column;
     }
+}
 
+.statusbar {
+    font-size: smaller;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 3px;
+    color: hsla(0, 100%, 50%, 0.3);
+    background-color: hsla(180, 20%, 50%, 0.1);
+    border: 1px solid hsla(180, 100%, 30%, 0.2);
+    border-top-left-radius: 12px;
 }

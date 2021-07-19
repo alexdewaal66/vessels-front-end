@@ -9,6 +9,7 @@
     width: fit-content;
     display: table;
     border-spacing: 0.5em;
+    margin: 0.5em;
 }
 
 .row {

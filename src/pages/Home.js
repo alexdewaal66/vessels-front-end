@@ -1,13 +1,12 @@
 import React from 'react';
-import layout from '../layouts/layout.module.css';
+import layout from '../pageLayouts/layout.module.css';
 import { Colors } from '../dev/Colors';
-import { Main, Command, Aside } from '../layouts';
+import { Main, Command, Aside, Content } from '../pageLayouts';
 
 export default function Home() {
     return (
-        <div className={layout.container}>
+        <Content>
             <Main>
-                CENTER
                 <Colors/>
             </Main>
             <Command>
@@ -16,6 +15,6 @@ export default function Home() {
             <Aside>
                 ASIDE
             </Aside>
-        </div>
+        </Content>
     );
 }

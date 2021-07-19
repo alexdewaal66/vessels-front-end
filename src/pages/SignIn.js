@@ -5,15 +5,16 @@ import { AuthContext } from "../contexts/AuthContext";
 import { now, postRequest } from '../helpers/utils';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
-import forms from '../layouts/forms.module.css';
-import { Aside, Command, Main } from '../layouts';
-import { Content } from '../layouts/Content';
+import forms from '../formLayouts/forms.module.css';
+import { Aside, Command, Main } from '../pageLayouts';
+import { Content } from '../pageLayouts/Content';
+
 // import { pages } from './index';
 
 function SignIn() {
-    const { handleSubmit, register } = useForm();
+    const {handleSubmit, register} = useForm();
     const authContext = useContext(AuthContext);
-    const { login } = authContext;
+    const {login} = authContext;
     const requestState = useRequestState();
     console.log(now() + ` authContext=\n\t`, authContext);
 
@@ -25,89 +26,85 @@ function SignIn() {
             payload: formData,
             requestState: requestState,
             onSuccess: (result) => {
-                login(result.accessToken);
+                login(result.jwt);
             },
         })
     }
 
     return (
-        <>
-            <Content>
-                <Main>
-                    <h1>Inloggen</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias cum debitis dolor dolore fuga id
-                        molestias qui quo unde?</p>
+        <Content>
+            <Main>
+                <h1>Inloggen</h1>
+                <p>Log in om gegevens, foto's & commentaar te kunnen toevoegen.</p>
 
-                    {requestState.isPending && (
-                        <>Even geduld a.u.b.</>
-                    )}
-                    {requestState.isSuccess && (
-                        <>🎈🎈🎈 Inloggen is gelukt. 🎈🎈🎈</>
-                    )}
-                    {requestState.isError && (
-                        // <>Inloggen is niet gelukt. Probeer het opnieuw. ({requestError})</>
-                        <>Inloggen is niet gelukt. Probeer het opnieuw. ({requestState.errorMsg})</>
-                    )}
-                    {!requestState.isSuccess && (
-                        <form
-                            onSubmit={handleSubmit(onSubmit)}
-                            className={forms.table}
-                        >
-                            <label className={forms.row}>
-                                <span className={forms.cell}>Emailadres:</span>
-                                <input
-                                    className={forms.cell}
-                                    type="email"
-                                    id="email-field"
-                                    name="email"
-                                    {...register("email")}
-                                />
-                            </label>
+                {requestState.isPending && (
+                    <>Even geduld a.u.b.</>
+                )}
+                {requestState.isSuccess && (
+                    <>🎈🎈🎈 Inloggen is gelukt. 🎈🎈🎈</>
+                )}
+                {requestState.isError && (
+                    // <>Inloggen is niet gelukt. Probeer het opnieuw. ({requestError})</>
+                    <>Inloggen is niet gelukt. Probeer het opnieuw. ({requestState.errorMsg})</>
+                )}
+                {!requestState.isSuccess && (
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className={forms.table}
+                    >
+                        <label className={forms.row}>
+                            <span className={forms.cell}>Emailadres:</span>
+                            <input
+                                className={forms.cell}
+                                type="email"
+                                id="email-field"
+                                name="email"
+                                {...register("email")}
+                            />
+                        </label>
 
-                            <label className={forms.row}>
-                                <span className={forms.cell}>Username:</span>
-                                <input
-                                    className={forms.cell}
-                                    type="text"
-                                    id="username-field"
-                                    name="username"
-                                    {...register("username")}
-                                />
-                            </label>
+                        <label className={forms.row}>
+                            <span className={forms.cell}>Username:</span>
+                            <input
+                                className={forms.cell}
+                                type="text"
+                                id="username-field"
+                                name="username"
+                                {...register("username")}
+                            />
+                        </label>
 
-                            <label className={forms.row}>
-                                <span className={forms.cell}>Wachtwoord:</span>
-                                <input
-                                    className={forms.cell}
-                                    type="password"
-                                    id="password-field"
-                                    name="password"
-                                    {...register("password")}
-                                />
-                            </label>
-                            <span className={forms.cell}>
-                                <button
-                                    type="submit"
-                                    className="form-button"
-                                    disabled={requestState.isPending}
-                                >
-                                    Inloggen
-                                </button>
-                            </span>
-                        </form>
-                    )}
+                        <label className={forms.row}>
+                            <span className={forms.cell}>Wachtwoord:</span>
+                            <input
+                                className={forms.cell}
+                                type="password"
+                                id="password-field"
+                                name="password"
+                                {...register("password")}
+                            />
+                        </label>
+                        <span className={forms.cell}>
+                            <button
+                                type="submit"
+                                className="form-button"
+                                disabled={requestState.isPending}
+                            >
+                            Inloggen
+                        </button>
+                        </span>
+                    </form>
+                )}
 
-                    <p>Heb je nog geen account? <Link to="/signup">Registreer</Link> je dan eerst.</p>
-                </Main>
-                <Command>
-                    COMMAND
-                </Command>
-                <Aside>
-                    ASIDE
-                </Aside>
-            </Content>
-
-        </>
+                <p>Heb je nog geen account? <Link to="/signup">Registreer</Link> je dan eerst.</p>
+            </Main>
+            <Command>
+                COMMAND
+            </Command>
+            <Aside>
+                ASIDE
+            </Aside>
+        </Content>
     );
 }
 

@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { now, postRequest } from '../helpers/utils';
-import { pages } from './index';
+import { pageObjects } from './index';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
-import layout from '../layouts/layout.module.css';
-import forms from '../layouts/forms.module.css';
-import { Aside, Command, Main, Content } from '../layouts';
-import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../layouts';
+import { Aside, Command, Main, Content } from '../pageLayouts';
+import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
 
 function SignUp() {
     const {handleSubmit, register} = useForm();
@@ -26,13 +24,12 @@ function SignUp() {
             requestState: requestState,
             setResult: setResult,
             onSuccess: () => {
-                setTimeout(() => history.push(pages.SignIn), 2000);
+                setTimeout(() => history.push(pageObjects.signIn.path), 2000);
             },
         })
     }
 
     return (
-        <>
             <Content>
                 <Main>
                     <h1>Registreren</h1>
@@ -99,7 +96,7 @@ function SignUp() {
                         </Fieldset></Form>
                     )}
 
-                    <p>Heb je al een account? Je kunt je <Link to={pages.SignIn}>hier</Link> inloggen.</p>
+                    <p>Heb je al een account? Je kunt je <Link to={pageObjects.signIn.path}>hier</Link> inloggen.</p>
                 </Main>
                 <Command>
                     COMMAND
@@ -108,8 +105,6 @@ function SignUp() {
                     ASIDE
                 </Aside>
             </Content>
-
-        </>
     );
 }
 
