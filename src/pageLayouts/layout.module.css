@@ -3,9 +3,11 @@ html, body {
     margin: 0;
     --padding: 10px;
 }
+
 .root {
     height: 100vh;
 }
+
 .app {
     display: flex;
     height: 100vh;
@@ -13,17 +15,31 @@ html, body {
 }
 
 .header {
-    border-bottom: 1px solid var(--compl-color-de-normal);
+    border-bottom: 1px solid;
 }
 
 .footer {
-    border-top: 1px solid var(--compl-color-de-normal);
+    border-top: 1px solid;
 }
 
 .header, .footer {
+    --color-darker: var(--compl-color-darker);
+    --color-normal: var(--compl-color-normal);
+    --color-light: var(--compl-color-light);
+    --color-em-darker: var(--compl-color-em-darker);
+    --color-em-normal: var(--compl-color-em-normal);
+    --color-em-light: var(--compl-color-em-light);
+    --color-de-darker: var(--compl-color-de-darker);
+    --color-de-normal: var(--compl-color-de-normal);
+    --color-de-light: var(--compl-color-de-light);
+    --color-bg-darker: var(--compl-color-bg-darker);
+    --color-bg-normal: var(--compl-color-bg-normal);
+    --color-bg-light: var(--compl-color-bg-light);
+
+    color: var(--color-normal);
+    background-color: var(--color-bg-normal);
+    border-color: var(--color-de-normal);
     flex: none;
-    color: var(--compl-color-normal);
-    background-color: var(--compl-color-bg-normal);
     padding: var(--padding);
 }
 
@@ -34,11 +50,26 @@ html, body {
 }
 
 .main {
+    --color-darker: var(--main-color-darker);
+    --color-normal: var(--main-color-normal);
+    --color-light: var(--main-color-light);
+    --color-em-darker: var(--main-color-em-darker);
+    --color-em-normal: var(--main-color-em-normal);
+    --color-em-light: var(--main-color-em-light);
+    --color-de-darker: var(--main-color-de-darker);
+    --color-de-normal: var(--main-color-de-normal);
+    --color-de-light: var(--main-color-de-light);
+    --color-bg-darker: var(--main-color-bg-darker);
+    --color-bg-normal: var(--main-color-bg-normal);
+    --color-bg-light: var(--main-color-bg-light);
+
+    color: var(--color-normal);
+    background-color: var(--color-bg-normal);
+    border-color: var(--color-de-normal);
+
     flex-grow: 3;
     padding: var(--padding);
-    color: var(--main-color-normal);
-    background-color: var(--main-color-bg-normal);
-    border-color: var(--main-color-de-normal);
+
     background-image: url("../assets/anchor.png");
     background-position: center;
     background-repeat: no-repeat;
@@ -48,19 +79,33 @@ html, body {
 .command {
     flex-grow: 0;
     order: -1;
-    border-right: 1px solid var(--alt1-color-de-normal);
+    border-right: 1px solid;
 }
 
 .aside {
     flex-grow: 1;
-    border-left: 1px solid var(--alt1-color-de-normal);
+    border-left: 1px solid;
 }
 
 .command, .aside {
+    --color-darker: var(--alt1-color-darker);
+    --color-normal: var(--alt1-color-normal);
+    --color-light: var(--alt1-color-light);
+    --color-em-darker: var(--alt1-color-em-darker);
+    --color-em-normal: var(--alt1-color-em-normal);
+    --color-em-light: var(--alt1-color-em-light);
+    --color-de-darker: var(--alt1-color-de-darker);
+    --color-de-normal: var(--alt1-color-de-normal);
+    --color-de-light: var(--alt1-color-de-light);
+    --color-bg-darker: var(--alt1-color-bg-darker);
+    --color-bg-normal: var(--alt1-color-bg-normal);
+    --color-bg-light: var(--alt1-color-bg-light);
+
+    color: var(--color-normal);
+    background: var(--color-bg-normal);
+    border-color: var(--color-de-normal);
+
     padding: var(--padding);
-    /*border-radius: 3px;*/
-    color: var(--alt1-color-normal);
-    background: var(--alt1-color-bg-normal);
 }
 
 @media (max-width: 600px) {

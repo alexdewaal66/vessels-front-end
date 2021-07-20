@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { addJwtToHeaders, getRequest, now, persistentVars } from '../helpers/utils';
 import jwt_decode from 'jwt-decode';
-import { pageObjects } from '../pages';
+import { pages } from '../pages';
 import { useHistory } from 'react-router-dom';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
@@ -40,7 +40,7 @@ export function AuthContextProvider({children}) {
                     },
                     status: authStates.DONE,
                 });
-                history.push(pageObjects.profile.path);
+                history.push(pages.profile.path);
             },
         })
     }
@@ -58,7 +58,8 @@ export function AuthContextProvider({children}) {
 
     function logout() {
         console.log(now() + ' logout()');
-        // todo: delete token ??+
+        localStorage.removeItem(persistentVars.JWT);
+        setAuthState({user:null});
     }
 
     function isTokenValid(JWT) {

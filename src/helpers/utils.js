@@ -48,13 +48,6 @@ export function addJwtToHeaders(headers, token) {
     };
 }
 
-function addCorsToHeaders(headers) {
-    return {
-        ...headers,
-        'Access-Control-Allow-Origin': '*',
-        // crossorigin: true,
-    }
-}
 
 /******************************************/
 
@@ -62,14 +55,14 @@ export function postRequest({url, payload, requestState, setResult, onSuccess}) 
     const ignorePromise = makeRequest({
         method: 'post',
         url, payload, requestState, setResult, onSuccess,
-    })
+    });
 }
 
 export function getRequest({url, headers, requestState, setResult, onSuccess}) {
     const ignorePromise = makeRequest({
         method: 'get',
         url, headers, requestState, setResult, onSuccess,
-    })
+    });
 }
 
 export async function makeRequest({method, url, headers, payload, requestState, setResult, onSuccess}) {

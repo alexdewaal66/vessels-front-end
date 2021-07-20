@@ -6,6 +6,7 @@ import { now, postRequest } from '../helpers/utils';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import forms from '../formLayouts/forms.module.css';
+import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
 import { Aside, Command, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts/Content';
 
@@ -44,56 +45,54 @@ function SignIn() {
                     <>🎈🎈🎈 Inloggen is gelukt. 🎈🎈🎈</>
                 )}
                 {requestState.isError && (
-                    // <>Inloggen is niet gelukt. Probeer het opnieuw. ({requestError})</>
                     <>Inloggen is niet gelukt. Probeer het opnieuw. ({requestState.errorMsg})</>
                 )}
                 {!requestState.isSuccess && (
-                    <form
-                        onSubmit={handleSubmit(onSubmit)}
-                        className={forms.table}
-                    >
-                        <label className={forms.row}>
-                            <span className={forms.cell}>Emailadres:</span>
-                            <input
-                                className={forms.cell}
-                                type="email"
-                                id="email-field"
-                                name="email"
-                                {...register("email")}
-                            />
-                        </label>
+                    <Form onSubmit={handleSubmit(onSubmit)}>
+                        <Fieldset>
+                            <FieldRow>
+                                <FieldDesc>Emailadres:</FieldDesc>
+                                <FieldEl><input
+                                    type="email"
+                                    id="email-field"
+                                    name="email"
+                                    {...register("email")}
+                                /></FieldEl>
+                            </FieldRow>
 
-                        <label className={forms.row}>
-                            <span className={forms.cell}>Username:</span>
-                            <input
-                                className={forms.cell}
-                                type="text"
-                                id="username-field"
-                                name="username"
-                                {...register("username")}
-                            />
-                        </label>
+                            <FieldRow>
+                                <FieldDesc>Username:</FieldDesc>
+                                <FieldEl><input
+                                    type="text"
+                                    id="username-field"
+                                    name="username"
+                                    {...register("username")}
+                                /></FieldEl>
+                            </FieldRow>
 
-                        <label className={forms.row}>
-                            <span className={forms.cell}>Wachtwoord:</span>
-                            <input
-                                className={forms.cell}
-                                type="password"
-                                id="password-field"
-                                name="password"
-                                {...register("password")}
-                            />
-                        </label>
-                        <span className={forms.cell}>
-                            <button
-                                type="submit"
-                                className="form-button"
-                                disabled={requestState.isPending}
-                            >
-                            Inloggen
-                        </button>
-                        </span>
-                    </form>
+                            <FieldRow>
+                                <FieldDesc>Wachtwoord:</FieldDesc>
+                                <FieldEl><input
+                                    className={forms.cell}
+                                    type="password"
+                                    id="password-field"
+                                    name="password"
+                                    {...register("password")}
+                                /></FieldEl>
+                            </FieldRow>
+                            <FieldRow>
+                                <FieldEl>
+                                    <button
+                                        type="submit"
+                                        className="form-button"
+                                        disabled={requestState.isPending}
+                                    >
+                                        Inloggen
+                                    </button>
+                                </FieldEl>
+                            </FieldRow>
+                        </Fieldset>
+                    </Form>
                 )}
 
                 <p>Heb je nog geen account? <Link to="/signup">Registreer</Link> je dan eerst.</p>

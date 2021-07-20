@@ -5,7 +5,7 @@ import { addJwtToHeaders, getRequest, now, persistentVars } from '../helpers/uti
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import { Aside, Command, Main, Content } from '../pageLayouts';
-import { pageObjects } from './index';
+import { pages } from './index';
 
 function Profile() {
     const [privateContent, setPrivateContent] = useState({});
@@ -48,7 +48,7 @@ function Profile() {
                     <p>{privateContent.content}</p>
                 </section>
                 }
-                <p>Terug naar de <Link to={pageObjects.home.path}>Homepagina</Link></p>
+                <p>Terug naar de <Link to={pages.home.path}>Homepagina</Link></p>
             </Main>
             <Command>
                 COMMAND

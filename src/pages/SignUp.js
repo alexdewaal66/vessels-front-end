@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { now, postRequest } from '../helpers/utils';
-import { pageObjects } from './index';
+import { pages } from './index';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import { Aside, Command, Main, Content } from '../pageLayouts';
@@ -24,7 +24,7 @@ function SignUp() {
             requestState: requestState,
             setResult: setResult,
             onSuccess: () => {
-                setTimeout(() => history.push(pageObjects.signIn.path), 2000);
+                setTimeout(() => history.push(pages.signIn.path), 2000);
             },
         })
     }
@@ -33,9 +33,7 @@ function SignUp() {
             <Content>
                 <Main>
                     <h1>Registreren</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias cum debitis dolor dolore fuga
-                        id
-                        molestias qui quo unde?</p>
+                    <p>Registreer en log in om gegevens, foto's & commentaar te kunnen toevoegen.</p>
 
                     {requestState.isPending && (
                         <>Even geduld a.u.b.</>
@@ -96,7 +94,7 @@ function SignUp() {
                         </Fieldset></Form>
                     )}
 
-                    <p>Heb je al een account? Je kunt je <Link to={pageObjects.signIn.path}>hier</Link> inloggen.</p>
+                    <p>Heb je al een account? Je kunt je <Link to={pages.signIn.path}>hier</Link> inloggen.</p>
                 </Main>
                 <Command>
                     COMMAND

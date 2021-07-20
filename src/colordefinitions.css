@@ -1,8 +1,8 @@
 :root {
     --main-hue: 190;
     --input-hue: 170;
-    --alt1-hue: 220;
-    --alt2-hue: 200;
+    --alt1-hue: 200;
+    --alt2-hue: 180;
 
     /*  em:emphasis  / de:de-emphasis / bg:background */
 
@@ -21,6 +21,9 @@
     --bg-darker: 85%;
     --bg-normal: 90%;
     --bg-light: 95%;
+
+    --t-normal:    hsl(190, 50%, 20%);
+    --t-bg-normal: hsl(190, 30%, 80%);
 
     --main-color-darker:    hsl(var(--main-hue), var(--base-sat), var(--darker));
     --main-color-normal:    hsl(var(--main-hue), var(--base-sat), var(--normal));

@@ -1,13 +1,13 @@
 import React, {useContext} from 'react';
 import { NavLink } from 'react-router-dom';
-import { pageObjects } from '../pages';
+import { pages } from '../pages';
 import headerStyles from './header.module.css'
 import layout from '../pageLayouts/layout.module.css';
 import { AuthContext } from '../contexts/AuthContext';
 import { withCondition } from '../enhancers/withCondition';
 
 
-const IfLi = withCondition('li');
+const CondLi = withCondition('li');
 
 function Header() {
     const {user} = useContext(AuthContext);
@@ -15,28 +15,32 @@ function Header() {
     return (
         <nav className={layout.header}>
             <div className={headerStyles.nav}>
-                <h4 className={headerStyles.title}>Vessels</h4>
+                <h3 className={headerStyles.title}>Vessels</h3>
 
                 <ul className={headerStyles.ul}>
                     <li>
-                        <NavLink to={pageObjects.home.path} exact activeClassName="active-link">Home</NavLink>
+                        <NavLink to={pages.home.path} exact activeClassName={headerStyles.selected}>Home</NavLink>
                     </li>
 
-                    <IfLi condition={user}>
-                        <NavLink to={pageObjects.entity.path} activeClassName="active-link">Entiteit</NavLink>
-                    </IfLi>
+                    <CondLi condition={user}>
+                        <NavLink to={pages.entity.path} activeClassName={headerStyles.selected}>Entiteit</NavLink>
+                    </CondLi>
 
-                    <li>
-                        <NavLink to={pageObjects.signUp.path} activeClassName="active-link">Registreren</NavLink>
-                    </li>
+                    <CondLi condition={!user}>
+                        <NavLink to={pages.signUp.path} activeClassName={headerStyles.selected}>Registreren</NavLink>
+                    </CondLi>
 
-                    <li>
-                        <NavLink to={pageObjects.signIn.path} activeClassName="active-link">Inloggen</NavLink>
-                    </li>
+                    <CondLi condition={!user}>
+                        <NavLink to={pages.signIn.path} activeClassName={headerStyles.selected}>Inloggen</NavLink>
+                    </CondLi>
 
-                    <IfLi condition={user}>
-                        <NavLink to={pageObjects.profile.path} activeClassName="active-link">Profiel</NavLink>
-                    </IfLi>
+                    <CondLi condition={user}>
+                        <NavLink to={pages.signOut.path} activeClassName={headerStyles.selected}>Uitloggen</NavLink>
+                    </CondLi>
+
+                    <CondLi condition={user}>
+                        <NavLink to={pages.profile.path} activeClassName="active-link">Profiel</NavLink>
+                    </CondLi>
                 </ul>
             </div>
 

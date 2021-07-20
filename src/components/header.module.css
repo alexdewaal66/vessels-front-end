@@ -27,16 +27,16 @@
 .nav a,
 .nav a:visited,
 .nav a:link {
-    color: darkgreen;
     text-decoration: none;
 }
 
 .nav a:hover {
-    border-bottom: 1px solid var(--);
+    color: var(--color-em-darker);
+    font-style: italic;
 }
 
-.active-link {
-    border-bottom: 2px solid white;
+.selected {
+    border-bottom: 2px solid var(--color-de-normal);
     pointer-events: none;
 }
 

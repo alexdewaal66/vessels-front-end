@@ -1,10 +1,10 @@
 import React from 'react';
 
-export const withCondition = BaseComponent => ({condition, children}) =>
+export const withCondition = BaseComponent => ({condition, children, ...rest}) =>
     (
         <>
             {condition &&
-            <BaseComponent>
+            <BaseComponent {...rest}>
                 {children}
             </BaseComponent>
             }
