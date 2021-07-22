@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { getRequest, postRequest, makeRequest, now } from '../helpers/utils';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
-import layout from '../pageLayouts/layout.module.css';
+import layout from '../pageLayouts/pageLayout.module.css';
 import forms from '../formLayouts/forms.module.css';
 import { Aside, Command, Main, Content } from '../pageLayouts';
 

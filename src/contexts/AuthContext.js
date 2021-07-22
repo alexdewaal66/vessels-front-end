@@ -5,7 +5,7 @@ import { pages } from '../pages';
 import { useHistory } from 'react-router-dom';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
-import layout from '../pageLayouts/layout.module.css'
+import layout from '../pageLayouts/pageLayout.module.css'
 
 export const AuthContext = createContext({});
 
@@ -31,16 +31,10 @@ export function AuthContextProvider({children}) {
             requestState: requestState,
             onSuccess: (result) => {
                 setAuthState({
-                    user: {
-                        username: result.username,
-                        email: result.email,
-                        id: result.id, // why?? we already have this id from the JWT
-                        country: result.country,
-                        // why not ...result ??
-                    },
+                    user: result,
                     status: authStates.DONE,
                 });
-                history.push(pages.profile.path);
+                history.push(pages.home.path);
             },
         })
     }

@@ -9,14 +9,14 @@ export const endpoints = {
 
 const types = {
     str: 'string',
-    num: 'numeric',
+    num: 'number',
     bool: 'boolean',
     img: 'image',
     arr: 'array',
     obj: 'object',
 };
 
-const entities = {
+export const entities = {
     xyz: {
         name: "Xyz",
         endpoint: "/xyzs",

@@ -1,10 +1,37 @@
-import React from 'react';
-import layout from './layout.module.css';
+import React, { useContext } from 'react';
+import commandStyles from './command.module.css';
+import pageLayout from '../pageLayouts/pageLayout.module.css';
 
-export function Command({children, ...rest}) {
+
+export function Command({commandList, choice, children, ...rest}) {
+    // console.log(`commandList=`, commandList);
+
     return (
-        <main className={layout.command} {...rest}>
+        <nav className={pageLayout.command} {...rest}>
             {children}
-        </main>
+            <div className={commandStyles.nav}>
+                <h4>Opdrachten:</h4>
+
+                <ul className={commandStyles.ul}>
+                    {commandList?.displayOrder.map(command =>
+                        <li key={command.name}
+                            onClick={() => choice.set(command)}
+                        >
+                            <a href="javascript:void(0)"
+                               className={choice.value === command
+                                ? commandStyles.selected
+                                : null
+                            }>
+                                {command.name}
+                            </a>
+                        </li>
+                    )}
+                </ul>
+            </div>
+        </nav>
     );
 }
+
+
+
+

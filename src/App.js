@@ -1,43 +1,28 @@
 import React from 'react';
-import { Switch, Route, } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 
 import './assets/fonts/stylesheet.css'
 import './App.css';
-import layout from './pageLayouts/layout.module.css';
-import Header from './components/Header';
-import { pages, SignOut } from './pages';
-import Profile from './pages/Profile';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import Home from './pages/Home';
-import Entity from './pages/Entity';
+import layout from './pageLayouts/pageLayout.module.css';
+import Header from './pageLayouts/Header';
+import { pages, Home, Entity, SignOut, Profile, SignIn, SignUp } from './pages';
+import { Footer } from './pageLayouts/Footer';
 
 function App() {
     return (
             <div className={"App " + layout.app}>
                 <Header/>
                 <Switch>
-                    <Route exact={pages.home.exact}
-                           path={pages.home.path}>
-                        <Home/>
-                    </Route>
-                    <Route path={pages.signUp.path}>
-                        <SignUp/>
-                    </Route>
-                    <Route path={pages.signIn.path}>
-                        <SignIn/>
-                    </Route>
-                    <Route path={pages.signOut.path}>
-                        <SignOut/>
-                    </Route>
-                    <Route path={pages.profile.path}>
-                        <Profile/>
-                    </Route>
-                    <Route path={pages.entity.path}>
-                        <Entity/>
-                    </Route>
+                    {pages.displayOrder.map( page =>
+                        <Route exact={page.exact}
+                               path={page.path}
+                               key={page.path}
+                        >
+                            <page.component />
+                        </Route>
+                    )}
                 </Switch>
-                <footer className={layout.footer}>FOOTER</footer>
+                <Footer>FOOTER</Footer>
             </div>
     );
 }

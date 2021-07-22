@@ -1,5 +1,5 @@
 import React from 'react';
-import layout from './layout.module.css';
+import layout from './pageLayout.module.css';
 
 export function Content({children}) {
     return (
