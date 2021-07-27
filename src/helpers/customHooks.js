@@ -6,15 +6,16 @@ export function useConditionalEffect(operation, qualifier) {
         if (qualifier)
             operation();
     }
-
     useEffect(conditionalOperation, [qualifier]);
 }
 
-export function useObjectState(initialValue) {
+
+export function useOOState(initialValue) {
     const state = {};
     [state.value, state.set] = useState(initialValue);
     return state;
 }
+
 
 export function useRequestState(initialValue = requestStates.IDLE) {
     const requestState = {};

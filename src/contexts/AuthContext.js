@@ -5,7 +5,7 @@ import { pages } from '../pages';
 import { useHistory } from 'react-router-dom';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
-import layout from '../pageLayouts/pageLayout.module.css'
+import { Statusbar } from '../pageLayouts/Statusbar';
 
 export const AuthContext = createContext({});
 
@@ -39,15 +39,15 @@ export function AuthContextProvider({children}) {
         })
     }
 
-    function login(JWT) {
-        const userID = getUserID(JWT);
-        fetchUserData(JWT, userID);
-    }
-
     function getUserID(JWT) {
         localStorage.setItem(persistentVars.JWT, JWT);
         const decodedToken = jwt_decode(JWT);
         return decodedToken.sub;
+    }
+
+    function login(JWT) {
+        const userID = getUserID(JWT);
+        fetchUserData(JWT, userID);
     }
 
     function logout() {
@@ -82,16 +82,16 @@ export function AuthContextProvider({children}) {
         <AuthContext.Provider value={authData}>
             <>
                 {requestState.isIdle && (
-                    <span className={layout.statusbar}>authenticatie nog niet gestart</span>
+                    <Statusbar>authenticatie nog niet gestart</Statusbar>
                 )}
                 {requestState.isPending && (
-                    <span className={layout.statusbar}>authenticatie is bezig</span>
+                    <Statusbar>authenticatie is bezig</Statusbar>
                 )}
                 {requestState.isError && (
-                    <span className={layout.statusbar}>authenticatie mislukt, ({requestState.errorMsg})</span>
+                    <Statusbar>authenticatie mislukt, ({requestState.errorMsg})</Statusbar>
                 )}
                 {requestState.isSuccess && (
-                    <span className={layout.statusbar}>authenticatie geslaagd</span>
+                    <Statusbar>authenticatie geslaagd</Statusbar>
                 )}
                 {authState.status === authStates.PENDING
                     ? <p>Loading...</p>

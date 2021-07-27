@@ -25,7 +25,7 @@ export const entities = {
             {name: "xyzString", type: types.str},
             {name: "name", type: types.str, label: "naam"},
             {name: "desc", type: types.str, label: "beschrijving"},
-            {name: "ratio", type: types.num}
+            {name: "ratio", type: types.num, validation: {min: {value: 0, message: "Negative ratios not allowed"}}}
         ],
         methods: "CRUD",
     },
@@ -34,7 +34,7 @@ export const entities = {
         endpoint: "/users",
         id: [{name: "username", type: types.str}],
         properties: [
-            {name: "password", type: types.str},
+            {name: "password", type: types.str, validation: {required: true}},
             {name: "enabled", type: types.bool},
             {name: "apikey", type: types.str},
             {name: "email", type: types.str},

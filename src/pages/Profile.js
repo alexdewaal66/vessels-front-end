@@ -21,11 +21,9 @@ function Profile() {
             url: endpoints.users,
             headers: addJwtToHeaders({}, token),
             requestState: requestState,
-            setResult: setPrivateContent,
+            onSuccess: setPrivateContent,
         })
     }
-
-    // useEffect(fetchUserProfile, []);
 
     return (
         <Content>

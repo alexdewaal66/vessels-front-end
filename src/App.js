@@ -1,11 +1,11 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 
 import './assets/fonts/stylesheet.css'
 import './App.css';
 import layout from './pageLayouts/pageLayout.module.css';
 import Header from './pageLayouts/Header';
-import { pages, Home, Entity, SignOut, Profile, SignIn, SignUp } from './pages';
+import { pages } from './pages';
 import { Footer } from './pageLayouts/Footer';
 
 function App() {

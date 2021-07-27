@@ -51,34 +51,33 @@ export function addJwtToHeaders(headers, token) {
 
 /******************************************/
 
-export function postRequest({url, payload, requestState, setResult, onSuccess}) {
+export function postRequest({url, headers, payload, requestState, onSuccess}) {
     const ignorePromise = makeRequest({
         method: 'post',
-        url, payload, requestState, setResult, onSuccess,
+        url, headers, payload, requestState, onSuccess,
     });
 }
 
-export function getRequest({url, headers, requestState, setResult, onSuccess}) {
+export function getRequest({url, headers, requestState, onSuccess}) {
     const ignorePromise = makeRequest({
         method: 'get',
-        url, headers, requestState, setResult, onSuccess,
+        url, headers, requestState, onSuccess,
     });
 }
 
-export async function makeRequest({method, url, headers, payload, requestState, setResult, onSuccess}) {
+export async function makeRequest({method, url, headers, payload, requestState, onSuccess}) {
     requestState.setAtPending();
     console.log(now() + ' makeRequest()');
-    console.log('request arguments=\n\t', {method, url, headers, payload, requestState, setResult, onSuccess});
+    console.log('request arguments=\n\t', {method, url, headers, payload, requestState, onSuccess});
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,
             method,
             url,
-            headers, //: addCorsToHeaders(headers),
+            headers,
             data: payload,
             timeout: 5_000,
         });
-        if (setResult) setResult(response.data);
         console.log('response=', response);
         requestState.setAtSuccess();
         if (onSuccess) onSuccess(response.data);
