@@ -41,7 +41,7 @@ export default function Entity({entityName, id}) {
                         {myEntity &&
                         <>
                             {Object.entries(myEntity).map(([k, v]) => (
-                                    <p>key={k} value={v}</p>
+                                    <p key={k+v}>key={k} value={v}</p>
                                 )
                             )}
                         </>

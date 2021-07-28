@@ -7,7 +7,7 @@ export const endpoints = {
     profile: '/profile',
 };
 
-const types = {
+export const types = {
     str: 'string',
     num: 'number',
     bool: 'boolean',
@@ -16,17 +16,24 @@ const types = {
     obj: 'object',
 };
 
+export const subtypes = {
+    password: 'password',
+    email: 'email',
+    date: 'date',
+    url: 'url',
+};
+
 export const entities = {
     xyz: {
         name: "Xyz",
         endpoint: "/xyzs",
         id: [{name: "id", type: types.num}],
-        properties: [
-            {name: "xyzString", type: types.str},
-            {name: "name", type: types.str, label: "naam"},
-            {name: "desc", type: types.str, label: "beschrijving"},
-            {name: "ratio", type: types.num, validation: {min: {value: 0, message: "Negative ratios not allowed"}}}
-        ],
+        properties: {
+            xyzString: {type: types.str, validation: {maxLength: 200}},
+            name: {type: types.str, label: "naam", validation: {maxLength: 100}},
+            description: {type: types.str, label: "beschrijving", validation: {maxLength: 1000}},
+            ratio: {type: types.num, validation: {min: {value: 0, message: "Negative ratios not allowed"}}}
+        },
         methods: "CRUD",
     },
     user: {

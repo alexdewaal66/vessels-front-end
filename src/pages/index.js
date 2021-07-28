@@ -8,6 +8,7 @@ import { Search } from '../components/Search';
 import { Vessel } from '../components/Vessel';
 import { Empty } from '../dev/Empty';
 import { Colors } from '../dev/Colors';
+import { Xyzs } from '../components/Xyzs';
 
 const pages = {
     home: {name: 'Home', path: '/', component: Home, exact: true, isVisible: () => true, },
@@ -31,7 +32,7 @@ const homeCommands = {
     empty: {name: 'leeg', component: Empty},
     search: {name: 'Zoek', component: Search,},
     vessels: {name: 'Vaartuigen', component: Vessel,},
-    xyzs: {name: 'Xyzs', component: Colors},
+    xyzs: {name: 'Xyzs', component: Xyzs},
     users: {name: 'Gebruikers', component: Empty,},
     colors: {name: 'Kleuren', component: Colors,},
 };

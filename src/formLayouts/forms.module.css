@@ -2,7 +2,7 @@
     border-color: inherit;
 }
 
-.table {
+.border {
     border: 1px;
     border-style:  solid;
     border-color: inherit;
@@ -12,8 +12,12 @@
     margin: 0.5em;
 }
 
-.no-border {
-    border: 0;
+.noBorder {
+    border: none;
+    width: fit-content;
+    display: table;
+    border-spacing: 0.5em;
+    margin: 0.5em;
 }
 
 .row {
@@ -22,4 +26,5 @@
 
 .cell {
     display: table-cell;
+    vertical-align: top;
 }
