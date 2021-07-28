@@ -31,7 +31,7 @@ export function Xyzs({id}) {
         <>
             <p>Xyz</p>
             {!id &&
-            <Form onChange={handleSubmit(fetchtXyzData)}><Fieldset border={false}>
+            <form onSubmit={handleSubmit(fetchtXyzData)} onChange={handleSubmit(fetchtXyzData)}><Fieldset border={false}>
                 <FieldRow>
                     <FieldDesc>
                         Kies een id:
@@ -60,7 +60,7 @@ export function Xyzs({id}) {
                     </FieldEl>
                 </FieldRow>
             </Fieldset>
-            </Form>
+            </form>
             }
             {xyz &&
             <>
@@ -73,12 +73,6 @@ export function Xyzs({id}) {
                                         {entities.xyz.properties[k]?.label || k}
                                     </FieldDesc>
                                     <FieldEl>
-                                        {/*<input*/}
-                                        {/*    type="text" size={entities.xyz.properties[k]?.validation.maxLength || 50}*/}
-                                        {/*    name={k}*/}
-                                        {/*    {...register(k, entities.xyz.properties[k]?.validation)}*/}
-                                        {/*    value={v}*/}
-                                        {/*/>*/}
                                         <Input entity="xyz"
                                                field={k}
                                                value={v}
@@ -88,6 +82,17 @@ export function Xyzs({id}) {
                                 </FieldRow>
                             )
                         )}
+                        <FieldRow>
+                            <FieldEl>
+                                <button
+                                    type="submit"
+                                    className="form-button"
+                                    disabled={requestState.isPending}
+                                >
+                                    Maak account aan
+                                </button>
+                            </FieldEl>
+                        </FieldRow>
                     </Fieldset>
                 </Form>
             </>

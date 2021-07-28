@@ -42,8 +42,8 @@ function Profile() {
                 {privateContent &&
                 <section>
                     <h2>Afgeschermde content voor ingelogde gebruikers</h2>
-                    <h4>{privateContent.title}</h4>
-                    <p>{privateContent.content}</p>
+                    {/*<p>Api-key: {privateContent.apikey}</p>*/}
+                    {/*<p>Enabled: {privateContent.enabled}</p>*/}
                 </section>
                 }
                 <p>Terug naar de <Link to={pages.home.path}>Homepagina</Link></p>

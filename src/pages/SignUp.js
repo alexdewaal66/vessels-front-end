@@ -39,7 +39,7 @@ function SignUp() {
                         <>Even geduld a.u.b.</>
                     )}
                     {requestState.isSuccess && (
-                        <>🎈🎈🎈 Registreren is gelukt. 🎈🎈🎈</>
+                        <>Registreren is gelukt.</>
                     )}
                     {requestState.isError && (
                         <>Registreren is niet gelukt. Probeer het opnieuw. ({requestState.error})</>

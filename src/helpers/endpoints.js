@@ -29,10 +29,20 @@ export const entities = {
         endpoint: "/xyzs",
         id: [{name: "id", type: types.num}],
         properties: {
-            xyzString: {type: types.str, validation: {maxLength: 200}},
-            name: {type: types.str, label: "naam", validation: {maxLength: 100}},
-            description: {type: types.str, label: "beschrijving", validation: {maxLength: 1000}},
-            ratio: {type: types.num, validation: {min: {value: 0, message: "Negative ratios not allowed"}}}
+            xyzString: {
+                type: types.str, validation: {maxLength: 200}
+            },
+            name: {
+                type: types.str, label: "naam", validation: {maxLength: 100}
+            },
+            description: {
+                type: types.str, label: "beschrijving", validation: {maxLength: 1000}
+            },
+            ratio: {
+                type: types.num, validation: {
+                    min: {value: 0, message: "Negative ratios not allowed"}
+                }
+            }
         },
         methods: "CRUD",
     },

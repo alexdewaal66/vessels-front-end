@@ -42,7 +42,7 @@ function SignIn() {
                     <>Even geduld a.u.b.</>
                 )}
                 {requestState.isSuccess && (
-                    <>🎈🎈🎈 Inloggen is gelukt. 🎈🎈🎈</>
+                    <>Inloggen is gelukt.</>
                 )}
                 {requestState.isError && (
                     <>Inloggen is niet gelukt. Probeer het opnieuw. ({requestState.errorMsg})</>
@@ -54,7 +54,6 @@ function SignIn() {
                                 <FieldDesc>Emailadres:</FieldDesc>
                                 <FieldEl><input
                                     type="email"
-                                    id="email-field"
                                     name="email"
                                     {...register("email")}
                                 /></FieldEl>
@@ -64,7 +63,6 @@ function SignIn() {
                                 <FieldDesc>Username:</FieldDesc>
                                 <FieldEl><input
                                     type="text"
-                                    id="username-field"
                                     name="username"
                                     {...register("username")}
                                 /></FieldEl>
@@ -75,7 +73,6 @@ function SignIn() {
                                 <FieldEl><input
                                     className={forms.cell}
                                     type="password"
-                                    id="password-field"
                                     name="password"
                                     {...register("password")}
                                 /></FieldEl>

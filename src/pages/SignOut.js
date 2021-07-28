@@ -13,7 +13,7 @@ function SignIn() {
     const {handleSubmit} = useForm();
     const authContext = useContext(AuthContext);
     const {logout} = authContext;
-    const requestState = useRequestState();
+    // const requestState = useRequestState();
     console.log(now() + ` authContext=\n\t`, authContext);
 
 
@@ -31,7 +31,7 @@ function SignIn() {
                     <button
                         type="submit"
                         className="form-button"
-                        disabled={requestState.isPending}
+                        // disabled={requestState.isPending}
                     >
                         Log uit
                     </button>
