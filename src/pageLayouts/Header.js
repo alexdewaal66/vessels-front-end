@@ -5,15 +5,16 @@ import headerStyles from './header.module.css'
 import pageLayout from './pageLayout.module.css';
 import { AuthContext } from '../contexts/AuthContext';
 import { withCondition } from '../enhancers/withCondition';
+import { cx } from '../helpers/multipleStyles';
 
 
 const CondLi = withCondition('li');
 
-export default function Header() {
+export default function Header({className}) {
     const {user} = useContext(AuthContext);
 
     return (
-        <nav className={pageLayout.header}>
+        <nav className={cx(pageLayout.header, className)}>
             <div className={headerStyles.nav}>
                 <h3 className={headerStyles.title}>Vessels</h3>
 
@@ -29,7 +30,6 @@ export default function Header() {
                     )}
                 </ul>
             </div>
-
         </nav>
     );
 };

@@ -82,7 +82,7 @@ function SignIn() {
                                     <button
                                         type="submit"
                                         className="form-button"
-                                        disabled={requestState.isPending}
+                                        disabled={requestState.isPending || requestState.isSuccess}
                                     >
                                         Inloggen
                                     </button>

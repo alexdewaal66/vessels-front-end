@@ -76,6 +76,20 @@ html, body {
     background-size: contain;
 }
 
+.main :is(textarea, input, select, button) {
+    color: var(--color-em-normal);
+    background-color: var(--color-bg-light);
+    border-color: var(--color-de-normal);
+    border-style: solid;
+    border-width: thin;
+    border-radius: 3px;
+}
+
+.main button {
+    padding: 5px;
+    border-width: 2px;
+}
+
 .command {
     flex-grow: 0;
     order: -1;

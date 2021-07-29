@@ -33,6 +33,7 @@ const homeCommands = {
     search: {name: 'Zoek', component: Search,},
     vessels: {name: 'Vaartuigen', component: Vessel,},
     xyzs: {name: 'Xyzs', component: Xyzs},
+    // xyz1: {name: 'Xyz 1', component: Xyzs({id: 1})},
     users: {name: 'Gebruikers', component: Empty,},
     colors: {name: 'Kleuren', component: Colors,},
 };

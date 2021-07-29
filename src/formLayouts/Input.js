@@ -17,7 +17,6 @@ const inputTypes = {
     password: {element: 'input', type: 'password', simple: true},
     radio: {element: 'input', type: 'radio'},
     range: {element: 'input', type: 'range'},
-    reset: {element: 'input', type: 'reset'},
     search: {element: 'input', type: 'search'},
     submit: {element: 'input', type: 'submit'},
     tel: {element: 'input', type: 'tel', simple: true},

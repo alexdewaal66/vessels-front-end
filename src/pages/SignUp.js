@@ -85,7 +85,7 @@ function SignUp() {
                                     <button
                                         type="submit"
                                         className="form-button"
-                                        disabled={requestState.isPending}
+                                        disabled={requestState.isPending || requestState.isSuccess}
                                     >
                                         Maak account aan
                                     </button>

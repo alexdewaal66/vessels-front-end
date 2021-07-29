@@ -4,6 +4,8 @@ import { useRequestState } from '../helpers/customHooks';
 import { useForm } from 'react-hook-form';
 import { addJwtToHeaders, persistentVars, now, getRequest } from '../helpers/utils';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl, Input } from '../formLayouts';
+import { ShowObject } from '../dev/ShowObject';
+import { Stringify } from '../dev/Stringify';
 
 export function Xyzs({id}) {
     const {handleSubmit, register} = useForm();
@@ -65,6 +67,7 @@ export function Xyzs({id}) {
             {xyz &&
             <>
                 <p>De Xyz is als volgt:</p>
+                <Stringify data={xyz}/>
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Fieldset>
                         {Object.entries(xyz).map(([k, v]) => (k !== 'id' &&
@@ -89,7 +92,7 @@ export function Xyzs({id}) {
                                     className="form-button"
                                     disabled={requestState.isPending}
                                 >
-                                    Maak account aan
+                                    Doet nog niks
                                 </button>
                             </FieldEl>
                         </FieldRow>

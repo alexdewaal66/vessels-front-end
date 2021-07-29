@@ -6,6 +6,7 @@ import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import { Aside, Command, Main, Content } from '../pageLayouts';
 import { pages } from './index';
+import { ShowObject } from '../dev/ShowObject';
 
 function Profile() {
     const [privateContent, setPrivateContent] = useState({});
@@ -41,9 +42,9 @@ function Profile() {
                 </section>
                 {privateContent &&
                 <section>
-                    <h2>Afgeschermde content voor ingelogde gebruikers</h2>
-                    {/*<p>Api-key: {privateContent.apikey}</p>*/}
-                    {/*<p>Enabled: {privateContent.enabled}</p>*/}
+                    <p>Api-key: {user.apikey}</p>
+                    <p>Enabled: {user.enabled ? <>Ja</> : <>Nee</>}</p>
+                    <p>Authorities: <ShowObject obj={user.authorities}/></p>
                 </section>
                 }
                 <p>Terug naar de <Link to={pages.home.path}>Homepagina</Link></p>

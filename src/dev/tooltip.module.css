@@ -1,0 +1,23 @@
+.container {
+    position: relative;
+}
+
+/* tooltip text */
+.container .text {
+    visibility: hidden;
+    /*width: 50%;*/
+    background-color: hsla(0, 50%, 0%, 0.30);
+    color: hsla(0, 50%, 100%, 0.90);
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+
+    position: absolute;
+    z-index: 1;
+    top: 105%;
+    left: 50%;
+    margin-left: -25%;}
+
+.container:hover .text {
+    visibility: visible;
+}
