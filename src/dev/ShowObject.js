@@ -7,12 +7,12 @@ export function ShowObject({obj}) {
         return (
             <ul>
                 {Object.entries(obj).map(([key, value]) =>
-                    <li>
+                    <li key={key}>
                         <TTC>{key} :
                             <TT>{typeof value}</TT>
                         </TTC>
                         {typeof value === 'object'
-                            ? <ShowObject obj={value}/>
+                            ? <ShowObject obj={value} />
                             : <>{value}</>
                         }
                     </li>

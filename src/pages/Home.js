@@ -11,7 +11,7 @@ export default function Home() {
             <Command commandList={homeCommands} choice={choice}>
             </Command>
             <Main>
-                <choice.value.component self={choice.value}/>
+                <choice.value.component self={choice.value} />
             </Main>
             <Aside>
                 ASIDE

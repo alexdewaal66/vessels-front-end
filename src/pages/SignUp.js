@@ -11,7 +11,6 @@ import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
 function SignUp() {
     const {handleSubmit, register} = useForm();
     const requestState = useRequestState();
-    const [result, setResult] = useState(null);
     const history = useHistory();
 
     console.log(now() + ' registration state:\n\t', requestState);
@@ -22,7 +21,6 @@ function SignUp() {
             url: endpoints.signUp,
             payload: formData,
             requestState: requestState,
-            setResult: setResult,
             onSuccess: () => {
                 setTimeout(() => history.push(pages.signIn.path), 2000);
             },

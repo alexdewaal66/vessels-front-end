@@ -36,15 +36,15 @@ export const requestStates = {IDLE: 'idle', PENDING: 'pending', SUCCESS: 'succes
 /******************************************/
 
 // enumeration of variable names saved in local storage
-export const persistentVars = {JWT: 'JsonWebToken'};
+export const persistentVars = {Jwt: 'JsonWebToken'};
 
 /******************************************/
 
-export function addJwtToHeaders(headers, token) {
+export function addJwtToHeaders(headers, Jwt) {
     return {
         ...headers,
         'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
+        Authorization: 'Bearer ' + Jwt,
     };
 }
 
@@ -54,6 +54,13 @@ export function addJwtToHeaders(headers, token) {
 export function postRequest({url, headers, payload, requestState, onSuccess}) {
     const ignorePromise = makeRequest({
         method: 'post',
+        url, headers, payload, requestState, onSuccess,
+    });
+}
+
+export function putRequest({url, headers, payload, requestState, onSuccess}) {
+    const ignorePromise = makeRequest({
+        method: 'put',
         url, headers, payload, requestState, onSuccess,
     });
 }

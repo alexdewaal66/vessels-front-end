@@ -1,46 +1,67 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { entities } from '../helpers/endpoints';
 import { useRequestState } from '../helpers/customHooks';
 import { useForm } from 'react-hook-form';
-import { addJwtToHeaders, persistentVars, now, getRequest } from '../helpers/utils';
+import { addJwtToHeaders, persistentVars, now, getRequest, putRequest } from '../helpers/utils';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl, Input } from '../formLayouts';
-import { ShowObject } from '../dev/ShowObject';
+// import { ShowObject } from '../dev/ShowObject';
 import { Stringify } from '../dev/Stringify';
+// import { endpoints } from '../helpers/endpoints';
 
-export function Xyzs({id}) {
-    const {handleSubmit, register} = useForm();
-    const requestState = useRequestState();
+export function Xyz({id =1 }) {
+    const requestSelectState = useRequestState();
+    const requestEditState = useRequestState();
+    const {handleSubmit: handleSelectSubmit, register: registerSelect} = useForm();
+    const {handleSubmit: handleEditSubmit, register: registerEdit, reset: resetEdit} = useForm();
     const [xyz, setXyz] = useState();
     console.log(`xyz=`, xyz);
 
-    function fetchtXyzData(formdata) {
-        console.log(now() + ' fetchtXyzData()');
+    function updateEditForm(value) {
+        setXyz(value);
+        resetEdit();
+    }
+
+    function fetchtSelectedXyz(formdata) {
+        console.log(now() + ' fetchtSelectedXyz()');
         console.log(`formdata=`, formdata);
-        const token = localStorage.getItem(persistentVars.JWT);
+        const Jwt = localStorage.getItem(persistentVars.Jwt);
+        const xyzId = formdata?.id || id;
         getRequest({
-            url: `${entities.xyz.endpoint}/${formdata.xyzId}`,
-            headers: addJwtToHeaders({}, token),
-            requestState: requestState,
-            onSuccess: setXyz,
+            url: `${entities.xyz.endpoint}/${xyzId}`,
+            headers: addJwtToHeaders({}, Jwt),
+            requestState: requestSelectState,
+            onSuccess: updateEditForm,
         })
     }
 
-    function onSubmit(formdata) {
+    function saveXyz(formdata) {
         // C, R or U?
+        console.log(now() + ' saveXyz()');
+        const Jwt = localStorage.getItem(persistentVars.Jwt);
+        putRequest({
+            url: `${entities.xyz.endpoint}/${formdata.id}`,
+            headers: addJwtToHeaders({}, Jwt),
+            payload: formdata,
+            requestState: requestEditState,
+            onSuccess: () => { setXyz(formdata) },
+        })
     }
+
+    useEffect(fetchtSelectedXyz, []);
+    // useEffect(fetchtSelectedXyz, [requestSelectState]); // LOOPS
 
     return (
         <>
             <p>Xyz</p>
-            {!id &&
-            <form onSubmit={handleSubmit(fetchtXyzData)} onChange={handleSubmit(fetchtXyzData)}><Fieldset border={false}>
+            <form onSubmit={handleSelectSubmit(fetchtSelectedXyz)} onChange={handleSelectSubmit(fetchtSelectedXyz)}><Fieldset border={false}>
                 <FieldRow>
                     <FieldDesc>
                         Kies een id:
                     </FieldDesc>
                     <FieldEl>
-                        <select name="xyzId"
-                                {...register("xyzId")}
+                        <select name="id"
+                                {...registerSelect("id")}
+                            defaultValue={id}
                         >
                             <option value={1}>1</option>
                             <option value={2}>2</option>
@@ -55,7 +76,7 @@ export function Xyzs({id}) {
                         <button
                             type="submit"
                             className="form-button"
-                            disabled={requestState.isPending}
+                            disabled={requestSelectState.isPending}
                         >
                             Haal gegevens op
                         </button>
@@ -63,13 +84,15 @@ export function Xyzs({id}) {
                 </FieldRow>
             </Fieldset>
             </form>
-            }
+
+
             {xyz &&
             <>
                 <p>De Xyz is als volgt:</p>
-                <Stringify data={xyz}/>
-                <Form onSubmit={handleSubmit(onSubmit)}>
+                <Stringify data={xyz} />
+                <Form onSubmit={handleEditSubmit(saveXyz)}>
                     <Fieldset>
+                        <input type="hidden" name="id" value={xyz.id} {...registerEdit('id')} />
                         {Object.entries(xyz).map(([k, v]) => (k !== 'id' &&
                                 <FieldRow key={'xyz_' + k}>
                                     <FieldDesc>
@@ -78,8 +101,8 @@ export function Xyzs({id}) {
                                     <FieldEl>
                                         <Input entity="xyz"
                                                field={k}
-                                               value={v}
-                                               register={register}
+                                               defaultValue={v}
+                                               register={registerEdit}
                                         />
                                     </FieldEl>
                                 </FieldRow>
@@ -90,9 +113,9 @@ export function Xyzs({id}) {
                                 <button
                                     type="submit"
                                     className="form-button"
-                                    disabled={requestState.isPending}
+                                    disabled={requestEditState.isPending}
                                 >
-                                    Doet nog niks
+                                    Bewaar
                                 </button>
                             </FieldEl>
                         </FieldRow>

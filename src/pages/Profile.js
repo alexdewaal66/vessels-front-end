@@ -16,11 +16,11 @@ function Profile() {
 
     function fetchUserProfile() {
         console.log(now() + ' fetchUserProfile()');
-        const token = localStorage.getItem(persistentVars.JWT);
-        console.log('token=', token);
+        const Jwt = localStorage.getItem(persistentVars.Jwt);
+        console.log('Jwt=', Jwt);
         getRequest({
             url: endpoints.users,
-            headers: addJwtToHeaders({}, token),
+            headers: addJwtToHeaders({}, Jwt),
             requestState: requestState,
             onSuccess: setPrivateContent,
         })
@@ -40,11 +40,11 @@ function Profile() {
                     </>
                     }
                 </section>
-                {privateContent &&
+                {user &&
                 <section>
                     <p>Api-key: {user.apikey}</p>
                     <p>Enabled: {user.enabled ? <>Ja</> : <>Nee</>}</p>
-                    <p>Authorities: <ShowObject obj={user.authorities}/></p>
+                    <div>Authorities: <ShowObject obj={user.authorities} /></div>
                 </section>
                 }
                 <p>Terug naar de <Link to={pages.home.path}>Homepagina</Link></p>

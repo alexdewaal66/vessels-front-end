@@ -28,7 +28,7 @@ const inputTypes = {
     textarea: {element: 'textarea'}
 }
 
-export function Input({entity, field, value, register, ...rest}) {
+export function Input({entity, field, defaultValue, register, ...rest}) {
     const property = entities[entity].properties[field];
     let maxLength = property?.validation?.maxLength;
     let inputSize = 0;
@@ -61,7 +61,7 @@ export function Input({entity, field, value, register, ...rest}) {
                     type={inputTypes.text.type}
                     size={inputSize}
                     name={field}
-                    value={value}
+                    defaultValue={defaultValue}
                     {...register(field, property?.validation)}
                     {...rest}
                 />
@@ -71,7 +71,7 @@ export function Input({entity, field, value, register, ...rest}) {
                     rows={rows}
                     cols={cols}
                     name={field}
-                    value={value}
+                    defaultValue={defaultValue}
                     {...register(field, property?.validation)}
                     {...rest}
                 />
@@ -81,7 +81,7 @@ export function Input({entity, field, value, register, ...rest}) {
                     <input
                         type={inputType.type}
                         name={field}
-                        value={value}
+                        defaultValue={defaultValue}
                         {...register(field, property?.validation)}
                         {...rest}
                     />

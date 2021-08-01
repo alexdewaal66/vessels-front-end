@@ -20,14 +20,15 @@ export function AuthContextProvider({children}) {
     const authData = {
         ...authState,
         login,
-        logout,
+        logout
     };
 
-    function fetchUserData(JWT, id) {
+    function fetchUserData(Jwt) {
         console.log('in fetchUserData()');
+        const userID = getUserID(Jwt);
         getRequest({
-            url: `${endpoints.users}${id}`,
-            headers: addJwtToHeaders({}, JWT),
+            url: `${endpoints.users}${userID}`,
+            headers: addJwtToHeaders({}, Jwt),
             requestState: requestState,
             onSuccess: (result) => {
                 setAuthState({
@@ -39,44 +40,54 @@ export function AuthContextProvider({children}) {
         })
     }
 
-    function getUserID(JWT) {
-        localStorage.setItem(persistentVars.JWT, JWT);
-        const decodedToken = jwt_decode(JWT);
-        return decodedToken.sub;
+    // todo: move to helpers
+    function getUserID(Jwt) {
+        const decodedJwt = jwt_decode(Jwt);
+        return decodedJwt.sub;
     }
 
-    function login(JWT) {
-        const userID = getUserID(JWT);
-        fetchUserData(JWT, userID);
+    // todo: find more descriptive name
+    function login(Jwt) {
+        localStorage.setItem(persistentVars.Jwt, Jwt);
+        fetchUserData(Jwt);
     }
 
     function logout() {
         console.log(now() + ' logout()');
-        localStorage.removeItem(persistentVars.JWT);
-        setAuthState({user:null});
+        localStorage.removeItem(persistentVars.Jwt);
+        setAuthState({
+            user: null, status: authStates.DONE
+        });
     }
 
-    function isTokenValid(JWT) {
-        const decodedToken = jwt_decode(JWT);
-        const expiration = decodedToken.exp * 1000; // Unix --> JS timestamp
-        return expiration > (Date.now() + 500);
+    // todo: move to helpers
+    function getJwtIfValid() {
+        const Jwt = localStorage.getItem(persistentVars.Jwt);
+        if (!Jwt) return null;
+        const decodedJwt = jwt_decode(Jwt);
+        const expiration = decodedJwt.exp * 1000; // Unix --> JS timestamp
+        const oneMinute = 60 * 1000;
+        return expiration - Date.now() > oneMinute ? Jwt : null;
     }
 
     useEffect(() => {
-        const JWT = localStorage.getItem(persistentVars.JWT);
-
-        if (!authState.user && JWT && isTokenValid(JWT)) {
-            // geen users, wel een geldige token
-            const decodedToken = jwt_decode(JWT);
-            fetchUserData(JWT, decodedToken.sub)
+        const Jwt = getJwtIfValid();
+        if (!Jwt) {
+            // geen geldige Jwt
+            logout();
         } else {
-            // geen users, geen geldige token
-            setAuthState({
-                user: null,
-                status: authStates.DONE
-            })
+            if (!authState.user) {
+                // wel geldige Jwt, geen user
+                fetchUserData(Jwt);
+            } else {
+                // wel geldige Jwt en user
+                setAuthState({
+                    status: authStates.DONE
+                });
+            }
         }
     }, []);
+
 
     return (
         <AuthContext.Provider value={authData}>

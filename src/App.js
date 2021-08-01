@@ -8,6 +8,7 @@ import Header from './pageLayouts/Header';
 import { pages } from './pages';
 import { Footer } from './pageLayouts/Footer';
 
+//TODO README.md
 function App() {
     return (
             <div className={"App " + layout.app}>
