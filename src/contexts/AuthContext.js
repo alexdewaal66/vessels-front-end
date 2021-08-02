@@ -1,9 +1,9 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { addJwtToHeaders, getRequest, now, persistentVars } from '../helpers/utils';
 import jwt_decode from 'jwt-decode';
 import { pages } from '../pages';
 import { useHistory } from 'react-router-dom';
-import { useRequestState } from '../helpers/customHooks';
+import { useRequestState, useMountEffect } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import { Statusbar } from '../pageLayouts/Statusbar';
 
@@ -70,7 +70,7 @@ export function AuthContextProvider({children}) {
         return expiration - Date.now() > oneMinute ? Jwt : null;
     }
 
-    useEffect(() => {
+    useMountEffect(() => {
         const Jwt = getJwtIfValid();
         if (!Jwt) {
             // geen geldige Jwt
@@ -86,7 +86,7 @@ export function AuthContextProvider({children}) {
                 });
             }
         }
-    }, []);
+    });
 
 
     return (

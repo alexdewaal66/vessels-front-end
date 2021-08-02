@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import commandStyles from './command.module.css';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
 
@@ -19,13 +19,12 @@ export function Command({commandList, choice, children, className, ...rest}) {
                             // todo: choose between anonymous or curried function
                             // onClick={() => choice.set(command)}
                             onClick={makeChoice(command)}
+                            className={choice.value === command
+                                ? commandStyles.selected
+                                : null
+                            }
                         >
-                            <a className={choice.value === command
-                                    ? commandStyles.selected
-                                    : null
-                                }>
-                                {command.name}
-                            </a>
+                            {command.name}
                         </li>
                     )}
                 </ul>
@@ -34,6 +33,17 @@ export function Command({commandList, choice, children, className, ...rest}) {
     );
 }
 
+/*
+                            <a className={choice.value === command
+                                ? commandStyles.selected
+                                : null
+                            }>
+                                {command.name}
+                            </a>
 
-
-
+                            <button type="button"
+                                    className={commandStyles.linkButton}
+                            >
+                                {command.name}
+                            </button>
+ */

@@ -9,6 +9,9 @@ export function useConditionalEffect(operation, qualifier) {
     useEffect(conditionalOperation, [qualifier]);
 }
 
+export function useMountEffect(fun) {
+    useEffect(fun, []);
+}
 
 export function useOOState(initialValue) {
     const state = {};

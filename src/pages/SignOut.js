@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
 import { now } from '../helpers/utils';
-import { useRequestState } from '../helpers/customHooks';
 import { Aside, Command, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts/Content';
 import { pages } from './index';
@@ -13,7 +12,6 @@ function SignIn() {
     const {handleSubmit} = useForm();
     const authContext = useContext(AuthContext);
     const {logout} = authContext;
-    // const requestState = useRequestState();
     console.log(now() + ` authContext=\n\t`, authContext);
 
 
@@ -31,7 +29,6 @@ function SignIn() {
                     <button
                         type="submit"
                         className="form-button"
-                        // disabled={requestState.isPending}
                     >
                         Log uit
                     </button>

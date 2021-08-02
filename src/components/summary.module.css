@@ -1,0 +1,32 @@
+.layout {
+    border-spacing: 0.5em;
+    border: 1px solid var(--color-de-normal);
+    border-collapse: collapse;
+}
+
+.layout thead {
+    border-bottom: var(--color-de-normal);
+}
+
+.layout th {
+    color: var(--color-em-normal);
+    background-color: var(--color-bg-light);
+}
+
+.row {
+    cursor: pointer;
+    /*border: 1px solid var(--color-de-light);*/
+}
+
+
+.row:nth-child(even) {
+    background-color: var(--color-bg-light);
+}
+
+.row:hover {
+    background-color: var(--color-bg-darker);
+}
+
+.cell {
+    padding: 0.2em;
+}

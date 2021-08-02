@@ -27,14 +27,15 @@
     margin-bottom: 0.5em;
 }
 
-.nav a,
+.nav a, .nav li,
 .nav a:visited,
 .nav a:link {
     color: var(--color-normal);
     text-decoration: none;
+    cursor: pointer;
 }
 
-.nav a:hover {
+.nav a:hover, .nav li:hover {
     color: var(--color-em-darker);
     font-style: italic;
     pointer-events: auto;

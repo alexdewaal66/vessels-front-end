@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Main, Command, Aside, Content } from '../pageLayouts';
 import { homeCommands } from './index';
 import { useOOState } from '../helpers/customHooks';

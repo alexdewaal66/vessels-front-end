@@ -1,9 +1,9 @@
 import React from 'react';
 import forms from './/forms.module.css';
 
-export function FieldRow({ children, ...rest}) {
+export function FieldRow({ children, elKey, ...rest}) {
     return (
-        <label className={forms.row} {...rest} >
+        <label className={forms.row} key={elKey} {...rest} >
             {children}
         </label>
     );

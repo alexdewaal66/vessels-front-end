@@ -6,6 +6,10 @@ export function now() {
     return `(${time})`;
 }
 
+export function range(size) {
+    return [...Array(size).keys()];
+}
+
 export function formatDate(timestamp) {
     const day = (new Date(timestamp * 1_000));
     return day.toLocaleDateString('nl-NL', {weekday: 'long'});
