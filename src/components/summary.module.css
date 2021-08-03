@@ -1,32 +1,40 @@
-.layout {
+.table {
     border-spacing: 0.5em;
     border: 1px solid var(--color-de-normal);
     border-collapse: collapse;
+    --table-padding: 0.25em;
 }
 
-.layout thead {
-    border-bottom: var(--color-de-normal);
-}
-
-.layout th {
+.table th {
     color: var(--color-em-normal);
     background-color: var(--color-bg-light);
+    padding-top: var(--table-padding);
 }
 
-.row {
+.table tr {
     cursor: pointer;
-    /*border: 1px solid var(--color-de-light);*/
 }
 
-
-.row:nth-child(even) {
+.table tr:nth-child(even) {
     background-color: var(--color-bg-light);
 }
 
-.row:hover {
+.table tr:hover {
     background-color: var(--color-bg-darker);
 }
 
-.cell {
+.table td {
     padding: 0.2em;
+}
+
+.table tr:last-child td{
+    padding-bottom: var(--table-padding);
+}
+
+.table td:first-child, .table th:first-child {
+    padding-left: var(--table-padding);
+}
+
+.table td:last-child, .table th:last-child {
+    padding-right: var(--table-padding);
 }

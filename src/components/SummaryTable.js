@@ -5,7 +5,7 @@ import { SummaryRow } from './SummaryRow';
 
 export function SummaryTable({list, metadata, setEntity, entityName}) {
     return (
-        <table className={summaryStyle.layout}>
+        <table className={summaryStyle.table}>
             <thead>
             <SummaryHeading metadata={metadata} elKey={entityName}/>
             </thead>

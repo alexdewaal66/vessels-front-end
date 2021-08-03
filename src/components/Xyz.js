@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { entities } from '../helpers/endpoints';
 import { useMountEffect, useRequestState } from '../helpers/customHooks';
 import { useForm } from 'react-hook-form';
@@ -8,23 +8,16 @@ import {
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl, Input } from '../formLayouts';
 import { SummaryTable } from './SummaryTable';
 
-export function Xyz({id = 1}) {
+export function Xyz({id = 0}) {
     const requestListState = useRequestState();
-    const requestSelectState = useRequestState();
     const requestEditState = useRequestState();
-    const {handleSubmit: handleSelectSubmit, register: registerSelect} = useForm();
-    const {handleSubmit: handleEditSubmit, register: registerEdit, reset: resetEdit} = useForm();
-    const [list, setList] = useState();
+    const editEntity = useForm();
+    const { handleSubmit, register, reset, setValue} = editEntity;
+    const [list, setList] = useState(null);
     const [xyz, setXyz] = useState({});
-    const [method, setMethod] = useState('put');
     console.log(`xyz=`, xyz);
     const {xyz: metadata} = entities;
     const {endpoint, id: [{name: idName}]} = metadata;
-
-    function updateEditForm(value) {
-        setXyz(value);
-        resetEdit();
-    }
 
     function fetchXyzList() {
         console.log(now() + ' fetchXyzList()');
@@ -33,9 +26,144 @@ export function Xyz({id = 1}) {
             url: endpoint,
             headers: addJwtToHeaders({}, Jwt),
             requestState: requestListState,
-            onSuccess: setList,
+            onSuccess: (response) => setList(response.data),
         })
     }
+
+
+    useMountEffect(fetchXyzList);
+
+    function updateEditForm(changedXyz) {
+        setXyz(changedXyz);
+        reset();
+    }
+
+    function onEditResponse(response) {
+        // setXyz(formData);
+        console.log(now() + ' onEditResponse()\n\tresponse=', response);
+        updateEditForm(response.data);
+    }
+
+    function onEditSubmit({requestMethod, ...formData}) {
+        console.log(now() + ' onSubmit()');
+        console.log(`requestMethod=`, requestMethod);
+        console.log(`formData=`, formData);
+        let url = endpoint;
+        switch (requestMethod) {
+            case 'put':
+                url += `/${formData.id}`;
+                break;
+            case 'delete':
+                url += `/${formData.id}`;
+                formData = null;
+                break;
+            case 'post':
+                delete formData.id;
+                break;
+            default:
+                const err = `Unsupported method: '${requestMethod}'`;
+                console.log(err);
+                requestEditState.setAtError();
+                requestEditState.errorMsg = err;
+                return;
+        }
+        const Jwt = localStorage.getItem(persistentVars.Jwt);
+        makeRequest({
+            method: requestMethod,
+            url,
+            headers: addJwtToHeaders({}, Jwt),
+            payload: formData,
+            requestState: requestEditState,
+            onSuccess: onEditResponse,
+        })
+    }
+
+    return (
+        <>
+            <h4>Xyz</h4>
+            {list && (
+                <SummaryTable metadata={metadata} list={list} setEntity={updateEditForm} entityName="xyz"/>
+            )}
+            {/*<Stringify data={list}/>*/}
+            {requestEditState.isPending && (
+                <>
+                    Even geduld a.u.b.
+                </>
+            )}
+            {requestEditState.isError && (
+                <>
+                    Er is iets fout gegaan ({requestEditState.errorMsg})
+                </>
+            )}
+            {requestEditState.isSuccess && (
+                <>
+                    De gegevens zijn bewaard
+                </>
+            )}
+            <>{xyz?.id  && (
+                <>
+                    <p>Details {'#' + xyz.id}:</p>
+                    <Form onSubmit={handleSubmit(onEditSubmit)}>
+                        <Fieldset>
+                            <input type="hidden" name="id" value={xyz?.id} {...register('id')} />
+                            <input type="hidden" name="requestMethod" value="none" {...register('requestMethod')} />
+                            {Object.entries(xyz).map(([k, v]) => (k !== 'id' &&
+                                    <FieldRow elKey={'xyz_edit_' + k} key={'xyz_edit_' + k}>
+                                        <FieldDesc>
+                                            {metadata.properties[k]?.label || k}
+                                        </FieldDesc>
+                                        <FieldEl>
+                                            <Input entity="xyz"
+                                                   field={k}
+                                                   defaultValue={v || ''}
+                                                   register={register}
+                                            />
+                                        </FieldEl>
+                                    </FieldRow>
+                                )
+                            )}
+                            <FieldRow>
+                                <FieldEl>
+                                </FieldEl>
+                                <FieldEl>
+                                    <button
+                                        type="submit"
+                                        className="form-button"
+                                        disabled={requestEditState.isPending}
+                                        onClick={() => setValue('requestMethod', 'put')}
+                                    >
+                                        Wijzig
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="form-button"
+                                        disabled={requestEditState.isPending}
+                                        onClick={() => setValue('requestMethod', 'post')}
+                                    >
+                                        Bewaar als nieuw
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="form-button"
+                                        disabled={requestEditState.isPending}
+                                        onClick={() => setValue('requestMethod', 'delete')}
+                                    >
+                                        Verwijder
+                                    </button>
+                                </FieldEl>
+                            </FieldRow>
+                        </Fieldset>
+                    </Form>
+                </>
+            )}
+            </>
+        </>
+    );
+}
+
+
+/*
+    const requestSelectState = useRequestState();
 
     function fetchtSelectedXyz(formdata) {
         console.log(now() + ' fetchtSelectedXyz()');
@@ -54,129 +182,4 @@ export function Xyz({id = 1}) {
         })
     }
 
-    useMountEffect(fetchtSelectedXyz);
-    useMountEffect(fetchXyzList);
-
-    function setMethodAsPut() {
-        setMethod('put');
-    }
-
-    function setMethodAsPost() {
-        setMethod('post');
-    }
-
-    function setMethodAsDelete() {
-
-    }
-
-    function saveXyz(formdata) {
-        let urlId = '';
-        if (method === 'put') {
-            urlId = `/${formdata.id}`;
-        } else {
-            delete formdata.id;
-        }
-        console.log(now() + ' saveXyz()');
-        const Jwt = localStorage.getItem(persistentVars.Jwt);
-        makeRequest({
-            method,
-            url: endpoint + urlId,
-            headers: addJwtToHeaders({}, Jwt),
-            payload: formdata,
-            requestState: requestEditState,
-            onSuccess: () => {
-                setXyz(formdata)
-            },
-        })
-    }
-
-    return (
-        <>
-            <h4>Xyz</h4>
-            <form onChange={handleSelectSubmit(fetchtSelectedXyz)}>
-                <Fieldset border={false}>
-                    <FieldRow>
-                        <FieldDesc>
-                            Kies een id:
-                        </FieldDesc>
-                        <FieldEl>
-                            <select name="id"
-                                    {...registerSelect("id")}
-                                    defaultValue={id}
-                            >
-                                {range(20).map(i =>
-                                    <option key={'xyz_opt_' + i} value={i}>{i}</option>
-                                )}
-                            </select>
-                        </FieldEl>
-                    </FieldRow>
-                </Fieldset>
-            </form>
-            {list && (
-                <SummaryTable metadata={metadata} list={list} setEntity={setXyz} entityName="xyz" />
-            )}
-            {/*<Stringify data={list}/>*/}
-            {requestEditState.isPending && (
-                <>
-                    Even geduld a.u.b.
-                </>
-            )}
-            {requestEditState.isError && (
-                <>
-                    Er is iets fout gegaan ({requestEditState.errorMsg})
-                </>
-            )}
-            {requestEditState.isSuccess && (
-                <>
-                    De gegevens zijn bewaard
-                </>
-            )}
-            <>
-                <p>De Xyz is als volgt:</p>
-                <Form onSubmit={handleEditSubmit(saveXyz)}>
-                    <Fieldset>
-                        <input type="hidden" name="id" value={xyz.id} {...registerEdit('id')} />
-                        {Object.entries(xyz).map(([k, v]) => (k !== 'id' &&
-                                <FieldRow elKey={'xyz_edit_' + k} key={'xyz_edit_' + k}>
-                                    <FieldDesc>
-                                        {metadata.properties[k]?.label || k}
-                                    </FieldDesc>
-                                    <FieldEl>
-                                        <Input entity="xyz"
-                                               field={k}
-                                               defaultValue={v || ''}
-                                               register={registerEdit}
-                                        />
-                                    </FieldEl>
-                                </FieldRow>
-                            )
-                        )}
-                        <FieldRow>
-                            <FieldEl>
-                            </FieldEl>
-                            <FieldEl>
-                                <button
-                                    type="submit"
-                                    className="form-button"
-                                    disabled={requestEditState.isPending}
-                                    onClick={setMethodAsPut}
-                                >
-                                    Wijzig
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="form-button"
-                                    disabled={requestEditState.isPending}
-                                    onClick={setMethodAsPost}
-                                >
-                                    Bewaar als nieuw
-                                </button>
-                            </FieldEl>
-                        </FieldRow>
-                    </Fieldset>
-                </Form>
-            </>
-        </>
-    );
-}
-
+ */

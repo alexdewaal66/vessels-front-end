@@ -26,8 +26,8 @@ function SignIn() {
             url: endpoints.signIn,
             payload: formData,
             requestState: requestState,
-            onSuccess: (result) => {
-                login(result.jwt);
+            onSuccess: (response) => {
+                login(response.data.jwt);
             },
         })
     }

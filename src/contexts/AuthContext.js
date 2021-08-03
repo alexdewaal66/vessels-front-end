@@ -30,9 +30,9 @@ export function AuthContextProvider({children}) {
             url: `${endpoints.users}${userID}`,
             headers: addJwtToHeaders({}, Jwt),
             requestState: requestState,
-            onSuccess: (result) => {
+            onSuccess: (response) => {
                 setAuthState({
-                    user: result,
+                    user: response.data,
                     status: authStates.DONE,
                 });
                 history.push(pages.home.path);

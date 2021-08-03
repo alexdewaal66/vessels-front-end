@@ -78,8 +78,10 @@ export function getRequest({url, headers, requestState, onSuccess}) {
 
 export async function makeRequest({method, url, headers, payload, requestState, onSuccess}) {
     requestState.setAtPending();
-    console.log(now() + ' makeRequest()');
-    console.log('request arguments=\n\t', {method, url, headers, payload, requestState, onSuccess});
+    console.log(
+        now() + ' makeRequest() arguments=',
+        {method, url, headers, payload, requestState, onSuccess}
+    );
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,
@@ -89,9 +91,9 @@ export async function makeRequest({method, url, headers, payload, requestState, 
             data: payload,
             timeout: 5_000,
         });
-        console.log('response=', response);
+        console.log(now() + 'makeRequest() response=', response);
         requestState.setAtSuccess();
-        if (onSuccess) onSuccess(response.data);
+        if (onSuccess) onSuccess(response);
     } catch (e) {
         console.error(now(), e);
         requestState.setAtError();

@@ -23,7 +23,7 @@ export default function Entity({entityName, id}) {
             url: endpoints.xyzs,
             headers: {},
             requestState,
-            setResult: setEntity,
+            onSuccess: (response) => setEntity(response.data),
         })
 
     }
