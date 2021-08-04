@@ -63,6 +63,7 @@ export function EditEntity({entity, useFormFunctions, metadata, onChange}) {
                 onPost(formData);
                 break;
             case 'delete':
+                //todo: ask confirmation
                 onDelete(formData);
                 break;
             default:

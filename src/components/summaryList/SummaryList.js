@@ -1,5 +1,5 @@
 import React from 'react';
-import { cx } from '../helpers/multipleStyles';
+import { cx } from '../../helpers/multipleStyles';
 
 export function Empty({children, className, ...rest}) {
     return (

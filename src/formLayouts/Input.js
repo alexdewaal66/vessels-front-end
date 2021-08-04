@@ -13,7 +13,7 @@ const inputTypes = {
     hidden: {element: 'input', type: 'hidden'},
     image: {element: 'input', type: 'image'},
     month: {element: 'input', type: 'month', simple: true},
-    number: {element: 'input', type: 'number', simple: true},
+    number: {element: 'input', type: 'number'},
     password: {element: 'input', type: 'password', simple: true},
     radio: {element: 'input', type: 'radio'},
     range: {element: 'input', type: 'range'},
@@ -87,15 +87,20 @@ export function Input({entity, field, defaultValue, register, ...rest}) {
                     />
                 </>
             )}
+            {inputType === inputTypes.number && (
+                <>
+                    <input
+                        type={inputType.type}
+                        step="any"
+                        name={field}
+                        defaultValue={defaultValue}
+                        {...register(field, property?.validation)}
+                        {...rest}
+                    />
+                </>
+            )}
         </>
     );
 }
 
 
-/*
-            {CONDITION && (
-                <>
-                JSX_JSX_JSX
-                </>
-            )}
- */
