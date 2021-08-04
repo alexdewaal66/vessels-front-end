@@ -40,43 +40,52 @@ export const requestStates = {IDLE: 'idle', PENDING: 'pending', SUCCESS: 'succes
 /******************************************/
 
 // enumeration of variable names saved in local storage
-export const persistentVars = {Jwt: 'JsonWebToken'};
+export const persistentVars = {JWT: 'JsonWebToken'};
 
 /******************************************/
 
-export function addJwtToHeaders(headers, Jwt) {
-    return {
+export function addJwtToHeaders(headers = {}) {
+    const jwt = localStorage.getItem(persistentVars.JWT);
+    return jwt ? {
         ...headers,
         'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + Jwt,
-    };
+        Authorization: 'Bearer ' + jwt,
+    } : headers;
 }
-
 
 /******************************************/
 
-export function postRequest({url, headers, payload, requestState, onSuccess}) {
-    const ignorePromise = makeRequest({
-        method: 'post',
-        url, headers, payload, requestState, onSuccess,
-    });
-}
-
-export function putRequest({url, headers, payload, requestState, onSuccess}) {
-    const ignorePromise = makeRequest({
-        method: 'put',
-        url, headers, payload, requestState, onSuccess,
-    });
-}
-
-export function getRequest({url, headers, requestState, onSuccess}) {
+export function getRequest({url, requestState, onSuccess}) {
     const ignorePromise = makeRequest({
         method: 'get',
-        url, headers, requestState, onSuccess,
+        url, requestState, onSuccess,
     });
 }
 
-export async function makeRequest({method, url, headers, payload, requestState, onSuccess}) {
+export function postRequest({url, payload, requestState, onSuccess}) {
+    const ignorePromise = makeRequest({
+        method: 'post',
+        url, payload, requestState, onSuccess,
+    });
+}
+
+export function putRequest({url, payload, requestState, onSuccess}) {
+    const ignorePromise = makeRequest({
+        method: 'put',
+        url, payload, requestState, onSuccess,
+    });
+}
+
+export function deleteRequest({url, requestState, onSuccess}) {
+    const ignorePromise = makeRequest({
+        method: 'delete',
+        url, requestState, onSuccess,
+    });
+}
+
+export async function makeRequest({method, url, payload, requestState, onSuccess}) {
+    const headers = addJwtToHeaders();
+
     requestState.setAtPending();
     console.log(
         now() + ' makeRequest() arguments=',
@@ -91,11 +100,11 @@ export async function makeRequest({method, url, headers, payload, requestState, 
             data: payload,
             timeout: 5_000,
         });
-        console.log(now() + 'makeRequest() response=', response);
+        console.log(now() + ' makeRequest() response=', response);
         requestState.setAtSuccess();
         if (onSuccess) onSuccess(response);
     } catch (e) {
-        console.error(now(), e);
+        console.error(now() + ' makeRequest() error=', e);
         requestState.setAtError();
         requestState.setErrorMsg(e.toString());
     }

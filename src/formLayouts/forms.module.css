@@ -1,23 +1,25 @@
 .form {
     border-color: inherit;
+    padding: 0;
+}
+
+.border, .noBorder {
+    width: fit-content;
+    display: table;
+    border-spacing: 0.5em;
+    /*margin: 0.5em;*/
+    margin: 0;
+    padding: 0;
 }
 
 .border {
     border: 1px;
-    border-style:  solid;
+    border-style: solid;
     border-color: inherit;
-    width: fit-content;
-    display: table;
-    border-spacing: 0.5em;
-    margin: 0.5em;
 }
 
 .noBorder {
     border: none;
-    width: fit-content;
-    display: table;
-    border-spacing: 0.5em;
-    margin: 0.5em;
 }
 
 .row {
@@ -31,4 +33,11 @@
 
 button + button {
     margin-left: 2em;
+}
+
+.form input,
+.form textarea,
+.form button {
+    font: inherit;
+    padding: 0.2em;
 }

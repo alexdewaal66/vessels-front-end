@@ -48,13 +48,13 @@ export function AuthContextProvider({children}) {
 
     // todo: find more descriptive name
     function login(Jwt) {
-        localStorage.setItem(persistentVars.Jwt, Jwt);
+        localStorage.setItem(persistentVars.JWT, Jwt);
         fetchUserData(Jwt);
     }
 
     function logout() {
         console.log(now() + ' logout()');
-        localStorage.removeItem(persistentVars.Jwt);
+        localStorage.removeItem(persistentVars.JWT);
         setAuthState({
             user: null, status: authStates.DONE
         });
@@ -62,7 +62,7 @@ export function AuthContextProvider({children}) {
 
     // todo: move to helpers
     function getJwtIfValid() {
-        const Jwt = localStorage.getItem(persistentVars.Jwt);
+        const Jwt = localStorage.getItem(persistentVars.JWT);
         if (!Jwt) return null;
         const decodedJwt = jwt_decode(Jwt);
         const expiration = decodedJwt.exp * 1000; // Unix --> JS timestamp
@@ -73,14 +73,14 @@ export function AuthContextProvider({children}) {
     useMountEffect(() => {
         const Jwt = getJwtIfValid();
         if (!Jwt) {
-            // geen geldige Jwt
+            // geen geldige JWT
             logout();
         } else {
             if (!authState.user) {
-                // wel geldige Jwt, geen user
+                // wel geldige JWT, geen user
                 fetchUserData(Jwt);
             } else {
-                // wel geldige Jwt en user
+                // wel geldige JWT en user
                 setAuthState({
                     status: authStates.DONE
                 });

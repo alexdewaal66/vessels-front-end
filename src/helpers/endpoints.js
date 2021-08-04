@@ -30,20 +30,20 @@ export const entities = {
         endpoint: "/xyzs",
         id: [{name: "id", type: types.num}],
         properties: {
-            xyzString: {
-                type: types.str, validation: {maxLength: 200}
-            },
             name: {
                 type: types.str, label: "naam", validation: {maxLength: 100}
             },
-            description: {
-                type: types.str, label: "beschrijving", validation: {maxLength: 1000}
+            xyzString: {
+                type: types.str, validation: {maxLength: 200}
             },
             ratio: {
                 type: types.num, validation: {
                     min: {value: 0, message: "Negatieve ratios niet toegestaan"}
                 }
-            }
+            },
+            description: {
+                type: types.str, label: "beschrijving", validation: {maxLength: 1000}
+            },
         },
         methods: "CRUD",
         summary: ["name", "xyzString", "ratio"],

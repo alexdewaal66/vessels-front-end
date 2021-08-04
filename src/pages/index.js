@@ -34,7 +34,7 @@ const homeCommands = {
     search: {name: 'Zoek', component: Search,},
     vessels: {name: 'Vaartuigen', component: Vessel,},
     xyz: {name: 'Xyz', component: Xyz,},
-    xyzN: {name: 'XyzN(3)', component: XyzN(3),},
+    xyzN: {name: 'XyzN(17)', component: XyzN(17),},
     users: {name: 'Gebruikers', component: Empty,},
     colors: {name: 'Kleuren', component: Colors,},
 };

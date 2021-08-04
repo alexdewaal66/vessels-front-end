@@ -1,17 +1,32 @@
+.tableFixHead {
+    border: 1px solid var(--color-de-normal);
+    margin: 0.5em;
+
+    overflow-y: auto;
+    height: 15em;
+}
+
 .table {
     border-spacing: 0.5em;
-    border: 1px solid var(--color-de-normal);
     border-collapse: collapse;
     --table-padding: 0.25em;
+    width: 100%;
 }
 
 .table th {
+    text-align: left;
     color: var(--color-em-normal);
     background-color: var(--color-bg-light);
     padding-top: var(--table-padding);
 }
 
-.table tr {
+
+.table thead th {
+    position: sticky;
+    top: 0;
+}
+
+.table tbody tr {
     cursor: pointer;
 }
 
@@ -27,7 +42,7 @@
     padding: 0.2em;
 }
 
-.table tr:last-child td{
+.table tr:last-child td {
     padding-bottom: var(--table-padding);
 }
 

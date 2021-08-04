@@ -20,15 +20,15 @@ function Profile() {
 
     function fetchUserProfile() {
         console.log(now() + ' fetchUserProfile()');
-        const Jwt = localStorage.getItem(persistentVars.Jwt);
+        const JWT = localStorage.getItem(persistentVars.JWT);
 
         const { endpoint, id: [{name: idName}] } = entities.user;
         const id = user[idName];
 
-        console.log('Jwt=', Jwt);
+        console.log('JWT=', JWT);
         getRequest({
             url: `${endpoint}/${id}`,
-            headers: addJwtToHeaders({}, Jwt),
+            headers: addJwtToHeaders({}, JWT),
             requestState: requestState,
             onSuccess: setPrivateContent,
         })

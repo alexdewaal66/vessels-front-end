@@ -9,6 +9,10 @@ export function SummaryRow({item, metadata, setDetails, elKey}) {
         <tr onClick={choose}
             key={elKey}
         >
+            <td key={elKey + 'id'}
+            >
+                {item.id}
+            </td>
             {metadata.summary.map(propertyName =>
                 <td key={elKey + propertyName}
                 >
