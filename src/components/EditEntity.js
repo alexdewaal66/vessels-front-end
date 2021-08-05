@@ -26,7 +26,6 @@ export function EditEntity({entity, useFormFunctions, metadata, onChange}) {
 
     function onPost(formData) {
         // console.log(now() + ' onPost() formData=', formData);
-        delete(formData.id);
         postRequest({
             url: endpoint,
             payload: formData,
@@ -53,6 +52,7 @@ export function EditEntity({entity, useFormFunctions, metadata, onChange}) {
         // console.log(now() + ' onSubmit() requestMethod=', requestMethod);
         // console.log(now() + ' onSubmit() formData=', formData);
 
+        // console.log(now() + ' onSubmit()   typeof formData.id =', typeof formData.id);
         //todo: repair datatypes of formData values, for now, just id
         formData.id = +formData.id;
         switch (requestMethod) {
@@ -75,6 +75,9 @@ export function EditEntity({entity, useFormFunctions, metadata, onChange}) {
         }
     }
 
+    const setRequestMethod = (method) => () => {
+        setValue('requestMethod', method);
+    };
 
     return (
         <>
@@ -115,19 +118,19 @@ export function EditEntity({entity, useFormFunctions, metadata, onChange}) {
                         <FieldEl>
                             <button type="submit" className="form-button"
                                     disabled={requestState.isPending}
-                                    onClick={() => setValue('requestMethod', 'put')}
+                                    onClick={setRequestMethod('put')}
                             >
                                 Wijzig
                             </button>
                             <button type="submit" className="form-button"
                                     disabled={requestState.isPending}
-                                    onClick={() => setValue('requestMethod', 'post')}
+                                    onClick={setRequestMethod('post')}
                             >
                                 Bewaar als nieuw
                             </button>
                             <button type="submit" className="form-button"
                                     disabled={requestState.isPending}
-                                    onClick={() => setValue('requestMethod', 'delete')}
+                                    onClick={setRequestMethod('delete')}
                             >
                                 Verwijder
                             </button>

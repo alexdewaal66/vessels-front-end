@@ -1,33 +1,29 @@
 import React, { useState } from 'react';
 import { entities } from '../helpers/endpoints';
-import { useMountEffect, useRequestState } from '../helpers/customHooks';
 import { useForm } from 'react-hook-form';
-import {
-    addJwtToHeaders, persistentVars, now, getRequest
-} from '../helpers/utils';
-import { SummaryTable } from './summaryList/SummaryTable';
+import { now } from '../helpers/utils';
 import { EditEntity } from './EditEntity';
+import { SummaryList } from './summaryList';
 
 export function Xyz({id = 0}) {
-    const requestListState = useRequestState();
     const useFormFunctions = useForm();
     const [list, setList] = useState(null);
-    const [xyz, setXyz] = useState(null);
-    console.log(`xyz=`, xyz);
+    const [item, setItem] = useState(null);
+    console.log(`item=`, item);
     const {xyz: metadata} = entities;
-    const {endpoint, id: [{name: idName}]} = metadata;
+    // const { id: [{name: idName}]} = metadata;
 
 
     function updateList(newList, selectedId = id) {
         console.log(now() + ` updateList() selectedId=`, selectedId);
         newList.sort((a, b) => a.id - b.id);
         setList(newList);
-        const selectedXyz = newList.find(item => item.id === selectedId);
-        updateEditForm(selectedXyz || newList[0]);
+        const selectedItem = newList.find(item => item.id === selectedId);
+        updateEditForm(selectedItem || newList[0]);
     }
 
-    function updateEditForm(changedXyz) {
-        setXyz(changedXyz);
+    function updateEditForm(changedItem) {
+        setItem(changedItem);
         useFormFunctions.reset();
     }
 
@@ -49,33 +45,18 @@ export function Xyz({id = 0}) {
         },
     }
 
-    //todo: move fetchXyzList(), useMountEffect() and <SummaryTable/> to <SummaryList/>
-
-    function fetchXyzList() {
-        console.log(now() + ' fetchXyzList()');
-        getRequest({
-            url: endpoint,
-            requestState: requestListState,
-            onSuccess: (response) => updateList(response.data),
-        })
-    }
-
-    useMountEffect(fetchXyzList);
 
     return (
         <>
-            <h4>Xyz</h4>
-            {list && (
-                    <SummaryTable metadata={metadata}
-                                  list={list}
-                                  setEntity={updateEditForm}
-                                  entityName="xyz"
-                    />
-            )}
-            {(xyz?.id || list) && (
-                <EditEntity entity={xyz || list[0]}
+            <h4>{metadata.label}</h4>
+            <SummaryList metadata={metadata}
+                         list={list}
+                         updateList={updateList}
+                         updateEditForm={updateEditForm}
+            />
+            {(item?.id || list) && (
+                <EditEntity entity={item || list[0]}
                             useFormFunctions={useFormFunctions}
-                            // updateList={updateList2}
                             metadata={metadata}
                             onChange={onEditChange}
                 />

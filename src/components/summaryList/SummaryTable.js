@@ -1,9 +1,9 @@
 import React from 'react';
-import summaryStyle from './summary.module.css';
-import { SummaryHeading } from './SummaryHeading';
-import { SummaryRow } from './SummaryRow';
+import { SummaryHeading, SummaryRow, summaryStyle } from './';
 
-export function SummaryTable({list, metadata, setEntity, entityName}) {
+export function SummaryTable({list, metadata, setEntity}) {
+    const entityName = metadata.name;
+
     return (
         <div className={summaryStyle.tableFixHead}>
             <table className={summaryStyle.table}>

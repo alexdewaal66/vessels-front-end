@@ -1,10 +1,31 @@
 import React from 'react';
-import { cx } from '../../helpers/multipleStyles';
+import { getRequest, now } from '../../helpers/utils';
+import { useMountEffect, useRequestState } from '../../helpers/customHooks';
+import { SummaryTable } from './';
 
-export function Empty({children, className, ...rest}) {
+export function SummaryList({metadata, list, updateList, updateEditForm}) {
+    const {endpoint} = metadata;
+    const requestListState = useRequestState();
+
+    function fetchList() {
+        console.log(now() + ' fetchList()');
+        getRequest({
+            url: endpoint,
+            requestState: requestListState,
+            onSuccess: (response) => updateList(response.data),
+        })
+    }
+
+    useMountEffect(fetchList);
+
     return (
-        <div className={cx('', className)} {...rest}>
-            {children}
-        </div>
+        <>
+            {list && (
+                <SummaryTable metadata={metadata}
+                              list={list}
+                              setEntity={updateEditForm}
+                />
+            )}
+        </>
     );
 }
