@@ -1,8 +1,8 @@
-import React, {useContext} from 'react';
+import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { pages } from '../pages';
 import headerStyles from './header.module.css'
-import pageLayout from './pageLayout.module.css';
+import { pageLayout } from './';
 import { AuthContext } from '../contexts/AuthContext';
 import { withCondition } from '../enhancers/withCondition';
 import { cx } from '../helpers/multipleStyles';
@@ -10,7 +10,7 @@ import { cx } from '../helpers/multipleStyles';
 
 const CondLi = withCondition('li');
 
-export default function Header({className}) {
+export function Header({className}) {
     const {user} = useContext(AuthContext);
 
     return (
@@ -20,13 +20,13 @@ export default function Header({className}) {
 
                 <ul className={headerStyles.ul}>
                     {pages.displayOrder.map(page =>
-                     <CondLi condition={page.isVisible(user)}
-                             key={page.name}
-                     >
-                         <NavLink to={page.path} exact={page.exact} activeClassName={headerStyles.selected}>
-                             {page.name}
-                         </NavLink>
-                     </CondLi>
+                        <CondLi condition={page.isVisible(user)}
+                                key={page.name}
+                        >
+                            <NavLink to={page.path} exact={page.exact} activeClassName={headerStyles.selected}>
+                                {page.name}
+                            </NavLink>
+                        </CondLi>
                     )}
                 </ul>
             </div>

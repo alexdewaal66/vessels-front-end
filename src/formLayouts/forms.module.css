@@ -41,3 +41,16 @@ button + button {
     font: inherit;
     padding: 0.2em;
 }
+
+.form input:read-only,
+.form textarea:read-only {
+    border: 0;
+    box-shadow: none;
+    outline: none;
+}
+
+
+
+/*todo: add @media (max-width: 760px) {}
+        to wrap labels and field in form rows (flex-wrap ??)
+*/

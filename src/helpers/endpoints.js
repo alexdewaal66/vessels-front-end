@@ -63,7 +63,8 @@ export const entities = {
         methods: "CRUD",
     },
     authority: {
-        name: "Authority",
+        name: "authority",
+        label: "Machtiging",
         endpoint: "/users/{username}/authorities",
         id: [
             {name: "username", type: types.str},
@@ -72,4 +73,29 @@ export const entities = {
         properties: [],
         methods: [],
     },
+    country: {
+        name: "country",
+        label: "Land",
+        endpoint: "/countries",
+        id: [{name: "id", type: types.num}],
+        properties: {
+            shortNameNl: {
+                type: types.str, label: "naam (NL)", validation: {maxLength: 100}
+            },
+            shortNameEn: {
+                type: types.str, label: "naam (EN)", validation: {maxLength: 100}
+            },
+            alpha2Code: {
+                type: types.str, label: "alfa 2 code", validation: {maxLength: 2}
+            },
+            alpha3Code: {
+                type: types.str, label: "alfa 3 code", validation: {maxLength: 3}
+            },
+            numericCode: {
+                type: types.str, label: "numerieke code", validation: {maxLength: 3}
+            },
+        },
+        methods: "R",
+        summary: ["shortNameNl", "alpha2Code", "alpha3Code"],
+    }
 }

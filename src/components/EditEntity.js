@@ -8,6 +8,8 @@ export function EditEntity({entity, useFormFunctions, metadata, onChange}) {
     const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
     const {endpoint, id: [{name: idName}]} = metadata;
+    const readOnly = metadata.methods === 'R';
+
 
     function onPut(formData) {
         // console.log(now() + ' onPut() formData=', formData);
@@ -103,7 +105,7 @@ export function EditEntity({entity, useFormFunctions, metadata, onChange}) {
                                     {metadata.properties[k]?.label || k}
                                 </FieldDesc>
                                 <FieldEl>
-                                    <Input entity="xyz"
+                                    <Input metadata={metadata}
                                            field={k}
                                            defaultValue={v || ''}
                                            register={register}
@@ -112,30 +114,32 @@ export function EditEntity({entity, useFormFunctions, metadata, onChange}) {
                             </FieldRow>
                         )
                     )}
-                    <FieldRow>
-                        <FieldEl>
-                        </FieldEl>
-                        <FieldEl>
-                            <button type="submit" className="form-button"
-                                    disabled={requestState.isPending}
-                                    onClick={setRequestMethod('put')}
-                            >
-                                Wijzig
-                            </button>
-                            <button type="submit" className="form-button"
-                                    disabled={requestState.isPending}
-                                    onClick={setRequestMethod('post')}
-                            >
-                                Bewaar als nieuw
-                            </button>
-                            <button type="submit" className="form-button"
-                                    disabled={requestState.isPending}
-                                    onClick={setRequestMethod('delete')}
-                            >
-                                Verwijder
-                            </button>
-                        </FieldEl>
-                    </FieldRow>
+                    {!readOnly && (
+                        <FieldRow>
+                            <FieldEl>
+                            </FieldEl>
+                            <FieldEl>
+                                <button type="submit" className="form-button"
+                                        disabled={requestState.isPending}
+                                        onClick={setRequestMethod('put')}
+                                >
+                                    Wijzig
+                                </button>
+                                <button type="submit" className="form-button"
+                                        disabled={requestState.isPending}
+                                        onClick={setRequestMethod('post')}
+                                >
+                                    Bewaar als nieuw
+                                </button>
+                                <button type="submit" className="form-button"
+                                        disabled={requestState.isPending}
+                                        onClick={setRequestMethod('delete')}
+                                >
+                                    Verwijder
+                                </button>
+                            </FieldEl>
+                        </FieldRow>
+                    )}
                 </Fieldset>
             </Form>
         </>

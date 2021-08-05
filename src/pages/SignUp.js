@@ -7,6 +7,7 @@ import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import { Aside, Command, Main, Content } from '../pageLayouts';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
+import { ShowRequestState } from '../components/ShowRequestState';
 
 function SignUp() {
     const {handleSubmit, register} = useForm();
@@ -32,16 +33,9 @@ function SignUp() {
                 <Main>
                     <h1>Registreren</h1>
                     <p>Registreer en log in om gegevens, foto's & commentaar te kunnen toevoegen.</p>
-
-                    {requestState.isPending && (
-                        <>Even geduld a.u.b.</>
-                    )}
-                    {requestState.isSuccess && (
-                        <>Registreren is gelukt.</>
-                    )}
-                    {requestState.isError && (
-                        <>Registreren is niet gelukt. Probeer het opnieuw. ({requestState.error})</>
-                    )}
+                    <ShowRequestState requestState={requestState}
+                                      advice="Probeer het opnieuw. "
+                    />
                     {!requestState.isSuccess && (
                         <Form onSubmit={handleSubmit(onSubmit)}><Fieldset>
                             <FieldRow>

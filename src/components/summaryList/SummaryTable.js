@@ -1,8 +1,10 @@
 import React from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
+import { now } from '../../helpers/utils';
 
 export function SummaryTable({list, metadata, setEntity}) {
     const entityName = metadata.name;
+    console.log(now() +  ` entityName=`, entityName);
 
     return (
         <div className={summaryStyle.tableFixHead}>

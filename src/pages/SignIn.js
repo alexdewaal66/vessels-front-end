@@ -8,7 +8,8 @@ import { endpoints } from '../helpers/endpoints';
 import forms from '../formLayouts/forms.module.css';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
 import { Aside, Command, Main } from '../pageLayouts';
-import { Content } from '../pageLayouts/Content';
+import { Content } from '../pageLayouts';
+import { ShowRequestState } from '../components/ShowRequestState';
 
 // import { pages } from './index';
 
@@ -37,16 +38,9 @@ function SignIn() {
             <Main>
                 <h1>Inloggen</h1>
                 <p>Log in om gegevens, foto's & commentaar te kunnen toevoegen.</p>
-
-                {requestState.isPending && (
-                    <>Even geduld a.u.b.</>
-                )}
-                {requestState.isSuccess && (
-                    <>Inloggen is gelukt.</>
-                )}
-                {requestState.isError && (
-                    <>Inloggen is niet gelukt. Probeer het opnieuw. ({requestState.errorMsg})</>
-                )}
+                <ShowRequestState requestState={requestState}
+                                  advice="Probeer het opnieuw. "
+                />
                 {!requestState.isSuccess && (
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Fieldset>

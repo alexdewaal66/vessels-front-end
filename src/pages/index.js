@@ -2,11 +2,11 @@ import Home from './Home';
 import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Profile from './Profile';
-import Entity from './Entity';
 import SignOut from './SignOut';
 import { Search, Vessel, Xyz } from '../components';
 import { Empty } from '../dev/Empty';
 import { Colors } from '../dev/Colors';
+import { entities } from '../helpers/endpoints';
 
 const pages = {
     home: {name: 'Home', path: '/', component: Home, exact: true, isVisible: () => true, },
@@ -14,12 +14,10 @@ const pages = {
     signUp: {name: 'Registreren', path: '/signup', component: SignUp, isVisible: user => !user, },
     signIn: {name: 'Inloggen', path: '/signin', component: SignIn, isVisible: user => !user, },
     signOut: {name: 'Uitloggen', path: '/signout', component: SignOut, isVisible: user => !!user, },
-    entity: {name: 'Entiteit', path: '/entity', component: Entity, isVisible: user => !!user, },
 };
 
 pages.displayOrder = [
     pages.home,
-    pages.entity,
     pages.signUp,
     pages.signIn,
     pages.signOut,
@@ -27,15 +25,16 @@ pages.displayOrder = [
 ];
 
 // curried component just for fun
-const XyzN = (n) => () => <Xyz id={n} />;
+const EntityN = (entity, n) => () => <Xyz entity={entity} id={n} />;
 
 const homeCommands = {
     empty: {name: 'leeg', component: Empty},
     search: {name: 'Zoek', component: Search,},
     vessels: {name: 'Vaartuigen', component: Vessel,},
     xyz: {name: 'Xyz', component: Xyz,},
-    xyzN: {name: 'XyzN(17)', component: XyzN(17),},
-    users: {name: 'Gebruikers', component: Empty,},
+    xyzN: {name: 'Xyz(5)', component: EntityN(entities.xyz,5),},
+    users: {name: 'Gebruikers', component: EntityN(entities.user, 0),},
+    countries: {name: 'Landen', component: EntityN(entities.country),},
     colors: {name: 'Kleuren', component: Colors,},
 };
 
@@ -45,9 +44,10 @@ homeCommands.displayOrder = [
     homeCommands.users,
     homeCommands.xyz,
     homeCommands.xyzN,
+    homeCommands.countries,
     homeCommands.colors,
 ];
 
 
 
-export { Home, SignUp, SignIn, SignOut, Profile, Entity, pages, homeCommands };
+export { Home, SignUp, SignIn, SignOut, Profile, EntityN, pages, homeCommands };

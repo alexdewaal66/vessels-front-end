@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
 import { now } from '../helpers/utils';
 import { Aside, Command, Main } from '../pageLayouts';
-import { Content } from '../pageLayouts/Content';
+import { Content } from '../pageLayouts';
 import { pages } from './index';
 
 function SignIn() {

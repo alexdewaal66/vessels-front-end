@@ -28,8 +28,9 @@ const inputTypes = {
     textarea: {element: 'textarea'}
 }
 
-export function Input({entity, field, defaultValue, register, ...rest}) {
-    const property = entities[entity].properties[field];
+export function Input({metadata, field, defaultValue, register, ...rest}) {
+    const property = metadata.properties[field];
+    const readOnly = metadata.methods === 'R';
     let maxLength = property?.validation?.maxLength;
     let inputSize = 0;
     let inputType = {};
@@ -52,7 +53,7 @@ export function Input({entity, field, defaultValue, register, ...rest}) {
         case types.num:
             inputType = inputTypes.number;
             break;
-    };
+    }
 
     return (
         <>
@@ -62,6 +63,7 @@ export function Input({entity, field, defaultValue, register, ...rest}) {
                     size={inputSize}
                     name={field}
                     defaultValue={defaultValue}
+                    readOnly={readOnly}
                     {...register(field, property?.validation)}
                     {...rest}
                 />
@@ -72,6 +74,7 @@ export function Input({entity, field, defaultValue, register, ...rest}) {
                     cols={cols}
                     name={field}
                     defaultValue={defaultValue}
+                    readOnly={readOnly}
                     {...register(field, property?.validation)}
                     {...rest}
                 />
@@ -82,6 +85,7 @@ export function Input({entity, field, defaultValue, register, ...rest}) {
                         type={inputType.type}
                         name={field}
                         defaultValue={defaultValue}
+                        readOnly={readOnly}
                         {...register(field, property?.validation)}
                         {...rest}
                     />
@@ -94,6 +98,7 @@ export function Input({entity, field, defaultValue, register, ...rest}) {
                         step="any"
                         name={field}
                         defaultValue={defaultValue}
+                        readOnly={readOnly}
                         {...register(field, property?.validation)}
                         {...rest}
                     />

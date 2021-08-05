@@ -39,7 +39,7 @@
     color: var(--color-em-darker);
     font-style: italic;
     pointer-events: auto;
-    text-shadow: 0px 0px 1em var(--color-de-normal);
+    text-shadow: 0 0 1em var(--color-de-normal);
 }
 
 .selected {

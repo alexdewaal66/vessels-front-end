@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { addJwtToHeaders, getRequest, now, persistentVars } from '../helpers/utils';
+import { getRequest, now } from '../helpers/utils';
 import { useMountEffect, useRequestState } from '../helpers/customHooks';
 import { entities } from '../helpers/endpoints';
 import { Aside, Command, Main, Content } from '../pageLayouts';
@@ -49,7 +49,6 @@ function Profile() {
                         <p><strong>Gebruikersnaam:</strong> {user.username}</p>
                         <p><strong>Email:</strong> {user.email}</p>
                         <p><strong>Land:</strong> {user.country}</p>
-                        <p><strong>Api-key:</strong> {user.apikey}</p>
                         <p><strong>Enabled:</strong> {user.enabled ? <>Ja</> : <>Nee</>}</p>
                         <div><strong>Authorities:</strong> <ShowObject obj={user.authorities} /></div>
                     </>

@@ -3,15 +3,14 @@ import { Switch, Route } from 'react-router-dom';
 
 import './assets/fonts/stylesheet.css'
 import './App.css';
-import layout from './pageLayouts/pageLayout.module.css';
-import Header from './pageLayouts/Header';
+import { pageLayout } from './pageLayouts';
 import { pages } from './pages';
-import { Footer } from './pageLayouts/Footer';
+import { Footer, Header } from './pageLayouts';
 
 //TODO README.md
 function App() {
     return (
-            <div className={"App " + layout.app}>
+            <div className={"App " + pageLayout.app}>
                 <Header/>
                 <Switch>
                     {pages.displayOrder.map( page =>

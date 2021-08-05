@@ -5,12 +5,12 @@ import { now } from '../helpers/utils';
 import { EditEntity } from './EditEntity';
 import { SummaryList } from './summaryList';
 
-export function Xyz({id = 0}) {
+export function Xyz({entity, id = 0}) {
     const useFormFunctions = useForm();
     const [list, setList] = useState(null);
     const [item, setItem] = useState(null);
     console.log(`item=`, item);
-    const {xyz: metadata} = entities;
+    const metadata = entity ? entity : entities.xyz;
     // const { id: [{name: idName}]} = metadata;
 
 
