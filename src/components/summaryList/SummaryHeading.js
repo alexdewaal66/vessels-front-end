@@ -1,7 +1,7 @@
 import React from 'react';
 
 export function SummaryHeading({metadata, elKey}) {
-    console.log(`metadata=`, metadata, `elKey=`, elKey);
+    // console.log(`metadata=`, metadata, `elKey=`, elKey);
 
     return (
         <tr>

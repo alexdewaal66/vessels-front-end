@@ -1,16 +1,17 @@
 .tableFixHead {
     border: 1px solid var(--color-de-normal);
     margin: 0.5em;
+    width: fit-content;
 
     overflow-y: auto;
     height: 15em;
 }
 
 .table {
-    border-spacing: 0.5em;
+    /*border-spacing: 5.5em;*/
     border-collapse: collapse;
     --table-padding: 0.25em;
-    width: 100%;
+    width: fit-content;
 }
 
 .table th {
@@ -38,8 +39,8 @@
     background-color: var(--color-bg-darker);
 }
 
-.table td {
-    padding: 0.2em;
+.table thead th, .table td {
+    padding: 0.2em 0.5em;
 }
 
 .table tr:last-child td {

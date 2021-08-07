@@ -29,6 +29,9 @@ const inputTypes = {
     textarea: {element: 'textarea'},
 }
 
+const aspectRatio = 10;
+const referenceSize = 80;
+
 export function Input({metadata, field, defaultValue, register, ...rest}) {
     const property = metadata.properties[field];
     // console.log(`metadata=`, metadata, `\nfield=`, field, `\nproperty=`, property);
@@ -42,15 +45,14 @@ export function Input({metadata, field, defaultValue, register, ...rest}) {
 
     switch (property?.type) {
         case types.str:
-            if (maxLength < 200) {
+            if (maxLength < 4 * referenceSize) {
                 inputType = inputTypes.text;
-                maxLength = maxLength || 50;
-                inputSize = Math.min(50, maxLength);
+                maxLength = maxLength || referenceSize;
+                inputSize = Math.min(referenceSize, maxLength);
             } else {
                 inputType = inputTypes.textarea;
-                const aspectRatio = 5;
-                cols = Math.max(50, Math.min(100, Math.ceil(Math.sqrt(maxLength / aspectRatio))));
-                rows = Math.min(50 / aspectRatio, Math.ceil(maxLength / cols));
+                cols = Math.max(referenceSize, Math.min(2 * referenceSize, Math.ceil(Math.sqrt(maxLength / aspectRatio))));
+                rows = Math.min(referenceSize / aspectRatio, Math.ceil(maxLength / cols));
             }
             break;
         case types.num:
