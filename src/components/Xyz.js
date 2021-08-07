@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { entities } from '../helpers/endpoints';
+import { entities } from '../helpers/entities';
 import { useForm } from 'react-hook-form';
 import { now } from '../helpers/utils';
 import { EditEntity } from './EditEntity';
@@ -9,13 +9,13 @@ export function Xyz({entity, id = 0}) {
     const useFormFunctions = useForm();
     const [list, setList] = useState(null);
     const [item, setItem] = useState(null);
-    console.log(`item=`, item);
+    // console.log(`>>> item=`, item, `>>> list=`, list);
     const metadata = entity ? entity : entities.xyz;
     // const { id: [{name: idName}]} = metadata;
 
 
     function updateList(newList, selectedId = id) {
-        console.log(now() + ` updateList() selectedId=`, selectedId);
+        // console.log(now() + ` updateList() selectedId=`, selectedId);
         newList.sort((a, b) => a.id - b.id);
         setList(newList);
         const selectedItem = newList.find(item => item.id === selectedId);
@@ -54,8 +54,9 @@ export function Xyz({entity, id = 0}) {
                          updateList={updateList}
                          updateEditForm={updateEditForm}
             />
-            {(item?.id || list) && (
-                <EditEntity entity={item || list[0]}
+
+            {(item || list)  && (
+                <EditEntity item={item || list[0]}
                             useFormFunctions={useFormFunctions}
                             metadata={metadata}
                             onChange={onEditChange}

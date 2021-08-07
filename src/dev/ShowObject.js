@@ -3,7 +3,7 @@ import { TTC, TT } from './Tooltips';
 
 export function ShowObject({obj}) {
     if (obj) {
-        console.log(`obj=`, obj);
+        // console.log(`obj=`, obj);
         return (
             <ul>
                 {Object.entries(obj).map(([key, value]) =>

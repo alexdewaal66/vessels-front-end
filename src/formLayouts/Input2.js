@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { types } from '../helpers/endpoints';
-import { ShowObject } from '../dev/ShowObject';
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
@@ -26,21 +25,22 @@ const inputTypes = {
     url: {element: 'input', type: 'url', simple: true},
     week: {element: 'input', type: 'week', simple: true},
     select: {element: 'select'},
-    textarea: {element: 'textarea'},
+    textarea: {element: 'textarea'}
 }
 
 export function Input({metadata, field, defaultValue, register, ...rest}) {
     const property = metadata.properties[field];
-    // console.log(`metadata=`, metadata, `\nfield=`, field, `\nproperty=`, property);
+    console.log(`metadata=`, metadata);
+    console.log(`field=`, field);
+    console.log(`property=`, property);
     const readOnly = metadata.methods === 'R';
-    let inputType = {};
     let maxLength = property?.validation?.maxLength;
-    let inputSize = null;
-    let rows = null;
-    let cols = null;
-    let step = null;
+    let inputSize = 0;
+    let inputType = {};
+    let rows = 2;
+    let cols = 10;
 
-    switch (property?.type) {
+    switch (property.type) {
         case types.str:
             if (maxLength < 200) {
                 inputType = inputTypes.text;
@@ -55,29 +55,59 @@ export function Input({metadata, field, defaultValue, register, ...rest}) {
             break;
         case types.num:
             inputType = inputTypes.number;
-            step = 'any';
             break;
-        default:
-            return (<>
-                metadata: <ShowObject obj={metadata}/>
-                <br/>
-                field: <ShowObject obj={field}/>
-            </>);
     }
 
     return (
-        <inputType.element
-            type={inputType.type}
-            step={step}
-            size={inputSize}
-            name={field}
-            rows={rows}
-            cols={cols}
-            defaultValue={defaultValue}
-            readOnly={readOnly}
-            {...register(field, property?.validation)}
-            {...rest}
-        />
+        <>
+            {inputType === inputTypes.text && (
+                <input
+                    type={inputTypes.text.type}
+                    size={inputSize}
+                    name={field}
+                    defaultValue={defaultValue}
+                    readOnly={readOnly}
+                    {...register(field, property?.validation)}
+                    {...rest}
+                />
+            )}
+            {inputType === inputTypes.textarea && (
+                <textarea
+                    rows={rows}
+                    cols={cols}
+                    name={field}
+                    defaultValue={defaultValue}
+                    readOnly={readOnly}
+                    {...register(field, property?.validation)}
+                    {...rest}
+                />
+            )}
+            {inputType.simple && (
+                <>
+                    <input
+                        type={inputType.type}
+                        name={field}
+                        defaultValue={defaultValue}
+                        readOnly={readOnly}
+                        {...register(field, property?.validation)}
+                        {...rest}
+                    />
+                </>
+            )}
+            {inputType === inputTypes.number && (
+                <>
+                    <input
+                        type={inputType.type}
+                        step="any"
+                        name={field}
+                        defaultValue={defaultValue}
+                        readOnly={readOnly}
+                        {...register(field, property?.validation)}
+                        {...rest}
+                    />
+                </>
+            )}
+        </>
     );
 }
 

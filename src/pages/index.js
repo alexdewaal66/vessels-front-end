@@ -6,7 +6,7 @@ import SignOut from './SignOut';
 import { Search, Vessel, Xyz } from '../components';
 import { Empty } from '../dev/Empty';
 import { Colors } from '../dev/Colors';
-import { entities } from '../helpers/endpoints';
+import { entities } from '../helpers/entities';
 
 const pages = {
     home: {name: 'Home', path: '/', component: Home, exact: true, isVisible: () => true, },
@@ -32,9 +32,10 @@ const homeCommands = {
     search: {name: 'Zoek', component: Search,},
     vessels: {name: 'Vaartuigen', component: Vessel,},
     xyz: {name: 'Xyz', component: Xyz,},
-    xyzN: {name: 'Xyz(5)', component: EntityN(entities.xyz,5),},
+    xyzN: {name: 'Xyz(3)', component: EntityN(entities.xyz,3),},
     users: {name: 'Gebruikers', component: EntityN(entities.user, 0),},
     countries: {name: 'Landen', component: EntityN(entities.country),},
+    vesselTypes: {name: 'Scheepstypes', component: EntityN(entities.vesselType)},
     colors: {name: 'Kleuren', component: Colors,},
 };
 
@@ -45,6 +46,7 @@ homeCommands.displayOrder = [
     homeCommands.xyz,
     homeCommands.xyzN,
     homeCommands.countries,
+    homeCommands.vesselTypes,
     homeCommands.colors,
 ];
 

@@ -24,7 +24,7 @@ export function AuthContextProvider({children}) {
     };
 
     function fetchUserData(Jwt) {
-        console.log('in fetchUserData()');
+        // console.log('in fetchUserData()');
         const userID = getUserID(Jwt);
         getRequest({
             url: `${endpoints.users}${userID}`,

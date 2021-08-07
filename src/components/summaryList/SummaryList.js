@@ -8,7 +8,7 @@ export function SummaryList({metadata, list, updateList, updateEditForm}) {
     const requestListState = useRequestState();
 
     function fetchList() {
-        console.log(now() + ' fetchList()');
+        // console.log(now() + ' fetchList()');
         getRequest({
             url: endpoint,
             requestState: requestListState,

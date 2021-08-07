@@ -1,6 +1,8 @@
 import React from 'react';
 
 export function SummaryHeading({metadata, elKey}) {
+    console.log(`metadata=`, metadata, `elKey=`, elKey);
+
     return (
         <tr>
             <th key={elKey + 'id_h'}>
