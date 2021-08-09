@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { now } from '../../helpers/utils';
-import { HiddenRow } from './HiddenRow';
+import { cx } from '../../helpers/multipleStyles';
 
-export function SummaryTable({list, metadata, setItem}) {
+export function SummaryTable({list, metadata, setItem, small}) {
+    const smallStyle = (small) ? summaryStyle.small : '';
+
     const entityName = metadata.name;
     // console.log(now() +  ` entityName=`, entityName);
     const [focusIndex, setFocusIndex] = useState(0);
@@ -18,9 +20,13 @@ export function SummaryTable({list, metadata, setItem}) {
 
     const rowFocus = {up: focusUp, down: focusDown, set: setFocusIndex};
 
+
+
+
+
     return (
         <div className={summaryStyle.tableFixHead}>
-            <table className={summaryStyle.table}>
+            <table className={cx(summaryStyle.table, smallStyle)}>
                 <thead>
                 <SummaryHeading metadata={metadata} elKey={entityName}/>
                 </thead>
@@ -35,9 +41,12 @@ export function SummaryTable({list, metadata, setItem}) {
                                 hasFocus={index === focusIndex}
                     />
                 ))}
+                {/*<HiddenRow list={list} summary={metadata.summary} />*/}
                 </tbody>
             </table>
         </div>
     );
 }
+
+
 

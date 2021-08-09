@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { addJwtToHeaders, getRequest, now, persistentVars } from '../helpers/utils';
+import { getRequest, now, persistentVars } from '../helpers/utils';
 import jwt_decode from 'jwt-decode';
 import { pages } from '../pages';
 import { useHistory } from 'react-router-dom';
@@ -19,16 +19,15 @@ export function AuthContextProvider({children}) {
     const history = useHistory();
     const authData = {
         ...authState,
-        login,
+        fetchUserData,
         logout
     };
 
-    function fetchUserData(Jwt) {
+    function fetchUserData() {
         // console.log('in fetchUserData()');
-        const userID = getUserID(Jwt);
+        const userID = getUserID(localStorage.getItem(persistentVars.JWT));
         getRequest({
             url: `${endpoints.users}${userID}`,
-            headers: addJwtToHeaders({}, Jwt),
             requestState: requestState,
             onSuccess: (response) => {
                 setAuthState({
@@ -46,11 +45,6 @@ export function AuthContextProvider({children}) {
         return decodedJwt.sub;
     }
 
-    // todo: find more descriptive name
-    function login(Jwt) {
-        localStorage.setItem(persistentVars.JWT, Jwt);
-        fetchUserData(Jwt);
-    }
 
     function logout() {
         console.log(now() + ' logout()');

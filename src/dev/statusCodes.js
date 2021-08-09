@@ -317,7 +317,7 @@ export const statusCodes = {
         constant: "REQUEST_HEADER_FIELDS_TOO_LARGE",
         comment: {
             doc: "Official Documentation @ https://tools.ietf.org/html/rfc6585#section-5",
-            description: "The server is unwilling to process the request because its header fields are too large. The request MAY be resubmitted after reducing the size of the request header fields."
+            description: "The server is unwilling to process the request because its header fields are too large. The request MAY be resubmitted after reducing the small of the request header fields."
         }
     },
     "408": {
@@ -349,7 +349,7 @@ export const statusCodes = {
         constant: "REQUESTED_RANGE_NOT_SATISFIABLE",
         comment: {
             doc: "Official Documentation @ https://tools.ietf.org/html/rfc7233#section-4.4",
-            description: "The range specified by the Range header field in the request can't be fulfilled; it's possible that the range is outside the size of the target URI's data."
+            description: "The range specified by the Range header field in the request can't be fulfilled; it's possible that the range is outside the small of the target URI's data."
         }
     },
     "205": {

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
-import { now, postRequest } from '../helpers/utils';
+import { now, persistentVars, postRequest } from '../helpers/utils';
 import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import forms from '../formLayouts/forms.module.css';
@@ -11,12 +11,11 @@ import { Aside, Command, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { ShowRequestState } from '../components/ShowRequestState';
 
-// import { pages } from './index';
 
 function SignIn() {
     const {handleSubmit, register} = useForm();
     const authContext = useContext(AuthContext);
-    const {login} = authContext;
+    const {fetchUserData} = authContext;
     const requestState = useRequestState();
     console.log(now() + ` authContext=\n\t`, authContext);
 
@@ -28,7 +27,8 @@ function SignIn() {
             payload: formData,
             requestState: requestState,
             onSuccess: (response) => {
-                login(response.data.jwt);
+                localStorage.setItem(persistentVars.JWT, response.data.jwt);
+                fetchUserData();
             },
         })
     }

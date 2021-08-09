@@ -160,9 +160,9 @@ entities.vesselType = {
         superType: {
             type: types.obj, label: "supertype", target: "vesselType",
         },
-        subTypes: {
-            type: types.arr, label: "subtypes", elements: "vesselType",
-        },
+        // subTypes: {
+        //     type: types.arr, label: "subtypes", elements: "vesselType",
+        // },
     },
     methods: "CRUD",
     summary: ["id", "nameNL", "nameEN"],

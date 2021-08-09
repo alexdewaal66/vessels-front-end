@@ -56,7 +56,7 @@ export function Xyz({entity, id = 0}) {
                              list={list}
                              updateList={updateList}
                              setItem={updateEditForm}
-                             size={20}
+                             small={20}
                 />
             </span>
 

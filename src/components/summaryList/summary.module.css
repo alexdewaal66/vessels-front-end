@@ -7,6 +7,11 @@
     height: 85vh;
 }
 
+.tableFixHead.small {
+    /* 1 line ~ 1.7em */
+    height: calc(6 * 1.7em);
+}
+
 .table {
     border-collapse: collapse;
     --table-padding: 0.25em;
@@ -43,8 +48,9 @@
 }
 
 .table tr:focus {
-    font-weight: bold;
+    /*font-weight: bold;*/
     color: var(--color-em-normal);
+    background-color: var(--compl-color-bg-light);
 }
 
 .table thead th, .table td {
@@ -63,6 +69,6 @@
     padding-right: var(--table-padding);
 }
 
-.hidden {
-    visibility: collapse;
-}
+/*.hidden {*/
+/*    visibility: collapse;*/
+/*}*/

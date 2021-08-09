@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { types } from '../helpers/endpoints';
 import { ShowObject } from '../dev/ShowObject';
 import { ItemSummary } from './summaryList/ItemSummary';
 import { entities } from '../helpers/entities';
 import { Stringify } from '../dev/Stringify';
+import { SummaryList } from './summaryList';
+import { set } from 'react-hook-form';
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
@@ -65,6 +67,17 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
             step = 'any';
             break;
         case types.obj:
+            // const [list, setList] = useState(null);
+            // const [item, setItem] = useState(defaultValue);
+
+            // function updateList(newList, selectedId = id) {
+            //     // console.log(now() + ` updateList() selectedId=`, selectedId);
+            //     newList.sort((a, b) => a.id - b.id);
+            //     setList(newList);
+            //     const selectedItem = newList.find(item => item.id === selectedId);
+            //     setItem(selectedItem || newList[0]);
+            // };
+
             return (
                 <>
                     {defaultValue && (
@@ -72,8 +85,15 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
                             {/*defaultValue: <Stringify data={defaultValue} />*/}
                             {/*entities[property.target]: <Stringify data={entities[property.target]} />*/}
                             <ItemSummary item={defaultValue}
-                                        metadata={entities[property.target]}
-                        />
+                                         metadata={entities[property.target]}
+                            />
+                            {/*todo: move list retrieval to context??*/}
+                            {/*<SummaryList metadata={entities[property.target]}*/}
+                            {/*             list={list}*/}
+                            {/*             updateList={updateList}*/}
+                            {/*             setItem={setItem}*/}
+                            {/*             small={true}*/}
+                            {/*/>*/}
                         </>
                     )}
                 </>
