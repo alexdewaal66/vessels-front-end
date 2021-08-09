@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { now } from '../helpers/utils';
 import { EditEntity } from './EditEntity';
 import { SummaryList } from './summaryList';
+import pageLayout from '../pageLayouts/pageLayout.module.css';
 
 export function Xyz({entity, id = 0}) {
     const useFormFunctions = useForm();
@@ -11,6 +12,7 @@ export function Xyz({entity, id = 0}) {
     const [item, setItem] = useState(null);
     // console.log(`>>> listItem=`, listItem, `>>> list=`, list);
     const metadata = entity ? entity : entities.xyz;
+
     // const { id: [{name: idName}]} = metadata;
 
 
@@ -47,22 +49,27 @@ export function Xyz({entity, id = 0}) {
 
 
     return (
-        <>
-            <h4>{metadata.label}</h4>
-            <SummaryList metadata={metadata}
-                         list={list}
-                         updateList={updateList}
-                         setItem={updateEditForm}
-            />
-
-            {(item || list)  && (
-                <EditEntity item={item || list[0]}
-                            useFormFunctions={useFormFunctions}
-                            metadata={metadata}
-                            onChange={onEditChange}
+        <div className={pageLayout.split}>
+            <span className={pageLayout.leftSide}>
+                {/*<h4>{metadata.label}</h4>*/}
+                <SummaryList metadata={metadata}
+                             list={list}
+                             updateList={updateList}
+                             setItem={updateEditForm}
+                             size={20}
                 />
-            )}
-        </>
+            </span>
+
+            <span>
+                {(item || list) && (
+                    <EditEntity item={item || list[0]}
+                                useFormFunctions={useFormFunctions}
+                                metadata={metadata}
+                                onChange={onEditChange}
+                    />
+                )}
+            </span>
+        </div>
     );
 }
 

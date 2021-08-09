@@ -3,7 +3,7 @@ import { getRequest, now } from '../../helpers/utils';
 import { useMountEffect, useRequestState } from '../../helpers/customHooks';
 import { SummaryTable } from './';
 
-export function SummaryList({metadata, list, updateList, setItem}) {
+export function SummaryList({metadata, list, updateList, setItem, size}) {
     const {endpoint} = metadata;
     const requestListState = useRequestState();
 
@@ -24,6 +24,7 @@ export function SummaryList({metadata, list, updateList, setItem}) {
                 <SummaryTable metadata={metadata}
                               list={list}
                               setItem={setItem}
+                              size={size}
                 />
             )}
         </>

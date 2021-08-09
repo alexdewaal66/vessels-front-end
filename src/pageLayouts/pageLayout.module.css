@@ -134,6 +134,19 @@ html, body {
     border-top-left-radius: 12px;
 }
 
+.split {
+    display: flex;
+    flex-direction: row;
+}
+
+.leftSide {
+    margin-right: 3em;
+}
+
+.leftSide, .rightSide {
+    display: flex;
+}
+
 @media (max-width: 760px) {
     .content {
         flex-direction: column;

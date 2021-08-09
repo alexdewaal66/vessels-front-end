@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { now } from '../../helpers/utils';
+import { HiddenRow } from './HiddenRow';
 
 export function SummaryTable({list, metadata, setItem}) {
     const entityName = metadata.name;

@@ -24,12 +24,13 @@ export function SummaryRow({listItem, index, metadata, setItem, elKey, rowFocus,
             case keys.arrowUp:
                 // console.log(`↑: index=`, index);
                 rowFocus.up();
-                row.current.scrollIntoView({block: "nearest"});
+                row.current.scrollIntoView({block: "center"});
                 e.preventDefault();
                 return false; // suppress default scrolling
             case keys.arrowDown:
                 // console.log(`↓: index=`, index);
                 rowFocus.down();
+                row.current.scrollIntoView({block: "center"});
                 e.preventDefault();
                 return false; // suppress default scrolling
             default:

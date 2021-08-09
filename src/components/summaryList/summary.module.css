@@ -4,11 +4,10 @@
     width: fit-content;
 
     overflow-y: auto;
-    height: 15em;
+    height: 85vh;
 }
 
 .table {
-    /*border-spacing: 5.5em;*/
     border-collapse: collapse;
     --table-padding: 0.25em;
     width: fit-content;
@@ -25,6 +24,10 @@
 .table thead th {
     position: sticky;
     top: 0;
+}
+
+.table tbody {
+    /*overflow-y: visible;*/
 }
 
 .table tbody tr {
@@ -58,4 +61,8 @@
 
 .table td:last-child, .table th:last-child {
     padding-right: var(--table-padding);
+}
+
+.hidden {
+    visibility: collapse;
 }
