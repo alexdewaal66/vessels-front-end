@@ -6,8 +6,9 @@ entities.xyz = {
     name: "xyz",
     label: "Xyz",
     endpoint: "/xyzs",
-    id: [{name: "id", type: types.num}],
+    id: ["id"],
     properties: {
+        id: {type: types.num, label: "id"},
         name: {
             type: types.str, label: "naam", validation: {maxLength: 100},
         },
@@ -23,7 +24,7 @@ entities.xyz = {
             type: types.str, label: "beschrijving", validation: {maxLength: 1000}
         },
     },
-    summary: ["name", "xyzString", "ratio"],
+    summary: ["id", "name", "xyzString", "ratio"],
     methods: "CRUD",
 };
 
@@ -31,14 +32,32 @@ entities.user = {
     name: "user",
     label: "Gebruiker",
     endpoint: "/users",
-    id: [{name: "username", type: types.str}],
-    properties: [
-        {name: "password", type: types.str, validation: {required: true}},
-        {name: "enabled", type: types.bool},
-        {name: "apikey", type: types.str},
-        {name: "email", type: types.str},
-        {name: "authorities", type: types.arr, ref: "authority"},
-    ],
+    id: ["username"],
+    properties: {
+        username: {
+            label: "username", type: types.str
+        },
+        password: {
+            label: "password", type: types.str, validation: {
+                required: true
+            }
+        },
+        enabled: {
+            label: "enabled", type: types.bool
+        },
+        apikey: {
+            label: "apikey", type: types.str
+        }
+        ,
+        email: {
+            label: "email", type: types.str
+        }
+        ,
+        authorities: {
+            label: "authorities", type: types.arr, ref: "authority"
+        },
+    },
+    summary: ["username", "email"],
     methods: "CRUD",
 };
 
@@ -46,11 +65,15 @@ entities.authority = {
     name: "authority",
     label: "Machtiging",
     endpoint: "/users/{username}/authorities",
-    id: [
-        {name: "username", type: types.str},
-        {name: "authority", type: types.str},
-    ],
-    properties: [],
+    id: ["username", "authority"],
+    properties: {
+        username: {
+            type: types.str, label: "username"
+        },
+        authority: {
+            type: types.str, label: "authority"
+        },
+    },
     methods: "R",
 };
 
@@ -58,8 +81,11 @@ entities.country = {
     name: "country",
     label: "Land",
     endpoint: "/countries",
-    id: [{name: "id", type: types.num}],
+    id: ["id"],
     properties: {
+        id: {
+            type: types.num, label: "id"
+        },
         shortNameNL: {
             type: types.str, label: "naam (NL)", validation: {maxLength: 100},
         },
@@ -76,16 +102,19 @@ entities.country = {
             type: types.str, label: "numerieke code", validation: {maxLength: 3},
         },
     },
+    summary: ["id", "shortNameNL", "alpha2Code", "alpha3Code"],
     methods: "R",
 };
-entities.country.summary = ["shortNameNL", "alpha2Code", "alpha3Code"];
 
 entities.vesselType = {
     name: "vesseltype",
     label: "Scheepstype",
     endpoint: "/vesseltypes",
-    id: [{name: "id", type: types.num}],
+    id: ["id"],
     properties: {
+        id: {
+            type: types.num
+        },
         nameNL: {
             type: types.str, label: "naam (NL)", validation: {maxLength: 100},
         },
@@ -136,5 +165,9 @@ entities.vesselType = {
         },
     },
     methods: "CRUD",
-    summary: ["nameNL", "nameEN"],
+    summary: ["id", "nameNL", "nameEN"],
 };
+
+/*
+
+ */

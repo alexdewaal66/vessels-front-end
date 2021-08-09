@@ -2,6 +2,9 @@ import React from 'react';
 
 import { types } from '../helpers/endpoints';
 import { ShowObject } from '../dev/ShowObject';
+import { ItemSummary } from './summaryList/ItemSummary';
+import { entities } from '../helpers/entities';
+import { Stringify } from '../dev/Stringify';
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
@@ -29,13 +32,13 @@ const inputTypes = {
     textarea: {element: 'textarea'},
 }
 
-const aspectRatio = 10;
+const aspectRatio = 15;
 const referenceSize = 80;
 
-export function Input({metadata, field, defaultValue, register, ...rest}) {
+export function Input({metadata, field, defaultValue, register, readOnly, ...rest}) {
     const property = metadata.properties[field];
     // console.log(`metadata=`, metadata, `\nfield=`, field, `\nproperty=`, property);
-    const readOnly = metadata.methods === 'R';
+    readOnly = readOnly || metadata.methods === 'R';
     let inputType = {};
     let maxLength = property?.validation?.maxLength;
     let inputSize = null;
@@ -53,12 +56,28 @@ export function Input({metadata, field, defaultValue, register, ...rest}) {
                 inputType = inputTypes.textarea;
                 cols = Math.max(referenceSize, Math.min(2 * referenceSize, Math.ceil(Math.sqrt(maxLength / aspectRatio))));
                 rows = Math.min(referenceSize / aspectRatio, Math.ceil(maxLength / cols));
+                const valueRows = defaultValue.length / cols;
+                rows = (rows + valueRows) / 2;
             }
             break;
         case types.num:
             inputType = inputTypes.number;
             step = 'any';
             break;
+        case types.obj:
+            return (
+                <>
+                    {defaultValue && (
+                        <>
+                            {/*defaultValue: <Stringify data={defaultValue} />*/}
+                            {/*entities[property.target]: <Stringify data={entities[property.target]} />*/}
+                            <ItemSummary item={defaultValue}
+                                        metadata={entities[property.target]}
+                        />
+                        </>
+                    )}
+                </>
+            );
         default:
             return (<>
                 metadata: <ShowObject obj={metadata}/>

@@ -10,7 +10,7 @@ export function EditEntity({item, useFormFunctions, metadata, onChange}) {
     const requestState = useRequestState();
     const {endpoint, id: [{name: idName}]} = metadata;
     const readOnly = metadata.methods === 'R';
-    // console.log(now() + ` item=`, item);
+    // console.log(now() + ` listItem=`, listItem);
 
     function onPut(formData) {
         // console.log(now() + ' onPut() formData=', formData);

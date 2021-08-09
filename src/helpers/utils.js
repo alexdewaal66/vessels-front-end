@@ -101,7 +101,7 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
             data: payload,
             timeout: 5_000,
         });
-        // console.log(now() + ' makeRequest() response=', response);
+        console.log(now() + ' makeRequest() response=', response);
         requestState.setAtSuccess();
         if (onSuccess) onSuccess(response);
     } catch (e) {

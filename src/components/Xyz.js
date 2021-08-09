@@ -9,7 +9,7 @@ export function Xyz({entity, id = 0}) {
     const useFormFunctions = useForm();
     const [list, setList] = useState(null);
     const [item, setItem] = useState(null);
-    // console.log(`>>> item=`, item, `>>> list=`, list);
+    // console.log(`>>> listItem=`, listItem, `>>> list=`, list);
     const metadata = entity ? entity : entities.xyz;
     // const { id: [{name: idName}]} = metadata;
 
@@ -52,7 +52,7 @@ export function Xyz({entity, id = 0}) {
             <SummaryList metadata={metadata}
                          list={list}
                          updateList={updateList}
-                         updateEditForm={updateEditForm}
+                         setItem={updateEditForm}
             />
 
             {(item || list)  && (

@@ -35,8 +35,13 @@
     background-color: var(--color-bg-light);
 }
 
-.table tr:hover {
+.table tr:hover, .table tr:focus {
     background-color: var(--color-bg-darker);
+}
+
+.table tr:focus {
+    font-weight: bold;
+    color: var(--color-em-normal);
 }
 
 .table thead th, .table td {
