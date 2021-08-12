@@ -205,7 +205,7 @@ export const statusCodes = {
         constant: "NO_CONTENT",
         comment: {
             doc: "Official Documentation @ https://tools.ietf.org/html/rfc7231#section-6.3.5",
-            description: "There is no content to send for this request, but the headers may be useful. The user-agent may update its cached headers for this resource with the new ones."
+            description: "There is no content to send for this request, but the headers may be useful. The user-agent may put its cached headers for this resource with the new ones."
         }
     },
     "203": {
@@ -293,7 +293,7 @@ export const statusCodes = {
         constant: "PRECONDITION_REQUIRED",
         comment: {
             doc: "Official Documentation @ https://tools.ietf.org/html/rfc6585#section-3",
-            description: "The origin server requires the request to be conditional. Intended to prevent the 'lost update' problem, where a client GETs a resource's state, modifies it, and PUTs it back to the server, when meanwhile a third party has modified the state on the server, leading to a conflict."
+            description: "The origin server requires the request to be conditional. Intended to prevent the 'lost put' problem, where a client GETs a resource's state, modifies it, and PUTs it back to the server, when meanwhile a third party has modified the state on the server, leading to a conflict."
         }
     },
     "102": {

@@ -48,7 +48,7 @@
 }
 
 .table tr:focus {
-    /*font-weight: bold;*/
+    outline: black solid thin;
     color: var(--color-em-normal);
     background-color: var(--compl-color-bg-light);
 }

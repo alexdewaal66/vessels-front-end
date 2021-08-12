@@ -1,11 +1,8 @@
-import React from 'react';
-import layout from './pageLayout.module.css';
-import { cx } from '../helpers/multipleStyles';
+import React, { useContext } from 'react';
+import { StatusContext } from '../contexts/StatusContext';
 
-export function Statusbar({children, className, ...rest}) {
-    return (
-        <aside className={cx(layout.statusbar, className)} {...rest}>
-            {children}
-        </aside>
-    );
+export function Statusbar({children}) {
+    const {setStatusMessage} = useContext(StatusContext);
+    setStatusMessage(children);
+    return null;
 }

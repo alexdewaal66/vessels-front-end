@@ -134,16 +134,16 @@ html, body {
     border-top-left-radius: 12px;
 }
 
-.split {
+.splitView {
     display: flex;
     flex-direction: row;
 }
 
-.leftSide {
+.firstPart {
     margin-right: 3em;
 }
 
-.leftSide, .rightSide {
+.firstPart, .secondPart {
     display: flex;
 }
 

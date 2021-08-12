@@ -1,16 +1,62 @@
-import React from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { CommandContext, operationNames, useCommand } from '../contexts/CommandContext';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
 import { postRequest, putRequest, deleteRequest, now } from '../helpers/utils';
-import { useRequestState } from '../helpers/customHooks';
+import { useMountEffect, useRequestState } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
 import { ShowObject } from '../dev/ShowObject';
+import { useForm } from 'react-hook-form';
+import { Stringify } from '../dev/Stringify';
 
-export function EditEntity({item, useFormFunctions, metadata, onChange}) {
+export function EditEntity({metadata}) {
+    const [item, setItem] = useState(null);
+    const {command, setCommand} = useContext(CommandContext);
+    const useFormFunctions = useForm();
     const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
     const {endpoint, id: [{name: idName}]} = metadata;
     const readOnly = metadata.methods === 'R';
     // console.log(now() + ` listItem=`, listItem);
+
+    const operations = {
+        edit: (item, entityType) => {
+            if (entityType === metadata) {
+                updateEditForm(item);
+            }
+        },
+    }
+
+    useCommand(operations, command);
+
+    function updateEditForm(changedItem) {
+        setItem(changedItem);
+        useFormFunctions.reset();
+    }
+
+    const onEditChange = {
+        put: (formData) => {
+            setCommand({
+                operation: operationNames.put,
+                data: formData,
+                entityType: metadata
+            })
+        },
+        post: (formData) => {
+            setCommand({
+                operation: operationNames.post,
+                data: formData,
+                entityType: metadata
+            })
+        },
+        delete: (formData) => {
+            setCommand({
+                operation: operationNames.delete,
+                data: formData,
+                entityType: metadata
+            })
+        },
+    }
+
 
     function onPut(formData) {
         // console.log(now() + ' onPut() formData=', formData);
@@ -18,7 +64,7 @@ export function EditEntity({item, useFormFunctions, metadata, onChange}) {
             url: `${endpoint}/${formData.id}`,
             payload: formData,
             requestState: requestState,
-            onSuccess: () => onChange.update(formData),
+            onSuccess: () => onEditChange.put(formData),
         });
     }
 
@@ -34,7 +80,7 @@ export function EditEntity({item, useFormFunctions, metadata, onChange}) {
             payload: formData,
             requestState: requestState,
             onSuccess: (response) => {
-                onChange.create({
+                onEditChange.post({
                     ...formData,
                     id: extractNewId(response.data, metadata.label),
                 });
@@ -47,7 +93,7 @@ export function EditEntity({item, useFormFunctions, metadata, onChange}) {
         deleteRequest({
             url: `${endpoint}/${formData.id}`,
             requestState: requestState,
-            onSuccess: () => onChange.delete(formData),
+            onSuccess: () => onEditChange.delete(formData),
         });
     }
 
@@ -83,70 +129,71 @@ export function EditEntity({item, useFormFunctions, metadata, onChange}) {
     };
 
     return (
-        <>{item && (
-            <>
-                <ShowRequestState requestState={requestState}/>
-                <p>Details {'#' + item.id}:</p>
-                <Form onSubmit={handleSubmit(onSubmit)}>
-                    <Fieldset border={false}>
-                        <input type="hidden"
-                               name="id"
-                               value={item?.id}
-                               {...register('id')}
-                        />
-                        <input type="hidden"
-                               name="requestMethod"
-                               value="none"
-                               {...register('requestMethod')}
-                        />
-                        {Object.entries(item).map(([k, v]) => (k !== 'id' &&
-                                <FieldRow elKey={idName + '_edit_' + k}
-                                          key={idName + '_edit_' + k}
-                                >
-                                    <FieldDesc>
-                                        {metadata.properties[k]?.label || k}
-                                    </FieldDesc>
+        <>
+            {item && (
+                <>
+                    <ShowRequestState requestState={requestState}/>
+                    <p>Details {'#' + item.id}:</p>
+                    <Form onSubmit={handleSubmit(onSubmit)}>
+                        <Fieldset border={false}>
+                            <input type="hidden"
+                                   name="id"
+                                   value={item?.id}
+                                   {...register('id')}
+                            />
+                            <input type="hidden"
+                                   name="requestMethod"
+                                   value="none"
+                                   {...register('requestMethod')}
+                            />
+                            {Object.entries(item).map(([k, v]) => (k !== 'id' &&
+                                    <FieldRow elKey={idName + '_edit_' + k}
+                                              key={idName + '_edit_' + k}
+                                    >
+                                        <FieldDesc>
+                                            {metadata.properties[k]?.label || k}
+                                        </FieldDesc>
+                                        <FieldEl>
+                                            <Input metadata={metadata}
+                                                   field={k}
+                                                   defaultValue={v || ''}
+                                                   register={register}
+                                            />
+                                        </FieldEl>
+                                    </FieldRow>
+                                )
+                            )}
+                            {!readOnly && (
+                                <FieldRow>
                                     <FieldEl>
-                                        <Input metadata={metadata}
-                                               field={k}
-                                               defaultValue={v || ''}
-                                               register={register}
-                                        />
+                                    </FieldEl>
+                                    <FieldEl>
+                                        <button type="submit" className="form-button"
+                                                disabled={requestState.isPending}
+                                                onClick={setRequestMethod('put')}
+                                        >
+                                            Wijzig
+                                        </button>
+                                        <button type="submit" className="form-button"
+                                                disabled={requestState.isPending}
+                                                onClick={setRequestMethod('post')}
+                                        >
+                                            Bewaar als nieuw
+                                        </button>
+                                        <button type="submit" className="form-button"
+                                                disabled={requestState.isPending}
+                                                onClick={setRequestMethod('delete')}
+                                        >
+                                            Verwijder
+                                        </button>
                                     </FieldEl>
                                 </FieldRow>
-                            )
-                        )}
-                        {!readOnly && (
-                            <FieldRow>
-                                <FieldEl>
-                                </FieldEl>
-                                <FieldEl>
-                                    <button type="submit" className="form-button"
-                                            disabled={requestState.isPending}
-                                            onClick={setRequestMethod('put')}
-                                    >
-                                        Wijzig
-                                    </button>
-                                    <button type="submit" className="form-button"
-                                            disabled={requestState.isPending}
-                                            onClick={setRequestMethod('post')}
-                                    >
-                                        Bewaar als nieuw
-                                    </button>
-                                    <button type="submit" className="form-button"
-                                            disabled={requestState.isPending}
-                                            onClick={setRequestMethod('delete')}
-                                    >
-                                        Verwijder
-                                    </button>
-                                </FieldEl>
-                            </FieldRow>
-                        )}
-                    </Fieldset>
-                </Form>
+                            )}
+                        </Fieldset>
+                    </Form>
 
-            </>
-        )}
+                </>
+            )}
         </>
     );
 }

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-const keys = {enter: 13, arrowUp: 38, arrowDown: 40};
+const keys = {enter: 13, escape:27, arrowUp: 38, arrowDown: 40, home: 36, end: 35, pageUp: 33, pageDown: 34};
 
 export function SummaryRow({listItem, index, metadata, setItem, elKey, rowFocus, hasFocus}) {
     const row = useRef(null);
@@ -20,22 +20,33 @@ export function SummaryRow({listItem, index, metadata, setItem, elKey, rowFocus,
         switch (e.keyCode) {
             case keys.enter:
                 choose();
-                break;
+                return;
+            case keys.escape:
+                row.current?.blur();
+                return;
             case keys.arrowUp:
-                // console.log(`↑: index=`, index);
                 rowFocus.up();
-                row.current.scrollIntoView({block: "center"});
-                e.preventDefault();
-                return false; // suppress default scrolling
-            case keys.arrowDown:
-                // console.log(`↓: index=`, index);
-                rowFocus.down();
-                row.current.scrollIntoView({block: "center"});
-                e.preventDefault();
-                return false; // suppress default scrolling
-            default:
                 break;
+            case keys.arrowDown:
+                rowFocus.down();
+                break;
+            case keys.pageUp:
+                rowFocus.tenUp();
+                break;
+            case keys.pageDown:
+                rowFocus.tenDown();
+                break;
+            case keys.home:
+                rowFocus.first();
+                break;
+            case keys.end:
+                rowFocus.last();
+                break;
+            default:
+                return;
         }
+        row.current.scrollIntoView({block: "center"});
+        e.preventDefault();// suppress default scrolling
     }
 
     return (

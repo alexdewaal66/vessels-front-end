@@ -10,19 +10,27 @@ export function SummaryTable({list, metadata, setItem, small}) {
     // console.log(now() +  ` entityName=`, entityName);
     const [focusIndex, setFocusIndex] = useState(0);
 
-    function focusUp() {
-        setFocusIndex(Math.max(0, focusIndex - 1));
-    }
-
-    function focusDown() {
-        setFocusIndex(Math.min(list.length - 1, focusIndex + 1));
-    }
-
-    const rowFocus = {up: focusUp, down: focusDown, set: setFocusIndex};
-
-
-
-
+    const rowFocus = {
+        up: function () {
+            setFocusIndex(Math.max(0, focusIndex - 1));
+        },
+        down: function () {
+            setFocusIndex(Math.min(list.length - 1, focusIndex + 1));
+        },
+        tenUp: function () {
+            setFocusIndex(Math.max(0, focusIndex - 10));
+        },
+        tenDown: function () {
+            setFocusIndex(Math.min(list.length - 1, focusIndex + 10));
+        },
+        first: function () {
+            setFocusIndex(0);
+        },
+        last: function focusLast() {
+            setFocusIndex(list.length - 1);
+        },
+        set: setFocusIndex
+    };
 
     return (
         <div className={summaryStyle.tableFixHead}>

@@ -6,7 +6,6 @@ import { ItemSummary } from './summaryList/ItemSummary';
 import { entities } from '../helpers/entities';
 import { Stringify } from '../dev/Stringify';
 import { SummaryList } from './summaryList';
-import { set } from 'react-hook-form';
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
