@@ -8,7 +8,9 @@ entities.xyz = {
     endpoint: "/xyzs",
     id: ["id"],
     properties: {
-        id: {type: types.num, label: "id"},
+        id: {
+            type: types.num, label: "id", readOnly: true,
+        },
         name: {
             type: types.str, label: "naam", validation: {maxLength: 100},
         },
@@ -35,7 +37,7 @@ entities.user = {
     id: ["username"],
     properties: {
         username: {
-            label: "username", type: types.str
+            label: "username", type: types.str, readOnly: true,
         },
         password: {
             label: "password", type: types.str, validation: {
@@ -74,6 +76,7 @@ entities.authority = {
             type: types.str, label: "authority"
         },
     },
+    summary: ["username", "authority"],
     methods: "R",
 };
 
@@ -113,7 +116,7 @@ entities.vesselType = {
     id: ["id"],
     properties: {
         id: {
-            type: types.num
+            type: types.num, label: 'id', readOnly: true,
         },
         nameNL: {
             type: types.str, label: "naam (NL)", validation: {maxLength: 100},

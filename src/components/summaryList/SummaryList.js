@@ -4,22 +4,24 @@ import { useMountEffect, useRequestState } from '../../helpers/customHooks';
 import { SummaryTable } from './';
 import { CommandContext, operationNames, useCommand} from '../../contexts/CommandContext';
 
-export function SummaryList({metadata, id, small}) {
+export function SummaryList({metadata, initialId, small, receiver}) {
     const {endpoint} = metadata;
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
-    const {command, setCommand} = useContext(CommandContext);
+    const [selectedId, setSelectedId] = useState(initialId);
+    const [command, setCommand] = useContext(CommandContext);
 
-    function setItem(i) {
-        setCommand({operation: operationNames.edit, data: i, entityType: metadata});
+    function editItem(i) {
+        setCommand({operation: operationNames.edit, data: i, entityType: metadata, receiver: receiver});
     }
 
-    function updateList(newList, selectedId = id) {
+    function updateList(newList, newSelectedId = selectedId ?? initialId) {
         // console.log(now() + ` updateList() selectedId=`, selectedId);
         newList.sort((a, b) => a.id - b.id);
         setList(newList);
-        const selectedItem = newList.find(item => item.id === selectedId);
-        setItem(selectedItem || newList[0]);
+        setSelectedId(newSelectedId);
+        const selectedItem = newList.find(item => item.id === newSelectedId);
+        editItem(selectedItem ?? newList[0]);
     }
 
     function fetchList() {
@@ -33,32 +35,36 @@ export function SummaryList({metadata, id, small}) {
 
     useMountEffect(fetchList);
 
-    const operations = {
-        put: (formData) => {
-            const index = list.findIndex(item => item.id === formData.id);
-            console.log(now() + ` onChange.update() index=`, index);
-            const newList = [...list.slice(0, index), formData, ...list.slice(index + 1)];
-            updateList(newList, formData.id);
-        },
-        post: (formData) => {
-            const newList = [...list, formData];
-            updateList(newList, formData.id);
-        },
-        delete: (formData) => {
-            const index = list.findIndex(item => item.id === formData.id);
-            const newList = [...list.slice(0, index), ...list.slice(index + 1)];
-            updateList(newList);
-        },
+    const conditions = {
+        entityType: metadata,
+        receiver: 'SummaryList',
+        operations: {
+            put: (formData) => {
+                const index = list.findIndex(item => item.id === formData.id);
+                console.log(now() + ` onChange.update() index=`, index);
+                const newList = [...list.slice(0, index), formData, ...list.slice(index + 1)];
+                updateList(newList, formData.id);
+            },
+            post: (formData) => {
+                const newList = [...list, formData];
+                updateList(newList, formData.id);
+            },
+            delete: (formData) => {
+                const index = list.findIndex(item => item.id === formData.id);
+                const newList = [...list.slice(0, index), ...list.slice(index + 1)];
+                updateList(newList);
+            },
+        }
     }
 
-    useCommand(operations, command);
+    useCommand(conditions, command);
 
     return (
         <>
             {list && (
                 <SummaryTable metadata={metadata}
                               list={list}
-                              setItem={setItem}
+                              setItem={editItem}
                               small={small}
                 />
             )}

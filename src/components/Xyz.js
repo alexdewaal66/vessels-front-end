@@ -6,8 +6,8 @@ import { SummaryList } from './summaryList';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
 
 
-export function Xyz({entity, id = 0}) {
-    const metadata = entity ? entity : entities.xyz;
+export function Xyz({entity, initialId}) {
+    const metadata = entity ?? entities.xyz;
 
     return (
         <CommandContextProvider>
@@ -15,8 +15,9 @@ export function Xyz({entity, id = 0}) {
                 <span className={pageLayout.firstPart}>
                     {/*<h4>{metadata.label}</h4>*/}
                     <SummaryList metadata={metadata}
-                                 id={id}
-                                 small={20}
+                                 initialId={initialId}
+                                 small={false}
+                                 receiver={'EditEntity'}
                     />
                 </span>
                 <span className={pageLayout.secondPart}>

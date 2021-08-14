@@ -10,7 +10,7 @@ import { Stringify } from '../dev/Stringify';
 
 export function EditEntity({metadata}) {
     const [item, setItem] = useState(null);
-    const {command, setCommand} = useContext(CommandContext);
+    const [command, setCommand] = useContext(CommandContext);
     const useFormFunctions = useForm();
     const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
@@ -18,15 +18,19 @@ export function EditEntity({metadata}) {
     const readOnly = metadata.methods === 'R';
     // console.log(now() + ` listItem=`, listItem);
 
-    const operations = {
-        edit: (item, entityType) => {
-            if (entityType === metadata) {
-                updateEditForm(item);
-            }
+    const conditions = {
+        entityType: metadata,
+        receiver: 'EditEntity',
+        operations: {
+            edit: (item) => {
+                if (command.receiver === 'EditEntity') {
+                    updateEditForm(item);
+                }
+            },
         },
     }
 
-    useCommand(operations, command);
+    useCommand(conditions, command);
 
     function updateEditForm(changedItem) {
         setItem(changedItem);
@@ -38,21 +42,24 @@ export function EditEntity({metadata}) {
             setCommand({
                 operation: operationNames.put,
                 data: formData,
-                entityType: metadata
+                entityType: metadata,
+                receiver: 'SummaryList',
             })
         },
         post: (formData) => {
             setCommand({
                 operation: operationNames.post,
                 data: formData,
-                entityType: metadata
+                entityType: metadata,
+                receiver: 'SummaryList',
             })
         },
         delete: (formData) => {
             setCommand({
                 operation: operationNames.delete,
                 data: formData,
-                entityType: metadata
+                entityType: metadata,
+                receiver: 'SummaryList',
             })
         },
     }
@@ -133,7 +140,6 @@ export function EditEntity({metadata}) {
             {item && (
                 <>
                     <ShowRequestState requestState={requestState}/>
-                    <p>Details {'#' + item.id}:</p>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Fieldset border={false}>
                             <input type="hidden"
@@ -146,7 +152,7 @@ export function EditEntity({metadata}) {
                                    value="none"
                                    {...register('requestMethod')}
                             />
-                            {Object.entries(item).map(([k, v]) => (k !== 'id' &&
+                            {Object.entries(item).map(([k, v]) => (k !== '' &&
                                     <FieldRow elKey={idName + '_edit_' + k}
                                               key={idName + '_edit_' + k}
                                     >

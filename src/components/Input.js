@@ -39,7 +39,7 @@ const referenceSize = 80;
 export function Input({metadata, field, defaultValue, register, readOnly, ...rest}) {
     const property = metadata.properties[field];
     // console.log(`metadata=`, metadata, `\nfield=`, field, `\nproperty=`, property);
-    readOnly = readOnly || metadata.methods === 'R';
+    readOnly = readOnly || metadata.methods === 'R' || property.readOnly;
     let inputType = {};
     let maxLength = property?.validation?.maxLength;
     let inputSize = null;
@@ -67,14 +67,14 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
             break;
         case types.obj:
             // const [list, setList] = useState(null);
-            // const [item, setItem] = useState(defaultValue);
+            // const [item, selectItem] = useState(defaultValue);
 
-            // function updateList(newList, selectedId = id) {
+            // function updateList(newList, selectedId = initialId) {
             //     // console.log(now() + ` updateList() selectedId=`, selectedId);
             //     newList.sort((a, b) => a.id - b.id);
             //     setList(newList);
             //     const selectedItem = newList.find(item => item.id === selectedId);
-            //     setItem(selectedItem || newList[0]);
+            //     selectItem(selectedItem || newList[0]);
             // };
 
             return (
@@ -90,7 +90,7 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
                             {/*<SummaryList metadata={entities[property.target]}*/}
                             {/*             list={list}*/}
                             {/*             updateList={updateList}*/}
-                            {/*             setItem={setItem}*/}
+                            {/*             selectItem={selectItem}*/}
                             {/*             small={true}*/}
                             {/*/>*/}
                         </>

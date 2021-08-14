@@ -1,10 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const keys = {enter: 13, escape:27, arrowUp: 38, arrowDown: 40, home: 36, end: 35, pageUp: 33, pageDown: 34};
 
-export function SummaryRow({listItem, index, metadata, setItem, elKey, rowFocus, hasFocus}) {
+export function SummaryRow({listItem, index, metadata, selectItem, elKey, rowFocus, hasFocus}) {
     const row = useRef(null);
-    if (hasFocus) setFocus();
+
+    useEffect(() => {
+        if (hasFocus) setFocus();
+    });
 
     function setFocus() {
         row.current?.focus();
@@ -12,7 +15,7 @@ export function SummaryRow({listItem, index, metadata, setItem, elKey, rowFocus,
 
     function choose() {
         rowFocus.set(index);
-        setItem(listItem);
+        selectItem(listItem);
         setFocus();
     }
 

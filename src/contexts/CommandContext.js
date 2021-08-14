@@ -12,21 +12,24 @@ export const operationNames =  {
 
 export function CommandContextProvider({children}) {
     const [command, setCommand] = useState(
-        {operation: null, data: null, entityType: null}
+        {operation: null, data: null, entityType: null, receiver: null}
     );
 
 
     return (
-        <CommandContext.Provider value={{command, setCommand}}>
+        <CommandContext.Provider value={[command, setCommand]}>
             {children}
         </CommandContext.Provider>
     )
 }
 
-export function useCommand(operations, command) {
+export function useCommand(conditions, command) {
     function executeCommand() {
-        if (command.operation in operations) {
-            operations[command.operation](command.data, command.entityType);
+        console.log(`👀 conditions=`, conditions, `command=`, command);
+        if (command.operation in conditions.operations &&
+        command.entityType === conditions.entityType &&
+        command.receiver === conditions.receiver) {
+            conditions.operations[command.operation](command.data);
         }
     }
 

@@ -43,7 +43,7 @@ export function SummaryTable({list, metadata, setItem, small}) {
                     <SummaryRow listItem={listItem}
                                 index={index}
                                 metadata={metadata}
-                                setItem={setItem}
+                                selectItem={setItem}
                                 elKey={entityName + listItem.id}
                                 rowFocus={rowFocus}
                                 hasFocus={index === focusIndex}
