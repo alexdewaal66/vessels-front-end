@@ -3,7 +3,7 @@ import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Profile from './Profile';
 import SignOut from './SignOut';
-import { Search, Vessel, Xyz } from '../components';
+import { Search, Vessel, Entity } from '../components';
 import { Empty } from '../dev/Empty';
 import { Colors } from '../dev/Colors';
 import { entities } from '../helpers/entities';
@@ -25,13 +25,13 @@ pages.displayOrder = [
 ];
 
 // curried component just for fun
-const EntityN = (entity, n) => () => <Xyz entity={entity} id={n} />;
+const EntityN = (entity, n) => () => <Entity entity={entity} initialId={n} />;
 
 const homeCommands = {
     empty: {name: 'leeg', component: Empty},
     search: {name: 'Zoek', component: Search,},
     vessels: {name: 'Vaartuigen', component: Vessel,},
-    xyz: {name: 'Xyz', component: Xyz,},
+    xyz: {name: 'Entity', component: Entity,},
     xyzN: {name: 'Xyz(3)', component: EntityN(entities.xyz,3),},
     users: {name: 'Gebruikers', component: EntityN(entities.user, 0),},
     countries: {name: 'Landen', component: EntityN(entities.country),},

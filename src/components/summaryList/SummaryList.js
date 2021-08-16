@@ -5,6 +5,7 @@ import { SummaryTable } from './';
 import { CommandContext, operationNames, useCommand} from '../../contexts/CommandContext';
 
 export function SummaryList({metadata, initialId, small, receiver}) {
+    // console.log(`▶▶▶ initialId=`, initialId);
     const {endpoint} = metadata;
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
@@ -64,7 +65,8 @@ export function SummaryList({metadata, initialId, small, receiver}) {
             {list && (
                 <SummaryTable metadata={metadata}
                               list={list}
-                              setItem={editItem}
+                              selectedId={selectedId}
+                              selectItem={editItem}
                               small={small}
                 />
             )}

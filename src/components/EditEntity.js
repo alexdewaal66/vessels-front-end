@@ -23,19 +23,13 @@ export function EditEntity({metadata}) {
         receiver: 'EditEntity',
         operations: {
             edit: (item) => {
-                if (command.receiver === 'EditEntity') {
-                    updateEditForm(item);
-                }
+                setItem(item);
+                useFormFunctions.reset();
             },
         },
     }
 
     useCommand(conditions, command);
-
-    function updateEditForm(changedItem) {
-        setItem(changedItem);
-        useFormFunctions.reset();
-    }
 
     const onEditChange = {
         put: (formData) => {
@@ -123,7 +117,7 @@ export function EditEntity({metadata}) {
                 onDelete(formData);
                 break;
             default:
-                const err = `Unsupported method: '${requestMethod}'`;
+                const err = `Unsupported requestMethod: '${requestMethod}'`;
                 console.log(err);
                 requestState.setAtError();
                 requestState.errorMsg = err;
@@ -142,17 +136,17 @@ export function EditEntity({metadata}) {
                     <ShowRequestState requestState={requestState}/>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Fieldset border={false}>
-                            <input type="hidden"
-                                   name="id"
-                                   value={item?.id}
-                                   {...register('id')}
-                            />
+                            {/*<input type="hidden"*/}
+                            {/*       name="id"*/}
+                            {/*       value={item?.id}*/}
+                            {/*       {...register('id')}*/}
+                            {/*/>*/}
                             <input type="hidden"
                                    name="requestMethod"
                                    value="none"
                                    {...register('requestMethod')}
                             />
-                            {Object.entries(item).map(([k, v]) => (k !== '' &&
+                            {Object.entries(item).map(([k, v]) => (
                                     <FieldRow elKey={idName + '_edit_' + k}
                                               key={idName + '_edit_' + k}
                                     >
@@ -171,8 +165,7 @@ export function EditEntity({metadata}) {
                             )}
                             {!readOnly && (
                                 <FieldRow>
-                                    <FieldEl>
-                                    </FieldEl>
+                                    <FieldEl />
                                     <FieldEl>
                                         <button type="submit" className="form-button"
                                                 disabled={requestState.isPending}

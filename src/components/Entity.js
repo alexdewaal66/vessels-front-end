@@ -6,7 +6,7 @@ import { SummaryList } from './summaryList';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
 
 
-export function Xyz({entity, initialId}) {
+export function Entity({entity, initialId}) {
     const metadata = entity ?? entities.xyz;
 
     return (

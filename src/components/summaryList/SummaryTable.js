@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { now } from '../../helpers/utils';
 import { cx } from '../../helpers/multipleStyles';
 
-export function SummaryTable({list, metadata, setItem, small}) {
+export function SummaryTable({list, metadata, selectedId, selectItem, small}) {
     const smallStyle = (small) ? summaryStyle.small : '';
 
     const entityName = metadata.name;
     // console.log(now() +  ` entityName=`, entityName);
-    const [focusIndex, setFocusIndex] = useState(0);
+    const selectedIndex = Math.max(list.findIndex(item => item.id === selectedId), 0);
+    const [focusIndex, setFocusIndex] = useState( selectedIndex);
+
+    // useEffect(() => {
+    //     // console.log(`▶▶▶▶ selectedId=`, selectedId, `selectedIndex=`, selectedIndex);
+    //     setFocusIndex(selectedIndex);
+    // }, []);
 
     const rowFocus = {
         up: function () {
@@ -43,7 +49,7 @@ export function SummaryTable({list, metadata, setItem, small}) {
                     <SummaryRow listItem={listItem}
                                 index={index}
                                 metadata={metadata}
-                                selectItem={setItem}
+                                selectItem={selectItem}
                                 elKey={entityName + listItem.id}
                                 rowFocus={rowFocus}
                                 hasFocus={index === focusIndex}
