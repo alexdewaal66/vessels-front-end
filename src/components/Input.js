@@ -86,13 +86,14 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
                             <ItemSummary item={defaultValue}
                                          metadata={entitiesMetadata[property.target]}
                             />
-                            {/*todo: move list retrieval to context??*/}
                             {/*<SummaryList metadata={entitiesMetadata[property.target]}*/}
-                            {/*             list={list}*/}
-                            {/*             updateList={updateList}*/}
-                            {/*             selectItem={selectItem}*/}
+                            {/*             initialId={defaultValue.id}*/}
+                            {/*             // list={list}*/}
+                            {/*             // updateList={updateList}*/}
+                            {/*             // selectItem={selectItem}*/}
                             {/*             small={true}*/}
-                            {/*/>*/}
+                            {/*             receiver={Input}*/}
+                            />
                         </>
                     )}
                 </>

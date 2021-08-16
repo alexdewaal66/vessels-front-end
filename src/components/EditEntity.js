@@ -7,6 +7,7 @@ import { ShowRequestState } from './ShowRequestState';
 import { ShowObject } from '../dev/ShowObject';
 import { useForm } from 'react-hook-form';
 import { Stringify } from '../dev/Stringify';
+import { SummaryList } from './summaryList';
 
 export function EditEntity({metadata}) {
     const [item, setItem] = useState(null);
@@ -20,7 +21,7 @@ export function EditEntity({metadata}) {
 
     const conditions = {
         entityType: metadata,
-        receiver: 'EditEntity',
+        receiver: EditEntity,
         operations: {
             edit: (item) => {
                 setItem(item);
@@ -37,7 +38,7 @@ export function EditEntity({metadata}) {
                 operation: operationNames.put,
                 data: formData,
                 entityType: metadata,
-                receiver: 'SummaryList',
+                receiver: SummaryList,
             })
         },
         post: (formData) => {
@@ -45,7 +46,7 @@ export function EditEntity({metadata}) {
                 operation: operationNames.post,
                 data: formData,
                 entityType: metadata,
-                receiver: 'SummaryList',
+                receiver: SummaryList,
             })
         },
         delete: (formData) => {
@@ -53,7 +54,7 @@ export function EditEntity({metadata}) {
                 operation: operationNames.delete,
                 data: formData,
                 entityType: metadata,
-                receiver: 'SummaryList',
+                receiver: SummaryList,
             })
         },
     }

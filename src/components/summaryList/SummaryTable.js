@@ -50,6 +50,7 @@ export function SummaryTable({list, metadata, selectedId, selectItem, small}) {
                                 index={index}
                                 metadata={metadata}
                                 selectItem={selectItem}
+                                key={entityName + listItem.id}
                                 elKey={entityName + listItem.id}
                                 rowFocus={rowFocus}
                                 hasFocus={index === focusIndex}

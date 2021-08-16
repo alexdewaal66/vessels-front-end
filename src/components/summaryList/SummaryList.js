@@ -38,7 +38,8 @@ export function SummaryList({metadata, initialId, small, receiver}) {
 
     const conditions = {
         entityType: metadata,
-        receiver: 'SummaryList',
+        // receiver: SummaryList,
+        receiver: SummaryList,
         operations: {
             put: (formData) => {
                 const index = list.findIndex(item => item.id === formData.id);

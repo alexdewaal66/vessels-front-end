@@ -17,7 +17,7 @@ export function Entity({entity, initialId}) {
                     <SummaryList metadata={metadata}
                                  initialId={initialId}
                                  small={false}
-                                 receiver={'EditEntity'}
+                                 receiver={EditEntity}
                     />
                 </span>
                 <span className={pageLayout.secondPart}>
