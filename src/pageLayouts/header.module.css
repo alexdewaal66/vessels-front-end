@@ -32,8 +32,9 @@
 
 .nav a:hover {
     color: var(--color-em-darker);
-    font-style: italic;
-    text-shadow: 0 0 2em var(--color-em-normal);
+    /*font-style: italic;*/
+    /*text-shadow: 0 0 2em var(--color-em-normal);*/
+    text-shadow: 0 0 0.5px var(--color-em-darker);
 }
 
 .selected {

@@ -2,10 +2,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import { getRequest, now } from '../../helpers/utils';
 import { useMountEffect, useRequestState } from '../../helpers/customHooks';
 import { SummaryTable } from './';
-import { CommandContext, operationNames, useCommand} from '../../contexts/CommandContext';
+import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
+import { Entity } from '../Entity';
 
-export function SummaryList({metadata, initialId, small, receiver}) {
-    // console.log(`▶▶▶ initialId=`, initialId);
+
+export function SummaryList(props) {
+    const {metadata, initialId, small, receiver} = props;
+    console.log(`▶▶▶ props=`, props);
     const {endpoint} = metadata;
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
@@ -16,7 +19,7 @@ export function SummaryList({metadata, initialId, small, receiver}) {
         setCommand({operation: operationNames.edit, data: i, entityType: metadata, receiver: receiver});
     }
 
-    function updateList(newList, newSelectedId = selectedId ?? initialId) {
+    function updateList(newList = list, newSelectedId = selectedId ?? initialId) {
         // console.log(now() + ` updateList() selectedId=`, selectedId);
         newList.sort((a, b) => a.id - b.id);
         setList(newList);
@@ -24,6 +27,12 @@ export function SummaryList({metadata, initialId, small, receiver}) {
         const selectedItem = newList.find(item => item.id === newSelectedId);
         editItem(selectedItem ?? newList[0]);
     }
+
+    // trying to fix that the focus does not conform to initialId
+    useEffect(() => {
+        if (list)
+            updateList();
+    }, [list]);
 
     function fetchList() {
         // console.log(now() + ' fetchList()');
@@ -38,8 +47,7 @@ export function SummaryList({metadata, initialId, small, receiver}) {
 
     const conditions = {
         entityType: metadata,
-        // receiver: SummaryList,
-        receiver: SummaryList,
+        receiver: 'SummaryList',
         operations: {
             put: (formData) => {
                 const index = list.findIndex(item => item.id === formData.id);

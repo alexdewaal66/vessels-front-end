@@ -25,7 +25,7 @@ export function CommandContextProvider({children}) {
 
 export function useCommand(conditions, command) {
     function executeCommand() {
-        console.log(`👀 conditions=`, conditions, `command=`, command);
+        // console.log(`👀 conditions=`, conditions, `command=`, command);
         if (command.operation in conditions.operations &&
         command.entityType === conditions.entityType &&
         command.receiver === conditions.receiver) {

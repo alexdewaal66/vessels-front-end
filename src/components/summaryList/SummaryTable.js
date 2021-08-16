@@ -39,8 +39,8 @@ export function SummaryTable({list, metadata, selectedId, selectItem, small}) {
     };
 
     return (
-        <div className={summaryStyle.tableFixHead}>
-            <table className={cx(summaryStyle.table, smallStyle)}>
+        <div className={cx(summaryStyle.tableFixHead, smallStyle)}>
+            <table className={summaryStyle.table}>
                 <thead>
                 <SummaryHeading metadata={metadata} elKey={entityName}/>
                 </thead>

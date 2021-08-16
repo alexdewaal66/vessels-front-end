@@ -5,7 +5,7 @@ import { ShowObject } from '../dev/ShowObject';
 import { ItemSummary } from './summaryList/ItemSummary';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
 import { Stringify } from '../dev/Stringify';
-import { SummaryList } from './summaryList';
+import { SummaryList, SummaryListN } from './summaryList';
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
@@ -56,7 +56,7 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
             } else {
                 inputType = inputTypes.textarea;
                 cols = Math.max(referenceSize, Math.min(2 * referenceSize, Math.ceil(Math.sqrt(maxLength / aspectRatio))));
-                rows = Math.min(referenceSize / aspectRatio, Math.ceil(maxLength / cols));
+                rows = Math.max( 3, Math.min(referenceSize / aspectRatio, Math.ceil(maxLength / cols)));
                 const valueRows = defaultValue.length / cols;
                 rows = (rows + valueRows) / 2;
             }
@@ -79,23 +79,21 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
 
             return (
                 <>
-                    {defaultValue && (
+                    {/*{defaultValue && (*/}
                         <>
                             {/*defaultValue: <Stringify data={defaultValue} />*/}
                             {/*entitiesMetadata[property.target]: <Stringify data={entitiesMetadata[property.target]} />*/}
-                            <ItemSummary item={defaultValue}
-                                         metadata={entitiesMetadata[property.target]}
-                            />
-                            {/*<SummaryList metadata={entitiesMetadata[property.target]}*/}
-                            {/*             initialId={defaultValue.id}*/}
-                            {/*             // list={list}*/}
-                            {/*             // updateList={updateList}*/}
-                            {/*             // selectItem={selectItem}*/}
-                            {/*             small={true}*/}
-                            {/*             receiver={Input}*/}
+                            {/*<ItemSummary item={defaultValue}*/}
+                            {/*             metadata={entitiesMetadata[property.target]}*/}
+                            {/*/>*/}
+                            <SummaryList metadata={entitiesMetadata[property.target]}
+                                         initialId={defaultValue.id}
+                                         small={true}
+                                         receiver={'Input'}
+                                         key={metadata.name + 'Input' + defaultValue.id}
                             />
                         </>
-                    )}
+                    {/*)}*/}
                 </>
             );
         default:

@@ -7,7 +7,7 @@
     height: 85vh;
 }
 
-.tableFixHead.small {
+.small {
     /* 1 line ~ 1.7em */
     height: calc(6 * 1.7em);
 }
@@ -51,6 +51,7 @@
     outline: black solid thin;
     color: var(--color-em-normal);
     background-color: var(--compl-color-bg-light);
+    text-shadow: 0px 0px 0.1px var(--color-em-normal);
 }
 
 .table thead th, .table td {
