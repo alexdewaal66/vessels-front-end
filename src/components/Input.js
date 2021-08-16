@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { types } from '../helpers/endpoints';
 import { ShowObject } from '../dev/ShowObject';
 import { ItemSummary } from './summaryList/ItemSummary';
-import { entities } from '../helpers/entities';
+import { entitiesMetadata } from '../helpers/entitiesMetadata';
 import { Stringify } from '../dev/Stringify';
 import { SummaryList } from './summaryList';
 
@@ -82,12 +82,12 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
                     {defaultValue && (
                         <>
                             {/*defaultValue: <Stringify data={defaultValue} />*/}
-                            {/*entities[property.target]: <Stringify data={entities[property.target]} />*/}
+                            {/*entitiesMetadata[property.target]: <Stringify data={entitiesMetadata[property.target]} />*/}
                             <ItemSummary item={defaultValue}
-                                         metadata={entities[property.target]}
+                                         metadata={entitiesMetadata[property.target]}
                             />
                             {/*todo: move list retrieval to context??*/}
-                            {/*<SummaryList metadata={entities[property.target]}*/}
+                            {/*<SummaryList metadata={entitiesMetadata[property.target]}*/}
                             {/*             list={list}*/}
                             {/*             updateList={updateList}*/}
                             {/*             selectItem={selectItem}*/}

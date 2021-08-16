@@ -1,5 +1,5 @@
 import React from 'react';
-import { entities } from '../helpers/entities';
+import { entitiesMetadata } from '../helpers/entitiesMetadata';
 import { CommandContextProvider } from '../contexts/CommandContext';
 import { EditEntity } from './EditEntity';
 import { SummaryList } from './summaryList';
@@ -7,7 +7,7 @@ import pageLayout from '../pageLayouts/pageLayout.module.css';
 
 
 export function Entity({entity, initialId}) {
-    const metadata = entity ?? entities.xyz;
+    const metadata = entity ?? entitiesMetadata.xyz;
 
     return (
         <CommandContextProvider>

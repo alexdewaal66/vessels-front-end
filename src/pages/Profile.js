@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { getRequest, now } from '../helpers/utils';
 import { useMountEffect, useRequestState } from '../helpers/customHooks';
-import { entities } from '../helpers/endpoints';
 import { Aside, Command, Main, Content } from '../pageLayouts';
 import { pages } from './index';
 import { ShowObject } from '../dev/ShowObject';
@@ -22,7 +21,7 @@ function Profile() {
         console.log(now() + ' fetchUserProfile()');
         const JWT = localStorage.getItem(persistentVars.JWT);
 
-        const { endpoint, id: [{name: idName}] } = entities.user;
+        const { endpoint, id: [{name: idName}] } = entitiesMetadata.user;
         const id = user[idName];
 
         console.log('JWT=', JWT);

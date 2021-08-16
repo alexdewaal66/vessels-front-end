@@ -1,8 +1,8 @@
 import { types } from './endpoints';
 
-export const entities = {};
+export const entitiesMetadata = {};
 
-entities.xyz = {
+entitiesMetadata.xyz = {
     name: "xyz",
     label: "Xyz",
     endpoint: "/xyzs",
@@ -30,7 +30,7 @@ entities.xyz = {
     methods: "CRUD",
 };
 
-entities.user = {
+entitiesMetadata.user = {
     name: "user",
     label: "Gebruiker",
     endpoint: "/users",
@@ -63,7 +63,7 @@ entities.user = {
     methods: "CRUD",
 };
 
-entities.authority = {
+entitiesMetadata.authority = {
     name: "authority",
     label: "Machtiging",
     endpoint: "/users/{username}/authorities",
@@ -80,7 +80,7 @@ entities.authority = {
     methods: "R",
 };
 
-entities.country = {
+entitiesMetadata.country = {
     name: "country",
     label: "Land",
     endpoint: "/countries",
@@ -109,7 +109,7 @@ entities.country = {
     methods: "R",
 };
 
-entities.vesselType = {
+entitiesMetadata.vesselType = {
     name: "vesseltype",
     label: "Scheepstype",
     endpoint: "/vesseltypes",
@@ -171,6 +171,14 @@ entities.vesselType = {
     summary: ["id", "nameNL", "nameEN"],
 };
 
-/*
-
- */
+export function initializeEntities() {
+    for (const entitiesKey in entitiesMetadata) {
+        const entity = entitiesMetadata[entitiesKey];
+        entity.name = entitiesKey;
+        for (const summaryElement of entity.summary) {
+            if (!entity[summaryElement]) {
+                console.log(`typo in entities.${entitiesKey}.summary : `);
+            }
+        }
+    }
+}
