@@ -1,8 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { StatusContext } from '../contexts/StatusContext';
 
 export function Statusbar({children}) {
     const {setStatusMessage} = useContext(StatusContext);
-    setStatusMessage(children);
+
+    useEffect(() => {
+        setStatusMessage(children);
+    }, []);
+
     return null;
 }
