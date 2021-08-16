@@ -3,7 +3,7 @@ import { types } from './endpoints';
 export const entitiesMetadata = {};
 
 entitiesMetadata.xyz = {
-    name: "xyz",
+    // name: "xyz",
     label: "Xyz",
     endpoint: "/xyzs",
     id: ["id"],
@@ -31,7 +31,7 @@ entitiesMetadata.xyz = {
 };
 
 entitiesMetadata.user = {
-    name: "user",
+    // name: "user",
     label: "Gebruiker",
     endpoint: "/users",
     id: ["username"],
@@ -64,7 +64,7 @@ entitiesMetadata.user = {
 };
 
 entitiesMetadata.authority = {
-    name: "authority",
+    // name: "authority",
     label: "Machtiging",
     endpoint: "/users/{username}/authorities",
     id: ["username", "authority"],
@@ -81,7 +81,7 @@ entitiesMetadata.authority = {
 };
 
 entitiesMetadata.country = {
-    name: "country",
+    // name: "country",
     label: "Land",
     endpoint: "/countries",
     id: ["id"],
@@ -110,7 +110,7 @@ entitiesMetadata.country = {
 };
 
 entitiesMetadata.vesselType = {
-    name: "vesseltype",
+    // name: "vesseltype",
     label: "Scheepstype",
     endpoint: "/vesseltypes",
     id: ["id"],
@@ -171,14 +171,19 @@ entitiesMetadata.vesselType = {
     summary: ["id", "nameNL", "nameEN"],
 };
 
-export function initializeEntities() {
+export function initializeEntitiesMetadata() {
+    let noTypos = true;
     for (const entitiesKey in entitiesMetadata) {
         const entity = entitiesMetadata[entitiesKey];
         entity.name = entitiesKey;
         for (const summaryElement of entity.summary) {
-            if (!entity[summaryElement]) {
-                console.log(`typo in entities.${entitiesKey}.summary : `);
+            if (!entity.properties[summaryElement]) {
+                console.log(`❌ typo in entitiesMetadata.${entitiesKey}.summary : '${summaryElement}'`);
+                noTypos = false;
             }
         }
+    }
+    if (noTypos) {
+        console.log('✔ the summaries in entitiesMetadata appear to have no typos.');
     }
 }
