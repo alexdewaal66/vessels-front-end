@@ -3,20 +3,18 @@ import { getRequest, now } from '../../helpers/utils';
 import { useMountEffect, useRequestState } from '../../helpers/customHooks';
 import { SummaryTable } from './';
 import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
-import { Entity } from '../Entity';
 
-
-export function SummaryList(props) {
-    const {metadata, initialId, small, receiver} = props;
-    console.log(`▶▶▶ props=`, props);
+export function SummaryList({metadata, initialId, small, receiver, hasFocus}) {
+    // console.log(`▶▶▶ props=`, {metadata, initialId, small, receiver});
     const {endpoint} = metadata;
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     const [selectedId, setSelectedId] = useState(initialId);
     const [command, setCommand] = useContext(CommandContext);
 
-    function editItem(i) {
-        setCommand({operation: operationNames.edit, data: i, entityType: metadata, receiver: receiver});
+    function editItem(item) {
+        setSelectedId(item.id);
+        setCommand({operation: operationNames.edit, data: item, entityType: metadata, receiver: receiver});
     }
 
     function updateList(newList = list, newSelectedId = selectedId ?? initialId) {
@@ -28,11 +26,10 @@ export function SummaryList(props) {
         editItem(selectedItem ?? newList[0]);
     }
 
-    // trying to fix that the focus does not conform to initialId
     useEffect(() => {
         if (list)
             updateList();
-    }, [list]);
+    }, [list, initialId]);
 
     function fetchList() {
         // console.log(now() + ' fetchList()');
@@ -77,6 +74,7 @@ export function SummaryList(props) {
                               selectedId={selectedId}
                               selectItem={editItem}
                               small={small}
+                              hasFocus={hasFocus}
                 />
             )}
         </>

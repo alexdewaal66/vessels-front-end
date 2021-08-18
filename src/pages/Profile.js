@@ -1,12 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { getRequest, now } from '../helpers/utils';
-import { useMountEffect, useRequestState } from '../helpers/customHooks';
+import { useRequestState } from '../helpers/customHooks';
 import { Aside, Command, Main, Content } from '../pageLayouts';
 import { pages } from './index';
 import { ShowObject } from '../dev/ShowObject';
-import { Stringify } from '../dev/Stringify';
 
 function Profile() {
     const requestState = useRequestState();
@@ -36,13 +34,15 @@ function Profile() {
     useMountEffect(fetchUserProfile, []);
 */
 
+    //todo: use EntityN(entitiesMetadata.user, user.username) without receiver
+    //      to enable editing one's profile
+
     return (
         <Content>
             <Main>
                 <h1>Profielpagina</h1>
                 <section>
                     <h2>Gegevens</h2>
-                    {/*privateContent: <Stringify data={privateContent} />*/}
                     {user &&
                     <>
                         <p><strong>Gebruikersnaam:</strong> {user.username}</p>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { StatusContext } from '../contexts/StatusContext';
 
 export function Statusbar({children}) {

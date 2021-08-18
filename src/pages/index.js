@@ -6,6 +6,7 @@ import SignOut from './SignOut';
 import { Search, Vessel, Entity } from '../components';
 import { Empty } from '../dev/Empty';
 import { Colors } from '../dev/Colors';
+import { OnFocusExample } from '../dev/OnFocusExample';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
 
 const pages = {
@@ -29,15 +30,16 @@ const EntityN = (entity, n) => () => <Entity entity={entity} initialId={n} />;
 
 const homeCommands = {
     empty: {name: 'leeg', component: Empty},
-    search: {name: 'Zoek', component: Search,},
-    vessels: {name: 'Vaartuigen', component: Vessel,},
-    xyz: {name: 'Entity', component: Entity,},
-    xyzN3: {name: 'Xyz(3)', component: EntityN(entitiesMetadata.xyz,3),},
-    xyzN4: {name: 'Xyz(4)', component: EntityN(entitiesMetadata.xyz,4),},
-    users: {name: 'Gebruikers', component: EntityN(entitiesMetadata.user, 0),},
-    countries: {name: 'Landen', component: EntityN(entitiesMetadata.country),},
+    search: {name: 'Zoek', component: Search},
+    vessels: {name: 'Vaartuigen', component: Vessel},
+    xyz: {name: 'Entity', component: Entity},
+    xyzN3: {name: 'Xyz(3)', component: EntityN(entitiesMetadata.xyz,3)},
+    xyzN4: {name: 'Xyz(4)', component: EntityN(entitiesMetadata.xyz,4)},
+    users: {name: 'Gebruikers', component: EntityN(entitiesMetadata.user, 0)},
+    countries: {name: 'Landen', component: EntityN(entitiesMetadata.country)},
     vesselTypes: {name: 'Scheepstypes', component: EntityN(entitiesMetadata.vesselType)},
-    colors: {name: 'Kleuren', component: Colors,},
+    colors: {name: 'Kleuren', component: Colors},
+    focus: {name: 'Focus', component: OnFocusExample},
 };
 
 homeCommands.displayOrder = [
@@ -50,6 +52,7 @@ homeCommands.displayOrder = [
     homeCommands.countries,
     homeCommands.vesselTypes,
     homeCommands.colors,
+    homeCommands.focus,
 ];
 
 

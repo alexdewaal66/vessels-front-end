@@ -13,12 +13,11 @@ export function Entity({entity, initialId}) {
         <CommandContextProvider>
             <div className={pageLayout.splitView}>
                 <span className={pageLayout.firstPart}>
-                    {/*<h4>{metadata.label}</h4>*/}
                     <SummaryList metadata={metadata}
                                  initialId={initialId}
-                                 small={false}
                                  receiver={'EditEntity'}
                                  key={metadata.name + 'EditEntity'}
+                                 hasFocus
                     />
                 </span>
                 <span className={pageLayout.secondPart}>

@@ -1,13 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { CommandContext, operationNames, useCommand } from '../contexts/CommandContext';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
-import { postRequest, putRequest, deleteRequest, now } from '../helpers/utils';
-import { useMountEffect, useRequestState } from '../helpers/customHooks';
+import { postRequest, putRequest, deleteRequest } from '../helpers/utils';
+import { useRequestState } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
-import { ShowObject } from '../dev/ShowObject';
 import { useForm } from 'react-hook-form';
-import { Stringify } from '../dev/Stringify';
-import { SummaryList } from './summaryList';
 
 export function EditEntity({metadata}) {
     const [item, setItem] = useState(null);
@@ -32,7 +29,7 @@ export function EditEntity({metadata}) {
 
     useCommand(conditions, command);
 
-    const onEditChange = {
+    const issueCommand = {
         put: (formData) => {
             setCommand({
                 operation: operationNames.put,
@@ -61,12 +58,11 @@ export function EditEntity({metadata}) {
 
 
     function onPut(formData) {
-        // console.log(now() + ' onPut() formData=', formData);
         putRequest({
             url: `${endpoint}/${formData.id}`,
             payload: formData,
             requestState: requestState,
-            onSuccess: () => onEditChange.put(formData),
+            onSuccess: () => issueCommand.put(formData),
         });
     }
 
@@ -76,13 +72,12 @@ export function EditEntity({metadata}) {
     }
 
     function onPost(formData) {
-        // console.log(now() + ' onPost() formData=', formData);
         postRequest({
             url: endpoint,
             payload: formData,
             requestState: requestState,
             onSuccess: (response) => {
-                onEditChange.post({
+                issueCommand.post({
                     ...formData,
                     id: extractNewId(response.data, metadata.label),
                 });
@@ -91,11 +86,10 @@ export function EditEntity({metadata}) {
     }
 
     function onDelete(formData) {
-        // console.log(now() + ' onDelete() formData=', formData);
         deleteRequest({
             url: `${endpoint}/${formData.id}`,
             requestState: requestState,
-            onSuccess: () => onEditChange.delete(formData),
+            onSuccess: () => issueCommand.delete(formData),
         });
     }
 
