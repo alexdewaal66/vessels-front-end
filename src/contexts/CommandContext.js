@@ -24,7 +24,7 @@ export function CommandContextProvider({children}) {
 }
 
 export function useCommand(conditions, command) {
-    function executeCommand() {
+    function executeRelevantCommand() {
         // console.log(`👀 conditions=`, conditions, `command=`, command);
         if (command.operation in conditions.operations &&
         command.entityType === conditions.entityType &&
@@ -33,5 +33,5 @@ export function useCommand(conditions, command) {
         }
     }
 
-    useEffect(executeCommand, [command]);
+    useEffect(executeRelevantCommand, [command]);
 }

@@ -131,11 +131,6 @@ export function EditEntity({metadata}) {
                     <ShowRequestState requestState={requestState}/>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Fieldset border={false}>
-                            {/*<input type="hidden"*/}
-                            {/*       name="id"*/}
-                            {/*       value={item?.id}*/}
-                            {/*       {...register('id')}*/}
-                            {/*/>*/}
                             <input type="hidden"
                                    name="requestMethod"
                                    value="none"
@@ -152,7 +147,8 @@ export function EditEntity({metadata}) {
                                             <Input metadata={metadata}
                                                    field={k}
                                                    defaultValue={v || ''}
-                                                   register={register}
+                                                   useFormFunctions={useFormFunctions}
+                                                   readOnly={readOnly}
                                             />
                                         </FieldEl>
                                     </FieldRow>

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 
 import { types } from '../helpers/endpoints';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
 import { SummaryList } from './summaryList';
 import { Stringify } from '../dev/Stringify';
+// import { CommandContext, useCommand } from '../contexts/CommandContext';
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
@@ -34,10 +35,14 @@ const inputTypes = {
 const aspectRatio = 15;
 const referenceSize = 80;
 
-export function Input({metadata, field, defaultValue, register, readOnly, ...rest}) {
+export function Input({metadata, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
     const property = metadata.properties[field];
+    const elKey = `Input(${metadata.name},${field})`;
+
     // console.log(`metadata=`, metadata, `\nfield=`, field, `\nproperty=`, property);
     readOnly = readOnly || metadata.methods === 'R' || property.readOnly;
+    // const [command, setCommand] = useContext(CommandContext);
+    // const [fieldNameOfListedEntity, setFieldNameOfListedEntity] = useState(null);
     let inputType = {};
     let maxLength = property?.validation?.maxLength;
     let inputSize = null;
@@ -64,20 +69,25 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
             step = 'any';
             break;
         case types.obj:
-
+            const hiddenFieldName = property.target+'Id';
             return (
                 <>
-                    {/*defaultValue: <Stringify data={defaultValue} />*/}
-                    {/*entitiesMetadata[property.target]: <Stringify data={entitiesMetadata[property.target]} />*/}
-                    {/*<ItemSummary item={defaultValue}*/}
-                    {/*             metadata={entitiesMetadata[property.target]}*/}
-                    {/*/>*/}
+                    <div>IN: {hiddenFieldName} = {defaultValue.id}</div>
+                    <input type="hidden"
+                           readOnly={true}
+                           name={hiddenFieldName}
+                           defaultValue={defaultValue.id}
+                           {...useFormFunctions.register(hiddenFieldName)}
+                    />
                     <SummaryList metadata={entitiesMetadata[property.target]}
                                  initialId={defaultValue.id}
                                  small
                                  receiver={'Input'}
-                                 key={metadata.name + 'Input' + defaultValue.id}
-                                 hasFocus={false}
+                                 key={elKey}
+                                 elKey={elKey}
+                                 UICues={{small:true, hasFocus: false}}
+                                 useFormFunctions={useFormFunctions}
+                                 hiddenFieldName={hiddenFieldName}
                     />
                 </>
             );
@@ -99,7 +109,7 @@ export function Input({metadata, field, defaultValue, register, readOnly, ...res
             cols={cols}
             defaultValue={defaultValue}
             readOnly={readOnly}
-            {...register(field, property?.validation)}
+            {...useFormFunctions.register(field, property?.validation)}
             {...rest}
         />
     );

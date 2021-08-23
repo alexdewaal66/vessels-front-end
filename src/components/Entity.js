@@ -8,6 +8,7 @@ import pageLayout from '../pageLayouts/pageLayout.module.css';
 
 export function Entity({entity, initialId}) {
     const metadata = entity ?? entitiesMetadata.xyz;
+    const elKey =` Entity(${metadata.name},${initialId})`;
 
     return (
         <CommandContextProvider>
@@ -16,8 +17,9 @@ export function Entity({entity, initialId}) {
                     <SummaryList metadata={metadata}
                                  initialId={initialId}
                                  receiver={'EditEntity'}
-                                 key={metadata.name + 'EditEntity'}
-                                 hasFocus
+                                 key={elKey}
+                                 elKey={elKey}
+                                 UICues={{hasFocus:true}}
                     />
                 </span>
                 <span className={pageLayout.secondPart}>

@@ -4,18 +4,35 @@ import { useMountEffect, useRequestState } from '../../helpers/customHooks';
 import { SummaryTable } from './';
 import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
 
-export function SummaryList({metadata, initialId, small, receiver, hasFocus}) {
-    // console.log(`▶▶▶ props=`, {metadata, initialId, small, receiver});
+export function SummaryList({metadata, initialId, receiver, UICues, useFormFunctions, hiddenFieldName, elKey}) {
+    elKey += '/SList';
+    const {small, hasFocus} = UICues;
+    // console.log(`▶▶▶ props=`, {metadata, initialId, receiver, small, hasFocus});
     const {endpoint} = metadata;
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
+    const [preSelectedId, setPreSelectedId] = useState(initialId);
     const [selectedId, setSelectedId] = useState(initialId);
     const [command, setCommand] = useContext(CommandContext);
 
     function editItem(item) {
+        console.log(`editItem() item.id=`, item.id);
         setSelectedId(item.id);
-        setCommand({operation: operationNames.edit, data: item, entityType: metadata, receiver: receiver});
+        if (hiddenFieldName) {
+            console.log('>>> setValue');
+            useFormFunctions.setValue(hiddenFieldName, item.id);
+        } else {
+            console.log('>>> setCommand from');
+            setCommand({operation: operationNames.edit, data: item, entityType: metadata, receiver: receiver});
+        }
     }
+
+    useEffect(() => {
+        if (preSelectedId !== initialId) {
+            setSelectedId(initialId);
+            setPreSelectedId(initialId);
+        }
+    })
 
     function updateList(newList = list, newSelectedId = selectedId ?? initialId) {
         // console.log(now() + ` updateList() selectedId=`, selectedId);
@@ -25,11 +42,6 @@ export function SummaryList({metadata, initialId, small, receiver, hasFocus}) {
         const selectedItem = newList.find(item => item.id === newSelectedId);
         editItem(selectedItem ?? newList[0]);
     }
-
-    useEffect(() => {
-        if (list)
-            updateList();
-    }, [list, initialId]);
 
     function fetchList() {
         // console.log(now() + ' fetchList()');
@@ -69,13 +81,20 @@ export function SummaryList({metadata, initialId, small, receiver, hasFocus}) {
     return (
         <>
             {list && (
-                <SummaryTable metadata={metadata}
-                              list={list}
-                              selectedId={selectedId}
-                              selectItem={editItem}
-                              small={small}
-                              hasFocus={hasFocus}
-                />
+                <div>
+                    <div>SL: selectedId={selectedId} ; initialId={initialId}</div>
+                    <SummaryTable metadata={metadata}
+                                  list={list}
+                                  selectedId={selectedId}
+                                  selectItem={editItem}
+                                  small={small}
+                                  hasFocus={hasFocus}
+                                  elKey={elKey}
+                                  key={elKey}
+                        // elKey={elKey+selectedId}
+                        // key={elKey+selectedId}
+                    />
+                </div>
             )}
         </>
     );

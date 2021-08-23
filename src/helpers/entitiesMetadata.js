@@ -3,7 +3,6 @@ import { types } from './endpoints';
 export const entitiesMetadata = {};
 
 entitiesMetadata.xyz = {
-    // name: "xyz",
     label: "Xyz",
     endpoint: "/xyzs",
     id: ["id"],
@@ -31,7 +30,6 @@ entitiesMetadata.xyz = {
 };
 
 entitiesMetadata.user = {
-    // name: "user",
     label: "Gebruiker",
     endpoint: "/users",
     id: ["username"],
@@ -64,7 +62,6 @@ entitiesMetadata.user = {
 };
 
 entitiesMetadata.authority = {
-    // name: "authority",
     label: "Machtiging",
     endpoint: "/users/{username}/authorities",
     id: ["username", "authority"],
@@ -81,7 +78,6 @@ entitiesMetadata.authority = {
 };
 
 entitiesMetadata.country = {
-    // name: "country",
     label: "Land",
     endpoint: "/countries",
     id: ["id"],
@@ -110,7 +106,6 @@ entitiesMetadata.country = {
 };
 
 entitiesMetadata.vesselType = {
-    // name: "vesseltype",
     label: "Scheepstype",
     endpoint: "/vesseltypes",
     id: ["id"],

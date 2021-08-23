@@ -13,36 +13,48 @@ export function OnFocusExample({children, className, ...rest}) {
 
     function handleFocus(e) {
         if (e.currentTarget === e.target) {
-            logTargets(e, ' F - focused self');
+            logTargets(e, ' onFocus - focused self');
         } else {
-            logTargets(e, ' F - focused child');
+            logTargets(e, ' onFocus - focused child');
         }
         if (!e.currentTarget.contains(e.relatedTarget)) {
             // Not triggered when swapping focus between children
-            logTargets(e, ' F - focus entered self');
+            logTargets(e, ' onFocus - focus entered self');
         }
     }
 
     function handleBlur(e) {
         if (e.currentTarget === e.target) {
-            logTargets(e, ' B - unfocused self');
+            logTargets(e, ' onBlur - unfocused self');
         } else {
-            logTargets(e, ' B - unfocused child');
+            logTargets(e, ' onBlur - unfocused child');
         }
         if (!e.currentTarget.contains(e.relatedTarget)) {
             // Not triggered when swapping focus between children
-            logTargets(e, ' B - focus left self');
+            logTargets(e, ' onBlur - focus left self');
         }
     }
 
     return (
-        <div className={styles.onfocus}
-             tabIndex={1}
-             onFocus={handleFocus}
-             onBlur={handleBlur}
-        >
-            <input id="1"/>
-            <input id="2"/>
-        </div>
+        <>
+            <div id="A"
+                 className={styles.onfocus}
+                 tabIndex={1}
+                 onFocus={handleFocus}
+                 onBlur={handleBlur}
+            >
+                <input id="A1"/>
+                <input id="A2"/>
+            </div>
+            <div id="B"
+                 className={styles.onfocus}
+                 tabIndex={1}
+                 onFocus={handleFocus}
+                 onBlur={handleBlur}
+            >
+                <input id="B1"/>
+                <input id="B2"/>
+            </div>
+        </>
     );
 }
