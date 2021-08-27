@@ -43,7 +43,7 @@ export function SummaryTable({list, metadata, selectedId, selectItem, small, has
 
     function handleFocus(e) {
         if (e.currentTarget === e.target || !e.currentTarget.contains(e.relatedTarget)) {
-            console.log(now(),'handleFocus: focused self', `\nelKey=`, elKey);
+            // console.log(now(),'handleFocus: focused self', `\nelKey=`, elKey);
             // table gained focus, set to selected row
             // setTableFocus(true);
             setFocusIndex(selectedIndex);
@@ -52,10 +52,10 @@ export function SummaryTable({list, metadata, selectedId, selectItem, small, has
 
     function handleBlur(e) {
         if (!e.currentTarget.contains(e.relatedTarget)) {
-            console.log(now(),'handleBlur: focus left self',
-                '\ne.currentTarget=', e.currentTarget,
-                '\ne.relatedTarget=', e.relatedTarget,
-                `\nelKey=`, elKey, '\nevent=', e);
+            // console.log(now(),'handleBlur: focus left self',
+            //     '\ne.currentTarget=', e.currentTarget,
+            //     '\ne.relatedTarget=', e.relatedTarget,
+            //     `\nelKey=`, elKey, '\nevent=', e);
             setTableFocus(false);
         }
     }
@@ -70,7 +70,7 @@ export function SummaryTable({list, metadata, selectedId, selectItem, small, has
 
     return (
         <div>
-            <div>ST: focusIndex={focusIndex} ; selectedIndex={selectedIndex}</div>
+            {/*<div>ST: focusIndex={focusIndex} ; selectedIndex={selectedIndex}</div>*/}
             <div className={cx(summaryStyle.tableFixHead, smallStyle)}
                  onFocus={handleFocus}
                  onBlur={handleBlur}

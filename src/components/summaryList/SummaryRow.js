@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { summaryStyle } from './index';
 
-const keys = {enter: 13, escape:27, arrowUp: 38, arrowDown: 40, home: 36, end: 35, pageUp: 33, pageDown: 34};
+const keys = {tab: 9, enter: 13, escape:27, space: 32, arrowUp: 38, arrowDown: 40, home: 36, end: 35, pageUp: 33, pageDown: 34};
 
 export function SummaryRow({listItem, index, metadata, selectItem, rowFocus, UICues, elKey}) {
     const { hasFocus, isSelected, hasVisualPriority } = UICues;
@@ -14,7 +14,7 @@ export function SummaryRow({listItem, index, metadata, selectItem, rowFocus, UIC
         if (hasVisualPriority)
             row.current.scrollIntoView({block: "center"});
         if (hasFocus) {
-            console.log(`index=`, index);
+            // console.log(`index=`, index);
             setFocus();
         }
     });
@@ -31,10 +31,12 @@ export function SummaryRow({listItem, index, metadata, selectItem, rowFocus, UIC
     }
 
     function handleOnKeyDown(e) {
-        console.log(`e.keyCode=`, e.keyCode);
-        console.log(`elKey=`, elKey);
+        // console.log(`e.keyCode=`, e.keyCode);
+        console.log(`e.key=`, e.key);
+        // console.log(`elKey=`, elKey);
         switch (e.keyCode) {
             case keys.enter:
+            case keys.space:
                 choose();
                 return;
             case keys.escape:

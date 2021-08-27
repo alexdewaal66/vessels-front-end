@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { types } from '../helpers/endpoints';
+import { subtypes, types } from '../helpers/endpoints';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
 import { SummaryList } from './summaryList';
 import { Stringify } from '../dev/Stringify';
@@ -49,19 +49,27 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
     let rows = null;
     let cols = null;
     let step = null;
+    let hiddenFieldName;
 
     switch (property?.type) {
         case types.str:
-            if (maxLength < 4 * referenceSize) {
-                inputType = inputTypes.text;
-                maxLength = maxLength || referenceSize;
-                inputSize = Math.min(referenceSize, maxLength);
-            } else {
-                inputType = inputTypes.textarea;
-                cols = Math.max(referenceSize, Math.min(2 * referenceSize, Math.ceil(Math.sqrt(maxLength / aspectRatio))));
-                rows = Math.max(3, Math.min(referenceSize / aspectRatio, Math.ceil(maxLength / cols)));
-                const valueRows = defaultValue.length / cols;
-                rows = (rows + valueRows) / 2;
+            switch (property?.subtype) {
+                case subtypes.email:
+                    inputType = inputTypes.email;
+                    inputSize = Math.min(referenceSize, maxLength);
+                    break;
+                default:
+                    if (maxLength < 4 * referenceSize) {
+                        inputType = inputTypes.text;
+                        maxLength = maxLength || referenceSize;
+                        inputSize = Math.min(referenceSize, maxLength);
+                    } else {
+                        inputType = inputTypes.textarea;
+                        cols = Math.max(referenceSize, Math.min(2 * referenceSize, Math.ceil(Math.sqrt(maxLength / aspectRatio))));
+                        rows = Math.max(3, Math.min(referenceSize / aspectRatio, Math.ceil(maxLength / cols)));
+                        const valueRows = defaultValue.length / cols;
+                        rows = (rows + valueRows) / 2;
+                    }
             }
             break;
         case types.num:
@@ -69,7 +77,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             step = 'any';
             break;
         case types.obj:
-            const hiddenFieldName = property.target+'Id';
+            hiddenFieldName = 'hidden_' + field + '_' + property.target +'_id';
             return (
                 <>
                     <div>IN: {hiddenFieldName} = {defaultValue.id}</div>
@@ -91,6 +99,32 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                     />
                 </>
             );
+        case types.arr:
+            hiddenFieldName = 'hidden_' + field + '_' + property.target +'_id_list';
+            return (
+                <>
+                    <div>IN: {hiddenFieldName} = {defaultValue.id}</div>
+                    <input type="hidden"
+                           readOnly={true}
+                           name={hiddenFieldName}
+                           defaultValue={defaultValue.id}
+                           {...useFormFunctions.register(hiddenFieldName)}
+                    />
+                    <SummaryList metadata={entitiesMetadata[property.target]}
+                                 initialId={defaultValue.id}
+                                 small
+                                 receiver={'Input'}
+                                 key={elKey}
+                                 elKey={elKey}
+                                 UICues={{small:true, hasFocus: false}}
+                                 useFormFunctions={useFormFunctions}
+                                 hiddenFieldName={hiddenFieldName}
+                    />
+                </>
+            );
+        case types.bool:
+            inputType = inputTypes.checkbox;
+            break;
         default:
             return (<>
                 metadata: <Stringify data={metadata}/>
@@ -108,6 +142,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             rows={rows}
             cols={cols}
             defaultValue={defaultValue}
+            defaultChecked={defaultValue}
             readOnly={readOnly}
             {...useFormFunctions.register(field, property?.validation)}
             {...rest}

@@ -90,7 +90,7 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
     requestState.setAtPending();
     console.log(
         now() + ' makeRequest() arguments=',
-        {method, url, headers, payload, requestState, onSuccess}
+        {method, url, payload, requestState, onSuccess}
     );
     try {
         const response = await axios({
@@ -99,7 +99,7 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
             url,
             headers,
             data: payload,
-            timeout: 5_000,
+            timeout: 15_000,
         });
         console.log(now() + ' makeRequest() response=', response);
         requestState.setAtSuccess();

@@ -1,4 +1,4 @@
-import { types } from './endpoints';
+import { types, subtypes } from './endpoints';
 
 export const entitiesMetadata = {};
 
@@ -13,6 +13,9 @@ entitiesMetadata.xyz = {
         name: {
             type: types.str, label: "naam", validation: {maxLength: 100},
         },
+        description: {
+            type: types.str, label: "beschrijving", validation: {maxLength: 1000}
+        },
         xyzString: {
             type: types.str, validation: {maxLength: 200},
         },
@@ -21,11 +24,30 @@ entitiesMetadata.xyz = {
                 min: {value: 0, message: "Negatief ratio niet toegestaan."},
             },
         },
+        zyx: {
+            type: types.obj, label: "zyx", target: "zyx",
+        },
+    },
+    summary: ["id", "name", "xyzString", "ratio"],
+    methods: "CRUD",
+};
+
+entitiesMetadata.zyx = {
+    label: "Zyx",
+    endpoint: "/zyxs",
+    id: ["id"],
+    properties: {
+        id: {
+            type: types.num, label: "id", readOnly: true,
+        },
+        name: {
+            type: types.str, label: "naam", validation: {maxLength: 100},
+        },
         description: {
             type: types.str, label: "beschrijving", validation: {maxLength: 1000}
         },
     },
-    summary: ["id", "name", "xyzString", "ratio"],
+    summary: ["id", "name"],
     methods: "CRUD",
 };
 
@@ -35,26 +57,26 @@ entitiesMetadata.user = {
     id: ["username"],
     properties: {
         username: {
-            label: "username", type: types.str, readOnly: true,
+            label: "username", type: types.str, readOnly: true, validation: {maxLength: 256},
         },
         password: {
             label: "password", type: types.str, validation: {
-                required: true
+                required: true, validation: {maxLength: 256},
             }
         },
         enabled: {
             label: "enabled", type: types.bool
         },
         apikey: {
-            label: "apikey", type: types.str
+            label: "apikey", type: types.str, validation: {maxLength: 256},
         }
         ,
         email: {
-            label: "email", type: types.str
+            label: "email", type: types.str, subtype:subtypes.email, validation: {maxLength: 254},
         }
         ,
         authorities: {
-            label: "authorities", type: types.arr, ref: "authority"
+            label: "machtigingen", type: types.obj, target: "authority"
         },
     },
     summary: ["username", "email"],
@@ -102,6 +124,31 @@ entitiesMetadata.country = {
         },
     },
     summary: ["id", "shortNameNL", "alpha2Code", "alpha3Code"],
+    methods: "R",
+};
+
+entitiesMetadata.subdivision = {
+    label: "Deelsector",
+    endpoint: "/subdivisions",
+    id: ["id"],
+    properties: {
+        id: {
+            type: types.num, label: "id",
+        },
+        alpha2Code: {
+            type: types.str, label: "Alfa 2 code", validation: {maxLength: 2},
+        },
+        code: {
+            type: types.str, label: "Code", validation: {maxLength: 3},
+        },
+        name: {
+            type: types.str, label: "Naam", validation: {maxLength: 150},
+        },
+        type: {
+            type: types.str, label: "Type", validation: {maxLength: 100},
+        },
+    },
+    summary: ["id", "name", "alpha2Code"],
     methods: "R",
 };
 
@@ -166,6 +213,7 @@ entitiesMetadata.vesselType = {
     summary: ["id", "nameNL", "nameEN"],
 };
 
+
 export function initializeEntitiesMetadata() {
     let noTypos = true;
     for (const entitiesKey in entitiesMetadata) {
@@ -182,3 +230,45 @@ export function initializeEntitiesMetadata() {
         console.log('✔ the summaries in entitiesMetadata appear to have no typos.');
     }
 }
+
+export function createEmptyItem(metadata) {
+    console.log(`--------metadata.name=`, metadata.name);
+    const item = {};
+    Object.keys(metadata.properties).forEach(key => {
+        switch (metadata.properties[key].type) {
+            case types.num:
+                item[key] = 0;
+                break;
+            case types.str:
+                item[key] = '';
+                break;
+            default:
+                item[key] = null;
+        }
+    })
+    return item;
+}
+
+/*
+
+zyxMetadata = {zyx: {
+    label: "Zyx",
+    endpoint: "/zyxs",
+    id: ["id"],
+    properties: {
+        id: {
+            type: 'num', label: "id", readOnly: true,
+        },
+        name: {
+            type: 'str', label: "naam", validation: {maxLength: 100},
+        },
+        description: {
+            type: 'str', label: "beschrijving", validation: {maxLength: 1000}
+        },
+    },
+    summary: ["id", "name"],
+    methods: "CRUD",
+}};
+
+
+ */

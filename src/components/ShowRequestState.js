@@ -1,18 +1,20 @@
 import React from 'react';
+import { ShowStatus } from '../pageLayouts/ShowStatus';
+import { Statusbar } from '../pageLayouts/Statusbar';
 
 export function ShowRequestState({requestState, advice}) {
     return (
         <>
             {requestState.isPending && (
-                <>Even geduld a.u.b.</>
+                <Statusbar>Even geduld a.u.b.</Statusbar>
             )}
             {requestState.isError && (
-                <>Er is iets fout gegaan.
+                <Statusbar>Er is iets fout gegaan.
                     {advice}
-                    ({requestState.errorMsg})</>
+                    ({requestState.errorMsg})</Statusbar>
             )}
             {requestState.isSuccess && (
-                <>De opdracht is uitgevoerd.</>
+                <Statusbar>De opdracht is uitgevoerd.</Statusbar>
             )}
         </>
     );

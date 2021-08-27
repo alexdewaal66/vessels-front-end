@@ -29,17 +29,19 @@ pages.displayOrder = [
 const EntityN = (entity, n) => () => <Entity entity={entity} initialId={n} />;
 
 const homeCommands = {
-    empty: {name: 'leeg', component: Empty},
-    search: {name: 'Zoek', component: Search},
-    vessels: {name: 'Vaartuigen', component: Vessel},
-    xyz: {name: 'Entity', component: Entity},
-    xyzN3: {name: 'Xyz(3)', component: EntityN(entitiesMetadata.xyz,3)},
-    xyzN4: {name: 'Xyz(4)', component: EntityN(entitiesMetadata.xyz,4)},
-    users: {name: 'Gebruikers', component: EntityN(entitiesMetadata.user, 0)},
-    countries: {name: 'Landen', component: EntityN(entitiesMetadata.country)},
-    vesselTypes: {name: 'Scheepstypes', component: EntityN(entitiesMetadata.vesselType)},
-    colors: {name: 'Kleuren', component: Colors},
-    focus: {name: 'Focus', component: OnFocusExample},
+    empty: {label: 'leeg', component: Empty},
+    search: {label: 'Zoek', component: Search},
+    vessels: {label: 'Vaartuigen', component: Vessel},
+    xyz: {label: 'Entity', component: Entity},
+    xyzN3: {label: 'Xyz(3)', component: EntityN(entitiesMetadata.xyz,3)},
+    xyzN4: {label: 'Xyz(4)', component: EntityN(entitiesMetadata.xyz,4)},
+    zyx: {label: 'Zyx', component: EntityN(entitiesMetadata.zyx)},
+    users: {label: 'Gebruikers', component: EntityN(entitiesMetadata.user, 0)},
+    countries: {label: 'Landen', component: EntityN(entitiesMetadata.country)},
+    subdivisions: {label: 'Deelsector', component: EntityN(entitiesMetadata.subdivision)},
+    vesselTypes: {label: 'Scheepstypes', component: EntityN(entitiesMetadata.vesselType)},
+    colors: {label: 'Kleuren', component: Colors},
+    focus: {label: 'Focus', component: OnFocusExample},
 };
 
 homeCommands.displayOrder = [
@@ -49,7 +51,9 @@ homeCommands.displayOrder = [
     homeCommands.xyz,
     homeCommands.xyzN3,
     homeCommands.xyzN4,
+    homeCommands.zyx,
     homeCommands.countries,
+    homeCommands.subdivisions,
     homeCommands.vesselTypes,
     homeCommands.colors,
     homeCommands.focus,

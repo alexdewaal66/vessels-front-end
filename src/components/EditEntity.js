@@ -5,6 +5,7 @@ import { postRequest, putRequest, deleteRequest } from '../helpers/utils';
 import { useRequestState } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
 import { useForm } from 'react-hook-form';
+import { Stringify } from '../dev/Stringify';
 
 export function EditEntity({metadata}) {
     const [item, setItem] = useState(null);
@@ -100,6 +101,21 @@ export function EditEntity({metadata}) {
         // console.log(now() + ' onSubmit()   typeof formData.id =', typeof formData.id);
         //todo: repair datatypes of formData values, for now, just id
         formData.id = +formData.id;
+        // Input.js:
+        //      const hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
+        const hiddenFieldNames = Object.keys(formData).filter(key => key.split('_')[0] === 'hidden');
+        hiddenFieldNames.forEach(hiddenFieldName => {
+            const field = hiddenFieldName.split('_')[1];
+            if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
+                const idValue = formData[hiddenFieldName];
+                formData[field] = {id: idValue};
+            } else {
+                const idList = formData[hiddenFieldName].split(',');
+                formData[field] = {id: idList};
+            }
+            delete formData[hiddenFieldName];
+        });
+        console.log(`hiddenFields=`, hiddenFieldNames);
         switch (requestMethod) {
             case 'put':
                 onPut(formData);
@@ -135,44 +151,54 @@ export function EditEntity({metadata}) {
                                    name="requestMethod"
                                    value="none"
                                    {...register('requestMethod')}
+                                   key="requestMethod"
                             />
                             {Object.entries(item).map(([k, v]) => (
-                                    <FieldRow elKey={idName + '_edit_' + k}
-                                              key={idName + '_edit_' + k}
-                                    >
-                                        <FieldDesc>
-                                            {metadata.properties[k]?.label || k}
-                                        </FieldDesc>
-                                        <FieldEl>
-                                            <Input metadata={metadata}
-                                                   field={k}
-                                                   defaultValue={v || ''}
-                                                   useFormFunctions={useFormFunctions}
-                                                   readOnly={readOnly}
-                                            />
-                                        </FieldEl>
-                                    </FieldRow>
+                                    <>
+                                        {/*{console.log('item, k,v:', item, k, v)}*/}
+                                        <FieldRow elKey={idName + '_edit_' + k}
+                                                  key={idName + '_edit_' + k}
+                                        >
+                                            <FieldDesc
+                                                key={idName + '_edit_desc_' + k}
+                                            >
+                                                {metadata.properties[k]?.label || k}
+                                            </FieldDesc>
+                                            <FieldEl>
+                                                <Input metadata={metadata}
+                                                       field={k}
+                                                       defaultValue={v || ''}
+                                                       useFormFunctions={useFormFunctions}
+                                                       readOnly={readOnly}
+                                                       key={idName + '_edit_input_' + k}
+                                                />
+                                            </FieldEl>
+                                        </FieldRow>
+                                    </>
                                 )
                             )}
                             {!readOnly && (
                                 <FieldRow>
-                                    <FieldEl />
+                                    <FieldEl/>
                                     <FieldEl>
                                         <button type="submit" className="form-button"
                                                 disabled={requestState.isPending}
                                                 onClick={setRequestMethod('put')}
+                                                key="submit_put"
                                         >
                                             Wijzig
                                         </button>
                                         <button type="submit" className="form-button"
                                                 disabled={requestState.isPending}
                                                 onClick={setRequestMethod('post')}
+                                                key="submit_post"
                                         >
                                             Bewaar als nieuw
                                         </button>
                                         <button type="submit" className="form-button"
                                                 disabled={requestState.isPending}
                                                 onClick={setRequestMethod('delete')}
+                                                key="submit_del"
                                         >
                                             Verwijder
                                         </button>

@@ -71,12 +71,16 @@
 }
 
 tr.selected, tr.selected:focus {
-    --faint-red: hsla(0, 100%, 50%, 0.50);
+    --faint-color: hsla(120, 100%, 50%, 0.20);
     color: var(--color-em-darker);
     font-style: italic;
-    text-shadow: 0 0 .2px var(--color-em-darker), 0 0 15px var(--faint-red);
-    box-shadow: inset 0 0 10px 5px white;
+    text-shadow: 0 0 .5px var(--color-em-darker);
+    box-shadow: inset 0 0 10px 5px white, inset 0 0 40px var(--faint-color);
     outline: var(--color-de-normal) solid 1px;
+}
+tr.selected:focus {
+    outline-width: 2px;
+    background-color: var(--compl-color-bg-normal);
 }
 
 /*.hidden {*/

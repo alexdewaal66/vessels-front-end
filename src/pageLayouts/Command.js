@@ -15,7 +15,7 @@ export function Command({commandList, choice, children, className, ...rest}) {
 
                 <ul className={commandStyles.ul}>
                     {commandList?.displayOrder.map(command =>
-                        <li key={command.name}
+                        <li key={command.label}
                             // todo: choose between anonymous or curried function
                             // onClick={() => choice.set(command)}
                             onClick={makeChoice(command)}
@@ -24,7 +24,7 @@ export function Command({commandList, choice, children, className, ...rest}) {
                                 : null
                             }
                         >
-                            {command.name}
+                            {command.label}
                         </li>
                     )}
                 </ul>
