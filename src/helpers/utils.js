@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { endpoints } from './endpoints';
 import { statusCodes } from '../dev/statusCodes';
+import { entitiesMetadata } from './entitiesMetadata';
 
 export function now() {
     const time = (new Date()).toLocaleTimeString();
@@ -115,3 +116,9 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
 
 /******************************************/
 
+export function findItem({probe, metadata, requestState, onSuccess}) {
+    const [key, value] = Object.entries(probe).find( ([k,v]) => !!v && !!metadata.findItem.params[k] );
+    const param = metadata.findItem.params[key];
+    let url = metadata.endpoint + metadata.findItem.endpoint + param + value;
+    getRequest({url, requestState, onSuccess});
+}

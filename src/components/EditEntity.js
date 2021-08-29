@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { CommandContext, operationNames, useCommand } from '../contexts/CommandContext';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
-import { postRequest, putRequest, deleteRequest } from '../helpers/utils';
-import { useRequestState } from '../helpers/customHooks';
+import { postRequest, putRequest, deleteRequest, findItem, requestStates } from '../helpers/utils';
+import { useConditionalEffect, useRequestState } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
 import { useForm } from 'react-hook-form';
 import { Stringify } from '../dev/Stringify';
+import { entitiesMetadata } from '../helpers/entitiesMetadata';
 
 export function EditEntity({metadata}) {
     const [item, setItem] = useState(null);
@@ -13,9 +14,23 @@ export function EditEntity({metadata}) {
     const useFormFunctions = useForm();
     const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
+    const [oneCountry, setOneCountry] = useState();
     const {endpoint, id: [{name: idName}]} = metadata;
     const readOnly = metadata.methods === 'R';
     // console.log(now() + ` listItem=`, listItem);
+
+
+    const itemRequestState = useRequestState();
+
+    useConditionalEffect(() => {
+        console.log(`itemRequestState.value=`, itemRequestState.value);
+        findItem({
+            probe: item,
+            metadata: entitiesMetadata.country,
+            requestState: itemRequestState,
+            onSuccess: response => setOneCountry(response.data)
+        });
+    }, item);
 
     const conditions = {
         entityType: metadata,
@@ -143,7 +158,7 @@ export function EditEntity({metadata}) {
     return (
         <>
             {item && (
-                <>
+                <div>
                     <ShowRequestState requestState={requestState}/>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Fieldset border={false}>
@@ -207,8 +222,10 @@ export function EditEntity({metadata}) {
                             )}
                         </Fieldset>
                     </Form>
-
-                </>
+                    <div>
+                        oneCountry = <Stringify data={oneCountry}/>
+                    </div>
+                </div>
             )}
         </>
     );

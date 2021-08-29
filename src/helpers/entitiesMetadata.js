@@ -125,6 +125,17 @@ entitiesMetadata.country = {
     },
     summary: ["id", "shortNameNL", "alpha2Code", "alpha3Code"],
     methods: "R",
+    findItem: {
+        endpoint: "/find?",
+        params: {
+            shortNameNL: "name=",
+            shortNameEN: "name=",
+            alpha2Code: "code=",
+            alpha3Code: "code=",
+            numericCode: "code="
+        },
+
+    }
 };
 
 entitiesMetadata.subdivision = {
@@ -137,6 +148,7 @@ entitiesMetadata.subdivision = {
         },
         alpha2Code: {
             type: types.str, label: "Alfa 2 code", validation: {maxLength: 2},
+            target: "country",
         },
         code: {
             type: types.str, label: "Code", validation: {maxLength: 3},
@@ -150,6 +162,8 @@ entitiesMetadata.subdivision = {
     },
     summary: ["id", "name", "alpha2Code", "code"],
     methods: "R",
+    x: {
+    }
 };
 
 entitiesMetadata.unLocode = {
@@ -199,7 +213,9 @@ entitiesMetadata.unLocode = {
     },
     summary: ["id", "alpha2Code", "locationCode", "nameWoDiacritics"],
     methods: "R",
-
+    x: {
+        subdivisionName: item => {}
+    }
 };
 
 
