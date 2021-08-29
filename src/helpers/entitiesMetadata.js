@@ -148,9 +148,60 @@ entitiesMetadata.subdivision = {
             type: types.str, label: "Type", validation: {maxLength: 100},
         },
     },
-    summary: ["id", "name", "alpha2Code"],
+    summary: ["id", "name", "alpha2Code", "code"],
     methods: "R",
 };
+
+entitiesMetadata.unLocode = {
+    label: "Locatiecode",
+    endpoint: "/un_locode",
+    id: ["id"],
+    properties: {
+        id: {
+            type: types.num, label: "id",
+        },
+        change: {
+            type: types.str, label: "change", validation: {maxLength: 3},
+        },
+        alpha2Code: {
+            type: types.str, label: "alfa 2 code", validation: {maxLength: 2},
+        },
+        locationCode: {
+            type: types.str, label: "locatie code", validation: {maxLength: 3},
+        },
+        nameDiacritics: {
+            type: types.str, label: "naam (met accenttekens)", validation: {maxLength: 80},
+        },
+        nameWoDiacritics: {
+            type: types.str, label: "naam (zonder accenttekens)", validation: {maxLength: 80},
+        },
+        subdivisionCode: {
+            type: types.str, label: "deelsectorcode", validation: {maxLength: 3},
+        },
+        functionClassifier: {
+            type: types.str, label: "functie classificatie", validation: {maxLength: 8},
+        },
+        status: {
+            type: types.str, label: "status", validation: {maxLength: 2},
+        },
+        updateYear: {
+            type: types.str, label: "Jaartal update", validation: {maxLength: 4},
+        },
+        iata: {
+            type: types.str, label: "IATA", validation: {maxLength: 10},
+        },
+        coordinates: {
+            type: types.str, label: "coördinaten", validation: {maxLength: 15},
+        },
+        remarks: {
+            type: types.str, label: "opmerkingen", validation: {maxLength: 100},
+        },
+    },
+    summary: ["id", "alpha2Code", "locationCode", "nameWoDiacritics"],
+    methods: "R",
+
+};
+
 
 entitiesMetadata.vesselType = {
     label: "Scheepstype",

@@ -4,6 +4,7 @@ import { useMountEffect, useRequestState } from '../../helpers/customHooks';
 import { SummaryTable } from './';
 import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
 import { createEmptyItem } from '../../helpers/entitiesMetadata';
+import { ShowRequestState } from '../ShowRequestState';
 
 export function SummaryList({metadata, initialId, receiver, UICues, useFormFunctions, hiddenFieldName, elKey}) {
     elKey += '/SList';
@@ -104,6 +105,7 @@ export function SummaryList({metadata, initialId, receiver, UICues, useFormFunct
 
     return (
         <>
+            <ShowRequestState requestState={requestListState}/>
             {list && (
                 <div>
                     {/*<div>SL: selectedId={selectedId} ; initialId={initialId}</div>*/}
