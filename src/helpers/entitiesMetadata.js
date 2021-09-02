@@ -25,11 +25,15 @@ entitiesMetadata.xyz = {
             },
         },
         zyx: {
-            type: types.obj, label: "zyx", target: "zyx",
+            type: types.obj, label: "zyx",
         },
     },
     summary: ["id", "name", "xyzString", "ratio"],
     methods: "CRUD",
+    findItem: {
+        endpoint: "/find?",
+        params: {},
+    },
 };
 
 entitiesMetadata.zyx = {
@@ -49,6 +53,10 @@ entitiesMetadata.zyx = {
     },
     summary: ["id", "name"],
     methods: "CRUD",
+    findItem: {
+        endpoint: "/find?",
+        params: {},
+    },
 };
 
 entitiesMetadata.user = {
@@ -81,6 +89,10 @@ entitiesMetadata.user = {
     },
     summary: ["username", "email"],
     methods: "CRUD",
+    findItem: {
+        endpoint: "/find?",
+        params: {},
+    },
 };
 
 entitiesMetadata.authority = {
@@ -97,6 +109,10 @@ entitiesMetadata.authority = {
     },
     summary: ["username", "authority"],
     methods: "R",
+    findItem: {
+        endpoint: "/find?",
+        params: {},
+    },
 };
 
 entitiesMetadata.country = {
@@ -128,11 +144,11 @@ entitiesMetadata.country = {
     findItem: {
         endpoint: "/find?",
         params: {
-            shortNameNL: "name=",
-            shortNameEN: "name=",
-            alpha2Code: "code=",
-            alpha3Code: "code=",
-            numericCode: "code="
+            shortNameNL: "name",
+            shortNameEN: "name",
+            alpha2Code: "code",
+            alpha3Code: "code",
+            numericCode: "code"
         },
 
     }
@@ -148,9 +164,9 @@ entitiesMetadata.subdivision = {
         },
         alpha2Code: {
             type: types.str, label: "Alfa 2 code", validation: {maxLength: 2},
-            target: "country",
+            details: "country",
         },
-        code: {
+        subCode: {
             type: types.str, label: "Code", validation: {maxLength: 3},
         },
         name: {
@@ -160,10 +176,14 @@ entitiesMetadata.subdivision = {
             type: types.str, label: "Type", validation: {maxLength: 100},
         },
     },
-    summary: ["id", "name", "alpha2Code", "code"],
+    summary: ["id", "name", "alpha2Code", "subCode"],
     methods: "R",
-    x: {
-    }
+    findItem: {
+        endpoint: "/find?",
+        params: {
+            // alpha2Code: ["alpha2Code", "subCode"],
+        },
+    },
 };
 
 entitiesMetadata.unLocode = {
@@ -178,7 +198,7 @@ entitiesMetadata.unLocode = {
             type: types.str, label: "change", validation: {maxLength: 3},
         },
         alpha2Code: {
-            type: types.str, label: "alfa 2 code", validation: {maxLength: 2},
+            type: types.str, label: "alfa 2 code", validation: {maxLength: 2}, details: "country",
         },
         locationCode: {
             type: types.str, label: "locatie code", validation: {maxLength: 3},
@@ -213,9 +233,10 @@ entitiesMetadata.unLocode = {
     },
     summary: ["id", "alpha2Code", "locationCode", "nameWoDiacritics"],
     methods: "R",
-    x: {
-        subdivisionName: item => {}
-    }
+    findItem: {
+        endpoint: "/find?",
+        params: {},
+    },
 };
 
 
@@ -278,6 +299,10 @@ entitiesMetadata.vesselType = {
     },
     methods: "CRUD",
     summary: ["id", "nameNL", "nameEN"],
+    findItem: {
+        endpoint: "/find?",
+        params: {},
+    },
 };
 
 
@@ -317,25 +342,6 @@ export function createEmptyItem(metadata) {
 }
 
 /*
-
-zyxMetadata = {zyx: {
-    label: "Zyx",
-    endpoint: "/zyxs",
-    id: ["id"],
-    properties: {
-        id: {
-            type: 'num', label: "id", readOnly: true,
-        },
-        name: {
-            type: 'str', label: "naam", validation: {maxLength: 100},
-        },
-        description: {
-            type: 'str', label: "beschrijving", validation: {maxLength: 1000}
-        },
-    },
-    summary: ["id", "name"],
-    methods: "CRUD",
-}};
 
 
  */

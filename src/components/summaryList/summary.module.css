@@ -58,6 +58,14 @@
     padding: 0.2em 0.5em;
 }
 
+.table td {
+    text-overflow: ellipsis;
+}
+
+.table td:hover {
+    overflow: visible;
+}
+
 .table tr:last-child td {
     padding-bottom: var(--table-padding);
 }
@@ -83,6 +91,5 @@ tr.selected:focus {
     background-color: var(--compl-color-bg-normal);
 }
 
-/*.hidden {*/
-/*    visibility: collapse;*/
-/*}*/
+/*
+*/

@@ -1,11 +1,19 @@
 import React from 'react';
 
-export function Stringify({data}) {
+export function Stringify({data, children}) {
     return (
-        <div>
-            <pre>
-            {JSON.stringify(data, null, 2)}
-            </pre>
+        <div style={{
+            maxHeight: "250px",
+            overflowY: "scroll",
+            width: "max-content",
+            padding: "1em",
+            border: "1px solid white"
+        }}
+        >
+            {children && (
+                <span style={{textDecoration: "underline"}}>{children}:</span>
+            )}
+            <pre>{JSON.stringify(data, null, 2)}</pre>
         </div>
     );
 }

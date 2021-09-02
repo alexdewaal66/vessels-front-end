@@ -37,7 +37,7 @@ const referenceSize = 80;
 
 export function Input({metadata, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
     const property = metadata.properties[field];
-    const elKey = `Input(${metadata.name},${field})`;
+    const elKey = `Input(${metadata.name},${field},${defaultValue})`;
 
     // console.log(`metadata=`, metadata, `\nfield=`, field, `\nproperty=`, property);
     readOnly = readOnly || metadata.methods === 'R' || property.readOnly;
@@ -86,13 +86,14 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                            name={hiddenFieldName}
                            defaultValue={defaultValue.id}
                            {...useFormFunctions.register(hiddenFieldName)}
+                           key={elKey + hiddenFieldName + '_obj'}
                     />
                     <SummaryList metadata={entitiesMetadata[property.target]}
                                  initialId={defaultValue.id}
                                  small
                                  receiver={'Input'}
-                                 key={elKey}
-                                 elKey={elKey}
+                                 key={elKey + hiddenFieldName + '_obj'}
+                                 elKey={elKey + hiddenFieldName + '_obj'}
                                  UICues={{small:true, hasFocus: false}}
                                  useFormFunctions={useFormFunctions}
                                  hiddenFieldName={hiddenFieldName}
@@ -109,12 +110,13 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                            name={hiddenFieldName}
                            defaultValue={defaultValue.id}
                            {...useFormFunctions.register(hiddenFieldName)}
+                           key={elKey + hiddenFieldName}
                     />
                     <SummaryList metadata={entitiesMetadata[property.target]}
                                  initialId={defaultValue.id}
                                  small
                                  receiver={'Input'}
-                                 key={elKey}
+                                 key={elKey + hiddenFieldName + '_arr'}
                                  elKey={elKey}
                                  UICues={{small:true, hasFocus: false}}
                                  useFormFunctions={useFormFunctions}

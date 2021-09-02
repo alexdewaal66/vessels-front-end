@@ -140,6 +140,7 @@ html, body {
 .splitView {
     display: flex;
     flex-direction: row;
+    /*flex-wrap: wrap;*/
 }
 
 .firstPart {

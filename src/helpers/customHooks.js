@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { requestStates } from './utils';
 
 export function useConditionalEffect(operation, qualifier) {
@@ -29,10 +29,10 @@ export function useRequestState(initialValue = requestStates.IDLE) {
     /** @member  requestState.setErrorMsg **/
     [requestState.errorMsg, requestState.setErrorMsg] = useState('');
 
-    requestState.isIdle = requestState.value === requestStates.IDLE;
-    requestState.isPending = requestState.value === requestStates.PENDING;
-    requestState.isSuccess = requestState.value === requestStates.SUCCESS;
-    requestState.isError = requestState.value === requestStates.ERROR;
+    requestState.isIdle = (requestState.value === requestStates.IDLE);
+    requestState.isPending = (requestState.value === requestStates.PENDING);
+    requestState.isSuccess = (requestState.value === requestStates.SUCCESS);
+    requestState.isError = (requestState.value === requestStates.ERROR);
 
     requestState.setAtIdle = () => {
         requestState.set(requestStates.IDLE)
@@ -50,27 +50,64 @@ export function useRequestState(initialValue = requestStates.IDLE) {
     return requestState;
 }
 
-/****************************
+/****************************/
 
-const cap1st = (string) => string[0].toUpperCase() + string.slice(1);
+const dictActions = {
+    add: 'add',
+    set: 'set',
+    del: 'del',
+};
 
-function useMultiState(...subStates) {
-    // each subState is an array with a name and init element ['x', 1]
-    const multiState = {};
-    for (const subState of subStates) {
-        const [name, init] = subState;
-        [multiState[name], multiState[`set${cap1st(name)}`]] = useState(init);
+function UseDictException(message) {
+    this.message = message;
+    this.name = 'UseDictException';
+}
+
+function dictReducer(state, {type, payload: {name, value}}) {
+    console.log(`dictReducer() state=`, state);
+    switch (type) {
+        case dictActions.add:
+            if (name in state) {
+                throw new UseDictException(`can not add new entry ${name}, it already exists`);
+            } else {
+                return {...state, [name]: value};
+            }
+        case dictActions.set:
+            if (name in state) {
+                return {...state, [name]: value};
+            } else {
+                throw new UseDictException(`can not set entry ${name}, it doesn't exist`);
+            }
+        case dictActions.del:
+            if (name in state) {
+                const copy = {...state};
+                delete copy[name];
+                return copy;
+            } else {
+                throw new UseDictException(`can not delete entry ${name}, it doesn't exist`);
+            }
+        default:
+            return state;
     }
-    return multiState;
 }
 
-function Test() {
-    const myMultiState = useMultiState(
-        ['firstState', 2],
-        ['secondState', 4],
-        ['third', 8 ],
-    )
-
+export function useDict(initialState = {}, initializer) {
+    const stateDict = {};
+    /** @property stateDict.dict **/
+    [stateDict.dict, stateDict.dispatch] = useReducer(dictReducer, initialState, initializer);
+    stateDict.add = (name, value) =>
+        stateDict.dispatch({type: dictActions.add, payload: {name, value}});
+    stateDict.set = (name, value) =>
+        stateDict.dispatch({type: dictActions.set, payload: {name, value}});
+    stateDict.del = (name, value) =>
+        stateDict.dispatch({type: dictActions.del, payload: {name, value}});
+    return stateDict;
 }
 
-*********************************************/
+//  export function useDict() {
+//     const stateDict = {};
+//     [stateDict.value, stateDict.dispatch] = useReducer(dictReducer, {});
+//     stateDict.actions = dictActions;
+//     return stateDict;
+// }
+/*********************************************/

@@ -49,7 +49,7 @@ function Profile() {
                         <p><strong>Email:</strong> {user.email}</p>
                         <p><strong>Land:</strong> {user.country}</p>
                         <p><strong>Enabled:</strong> {user.enabled ? <>Ja</> : <>Nee</>}</p>
-                        <div><strong>Authorities:</strong> <ShowObject obj={user.authorities} /></div>
+                        <div><strong>Authorities:</strong> <ShowObject data={user.authorities} /></div>
                     </>
                     }
                 </section>

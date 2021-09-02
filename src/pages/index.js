@@ -29,7 +29,7 @@ pages.displayOrder = [
 const EntityN = (entity, n) => () => <Entity entity={entity} initialId={n} />;
 
 const homeCommands = {
-    empty: {label: 'leeg', component: Empty},
+    empty: {label: 'test useDict', component: Empty},
     search: {label: 'Zoek', component: Search},
     vessels: {label: 'Vaartuigen', component: Vessel},
     xyz: {label: 'Entity', component: Entity},
@@ -46,6 +46,7 @@ const homeCommands = {
 };
 
 homeCommands.displayOrder = [
+    homeCommands.empty,
     homeCommands.search,
     homeCommands.vessels,
     homeCommands.users,

@@ -1,18 +1,18 @@
 import React from 'react';
 import { TTC, TT } from './Tooltips';
 
-export function ShowObject({obj}) {
-    if (obj) {
-        // console.log(`obj=`, obj);
+export function ShowObject({data}) {
+    if (data) {
+        // console.log(`data=`, data);
         return (
             <ul>
-                {Object.entries(obj).map(([key, value]) =>
+                {Object.entries(data).map(([key, value]) =>
                     <li key={key}>
                         <TTC>{key} :
                             <TT>{typeof value}</TT>
                         </TTC>
                         {typeof value === 'object'
-                            ? <ShowObject obj={value} />
+                            ? <ShowObject data={value} />
                             : <>{value}</>
                         }
                     </li>

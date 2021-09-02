@@ -7,15 +7,17 @@ import { ShowRequestState } from './ShowRequestState';
 import { useForm } from 'react-hook-form';
 import { Stringify } from '../dev/Stringify';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
+import { Details } from './Details';
 
-export function EditEntity({metadata}) {
-    const [item, setItem] = useState(null);
+export function EditEntity({metadata, item, setItem, elKey}) {
+    console.log(`▶▶▶ props=`, {metadata, item, setItem});
+
     const [command, setCommand] = useContext(CommandContext);
     const useFormFunctions = useForm();
     const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
     const [oneCountry, setOneCountry] = useState();
-    const {endpoint, id: [{name: idName}]} = metadata;
+    const {endpoint} = metadata;
     const readOnly = metadata.methods === 'R';
     // console.log(now() + ` listItem=`, listItem);
 
@@ -158,7 +160,7 @@ export function EditEntity({metadata}) {
     return (
         <>
             {item && (
-                <div>
+                <div key={elKey + '1'}>
                     <ShowRequestState requestState={requestState}/>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Fieldset border={false}>
@@ -171,22 +173,26 @@ export function EditEntity({metadata}) {
                             {Object.entries(item).map(([k, v]) => (
                                     <>
                                         {/*{console.log('item, k,v:', item, k, v)}*/}
-                                        <FieldRow elKey={idName + '_edit_' + k}
-                                                  key={idName + '_edit_' + k}
+                                        <FieldRow elKey={elKey + '_edit_' + k}
+                                                  key={elKey + '_edit_' + k}
                                         >
                                             <FieldDesc
-                                                key={idName + '_edit_desc_' + k}
+                                                key={elKey + '_edit_desc_' + k}
                                             >
                                                 {metadata.properties[k]?.label || k}
                                             </FieldDesc>
                                             <FieldEl>
-                                                <Input metadata={metadata}
-                                                       field={k}
-                                                       defaultValue={v || ''}
-                                                       useFormFunctions={useFormFunctions}
-                                                       readOnly={readOnly}
-                                                       key={idName + '_edit_input_' + k}
-                                                />
+                                                <Details metadata={metadata} field={k} value={v}
+                                                         key={elKey + '_edit_details_' + k}
+                                                >
+                                                    <Input metadata={metadata}
+                                                           field={k}
+                                                           defaultValue={v || ''}
+                                                           useFormFunctions={useFormFunctions}
+                                                           readOnly={readOnly}
+                                                           key={elKey + '_edit_input_' + k}
+                                                    />
+                                                </Details>
                                             </FieldEl>
                                         </FieldRow>
                                     </>

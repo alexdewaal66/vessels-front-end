@@ -21,16 +21,16 @@ export function SummaryTable({list, metadata, selectedId, selectItem, small, has
 
     const rowFocus = {
         up: function () {
-            setFocusIndex(Math.max(0, focusIndex - 1));
+            setFocusIndex(fi => Math.max(0, fi - 1));
         },
         down: function () {
-            setFocusIndex(Math.min(list.length - 1, focusIndex + 1));
+            setFocusIndex(fi => Math.min(list.length - 1, fi + 1));
         },
         tenUp: function () {
-            setFocusIndex(Math.max(0, focusIndex - 10));
+            setFocusIndex(fi => Math.max(0, fi - 10));
         },
         tenDown: function () {
-            setFocusIndex(Math.min(list.length - 1, focusIndex + 10));
+            setFocusIndex(fi => Math.min(list.length - 1, fi + 10));
         },
         first: function () {
             setFocusIndex(0);

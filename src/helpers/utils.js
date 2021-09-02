@@ -57,35 +57,35 @@ export function addJwtToHeaders(headers = {}) {
 
 /******************************************/
 
-export function getRequest({url, requestState, onSuccess}) {
+export function getRequest({url, requestState, onSuccess, onFail}) {
     const ignorePromise = makeRequest({
         method: 'get',
-        url, requestState, onSuccess,
+        url, requestState, onSuccess, onFail,
     });
 }
 
-export function postRequest({url, payload, requestState, onSuccess}) {
+export function postRequest({url, payload, requestState, onSuccess, onFail}) {
     const ignorePromise = makeRequest({
         method: 'post',
-        url, payload, requestState, onSuccess,
+        url, payload, requestState, onSuccess, onFail
     });
 }
 
-export function putRequest({url, payload, requestState, onSuccess}) {
+export function putRequest({url, payload, requestState, onSuccess, onFail}) {
     const ignorePromise = makeRequest({
         method: 'put',
-        url, payload, requestState, onSuccess,
+        url, payload, requestState, onSuccess, onFail
     });
 }
 
-export function deleteRequest({url, requestState, onSuccess}) {
+export function deleteRequest({url, requestState, onSuccess, onFail}) {
     const ignorePromise = makeRequest({
         method: 'delete',
-        url, requestState, onSuccess,
+        url, requestState, onSuccess, onFail
     });
 }
 
-export async function makeRequest({method, url, payload, requestState, onSuccess}) {
+export async function makeRequest({method, url, payload, requestState, onSuccess, onFail}) {
     const headers = addJwtToHeaders();
 
     requestState.setAtPending();
@@ -111,6 +111,7 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
         console.error(now() + ' makeRequest() error=', e);
         requestState.setAtError();
         requestState.setErrorMsg(e.toString());
+        if (onFail) onFail(e);
     }
 }
 
@@ -119,6 +120,11 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
 export function findItem({probe, metadata, requestState, onSuccess}) {
     const [key, value] = Object.entries(probe).find( ([k,v]) => !!v && !!metadata.findItem.params[k] );
     const param = metadata.findItem.params[key];
-    let url = metadata.endpoint + metadata.findItem.endpoint + param + value;
+    let url = metadata.endpoint + metadata.findItem.endpoint;
+    if (Array.isArray(param)) {
+        url += param[0] + '=' + value + '&' + param[1] + '=' + probe[param[1]];
+    } else {
+        url += param + '=' + value;
+    }
     getRequest({url, requestState, onSuccess});
 }
