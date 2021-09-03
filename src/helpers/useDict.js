@@ -12,7 +12,7 @@ function UseDictException(message) {
 }
 
 function dictReducer(state, {type, payload: {name, value}}) {
-    console.log(`dictReducer() state=`, state);
+    // console.log(`dictReducer() state=`, state);
     switch (type) {
         case dictActions.add:
             if (name in state) {

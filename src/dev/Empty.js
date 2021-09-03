@@ -12,7 +12,7 @@ export function Empty({children, className, ...rest}) {
     const metadata = entitiesMetadata.vesselType;
     // const [example, setExample] = useState(initExample);
     const entityIds = useDict({});
-    console.log(`entityIds=`, entityIds);
+    // console.log(`entityIds=`, entityIds);
     const requestState = useRequestState();
 
     useMountEffect(loadAllIds);

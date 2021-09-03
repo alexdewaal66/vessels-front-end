@@ -30,8 +30,8 @@ export function Entity({entity, initialId}) {
                 <span className={pageLayout.secondPart}>
                     <EditEntity metadata={metadata}
                                 item={item} setItem={setItem}
-                                key={metadata.name + item?.id}
-                                elKey={metadata.name + item?.id}
+                                key={elKey + ` / EditEntity(${item?.id})`}
+                                elKey={elKey + ` / EditEntity(${item?.id})`}
                     />
                 </span>
             </div>

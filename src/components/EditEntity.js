@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, Fragment } from 'react';
 import { CommandContext, operationNames, useCommand } from '../contexts/CommandContext';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
 import { postRequest, putRequest, deleteRequest, findItem, requestStates } from '../helpers/utils';
@@ -28,7 +28,7 @@ export function EditEntity({metadata, item, setItem, elKey}) {
         console.log(`itemRequestState.value=`, itemRequestState.value);
         findItem({
             probe: item,
-            metadata: entitiesMetadata.country,
+            metadata: metadata,
             requestState: itemRequestState,
             onSuccess: response => setOneCountry(response.data)
         });
@@ -171,31 +171,31 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                                    key="requestMethod"
                             />
                             {Object.entries(item).map(([k, v]) => (
-                                    <>
+                                    <Fragment key={elKey + ' / FieldRow() ' + k}>
                                         {/*{console.log('item, k,v:', item, k, v)}*/}
-                                        <FieldRow elKey={elKey + '_edit_' + k}
-                                                  key={elKey + '_edit_' + k}
+                                        <FieldRow elKey={elKey + ' edit_row ' + k}
+                                                  key={elKey + ' edit_row ' + k}
                                         >
                                             <FieldDesc
-                                                key={elKey + '_edit_desc_' + k}
+                                                key={elKey + ' edit_desc ' + k}
                                             >
                                                 {metadata.properties[k]?.label || k}
                                             </FieldDesc>
                                             <FieldEl>
                                                 <Details metadata={metadata} field={k} value={v}
-                                                         key={elKey + '_edit_details_' + k}
+                                                         key={elKey + ' edit_details ' + k}
                                                 >
                                                     <Input metadata={metadata}
                                                            field={k}
                                                            defaultValue={v || ''}
                                                            useFormFunctions={useFormFunctions}
                                                            readOnly={readOnly}
-                                                           key={elKey + '_edit_input_' + k}
+                                                           key={elKey + ` / Input(${k}=${v})`}
                                                     />
                                                 </Details>
                                             </FieldEl>
                                         </FieldRow>
-                                    </>
+                                    </Fragment>
                                 )
                             )}
                             {!readOnly && (

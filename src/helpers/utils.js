@@ -118,14 +118,19 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
 /******************************************/
 
 export function findItem({probe, metadata, requestState, onSuccess}) {
-    console.log(`findItem() probe=`, probe);
-    const [key, value] = Object.entries(probe).find( ([k,v]) => !!v && !!metadata.findItem.params[k] );
-    const param = metadata.findItem.params[key];
-    let url = metadata.endpoint + metadata.findItem.endpoint;
-    if (Array.isArray(param)) {
-        url += param[0] + '=' + value + '&' + param[1] + '=' + probe[param[1]];
-    } else {
-        url += param + '=' + value;
+    console.log(`findItem() probe=`, probe, `metadata.name=`, metadata.name);
+    const entries = Object.entries(probe);
+    console.log(`findItem() entries=`, entries);
+    const hit = entries.find( ([k,v]) => !!v && (k in metadata.findItem.params) );
+    if (hit) {
+        const [key, value] = hit;
+        const param = metadata.findItem.params[key];
+        let url = metadata.endpoint + metadata.findItem.endpoint;
+        if (Array.isArray(param)) {
+            url += param[0] + '=' + value + '&' + param[1] + '=' + probe[param[1]];
+        } else {
+            url += param + '=' + value;
+        }
+        getRequest({url, requestState, onSuccess});
     }
-    getRequest({url, requestState, onSuccess});
 }

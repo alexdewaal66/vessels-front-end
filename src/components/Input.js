@@ -86,7 +86,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                            name={hiddenFieldName}
                            defaultValue={defaultValue.id}
                            {...useFormFunctions.register(hiddenFieldName)}
-                           key={elKey + hiddenFieldName + '_obj'}
+                           key={elKey + hiddenFieldName + '_objId'}
                     />
                     <SummaryList metadata={entitiesMetadata[property.target]}
                                  initialId={defaultValue.id}
@@ -110,7 +110,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                            name={hiddenFieldName}
                            defaultValue={defaultValue.id}
                            {...useFormFunctions.register(hiddenFieldName)}
-                           key={elKey + hiddenFieldName}
+                           key={elKey + hiddenFieldName + '_arrIdx'}
                     />
                     <SummaryList metadata={entitiesMetadata[property.target]}
                                  initialId={defaultValue.id}
