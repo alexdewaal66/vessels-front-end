@@ -32,7 +32,7 @@ export function EditEntity({metadata, item, setItem, elKey}) {
             requestState: itemRequestState,
             onSuccess: response => setOneCountry(response.data)
         });
-    }, item);
+    }, !!item, [item]);
 
     const conditions = {
         entityType: metadata,

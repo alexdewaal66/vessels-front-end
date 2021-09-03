@@ -22,7 +22,7 @@ export function Details({metadata, field, value, children}) {
         });
     }
 
-    useConditionalEffect(fetchItem, target);
+    useConditionalEffect(fetchItem, !!target, [target]);
 
 
     return (
