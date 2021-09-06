@@ -2,6 +2,7 @@ import { useReducer } from 'react';
 
 const dictActions = {
     add: 'add',
+    setMany : 'setMany',
     set: 'set',
     del: 'del',
 };
@@ -11,28 +12,32 @@ function UseDictException(message) {
     this.name = 'UseDictException';
 }
 
-function dictReducer(state, {type, payload: {name, value}}) {
+function dictReducer(state, {type, payload: {key, value}}) {
     // console.log(`dictReducer() state=`, state);
     switch (type) {
         case dictActions.add:
-            if (name in state) {
-                throw new UseDictException(`can not add new entry ${name}, it already exists`);
+            if (key in state) {
+                throw new UseDictException(`can not add new entry ${key}, it already exists`);
             } else {
-                return {...state, [name]: value};
+                return {...state, [key]: value};
             }
+        case dictActions.setMany:
+            // console.log(`dictReducer\ntype=`, type,`\nstate=`, state, `\nvalue=`, value);
+            // skip presence test
+            return {...state, ...value};
         case dictActions.set:
-            if (name in state) {
-                return {...state, [name]: value};
+            if (key in state) {
+                return {...state, [key]: value};
             } else {
-                throw new UseDictException(`can not set entry ${name}, it doesn't exist`);
+                throw new UseDictException(`can not set entry ${key}, it doesn't exist`);
             }
         case dictActions.del:
-            if (name in state) {
+            if (key in state) {
                 const copy = {...state};
-                delete copy[name];
+                delete copy[key];
                 return copy;
             } else {
-                throw new UseDictException(`can not delete entry ${name}, it doesn't exist`);
+                throw new UseDictException(`can not delete entry ${key}, it doesn't exist`);
             }
         default:
             return state;
@@ -40,14 +45,15 @@ function dictReducer(state, {type, payload: {name, value}}) {
 }
 
 export function useDict(initialState = {}, initializer) {
-    const stateDict = {};
-    /** @property stateDict.dict **/
-    [stateDict.dict, stateDict.dispatch] = useReducer(dictReducer, initialState, initializer);
-    stateDict.add = (name, value) =>
-        stateDict.dispatch({type: dictActions.add, payload: {name, value}});
-    stateDict.set = (name, value) =>
-        stateDict.dispatch({type: dictActions.set, payload: {name, value}});
-    stateDict.del = (name, value) =>
-        stateDict.dispatch({type: dictActions.del, payload: {name, value}});
-    return stateDict;
+    const [dict, dispatch] = useReducer(dictReducer, initialState, initializer);
+    const get = (key) => dict[key];
+    const add = (key, value) =>
+        dispatch({type: dictActions.add, payload: {key, value}});
+    const setMany = (value) =>
+        dispatch({type: dictActions.setMany, payload: {value}});
+    const set = (key, value) =>
+        dispatch({type: dictActions.set, payload: {key, value}});
+    const del = (key, value) =>
+        dispatch({type: dictActions.del, payload: {key, value}});
+    return {dict, get, add, setMany, set, del};
 }

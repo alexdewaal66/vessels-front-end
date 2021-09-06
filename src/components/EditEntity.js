@@ -1,38 +1,23 @@
-import React, { useState, useContext, useEffect, Fragment } from 'react';
+import React, { useContext, Fragment } from 'react';
 import { CommandContext, operationNames, useCommand } from '../contexts/CommandContext';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
-import { postRequest, putRequest, deleteRequest, findItem, requestStates } from '../helpers/utils';
-import { useConditionalEffect, useRequestState } from '../helpers/customHooks';
+import { postRequest, putRequest, deleteRequest } from '../helpers/utils';
+import { useRequestState } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
 import { useForm } from 'react-hook-form';
-import { Stringify } from '../dev/Stringify';
-import { entitiesMetadata } from '../helpers/entitiesMetadata';
 import { Details } from './Details';
 
 export function EditEntity({metadata, item, setItem, elKey}) {
-    console.log(`▶▶▶ props=`, {metadata, item, setItem});
+    // console.log(`▶▶▶ props=`, {metadata, item, setItem});
 
     const [command, setCommand] = useContext(CommandContext);
     const useFormFunctions = useForm();
     const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
-    const [oneCountry, setOneCountry] = useState();
     const {endpoint} = metadata;
     const readOnly = metadata.methods === 'R';
     // console.log(now() + ` listItem=`, listItem);
 
-
-    const itemRequestState = useRequestState();
-
-    useConditionalEffect(() => {
-        console.log(`itemRequestState.value=`, itemRequestState.value);
-        findItem({
-            probe: item,
-            metadata: metadata,
-            requestState: itemRequestState,
-            onSuccess: response => setOneCountry(response.data)
-        });
-    }, !!item, [item]);
 
     const conditions = {
         entityType: metadata,
@@ -228,9 +213,6 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                             )}
                         </Fieldset>
                     </Form>
-                    <div>
-                        oneCountry = <Stringify data={oneCountry}/>
-                    </div>
                 </div>
             )}
         </>

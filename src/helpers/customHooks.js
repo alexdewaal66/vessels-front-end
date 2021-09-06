@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { requestStates } from './utils';
+import { useDict } from './useDict';
 
 export function useConditionalEffect(operation, condition, deps) {
     useEffect(() => {
@@ -16,41 +17,37 @@ export function useMountEffect(fun) {
 }
 
 export function useOOState(initialValue) {
-    const state = {};
-    [state.value, state.set] = useState(initialValue);
-    return state;
+    const [value, set] = useState(initialValue);
+    return {value, set};
 }
 
 
 export function useRequestState(initialValue = requestStates.IDLE) {
-    const requestState = {};
-    [requestState.value, requestState.set] = useState(initialValue);
-    // (my) Webstorm somehow cannot resolve the next members in the destructuring on its own
-    /** @property requestState.errorMsg **/
-    /** @member  requestState.setErrorMsg **/
-    [requestState.errorMsg, requestState.setErrorMsg] = useState('');
+    const [value, set] = useState(initialValue);
+    const [errorMsg, setErrorMsg] = useState('');
 
-    requestState.isIdle = (requestState.value === requestStates.IDLE);
-    requestState.isPending = (requestState.value === requestStates.PENDING);
-    requestState.isSuccess = (requestState.value === requestStates.SUCCESS);
-    requestState.isError = (requestState.value === requestStates.ERROR);
+    const isIdle = (value === requestStates.IDLE);
+    const isPending = (value === requestStates.PENDING);
+    const isSuccess = (value === requestStates.SUCCESS);
+    const isError = (value === requestStates.ERROR);
 
-    requestState.setAtIdle = () => {
-        requestState.set(requestStates.IDLE)
+    const setAtIdle = () => {
+        set(requestStates.IDLE)
     };
-    requestState.setAtPending = () => {
-        requestState.set(requestStates.PENDING)
+    const setAtPending = () => {
+        set(requestStates.PENDING)
     };
-    requestState.setAtSuccess = () => {
-        requestState.set(requestStates.SUCCESS)
+    const setAtSuccess = () => {
+        set(requestStates.SUCCESS)
     };
-    requestState.setAtError = () => {
-        requestState.set(requestStates.ERROR)
+    const setAtError = () => {
+        set(requestStates.ERROR)
     };
 
-    return requestState;
+    return {
+        value, errorMsg, setErrorMsg,
+        isIdle, isPending, isSuccess, isError,
+        setAtIdle, setAtPending, setAtSuccess, setAtError
+    };
+
 }
-
-/****************************/
-
-/*********************************************/

@@ -25,7 +25,7 @@ entitiesMetadata.xyz = {
             },
         },
         zyx: {
-            type: types.obj, label: "zyx",
+            type: types.obj, label: "zyx", target: "zyx",
         },
     },
     summary: ["id", "name", "xyzString", "ratio"],
@@ -150,7 +150,6 @@ entitiesMetadata.country = {
             alpha3Code: "code",
             numericCode: "code"
         },
-
     }
 };
 

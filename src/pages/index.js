@@ -4,7 +4,7 @@ import SignIn from './SignIn';
 import Profile from './Profile';
 import SignOut from './SignOut';
 import { Search, Vessel, Entity } from '../components';
-import { Empty } from '../dev/Empty';
+import { Test } from '../dev/Test';
 import { Colors } from '../dev/Colors';
 import { OnFocusExample } from '../dev/OnFocusExample';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
@@ -29,7 +29,7 @@ pages.displayOrder = [
 const EntityN = (entity, n) => () => <Entity entity={entity} initialId={n} />;
 
 const homeCommands = {
-    empty: {label: 'test useDict', component: Empty},
+    empty: {label: 'test useDict', component: Test},
     search: {label: 'Zoek', component: Search},
     vessels: {label: 'Vaartuigen', component: Vessel},
     xyz: {label: 'Entity', component: Entity},

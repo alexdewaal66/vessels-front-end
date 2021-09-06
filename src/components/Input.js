@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React from 'react';
 
 import { subtypes, types } from '../helpers/endpoints';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
@@ -80,7 +80,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             hiddenFieldName = 'hidden_' + field + '_' + property.target +'_id';
             return (
                 <>
-                    <div>IN: {hiddenFieldName} = {defaultValue.id}</div>
+                    {/*<div>IN: {hiddenFieldName} = {defaultValue.id}</div>*/}
                     <input type="hidden"
                            readOnly={true}
                            name={hiddenFieldName}

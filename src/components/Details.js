@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TTC, TT } from '../dev/Tooltips';
-import { requestStates, findItem } from '../helpers/utils';
+import { findItem } from '../helpers/utils';
 import { useConditionalEffect, useRequestState } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
 import { Stringify } from '../dev/Stringify';
@@ -27,7 +27,7 @@ export function Details({metadata, field, value, children}) {
 
     return (
             <TTC>
-                {/*<ShowRequestState requestState={requestState} />*/}
+                <ShowRequestState requestState={requestState} description={'het ophalen van details '} />
                 {children}
                 {target && (
                     <>

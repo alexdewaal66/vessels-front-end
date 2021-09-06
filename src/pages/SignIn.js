@@ -39,6 +39,7 @@ function SignIn() {
                 <h1>Inloggen</h1>
                 <p>Log in om gegevens, foto's & commentaar te kunnen toevoegen.</p>
                 <ShowRequestState requestState={requestState}
+                                  description={'het inloggen '}
                                   advice="Probeer het opnieuw. "
                 />
                 {!requestState.isSuccess && (

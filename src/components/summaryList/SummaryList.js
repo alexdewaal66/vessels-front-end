@@ -9,7 +9,7 @@ import { ShowRequestState } from '../ShowRequestState';
 export function SummaryList({metadata, initialId, receiver, UICues, useFormFunctions, hiddenFieldName, elKey}) {
     elKey += '/SList';
     const {small, hasFocus} = UICues;
-    console.log(`▶▶▶ props=`, {metadata, initialId, receiver, UICues, useFormFunctions, hiddenFieldName, elKey});
+    // console.log(`▶▶▶ props=`, {metadata, initialId, receiver, UICues, useFormFunctions, hiddenFieldName, elKey});
     const {endpoint} = metadata;
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
@@ -105,7 +105,7 @@ export function SummaryList({metadata, initialId, receiver, UICues, useFormFunct
 
     return (
         <>
-            <ShowRequestState requestState={requestListState}/>
+            <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
             {list && (
                 <div>
                     {/*<div>SL: selectedId={selectedId} ; initialId={initialId}</div>*/}

@@ -1,24 +1,27 @@
 import React from 'react';
-import { ShowStatus } from '../pageLayouts/ShowStatus';
 import { Statusbar } from '../pageLayouts/Statusbar';
 
-export function ShowRequestState({requestState, description, advice}) {
+function capitalize(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
+export function ShowRequestState({requestState, description = 'de opdracht', advice}) {
     return (
         <>
             {requestState.isPending && (
                 <Statusbar>
                     Even geduld a.u.b.,
-                    {/*{description ? description : 'Opdracht '}*/}
+                    {capitalize(description)}
                     wordt uitgevoerd.
                 </Statusbar>
             )}
             {requestState.isError && (
-                <Statusbar>Er is iets fout gegaan.
+                <Statusbar>Er is iets fout gegaan met {description}.
                     {advice}
                     ({requestState.errorMsg})</Statusbar>
             )}
             {requestState.isSuccess && (
-                <Statusbar>De opdracht is uitgevoerd.</Statusbar>
+                <Statusbar>{capitalize(description)} is uitgevoerd.</Statusbar>
             )}
         </>
     );

@@ -89,10 +89,10 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
     const headers = addJwtToHeaders();
 
     requestState.setAtPending();
-    // console.log(
-    //     now() + ' makeRequest() arguments=',
-    //     {method, url, payload, requestState, onSuccess}
-    // );
+    console.log(
+        now() + ' makeRequest() arguments=',
+        {method, url, payload, requestState, onSuccess}
+    );
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,
@@ -102,7 +102,7 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
             data: payload,
             timeout: 15_000,
         });
-        // console.log(now() + ' makeRequest() response=', response);
+        console.log(now() + ' makeRequest() response=', response);
         requestState.setAtSuccess();
         if (onSuccess) onSuccess(response);
     } catch (e) {

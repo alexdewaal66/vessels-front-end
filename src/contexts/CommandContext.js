@@ -9,7 +9,7 @@ export const operationNames =  {
     delete: 'delete',
 }
 
-
+//todo: rewrite using useReducer ??
 export function CommandContextProvider({children}) {
     const [command, setCommand] = useState(
         {operation: null, data: null, entityType: null, receiver: null}

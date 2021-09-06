@@ -20,6 +20,16 @@ export const remote = {
             url, payload: probe, requestState, onSuccess, onFail});
     },
 
+    readByIds: function (metadata, idArray, requestState, onSuccess, onFail) {
+        const url = metadata.endpoint + '/ids';
+        postRequest({
+            url,
+            payload: idArray,
+            requestState,
+            onSuccess,
+            onFail
+        })
+    },
 
     read: function (metadata, id, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/' + id;

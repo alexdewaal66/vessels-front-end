@@ -34,6 +34,7 @@ function SignUp() {
                     <h1>Registreren</h1>
                     <p>Registreer en log in om gegevens, foto's & commentaar te kunnen toevoegen.</p>
                     <ShowRequestState requestState={requestState}
+                                      description={'het registreren '}
                                       advice="Probeer het opnieuw. "
                     />
                     {!requestState.isSuccess && (
