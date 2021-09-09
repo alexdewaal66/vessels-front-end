@@ -7,12 +7,13 @@ import { pages } from './index';
 import { ShowObject } from '../dev/ShowObject';
 
 function Profile() {
-    const requestState = useRequestState();
     const {user} = useContext(AuthContext);
     console.log(`user=`, user);
-/*
+
+    /*
     // fully functional but obsolete:
 
+    const requestState = useRequestState();
     const [privateContent, setPrivateContent] = useState({});
 
     function fetchUserProfile() {

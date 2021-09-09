@@ -1,7 +1,4 @@
-import { requestStates } from './utils';
-
 export function useFakeRequestState(initialValue) {
-    const value = 'useFakeRequestState';
     const errorMsg = 'useFakeRequestState'
     const setErrorMsg = () => {
     };
@@ -21,7 +18,7 @@ export function useFakeRequestState(initialValue) {
     };
 
     return {
-        value, errorMsg, setErrorMsg,
+        errorMsg, setErrorMsg,
         isIdle, isPending, isSuccess, isError,
         setAtIdle, setAtPending, setAtSuccess, setAtError
     };

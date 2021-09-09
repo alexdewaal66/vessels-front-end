@@ -1,11 +1,4 @@
-import { requestStates } from './utils';
 import { useDict, useSuperDict, setEntryProp } from './useDict';
-import { set } from 'react-hook-form';
-
-class RequestEntry {
-    constructor(dict, key) {
-    }
-}
 
 export function useRequestStateDict() {
     const dict = useDict();
@@ -54,32 +47,10 @@ export function useRequestStateDict() {
                         isError   : true,
                     });
                 },
-            } //todo? replace this with new RequestEntry(dict,key)
+            }
         );
         return dict.state[key];
     }
-
-    const isPending = (key) => (dict.state[key] === requestStates.PENDING);
-    const isIdle = (key) => (dict.state[key] === requestStates.IDLE);
-    const isSuccess = (key) => (dict.state[key] === requestStates.SUCCESS);
-    const isError = (key) => (dict.state[key] === requestStates.ERROR);
-
-    const setErrorMsg = (key, msg) => {
-        dict.set(key, {value: dict.state[key].value, errorMsg: msg})
-    }
-
-    const setAtIdle = (key) => {
-        dict.set(key, {value: requestStates.IDLE, errorMsg: ''})
-    };
-    const setAtPending = (key) => {
-        dict.set(key, {value: requestStates.PENDING, errorMsg: ''})
-    };
-    const setAtSuccess = (key) => {
-        dict.set(key, {value: requestStates.SUCCESS, errorMsg: ''})
-    };
-    const setAtError = (key) => {
-        dict.set(key, {value: requestStates.ERROR, errorMsg: ''})
-    };
 
     return {createRequestState}
 }

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { endpoints } from './endpoints';
 import { statusCodes } from '../dev/statusCodes';
-import { entitiesMetadata } from './entitiesMetadata';
 
 export function now() {
     const time = (new Date()).toLocaleTimeString();
@@ -58,6 +57,7 @@ export function addJwtToHeaders(headers = {}) {
 /******************************************/
 
 export function getRequest({url, requestState, onSuccess, onFail}) {
+    // eslint-disable-next-line no-unused-vars
     const ignorePromise = makeRequest({
         method: 'get',
         url, requestState, onSuccess, onFail,
@@ -65,6 +65,7 @@ export function getRequest({url, requestState, onSuccess, onFail}) {
 }
 
 export function postRequest({url, payload, requestState, onSuccess, onFail}) {
+    // eslint-disable-next-line no-unused-vars
     const ignorePromise = makeRequest({
         method: 'post',
         url, payload, requestState, onSuccess, onFail
@@ -72,6 +73,7 @@ export function postRequest({url, payload, requestState, onSuccess, onFail}) {
 }
 
 export function putRequest({url, payload, requestState, onSuccess, onFail}) {
+    // eslint-disable-next-line no-unused-vars
     const ignorePromise = makeRequest({
         method: 'put',
         url, payload, requestState, onSuccess, onFail
@@ -79,6 +81,7 @@ export function putRequest({url, payload, requestState, onSuccess, onFail}) {
 }
 
 export function deleteRequest({url, requestState, onSuccess, onFail}) {
+    // eslint-disable-next-line no-unused-vars
     const ignorePromise = makeRequest({
         method: 'delete',
         url, requestState, onSuccess, onFail

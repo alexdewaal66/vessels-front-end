@@ -1,16 +1,9 @@
-import { types, subtypes } from './endpoints';
 import { entitiesMetadata } from './entitiesMetadata';
 import { useDict } from './useDict';
-import { useMountEffect, useRequestState } from './customHooks';
+import { useMountEffect } from './customHooks';
 import { remote } from '../dev/ormHelpers';
-import { useFakeRequestState } from './useFakeRequestState';
 import { now } from './utils';
 import { useRequestStateDict } from './useRequestDict';
-
-const entityNamesWithReadIds = [
-    'xyz', 'zyx', 'vesselType', 'country',
-    'unLocode', 'subdivision', 'user'
-];
 
 function transformAndStoreIdArray(data, tree) {
     const branches = Object.fromEntries(data.map(
@@ -25,14 +18,6 @@ function loadIds(metadata, requestState, tree) {
     remote.readIds(
         metadata, requestState,
         (response) => transformAndStoreIdArray(response.data, tree)
-    );
-}
-
-function loadAllIds(requestState, forest) {
-    // console.log(`loadAllIds() forest.state=`, forest.state);
-    Object.keys(forest).forEach(name => {
-            loadIds(entitiesMetadata[name], requestState, forest[name]);
-        }
     );
 }
 
@@ -53,13 +38,6 @@ function transformAndStoreItemArray(metadata, data, tree) {
     );
     // console.log(`->-> branches=`, branches);
     tree.setMany(branches);
-}
-
-function loadItemsByIds(metadata, idArray, requestState, tree) {
-    remote.readByIds(
-        metadata, idArray, requestState,
-        (response) => transformAndStoreItemArray(metadata, response.data, tree)
-    )
 }
 
 function loadItemsByIds2(metadata, idArray, createRequestState, tree) {
@@ -97,6 +75,7 @@ function loadItem2(metadata, id, createRequestState, tree) {
 
 export function useStorage() {
     const forest = {
+        // each entity gets its own dictionary to ease manipulation of props and minimize cloning
         xyz: useDict(),
         zyx: useDict(),
         vesselType: useDict(),
@@ -151,6 +130,21 @@ function loadItem(metadata, id, requestState, tree) {
             }
         );
     }
+}
+
+function loadAllIds(requestState, forest) {
+    // console.log(`loadAllIds() forest.state=`, forest.state);
+    Object.keys(forest).forEach(name => {
+            loadIds(entitiesMetadata[name], requestState, forest[name]);
+        }
+    );
+}
+
+function loadItemsByIds(metadata, idArray, requestState, tree) {
+    remote.readByIds(
+        metadata, idArray, requestState,
+        (response) => transformAndStoreItemArray(metadata, response.data, tree)
+    )
 }
 
 
