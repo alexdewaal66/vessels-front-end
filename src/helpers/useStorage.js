@@ -14,35 +14,35 @@ function transformAndStoreIdArray(data, tree) {
     tree.setMany(branches);
 }
 
-function loadIds(metadata, requestState, tree) {
+function readAndStoreIds(metadata, requestState, tree) {
     remote.readIds(
         metadata, requestState,
         (response) => transformAndStoreIdArray(response.data, tree)
     );
 }
 
-function loadAllIds2(createRequestState, forest) {
-    // console.log(`loadAllIds() forest.state=`, forest.state);
+function readAndStoreAllIds(createRequestState, forest) {
+    // console.log(`readAndStoreAllIds() forest.state=`, forest.state);
     Object.keys(forest).forEach(name => {
-            const requestState = createRequestState('loadIds', name);
-            loadIds(entitiesMetadata[name], requestState, forest[name]);
+            const requestState = createRequestState('readAndStoreIds', name);
+            readAndStoreIds(entitiesMetadata[name], requestState, forest[name]);
         }
     );
 }
 
 function transformAndStoreItemArray(metadata, data, tree) {
-    const idKey = metadata.id;
+    const idKeyName = metadata.id;
     const branches = Object.fromEntries(data.map(
-        item => [item[idKey], {item}]
+        item => [item[idKeyName], {item}]
         )
     );
     // console.log(`->-> branches=`, branches);
     tree.setMany(branches);
 }
 
-function loadItemsByIds2(metadata, idArray, createRequestState, tree) {
+function readAndStoreItemsByIds(metadata, idArray, createRequestState, tree) {
     const requestState = createRequestState(
-        'loadItemsByIds', metadata.name,
+        'readAndStoreItemsByIds', metadata.name,
         idArray[0], idArray.at(-1)
     );
     remote.readByIds(
@@ -51,15 +51,13 @@ function loadItemsByIds2(metadata, idArray, createRequestState, tree) {
     )
 }
 
-function loadItem2(metadata, id, createRequestState, tree) {
-    const requestState = createRequestState('loadItem', metadata.name, id);
+function readAndStoreItem(metadata, id, createRequestState, tree) {
+    const requestState = createRequestState('readAndStoreItem', metadata.name, id);
     // const branch = tree.state[id];
-    // console.log(`>>> loadItem(${metadata.name}, ${id}) tree=`, tree);
+    // console.log(`>>> readAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
     if (!tree.state[id].item) {
         remote.read(
-            metadata,
-            id,
-            requestState,
+            metadata, id, requestState,
             (response) => {
                 const item = response.data;
                 tree.set(id, {item, fetched: now()});
@@ -67,7 +65,24 @@ function loadItem2(metadata, id, createRequestState, tree) {
             },
             () => {
                 const current = tree.state[id];
-                tree.set(id, {item: current.item, failed: now()});
+                tree.set(id, {item: current.item, fetchFailed: now()});
+            }
+        );
+    }
+}
+
+function updateAndStoreItem(metadata, item, createRequestState, tree) {
+    const requestState = createRequestState('updateAndStoreItem', metadata.name, item.id);
+    // const branch = tree.state[item.id];
+    console.log(`>>> updateAndStoreItem(${metadata.name}, ${item.id}) tree=`, tree);
+    if (tree.state[item.id]) {
+        remote.update(
+            metadata, item, requestState,
+            (response) => {
+                tree.set(item.id, {item, sent: now()});
+            },
+            () => {
+                tree.set(item.id, {item, SendFailed: now()});
             }
         );
     }
@@ -88,32 +103,43 @@ export function useStorage() {
     // const requestState = useFakeRequestState();
     const {createRequestState} = useRequestStateDict();
 
-    useMountEffect(() => loadAllIds2(createRequestState, forest));
-    // useMountEffect(() => loadAllIds2(requestState, forest));
+    useMountEffect(() => readAndStoreAllIds(createRequestState, forest));
+
+    // useMountEffect(() => readAndStoreAllIds(requestState, forest));
 
     function getItem(entityName, id) {
         // console.log(`getItem(${entityName}, ${id})`);
         if (!forest[entityName]?.state[id]) return;
         const tree = forest[entityName];
-        loadItem2(entitiesMetadata[entityName], id, createRequestState, tree);
-        // loadItem(entitiesMetadata[entityName], id, requestState, tree);
+        readAndStoreItem(entitiesMetadata[entityName], id, createRequestState, tree);
+        // readAndStoreItem(entitiesMetadata[entityName], id, requestState, tree);
     }
 
     function getItemsByIds(entityName, idArray) {
         if (!(entityName in forest)) return;
         const tree = forest[entityName];
         const absentItemsIdArray = idArray.filter(id => !tree.state[id].item);
-        loadItemsByIds2(entitiesMetadata[entityName], absentItemsIdArray, createRequestState, tree);
-        // loadItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree);
+        readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, createRequestState, tree);
+        // readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree);
     }
 
-    return {store: forest, getItem, getItemsByIds};
+    function saveItem(entityName, item) {
+        console.log(`saveItem(${entityName}, item) \n item=`, item);
+        if (!forest[entityName]?.state[item.id]) {
+            console.log(`id doesn't exist in storage:`, forest[entityName]?.state);
+            return;
+        }
+        const tree = forest[entityName];
+        updateAndStoreItem(entitiesMetadata[entityName], item, createRequestState, tree);
+    }
+
+    return {store: forest, getItem, getItemsByIds, saveItem};
 }
 
 /* uses predefined requestState
-function loadItem(metadata, id, requestState, tree) {
+function readAndStoreItem(metadata, id, requestState, tree) {
     // const branch = tree.state[id];
-    // console.log(`>>> loadItem(${metadata.name}, ${id}) tree=`, tree);
+    // console.log(`>>> readAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
     if (!tree.state[id].item) {
         remote.read(
             metadata,
@@ -132,15 +158,15 @@ function loadItem(metadata, id, requestState, tree) {
     }
 }
 
-function loadAllIds(requestState, forest) {
-    // console.log(`loadAllIds() forest.state=`, forest.state);
+function readAndStoreAllIds(requestState, forest) {
+    // console.log(`readAndStoreAllIds() forest.state=`, forest.state);
     Object.keys(forest).forEach(name => {
-            loadIds(entitiesMetadata[name], requestState, forest[name]);
+            readAndStoreIds(entitiesMetadata[name], requestState, forest[name]);
         }
     );
 }
 
-function loadItemsByIds(metadata, idArray, requestState, tree) {
+function readAndStoreItemsByIds(metadata, idArray, requestState, tree) {
     remote.readByIds(
         metadata, idArray, requestState,
         (response) => transformAndStoreItemArray(metadata, response.data, tree)

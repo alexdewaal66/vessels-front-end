@@ -44,7 +44,7 @@ export const remote = {
     },
 
     update: function (metadata, item, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint;
+        const url = metadata.endpoint + '/' + item.id;
         putRequest({
             url, payload: item, requestState, onSuccess, onFail});
     },

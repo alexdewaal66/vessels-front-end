@@ -1,32 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { cx } from '../helpers/multipleStyles';
 import { useMountEffect, useRequestState } from '../helpers/customHooks';
 import { Stringify } from './Stringify';
-import { remote } from './ormHelpers';
-import { entitiesMetadata } from '../helpers/entitiesMetadata';
 import { useDict, useSuperDict } from '../helpers/useDict';
 import { useStorage } from '../helpers/useStorage';
-import { get } from 'react-hook-form';
+import { OrmContext } from './OrmContext';
 
 
 export function Test({children, className, ...rest}) {
-    const {store, getItem, getItemsByIds} = useStorage();
+    // const {store, getItem, getItemsByIds} = useStorage();
+    const { storage } = useContext(OrmContext);
+    const {store, getItem, getItemsByIds, saveItem} = storage;
     const {createEntry, entries} = useSuperDict();
-    const key = '12345';
-
-    // function createEntry(dict, key, initialValue) {
-    //     dict.add(key, {
-    //         value: initialValue,
-    //         set: (v) =>  testDict.set(key, {...testDict.get(key), value: v})
-    //     });
-    // }
+    const testKey = '12345';
+    const testXyz = {
+        id:5,
+        name: 'testXyz',
+        xyzString: 'test-test-test',
+        description: 'testXyz-testXyz-testXyz-testXyz-testXyz',
+        ratio: 123456789,
+        zyx: null,
+    }
 
     useMountEffect( () => {
-        createEntry(key, 'allereerste');
+        createEntry(testKey, 'allereerste');
     });
 
     function updateTestDict() {
-        entries[key].set({pi: 3.1415926, onzin: 'vuhbqeuvbvuhbvuebv'});
+        entries[testKey].set({pi: 3.1415926, onzin: 'vuhbqeuvbvuhbvuebv'});
     }
 
     const loadFirstItem = (entityName) => () => {
@@ -35,7 +36,7 @@ export function Test({children, className, ...rest}) {
         getItem(entityName, id);
     };
 
-    const loadFirst100Item = (entityName) => () => {
+    const loadFirst100Items = (entityName) => () => {
         // only do first 100 items
         const idArray = Object.keys(store[entityName].state);
         const firstBunch = idArray.slice(0,100);
@@ -43,15 +44,21 @@ export function Test({children, className, ...rest}) {
         getItemsByIds(entityName, firstBunch);
     };
 
+    function saveTestXyz() {
+        console.log('saveTestXyz');
+        saveItem('xyz', testXyz);
+    }
+
     return (
         <>
             <div className={cx('', className)} {...rest}>
+                <button onClick={saveTestXyz}>saveTestXyz</button>
                 <button onClick={updateTestDict}>updateTestDict</button>
-                <Stringify data={entries[key]} >testEntries[{key}]</Stringify>
+                <Stringify data={entries[testKey]} >testEntries[{testKey}]</Stringify>
                 {Object.keys(store).map(entityName =>
                     <React.Fragment key={entityName}>
                         <button onClick={loadFirstItem(entityName)}>Laad eerste {entityName}</button>
-                        <button onClick={loadFirst100Item(entityName)}>Laad eerste 100 {entityName}s</button>
+                        <button onClick={loadFirst100Items(entityName)}>Laad eerste 100 {entityName}s</button>
                         <Stringify data={store[entityName].state}>
                             {entityName}
                         </Stringify>

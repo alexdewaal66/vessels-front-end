@@ -7,9 +7,7 @@ export function StatusContextProvider({children}) {
 
     return (
         <StatusContext.Provider value={{statusMessage, setStatusMessage}}>
-            <>
                 {children}
-            </>
         </StatusContext.Provider>
     )
 }

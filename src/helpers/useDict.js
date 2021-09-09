@@ -72,6 +72,7 @@ export function useSuperDict() {
             value: initialValue,
             set: setEntryProp(dict, key, 'value')
         });
+        return dict.state[key];
     }
 
     return {createEntry, entries: dict.state};

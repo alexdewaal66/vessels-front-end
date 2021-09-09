@@ -6,8 +6,7 @@ export function useRequestStateDict() {
     function createRequestState(...keyParts) {
         const key = [...keyParts, Date.now()].join('_');
         dict.add(key, {
-                // value: requestStates.IDLE,
-                // set: setEntryProp(dict, key, 'value'),
+                //todo: prop key to enable deletion
                 errorMsg: '',
                 setErrorMsg: setEntryProp(dict, key, 'errorMsg'),
                 isIdle    : true,
@@ -51,6 +50,8 @@ export function useRequestStateDict() {
         );
         return dict.state[key];
     }
+
+    //todo: method deleteRequestState(key) {}
 
     return {createRequestState}
 }

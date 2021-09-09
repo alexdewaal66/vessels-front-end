@@ -85,7 +85,6 @@ export function AuthContextProvider({children}) {
 
     return (
         <AuthContext.Provider value={authData}>
-            <>
                 {requestState.isIdle && (
                     <Statusbar>authenticatie nog niet gestart</Statusbar>
                 )}
@@ -102,7 +101,6 @@ export function AuthContextProvider({children}) {
                     ? <p>Loading...</p>
                     : children
                 }
-            </>
         </AuthContext.Provider>
     )
 }
