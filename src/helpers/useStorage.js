@@ -5,6 +5,7 @@ import { useMountEffect, useRequestState } from './customHooks';
 import { remote } from '../dev/ormHelpers';
 import { useFakeRequestState } from './useFakeRequestState';
 import { now } from './utils';
+import { useRequestStateDict } from './useRequestDict';
 
 const entityNamesWithReadIds = [
     'xyz', 'zyx', 'vesselType', 'country',
@@ -28,16 +29,26 @@ function loadIds(metadata, requestState, tree) {
 }
 
 function loadAllIds(requestState, forest) {
-    // console.log(`loadAllIds() forest.dict=`, forest.dict);
-    Object.keys(forest).forEach(name =>
-        loadIds(entitiesMetadata[name], requestState, forest[name])
+    // console.log(`loadAllIds() forest.state=`, forest.state);
+    Object.keys(forest).forEach(name => {
+            loadIds(entitiesMetadata[name], requestState, forest[name]);
+        }
+    );
+}
+
+function loadAllIds2(createRequestState, forest) {
+    // console.log(`loadAllIds() forest.state=`, forest.state);
+    Object.keys(forest).forEach(name => {
+            const requestState = createRequestState('loadIds', name);
+            loadIds(entitiesMetadata[name], requestState, forest[name]);
+        }
     );
 }
 
 function transformAndStoreItemArray(metadata, data, tree) {
     const idKey = metadata.id;
     const branches = Object.fromEntries(data.map(
-        item => [item[idKey], item]
+        item => [item[idKey], {item}]
         )
     );
     // console.log(`->-> branches=`, branches);
@@ -51,6 +62,39 @@ function loadItemsByIds(metadata, idArray, requestState, tree) {
     )
 }
 
+function loadItemsByIds2(metadata, idArray, createRequestState, tree) {
+    const requestState = createRequestState(
+        'loadItemsByIds', metadata.name,
+        idArray[0], idArray.at(-1)
+    );
+    remote.readByIds(
+        metadata, idArray, requestState,
+        (response) => transformAndStoreItemArray(metadata, response.data, tree)
+    )
+}
+
+function loadItem2(metadata, id, createRequestState, tree) {
+    const requestState = createRequestState('loadItem', metadata.name, id);
+    // const branch = tree.state[id];
+    // console.log(`>>> loadItem(${metadata.name}, ${id}) tree=`, tree);
+    if (!tree.state[id].item) {
+        remote.read(
+            metadata,
+            id,
+            requestState,
+            (response) => {
+                const item = response.data;
+                tree.set(id, {item, fetched: now()});
+                // console.log(`getItem(${entityName}, ${id}) item=`, item);
+            },
+            () => {
+                const current = tree.state[id];
+                tree.set(id, {item: current.item, failed: now()});
+            }
+        );
+    }
+}
+
 export function useStorage() {
     const forest = {
         xyz: useDict(),
@@ -62,52 +106,52 @@ export function useStorage() {
         user: useDict(),
         // authority: useDict(),
     };
-    const requestState = useFakeRequestState();
+    // const requestState = useFakeRequestState();
+    const {createRequestState} = useRequestStateDict();
 
-    useMountEffect(() => loadAllIds(requestState, forest));
+    useMountEffect(() => loadAllIds2(createRequestState, forest));
+    // useMountEffect(() => loadAllIds2(requestState, forest));
 
     function getItem(entityName, id) {
         // console.log(`getItem(${entityName}, ${id})`);
-        if (!forest[entityName]?.dict[id]) return;
-        let item = null;
+        if (!forest[entityName]?.state[id]) return;
         const tree = forest[entityName];
-        const branch = tree.dict[id];
-        // console.log(`>>> getItem(${entityName}, ${id}) tree=`, tree);
-        if (!branch.item) { // fetch from remote
-            remote.read(
-                entitiesMetadata[entityName],
-                id,
-                requestState,
-                (response) => {
-                    item = response.data;
-                    tree.set(id, {item, fetched: now()});
-                    // console.log(`getItem(${entityName}, ${id}) item=`, item);
-                },
-                () => { //todo: replace with anything senseful
-                    tree.set(id, {item: '❌', failed: now()});
-                }
-            );
-        }
-        // return item;
+        loadItem2(entitiesMetadata[entityName], id, createRequestState, tree);
+        // loadItem(entitiesMetadata[entityName], id, requestState, tree);
     }
 
     function getItemsByIds(entityName, idArray) {
-        if (!entityName in forest) return;
+        if (!(entityName in forest)) return;
         const tree = forest[entityName];
-        // const absentItemsList = idArray.filter( id => !tree.dict[id].item );
-        loadItemsByIds(entitiesMetadata[entityName], idArray, requestState, tree);
+        const absentItemsIdArray = idArray.filter(id => !tree.state[id].item);
+        loadItemsByIds2(entitiesMetadata[entityName], absentItemsIdArray, createRequestState, tree);
+        // loadItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree);
     }
 
     return {store: forest, getItem, getItemsByIds};
 }
 
-/*
-const storeExample = {
-    type: entitiesMetadata.zyx,
-    '1': {item: {id: 1, name: 'zyx1', description: 'zyx1zyx1zyx1'}},
-    '2': {item: null}
-};
+/* uses predefined requestState
+function loadItem(metadata, id, requestState, tree) {
+    // const branch = tree.state[id];
+    // console.log(`>>> loadItem(${metadata.name}, ${id}) tree=`, tree);
+    if (!tree.state[id].item) {
+        remote.read(
+            metadata,
+            id,
+            requestState,
+            (response) => {
+                const item = response.data;
+                tree.set(id, {item, fetched: now()});
+                // console.log(`getItem(${entityName}, ${id}) item=`, item);
+            },
+            () => {
+                const current = tree.state[id];
+                tree.set(id, {item: current.item, failed: now()});
+            }
+        );
+    }
+}
 
-let itemArray = [ {id: 1, x: 'a'}, {id: 2, x: 'b'}, {id: 3, x: 'c'} ];
-let branches = Object.fromEntries(itemArray.map( item => [item.id, item] );
-*/
+
+ */

@@ -2,7 +2,7 @@ import { useReducer } from 'react';
 
 const dictActions = {
     add: 'add',
-    setMany : 'setMany',
+    setMany: 'setMany',
     set: 'set',
     del: 'del',
 };
@@ -45,8 +45,8 @@ function dictReducer(state, {type, payload: {key, value}}) {
 }
 
 export function useDict(initialState = {}, initializer) {
-    const [dict, dispatch] = useReducer(dictReducer, initialState, initializer);
-    const get = (key) => dict[key];
+    const [state, dispatch] = useReducer(dictReducer, initialState, initializer);
+    const get = (key) => state[key];
     const add = (key, value) =>
         dispatch({type: dictActions.add, payload: {key, value}});
     const setMany = (value) =>
@@ -55,5 +55,25 @@ export function useDict(initialState = {}, initializer) {
         dispatch({type: dictActions.set, payload: {key, value}});
     const del = (key, value) =>
         dispatch({type: dictActions.del, payload: {key, value}});
-    return {dict, get, add, setMany, set, del};
+
+    return {state, get, add, setMany, set, del};
 }
+
+export const setEntryProp = (dict, key, propName) =>
+    (v) => dict.set(key, {...dict.state[key], [propName]: v});
+
+
+
+export function useSuperDict() {
+    const dict = useDict();
+
+    function createEntry(key, initialValue) {
+        dict.add(key, {
+            value: initialValue,
+            set: setEntryProp(dict, key, 'value')
+        });
+    }
+
+    return {createEntry, entries: dict.state};
+}
+

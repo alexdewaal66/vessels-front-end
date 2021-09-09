@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { requestStates } from './utils';
-import { useDict } from './useDict';
 
 export function useConditionalEffect(operation, condition, deps) {
     useEffect(() => {
@@ -26,26 +25,18 @@ export function useRequestState(initialValue = requestStates.IDLE) {
     const [value, set] = useState(initialValue);
     const [errorMsg, setErrorMsg] = useState('');
 
-    const isIdle = (value === requestStates.IDLE);
+    const isIdle    = (value === requestStates.IDLE);
     const isPending = (value === requestStates.PENDING);
     const isSuccess = (value === requestStates.SUCCESS);
-    const isError = (value === requestStates.ERROR);
+    const isError   = (value === requestStates.ERROR);
 
-    const setAtIdle = () => {
-        set(requestStates.IDLE)
-    };
-    const setAtPending = () => {
-        set(requestStates.PENDING)
-    };
-    const setAtSuccess = () => {
-        set(requestStates.SUCCESS)
-    };
-    const setAtError = () => {
-        set(requestStates.ERROR)
-    };
+    const setAtIdle    = () => set(requestStates.IDLE);
+    const setAtPending = () => set(requestStates.PENDING);
+    const setAtSuccess = () => set(requestStates.SUCCESS);
+    const setAtError   = () => set(requestStates.ERROR);
 
     return {
-        value, errorMsg, setErrorMsg,
+        errorMsg, setErrorMsg,
         isIdle, isPending, isSuccess, isError,
         setAtIdle, setAtPending, setAtSuccess, setAtError
     };

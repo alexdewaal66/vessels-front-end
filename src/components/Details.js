@@ -8,7 +8,7 @@ import { entitiesMetadata } from '../helpers/entitiesMetadata';
 
 export function Details({metadata, field, value, children}) {
     const requestState = useRequestState();
-    const [oneCountry, setOneCountry] = useState();
+    const [details, setDetails] = useState();
     const property = metadata.properties[field];
     const target = property?.details;
 
@@ -18,7 +18,7 @@ export function Details({metadata, field, value, children}) {
             probe: {[field]: value},
             metadata: entitiesMetadata[target],
             requestState: requestState,
-            onSuccess: response => setOneCountry(response.data)
+            onSuccess: response => setDetails(response.data)
         });
     }
 
@@ -32,7 +32,7 @@ export function Details({metadata, field, value, children}) {
                 {target && (
                     <>
                         <TT style={{textAlign: "left", marginLeft: "100%", top: "0"}}>
-                            <Stringify data={oneCountry}/>
+                            <Stringify data={details}/>
                         </TT>
                     </>
                 )}

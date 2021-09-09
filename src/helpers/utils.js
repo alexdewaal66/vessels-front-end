@@ -85,10 +85,10 @@ export function deleteRequest({url, requestState, onSuccess, onFail}) {
     });
 }
 
-export async function makeRequest({method, url, payload, requestState, onSuccess, onFail}) {
+export async function makeRequest({method, url, payload, requestState = null, onSuccess, onFail}) {
     const headers = addJwtToHeaders();
 
-    requestState.setAtPending();
+    requestState?.setAtPending();
     console.log(
         now() + ' makeRequest() arguments=',
         {method, url, payload, requestState, onSuccess}
@@ -103,14 +103,14 @@ export async function makeRequest({method, url, payload, requestState, onSuccess
             timeout: 15_000,
         });
         console.log(now() + ' makeRequest() response=', response);
-        requestState.setAtSuccess();
+        requestState?.setAtSuccess();
         if (onSuccess) onSuccess(response);
     } catch (e) {
         if (e?.response)
             e.response.statusText = statusCodes[e.response.status];
         console.error(now() + ' makeRequest() error=', e);
-        requestState.setAtError();
-        requestState.setErrorMsg(e.toString());
+        requestState?.setAtError();
+        requestState?.setErrorMsg(e.toString());
         if (onFail) onFail(e);
     }
 }

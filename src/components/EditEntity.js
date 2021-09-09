@@ -133,7 +133,7 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                 const err = `Unsupported requestMethod: '${requestMethod}'`;
                 console.log(err);
                 requestState.setAtError();
-                requestState.errorMsg = err;
+                requestState.setErrorMsg(err);
                 return;
         }
     }

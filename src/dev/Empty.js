@@ -42,7 +42,7 @@ export function Empty({children, className, ...rest}) {
                     <button onClick={loadIds(entitiesMetadata[name])}
                             key={'button_load_ids_' + name}
                             id={'button_load_ids_' + name}
-                            disabled={entityButtonsDisabled.dict[name]}
+                            disabled={entityButtonsDisabled.state[name]}
                     >
                         Laad {entitiesMetadata[name].label} ID's
                     </button>
