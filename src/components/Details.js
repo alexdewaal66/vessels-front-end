@@ -14,12 +14,12 @@ export function Details({metadata, field, value, children}) {
 
     function fetchItem() {
         // console.log(`itemRequestState.value=`, requestState.value);
-        findItem({
-            probe: {[field]: value},
-            metadata: entitiesMetadata[target],
-            requestState: requestState,
-            onSuccess: response => setDetails(response.data)
-        });
+        findItem(
+            entitiesMetadata[target],
+            {[field]: value},
+            requestState,
+            response => setDetails(response.data)
+        );
     }
 
     useConditionalEffect(fetchItem, !!target, [target]);

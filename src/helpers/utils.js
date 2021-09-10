@@ -24,14 +24,18 @@ export function formatTime(timestamp) {
 
 /******************************************/
 
-export function makeId(length) {
-    let result = '';
-    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    const charCount = characters.length;
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.random() * charCount);
-    }
-    return result;
+// export function makeId(length) {
+//     let result = '';
+//     const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+//     const charCount = characters.length;
+//     for (let i = 0; i < length; i++) {
+//         result += characters.charAt(Math.random() * charCount);
+//     }
+//     return result;
+// }
+
+export function makeId() {
+    return  Date.now().toString(36) + '_' + (Math.random() * 0x10_0000_0000_0000).toString(36);
 }
 
 /******************************************/
@@ -120,7 +124,7 @@ export async function makeRequest({method, url, payload, requestState = null, on
 
 /******************************************/
 
-export function findItem({probe, metadata, requestState, onSuccess}) {
+export function findItem(metadata, probe, requestState, onSuccess, onFail) {
     console.log(`findItem() probe=`, probe, `metadata.name=`, metadata.name);
     const entries = Object.entries(probe);
     console.log(`findItem() entries=`, entries);
@@ -134,6 +138,6 @@ export function findItem({probe, metadata, requestState, onSuccess}) {
         } else {
             url += param + '=' + value;
         }
-        getRequest({url, requestState, onSuccess});
+        getRequest({url, requestState, onSuccess, onFail});
     }
 }

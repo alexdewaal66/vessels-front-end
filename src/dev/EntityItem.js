@@ -6,7 +6,7 @@ class EntityItem {
         this.item = item;
     }
     get id() {
-        return Object.fromEntries( this.metadata.id.map( pn => [pn, this.item[pn]] ) );
+        return Object.fromEntries( this.metadata.id.map( propName => [propName, this.item[propName]] ) );
     }
 
 }

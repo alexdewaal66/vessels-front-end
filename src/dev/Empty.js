@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { cx } from '../helpers/multipleStyles';
 import { useMountEffect, useDict, useRequestState } from '../helpers/customHooks';
 import { Stringify } from './Stringify';
-import { remote } from './ormHelpers';
+import { remote } from '../helpers/ormHelpers';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
 
 const entityNamesWithReadIds = ['xyz', 'zyx', 'vesselType', 'country', 'unLocode', 'subdivision'];

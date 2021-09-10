@@ -1,5 +1,5 @@
-import { entitiesMetadata } from '../helpers/entitiesMetadata';
-import { getRequest, findItem, postRequest, putRequest, deleteRequest } from '../helpers/utils';
+import { entitiesMetadata } from './entitiesMetadata';
+import { getRequest, findItem, postRequest, putRequest, deleteRequest } from './utils';
 
 export const remote = {
     readIds: function (metadata, requestState, onSuccess, onFail) {
@@ -30,6 +30,8 @@ export const remote = {
             onFail
         })
     },
+
+    findByUniqueProp: findItem,
 
     read: function (metadata, id, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/' + id;

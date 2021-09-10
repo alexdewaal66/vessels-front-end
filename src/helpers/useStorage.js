@@ -1,8 +1,8 @@
 import { entitiesMetadata } from './entitiesMetadata';
 import { useDict } from './useDict';
 import { useMountEffect } from './customHooks';
-import { remote } from '../dev/ormHelpers';
-import { now } from './utils';
+import { remote } from './ormHelpers';
+import { now, makeId } from './utils';
 import { useRequestStateDict } from './useRequestDict';
 
 function transformAndStoreIdArray(data, tree) {
@@ -71,6 +71,18 @@ function readAndStoreItem(metadata, id, createRequestState, tree) {
     }
 }
 
+function readAndStoreItemByUniqueProps(metadata, probe, createRequestState, tree) {
+    const requestState = createRequestState('readAndStoreItem', metadata.name, makeId());
+    remote.findByUniqueProp(
+        metadata, probe, requestState,
+        (response) => {
+            const item = response.data;
+            tree.set(item.id, {item, fetched: now()});
+        },
+        () => {}
+    );
+}
+
 function updateAndStoreItem(metadata, item, createRequestState, tree) {
     const requestState = createRequestState('updateAndStoreItem', metadata.name, item.id);
     // const branch = tree.state[item.id];
@@ -82,11 +94,63 @@ function updateAndStoreItem(metadata, item, createRequestState, tree) {
                 tree.set(item.id, {item, sent: now()});
             },
             () => {
-                tree.set(item.id, {item, SendFailed: now()});
+                tree.set(item.id, {item, sendFailed: now()});
             }
         );
     }
 }
+
+function extractNewId(message, label) {
+    const parts = message.split(' ');
+    return (parts[0] === label) ? parseInt(parts[1]) : null;
+}
+
+
+function createAndStoreItem(metadata, item, createRequestState, tree) {
+    const requestState = createRequestState('updateAndStoreItem', metadata.name, item.id);
+    // const branch = tree.state[item.id];
+    console.log(`>>> createAndStoreItem(${metadata.name}, ${item.id}) tree=`, tree);
+    if (!tree.state[item.id]) {
+        remote.create(
+            metadata, item, requestState,
+            (response) => {
+                item.id = extractNewId(response.data, metadata.label);
+                console.log(`created item.id=`, item.id);
+                tree.add(item.id, {item, sent: now()});
+            },
+            () => {
+                item.id = makeId();
+                tree.set(item.id, {item, createFailed: now()});
+            }
+        );
+    }
+}
+
+function deleteAndStoreItem(metadata, id, createRequestState, tree) {
+    const requestState = createRequestState('deleteAndStoreItem', metadata.name, id);
+    // const branch = tree.state[item.id];
+    console.log(`>>> deleteAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
+    if (tree.state[id]) {
+        remote.delete(
+            metadata, id, requestState,
+            (response) => {
+                console.log(`deleted id=`, id);
+                tree.del(id);
+            },
+            () => {
+                const current = tree.state['failedDeletions'];
+                if (current) {
+                    tree.set('failedDeletions', [...current, id]);
+                } else {
+                    tree.add('failedDeletions', [id]);
+                }
+                tree.del(id);
+            }
+        );
+    }
+}
+
+
 
 export function useStorage() {
     const forest = {
@@ -123,55 +187,42 @@ export function useStorage() {
         // readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree);
     }
 
+    function getItemByUniqueProps(entityName, probe) {
+        // console.log(`getItemByUniqueProps(${entityName}, probe) \nprobe=`, probe);
+        const tree = forest[entityName];
+        readAndStoreItemByUniqueProps(entitiesMetadata[entityName], probe, createRequestState, tree);
+    }
+
     function saveItem(entityName, item) {
-        console.log(`saveItem(${entityName}, item) \n item=`, item);
+        console.log(`saveItem(${entityName}, ⬇) \n item=`, item);
         if (!forest[entityName]?.state[item.id]) {
-            console.log(`id doesn't exist in storage:`, forest[entityName]?.state);
+            console.error(`id doesn't exist in storage:`, forest[entityName]?.state);
             return;
         }
         const tree = forest[entityName];
         updateAndStoreItem(entitiesMetadata[entityName], item, createRequestState, tree);
     }
 
-    return {store: forest, getItem, getItemsByIds, saveItem};
-}
-
-/* uses predefined requestState
-function readAndStoreItem(metadata, id, requestState, tree) {
-    // const branch = tree.state[id];
-    // console.log(`>>> readAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
-    if (!tree.state[id].item) {
-        remote.read(
-            metadata,
-            id,
-            requestState,
-            (response) => {
-                const item = response.data;
-                tree.set(id, {item, fetched: now()});
-                // console.log(`getItem(${entityName}, ${id}) item=`, item);
-            },
-            () => {
-                const current = tree.state[id];
-                tree.set(id, {item: current.item, failed: now()});
-            }
-        );
-    }
-}
-
-function readAndStoreAllIds(requestState, forest) {
-    // console.log(`readAndStoreAllIds() forest.state=`, forest.state);
-    Object.keys(forest).forEach(name => {
-            readAndStoreIds(entitiesMetadata[name], requestState, forest[name]);
+    function newItem(entityName, item) {
+        item.id = 0;
+        console.log(`newItem(${entityName}, ⬇) \n item=`, item);
+        if (forest[entityName]?.state[item.id]) {
+            console.error(`id already exists in storage:`, forest[entityName]?.state);
+            return;
         }
-    );
+        const tree = forest[entityName];
+        createAndStoreItem(entitiesMetadata[entityName], item, createRequestState, tree);
+    }
+
+    function deleteItem(entityName, id) {
+        console.log(`deleteItem(${entityName}, ${id})`);
+        if (!forest[entityName]?.state[id]) {
+            console.error(`id doesn't exist in storage:`, forest[entityName]?.state);
+            return;
+        }
+        const tree = forest[entityName];
+        deleteAndStoreItem(entitiesMetadata[entityName], id, createRequestState, tree);
+    }
+
+    return {store: forest, getItem, getItemsByIds, saveItem, newItem, deleteItem};
 }
-
-function readAndStoreItemsByIds(metadata, idArray, requestState, tree) {
-    remote.readByIds(
-        metadata, idArray, requestState,
-        (response) => transformAndStoreItemArray(metadata, response.data, tree)
-    )
-}
-
-
- */

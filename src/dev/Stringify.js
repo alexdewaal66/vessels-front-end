@@ -13,7 +13,7 @@ export function Stringify({data, children}) {
             {children && (
                 <span style={{textDecoration: "underline"}}>{children}:</span>
             )}
-            <pre>{JSON.stringify(data, null, 2)}</pre>
+            <pre>{JSON.stringify(data, undefined, 2)}</pre>
         </div>
     );
 }

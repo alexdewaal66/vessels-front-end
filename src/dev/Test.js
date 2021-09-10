@@ -4,20 +4,28 @@ import { useMountEffect, useRequestState } from '../helpers/customHooks';
 import { Stringify } from './Stringify';
 import { useDict, useSuperDict } from '../helpers/useDict';
 import { useStorage } from '../helpers/useStorage';
-import { OrmContext } from './OrmContext';
+import { OrmContext } from '../contexts/OrmContext';
 
 
 export function Test({children, className, ...rest}) {
     // const {store, getItem, getItemsByIds} = useStorage();
     const { storage } = useContext(OrmContext);
-    const {store, getItem, getItemsByIds, saveItem} = storage;
+    const {store, getItem, getItemsByIds, saveItem, newItem, deleteItem} = storage;
     const {createEntry, entries} = useSuperDict();
     const testKey = '12345';
-    const testXyz = {
-        id:5,
-        name: 'testXyz',
+    const testXyz1 = {
+        id:4,
+        name: 'testXyz1',
         xyzString: 'test-test-test',
-        description: 'testXyz-testXyz-testXyz-testXyz-testXyz',
+        description: 'testXyz1-testXyz1-testXyz1-testXyz1-testXyz1',
+        ratio: 123456789,
+        zyx: null,
+    }
+    const testXyz2 = {
+        id:5,
+        name: 'testXyz2',
+        xyzString: 'test-test-test',
+        description: 'testXyz2-testXyz2-testXyz2-testXyz2-testXyz2',
         ratio: 123456789,
         zyx: null,
     }
@@ -46,13 +54,30 @@ export function Test({children, className, ...rest}) {
 
     function saveTestXyz() {
         console.log('saveTestXyz');
-        saveItem('xyz', testXyz);
+        saveItem('xyz', testXyz1);
+    }
+
+    function createTestXyz() {
+        console.log('saveTestXyz');
+        newItem('xyz', testXyz2);
+    }
+
+    function deleteTestXyz(e) {
+        e.preventDefault();
+        const id = e.target.id.value;
+        console.log('deleteTestXyz id=', id);
+        deleteItem('xyz', id);
     }
 
     return (
         <>
             <div className={cx('', className)} {...rest}>
                 <button onClick={saveTestXyz}>saveTestXyz</button>
+                <button onClick={createTestXyz}>createTestXyz</button>
+                <form onSubmit={deleteTestXyz}>
+                    <input name="id" placeholder="id"/>
+                    <button type={'submit'}>deleteTestXyz</button>
+                </form>
                 <button onClick={updateTestDict}>updateTestDict</button>
                 <Stringify data={entries[testKey]} >testEntries[{testKey}]</Stringify>
                 {Object.keys(store).map(entityName =>

@@ -53,8 +53,8 @@ export function useDict(initialState = {}, initializer) {
         dispatch({type: dictActions.setMany, payload: {value}});
     const set = (key, value) =>
         dispatch({type: dictActions.set, payload: {key, value}});
-    const del = (key, value) =>
-        dispatch({type: dictActions.del, payload: {key, value}});
+    const del = (key, value= null) =>
+        dispatch({type: dictActions.del, payload: {key, value: null}});
 
     return {state, get, add, setMany, set, del};
 }
