@@ -1,25 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TTC, TT } from '../dev/Tooltips';
 import { findItem } from '../helpers/utils';
 import { useConditionalEffect, useRequestState } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
 import { Stringify } from '../dev/Stringify';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
+import { OrmContext } from '../contexts/OrmContext';
+
 
 export function Details({metadata, field, value, children}) {
+    const { store, loadItemByUniqueFields } = useContext(OrmContext);
     const requestState = useRequestState();
-    const [details, setDetails] = useState();
+    const [detailsId, setDetailsId] = useState();
     const property = metadata.properties[field];
     const target = property?.details;
 
     function fetchItem() {
         // console.log(`itemRequestState.value=`, requestState.value);
-        findItem(
-            entitiesMetadata[target],
-            {[field]: value},
-            requestState,
-            response => setDetails(response.data)
-        );
+        // findItem(
+        //     entitiesMetadata[target],
+        //     {[field]: value},
+        //     requestState,
+        //     response => setDetailsId(response.data)
+        // );
+        const probe = {[field]: value};
+        console.log(`❗ target=`, target, `probe=`, probe);
+        loadItemByUniqueFields(target, probe, setDetailsId);
     }
 
     useConditionalEffect(fetchItem, !!target, [target]);
@@ -32,7 +38,7 @@ export function Details({metadata, field, value, children}) {
                 {target && (
                     <>
                         <TT style={{textAlign: "left", marginLeft: "100%", top: "0"}}>
-                            <Stringify data={details}/>
+                            <Stringify data={store[target].state[detailsId]}/>
                         </TT>
                     </>
                 )}

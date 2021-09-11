@@ -3,14 +3,11 @@ import { cx } from '../helpers/multipleStyles';
 import { useMountEffect, useRequestState } from '../helpers/customHooks';
 import { Stringify } from './Stringify';
 import { useDict, useSuperDict } from '../helpers/useDict';
-import { useStorage } from '../helpers/useStorage';
 import { OrmContext } from '../contexts/OrmContext';
 
 
 export function Test({children, className, ...rest}) {
-    // const {store, getItem, getItemsByIds} = useStorage();
-    const { storage } = useContext(OrmContext);
-    const {store, getItem, getItemsByIds, saveItem, newItem, deleteItem} = storage;
+    const {store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem} = useContext(OrmContext);
     const {createEntry, entries} = useSuperDict();
     const testKey = '12345';
     const testXyz1 = {
@@ -39,17 +36,14 @@ export function Test({children, className, ...rest}) {
     }
 
     const loadFirstItem = (entityName) => () => {
-        // only do first item
         const id = Object.keys(store[entityName].state)[0];
-        getItem(entityName, id);
+        loadItem(entityName, id);
     };
 
     const loadFirst100Items = (entityName) => () => {
-        // only do first 100 items
         const idArray = Object.keys(store[entityName].state);
         const firstBunch = idArray.slice(0,100);
-        // firstBunch.forEach( id => getItem(entityName, id) );
-        getItemsByIds(entityName, firstBunch);
+        loadItemsByIds(entityName, firstBunch);
     };
 
     function saveTestXyz() {

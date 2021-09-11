@@ -31,7 +31,7 @@ export const remote = {
         })
     },
 
-    findByUniqueProp: findItem,
+    findByUniqueField: findItem,
 
     read: function (metadata, id, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/' + id;

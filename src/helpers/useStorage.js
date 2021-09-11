@@ -61,7 +61,7 @@ function readAndStoreItem(metadata, id, createRequestState, tree) {
             (response) => {
                 const item = response.data;
                 tree.set(id, {item, fetched: now()});
-                // console.log(`getItem(${entityName}, ${id}) item=`, item);
+                // console.log(`loadItem(${entityName}, ${id}) item=`, item);
             },
             () => {
                 const current = tree.state[id];
@@ -71,13 +71,17 @@ function readAndStoreItem(metadata, id, createRequestState, tree) {
     }
 }
 
-function readAndStoreItemByUniqueProps(metadata, probe, createRequestState, tree) {
+function readAndStoreItemByUniqueFields(metadata, probe, createRequestState, tree, setResult) {
+    let foundId = null;
     const requestState = createRequestState('readAndStoreItem', metadata.name, makeId());
-    remote.findByUniqueProp(
+    remote.findByUniqueField(
         metadata, probe, requestState,
         (response) => {
             const item = response.data;
             tree.set(item.id, {item, fetched: now()});
+            foundId = item.id;
+            // console.log(`readAndStoreItemByUniqueFields() foundId=`, foundId);
+            setResult(foundId);
         },
         () => {}
     );
@@ -171,15 +175,15 @@ export function useStorage() {
 
     // useMountEffect(() => readAndStoreAllIds(requestState, forest));
 
-    function getItem(entityName, id) {
-        // console.log(`getItem(${entityName}, ${id})`);
+    function loadItem(entityName, id) {
+        // console.log(`loadItem(${entityName}, ${id})`);
         if (!forest[entityName]?.state[id]) return;
         const tree = forest[entityName];
         readAndStoreItem(entitiesMetadata[entityName], id, createRequestState, tree);
         // readAndStoreItem(entitiesMetadata[entityName], id, requestState, tree);
     }
 
-    function getItemsByIds(entityName, idArray) {
+    function loadItemsByIds(entityName, idArray) {
         if (!(entityName in forest)) return;
         const tree = forest[entityName];
         const absentItemsIdArray = idArray.filter(id => !tree.state[id].item);
@@ -187,10 +191,10 @@ export function useStorage() {
         // readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree);
     }
 
-    function getItemByUniqueProps(entityName, probe) {
-        // console.log(`getItemByUniqueProps(${entityName}, probe) \nprobe=`, probe);
+    function loadItemByUniqueFields(entityName, probe, setResult) {
+        // console.log(`loadItemByUniqueFields(${entityName}, probe) \nprobe=`, probe);
         const tree = forest[entityName];
-        readAndStoreItemByUniqueProps(entitiesMetadata[entityName], probe, createRequestState, tree);
+        readAndStoreItemByUniqueFields(entitiesMetadata[entityName], probe, createRequestState, tree, setResult);
     }
 
     function saveItem(entityName, item) {
@@ -224,5 +228,5 @@ export function useStorage() {
         deleteAndStoreItem(entitiesMetadata[entityName], id, createRequestState, tree);
     }
 
-    return {store: forest, getItem, getItemsByIds, saveItem, newItem, deleteItem};
+    return {store: forest, loadItem, loadItemsByIds, saveItem, newItem, deleteItem, loadItemByUniqueFields};
 }
