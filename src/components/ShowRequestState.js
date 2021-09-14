@@ -8,19 +8,19 @@ function capitalize(string) {
 export function ShowRequestState({requestState, description = 'de opdracht', advice}) {
     return (
         <>
-            {requestState.isPending && (
+            {requestState?.isPending && (
                 <Statusbar>
                     Even geduld a.u.b.,
                     {capitalize(description)}
                     wordt uitgevoerd.
                 </Statusbar>
             )}
-            {requestState.isError && (
+            {requestState?.isError && (
                 <Statusbar>Er is iets fout gegaan met {description}.
                     {advice}
                     ({requestState.errorMsg})</Statusbar>
             )}
-            {requestState.isSuccess && (
+            {requestState?.isSuccess && (
                 <Statusbar>{capitalize(description)} is uitgevoerd.</Statusbar>
             )}
         </>

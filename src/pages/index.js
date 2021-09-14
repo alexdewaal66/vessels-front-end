@@ -26,7 +26,7 @@ pages.displayOrder = [
 ];
 
 // curried component just for fun
-const EntityN = (entity, n) => () => <Entity entity={entity} initialId={n} />;
+const EntityN = (metadata, n) => () => <Entity metadata={metadata} initialId={n} />;
 
 const homeCommands = {
     empty: {label: 'test useDict', component: Test},

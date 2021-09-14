@@ -7,8 +7,8 @@ import pageLayout from '../pageLayouts/pageLayout.module.css';
 import { now } from '../helpers/utils';
 
 
-export function Entity({entity, initialId}) {
-    const metadata = entity ?? entitiesMetadata.xyz;
+export function Entity({metadata = entitiesMetadata.xyz, initialId}) {
+    // const metadata = entity ?? entitiesMetadata.xyz;
     console.log(now() + `metadata.name=`, metadata.name);
     const elKey =` Entity(${metadata.name},${initialId})`;
     const [item, setItem] = useState(null);

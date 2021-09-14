@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { createContext, useContext } from 'react';
 import { useStorage } from '../helpers/useStorage';
 
 // O.R.M. = Object Rest Mapping 😏

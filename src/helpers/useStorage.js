@@ -3,7 +3,8 @@ import { useDict } from './useDict';
 import { useMountEffect } from './customHooks';
 import { remote } from './ormHelpers';
 import { now, makeId } from './utils';
-import { useRequestStateDict } from './useRequestDict';
+import { useState } from 'react';
+import { RequestState } from './RequestState';
 
 function transformAndStoreIdArray(data, tree) {
     const branches = Object.fromEntries(data.map(
@@ -21,10 +22,10 @@ function readAndStoreIds(metadata, requestState, tree) {
     );
 }
 
-function readAndStoreAllIds(createRequestState, forest) {
+function readAndStoreAllIds(forest) {
     // console.log(`readAndStoreAllIds() forest.state=`, forest.state);
     Object.keys(forest).forEach(name => {
-            const requestState = createRequestState('readAndStoreIds', name);
+            const requestState = new RequestState();
             readAndStoreIds(entitiesMetadata[name], requestState, forest[name]);
         }
     );
@@ -40,19 +41,14 @@ function transformAndStoreItemArray(metadata, data, tree) {
     tree.setMany(branches);
 }
 
-function readAndStoreItemsByIds(metadata, idArray, createRequestState, tree) {
-    const requestState = createRequestState(
-        'readAndStoreItemsByIds', metadata.name,
-        idArray[0], idArray.at(-1)
-    );
+function readAndStoreItemsByIds(metadata, idArray, requestState, tree) {
     remote.readByIds(
         metadata, idArray, requestState,
         (response) => transformAndStoreItemArray(metadata, response.data, tree)
     )
 }
 
-function readAndStoreItem(metadata, id, createRequestState, tree) {
-    const requestState = createRequestState('readAndStoreItem', metadata.name, id);
+function readAndStoreItem(metadata, id, requestState, tree) {
     // const branch = tree.state[id];
     // console.log(`>>> readAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
     if (!tree.state[id].item) {
@@ -71,9 +67,8 @@ function readAndStoreItem(metadata, id, createRequestState, tree) {
     }
 }
 
-function readAndStoreItemByUniqueFields(metadata, probe, createRequestState, tree, setResult) {
+function readAndStoreItemByUniqueFields(metadata, probe, requestState, tree, setResult) {
     let foundId = null;
-    const requestState = createRequestState('readAndStoreItem', metadata.name, makeId());
     remote.findByUniqueField(
         metadata, probe, requestState,
         (response) => {
@@ -83,18 +78,18 @@ function readAndStoreItemByUniqueFields(metadata, probe, createRequestState, tre
             // console.log(`readAndStoreItemByUniqueFields() foundId=`, foundId);
             setResult(foundId);
         },
-        () => {}
+        () => {
+        }
     );
 }
 
-function updateAndStoreItem(metadata, item, createRequestState, tree) {
-    const requestState = createRequestState('updateAndStoreItem', metadata.name, item.id);
+function updateAndStoreItem(metadata, item, requestState, tree) {
     // const branch = tree.state[item.id];
     console.log(`>>> updateAndStoreItem(${metadata.name}, ${item.id}) tree=`, tree);
     if (tree.state[item.id]) {
         remote.update(
             metadata, item, requestState,
-            (response) => {
+            () => {
                 tree.set(item.id, {item, sent: now()});
             },
             () => {
@@ -109,9 +104,7 @@ function extractNewId(message, label) {
     return (parts[0] === label) ? parseInt(parts[1]) : null;
 }
 
-
-function createAndStoreItem(metadata, item, createRequestState, tree) {
-    const requestState = createRequestState('updateAndStoreItem', metadata.name, item.id);
+function createAndStoreItem(metadata, item, requestState, tree) {
     // const branch = tree.state[item.id];
     console.log(`>>> createAndStoreItem(${metadata.name}, ${item.id}) tree=`, tree);
     if (!tree.state[item.id]) {
@@ -130,8 +123,7 @@ function createAndStoreItem(metadata, item, createRequestState, tree) {
     }
 }
 
-function deleteAndStoreItem(metadata, id, createRequestState, tree) {
-    const requestState = createRequestState('deleteAndStoreItem', metadata.name, id);
+function deleteAndStoreItem(metadata, id, requestState, tree) {
     // const branch = tree.state[item.id];
     console.log(`>>> deleteAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
     if (tree.state[id]) {
@@ -155,8 +147,16 @@ function deleteAndStoreItem(metadata, id, createRequestState, tree) {
 }
 
 
-
 export function useStorage() {
+    // const [rsStatus, setRsStatus] = useContext(StatusContext);
+    const [rsStatus, setRsStatus] = useState({
+        requestState: null,
+        description: '-nog geen beschrijving-',
+        advice: '-nog geen advies-'
+    });
+    // console.log(`rsStatus=`, rsStatus);
+    // console.log(`setRsStatus=`, setRsStatus);
+
     const forest = {
         // each entity gets its own dictionary to ease manipulation of props and minimize cloning
         xyz: useDict(),
@@ -168,33 +168,51 @@ export function useStorage() {
         user: useDict(),
         // authority: useDict(),
     };
-    // const requestState = useFakeRequestState();
-    const {createRequestState} = useRequestStateDict();
+    // const {createRequestState} = useRequestStateDict();
 
-    useMountEffect(() => readAndStoreAllIds(createRequestState, forest));
+    useMountEffect(() => readAndStoreAllIds(forest));
 
     // useMountEffect(() => readAndStoreAllIds(requestState, forest));
+
 
     function loadItem(entityName, id) {
         // console.log(`loadItem(${entityName}, ${id})`);
         if (!forest[entityName]?.state[id]) return;
         const tree = forest[entityName];
-        readAndStoreItem(entitiesMetadata[entityName], id, createRequestState, tree);
-        // readAndStoreItem(entitiesMetadata[entityName], id, requestState, tree);
+        const requestState = new RequestState();
+        // console.log(`useStorage() » loadItem() » requestState=`, requestState);
+        setRsStatus({
+            requestState,
+            description: `het ophalen van ${entitiesMetadata[entityName].label} (id=${id}) `,
+            advice: ''
+        });
+        readAndStoreItem(entitiesMetadata[entityName], id, requestState, tree);
     }
 
     function loadItemsByIds(entityName, idArray) {
         if (!(entityName in forest)) return;
         const tree = forest[entityName];
         const absentItemsIdArray = idArray.filter(id => !tree.state[id].item);
-        readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, createRequestState, tree);
-        // readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree);
+        const requestState = new RequestState();
+        // console.log(`useStorage() » loadItem() » requestState=`, requestState);
+        setRsStatus({
+            requestState,
+            description: `het ophalen van ${absentItemsIdArray.length} ${entitiesMetadata[entityName].label} items `,
+            advice: ''
+        });
+        readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree);
     }
 
     function loadItemByUniqueFields(entityName, probe, setResult) {
         // console.log(`loadItemByUniqueFields(${entityName}, probe) \nprobe=`, probe);
         const tree = forest[entityName];
-        readAndStoreItemByUniqueFields(entitiesMetadata[entityName], probe, createRequestState, tree, setResult);
+        const requestState = new RequestState();
+        setRsStatus({
+            requestState,
+            description: `het ophalen van de ${entitiesMetadata[entityName].label} match `,
+            advice: ''
+        });
+        readAndStoreItemByUniqueFields(entitiesMetadata[entityName], probe, requestState, tree, setResult);
     }
 
     function saveItem(entityName, item) {
@@ -204,7 +222,13 @@ export function useStorage() {
             return;
         }
         const tree = forest[entityName];
-        updateAndStoreItem(entitiesMetadata[entityName], item, createRequestState, tree);
+        const requestState = new RequestState();
+        setRsStatus({
+            requestState,
+            description: `het bewaren van ${entitiesMetadata[entityName].label} (id=${item.id}) `,
+            advice: ''
+        });
+        updateAndStoreItem(entitiesMetadata[entityName], item, requestState, tree);
     }
 
     function newItem(entityName, item) {
@@ -215,7 +239,13 @@ export function useStorage() {
             return;
         }
         const tree = forest[entityName];
-        createAndStoreItem(entitiesMetadata[entityName], item, createRequestState, tree);
+        const requestState = new RequestState();
+        setRsStatus({
+            requestState,
+            description: `het maken van een nieuwe ${entitiesMetadata[entityName].label} `,
+            advice: ''
+        });
+        createAndStoreItem(entitiesMetadata[entityName], item, requestState, tree);
     }
 
     function deleteItem(entityName, id) {
@@ -225,8 +255,24 @@ export function useStorage() {
             return;
         }
         const tree = forest[entityName];
-        deleteAndStoreItem(entitiesMetadata[entityName], id, createRequestState, tree);
+        const requestState = new RequestState();
+        setRsStatus({
+            requestState,
+            description: `het verwijderen van ${entitiesMetadata[entityName].label} (id=${id}) `,
+            advice: ''
+        });
+        deleteAndStoreItem(entitiesMetadata[entityName], id, requestState, tree);
     }
 
-    return {store: forest, loadItem, loadItemsByIds, saveItem, newItem, deleteItem, loadItemByUniqueFields};
+    return {
+        rsStatus,
+        setRsStatus,
+        store: forest,
+        loadItem,
+        loadItemsByIds,
+        saveItem,
+        newItem,
+        deleteItem,
+        loadItemByUniqueFields
+    };
 }

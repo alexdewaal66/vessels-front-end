@@ -1,13 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { cx } from '../helpers/multipleStyles';
-import { useMountEffect, useRequestState } from '../helpers/customHooks';
+import { useMountEffect } from '../helpers/customHooks';
 import { Stringify } from './Stringify';
-import { useDict, useSuperDict } from '../helpers/useDict';
+import { useSuperDict } from '../helpers/useDict';
 import { OrmContext } from '../contexts/OrmContext';
+import { ShowRequestState } from '../components';
+import { StatusContext } from '../contexts/StatusContext';
 
 
 export function Test({children, className, ...rest}) {
-    const {store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem} = useContext(OrmContext);
+    const {rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem} = useContext(OrmContext);
     const {createEntry, entries} = useSuperDict();
     const testKey = '12345';
     const testXyz1 = {
@@ -63,9 +65,24 @@ export function Test({children, className, ...rest}) {
         deleteItem('xyz', id);
     }
 
+    function testSetStatus() {
+        setRsStatus({
+            pietje: 'Puk',
+            getal: 123.456
+        });
+    }
+
     return (
         <>
+            <Stringify data={rsStatus}>
+                status
+            </Stringify>
+
+            {rsStatus && (
+                <ShowRequestState {...rsStatus} />
+            )}
             <div className={cx('', className)} {...rest}>
+                <button onClick={testSetStatus}>testSetStatus</button>
                 <button onClick={saveTestXyz}>saveTestXyz</button>
                 <button onClick={createTestXyz}>createTestXyz</button>
                 <form onSubmit={deleteTestXyz}>
@@ -86,7 +103,7 @@ export function Test({children, className, ...rest}) {
             </div>
         </>
     );
-}
+};
 
 // function initExample() {
 //     return function () {

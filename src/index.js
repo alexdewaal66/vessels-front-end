@@ -14,13 +14,13 @@ initializeEntitiesMetadata();
 ReactDOM.render(
     <React.StrictMode>
         <Router>
-            <OrmContextProvider>
-                <StatusContextProvider>
+            <StatusContextProvider>
+                <OrmContextProvider>
                     <AuthContextProvider>
                         <App/>
                     </AuthContextProvider>
-                </StatusContextProvider>
-            </OrmContextProvider>
+                </OrmContextProvider>
+            </StatusContextProvider>
         </Router>
     </React.StrictMode>,
     document.getElementById('root')
