@@ -3,8 +3,9 @@ import { endpoints } from './endpoints';
 import { statusCodes } from '../dev/statusCodes';
 
 export function now() {
-    const time = (new Date()).toLocaleTimeString();
-    return `(${time})`;
+    const date = new Date();
+    const time = date.toLocaleTimeString();
+    return `(${time}.${date.getMilliseconds().toString().padStart(3, "0")})`;
 }
 
 export function range(size) {
@@ -35,7 +36,7 @@ export function formatTime(timestamp) {
 // }
 
 export function makeId() {
-    return  Date.now().toString(36) + '_' + (Math.random() * 0x10_0000_0000_0000).toString(36);
+    return Date.now().toString(36) + '_' + (Math.random() * 0x10_0000_0000_0000).toString(36);
 }
 
 /******************************************/
@@ -60,33 +61,34 @@ export function addJwtToHeaders(headers = {}) {
 
 /******************************************/
 
-export function getRequest({url, requestState, onSuccess, onFail}) {
+export async function getRequest({url, requestState, onSuccess, onFail}) {
     // eslint-disable-next-line no-unused-vars
-    const ignorePromise = makeRequest({
+    await makeRequest({
         method: 'get',
         url, requestState, onSuccess, onFail,
     });
 }
 
-export function postRequest({url, payload, requestState, onSuccess, onFail}) {
+export async function postRequest({url, payload, requestState, onSuccess, onFail}) {
     // eslint-disable-next-line no-unused-vars
-    const ignorePromise = makeRequest({
+    await makeRequest({
         method: 'post',
         url, payload, requestState, onSuccess, onFail
     });
 }
 
-export function putRequest({url, payload, requestState, onSuccess, onFail}) {
+export async function putRequest({url, payload, requestState, onSuccess, onFail}) {
     // eslint-disable-next-line no-unused-vars
-    const ignorePromise = makeRequest({
+    await makeRequest({
         method: 'put',
         url, payload, requestState, onSuccess, onFail
     });
 }
 
-export function deleteRequest({url, requestState, onSuccess, onFail}) {
+export async function deleteRequest({url, requestState, onSuccess, onFail}) {
     // eslint-disable-next-line no-unused-vars
-    const ignorePromise = makeRequest({
+    // const ignorePromise = makeRequest({
+    await makeRequest({
         method: 'delete',
         url, requestState, onSuccess, onFail
     });
@@ -124,20 +126,3 @@ export async function makeRequest({method, url, payload, requestState = null, on
 
 /******************************************/
 
-export function findItem(metadata, probe, requestState, onSuccess, onFail) {
-    console.log(`findItem() probe=`, probe, `metadata.name=`, metadata.name);
-    const entries = Object.entries(probe);
-    console.log(`findItem() entries=`, entries);
-    const hit = entries.find( ([k,v]) => !!v && (k in metadata.findItem.params) );
-    if (hit) {
-        const [key, value] = hit;
-        const param = metadata.findItem.params[key];
-        let url = metadata.endpoint + metadata.findItem.endpoint;
-        if (Array.isArray(param)) {
-            url += param[0] + '=' + value + '&' + param[1] + '=' + probe[param[1]];
-        } else {
-            url += param + '=' + value;
-        }
-        getRequest({url, requestState, onSuccess, onFail});
-    }
-}

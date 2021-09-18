@@ -32,4 +32,4 @@ export function Header({className}) {
             </div>
         </nav>
     );
-};
+}

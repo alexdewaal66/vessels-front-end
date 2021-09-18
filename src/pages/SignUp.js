@@ -7,7 +7,7 @@ import { useRequestState } from '../helpers/customHooks';
 import { endpoints } from '../helpers/endpoints';
 import { Aside, Command, Main, Content } from '../pageLayouts';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
-import { ShowRequestState } from '../components/ShowRequestState';
+import { ShowRequestState } from '../components';
 
 function SignUp() {
     const {handleSubmit, register} = useForm();

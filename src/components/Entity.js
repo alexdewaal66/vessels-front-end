@@ -18,7 +18,7 @@ export function Entity({metadata = entitiesMetadata.xyz, initialId}) {
         <CommandContextProvider>
             <div className={pageLayout.splitView}>
                 <span className={pageLayout.firstPart}>
-                    <div>{metadata.name}</div>
+                    {/*<div>{metadata.name}</div>*/}
                     <SummaryList metadata={metadata}
                                  initialId={initialId}
                                  receiver={'EditEntity'}

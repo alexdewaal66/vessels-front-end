@@ -3,7 +3,10 @@ import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { cx } from '../../helpers/multipleStyles';
 import { now } from '../../helpers/utils';
 
-export function SummaryTable({list, metadata, selectedId, selectItem, small, hasFocus, elKey}) {
+export function SummaryTable({
+                                 list, metadata, selectedId, selectItem, small,
+                                 hasFocus, elKey, setFocusIndexCopy
+                             }) {
     const smallStyle = (small) ? summaryStyle.small : '';
     elKey += '/STable';
 
@@ -15,6 +18,7 @@ export function SummaryTable({list, metadata, selectedId, selectItem, small, has
 
     function setFocusIndex(i) {
         setFocusIndexState(i);
+        setFocusIndexCopy(i);
         setTableFocus(true);
         // console.log(now(), `elKey=`, elKey, `\nnew focusIndex should be: `, i);
     }

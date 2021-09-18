@@ -5,11 +5,11 @@ import { Stringify } from './Stringify';
 import { useSuperDict } from '../helpers/useDict';
 import { OrmContext } from '../contexts/OrmContext';
 import { ShowRequestState } from '../components';
-import { StatusContext } from '../contexts/StatusContext';
 
 
 export function Test({children, className, ...rest}) {
-    const {rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem} = useContext(OrmContext);
+    const {allIdsLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
+        = useContext(OrmContext);
     const {createEntry, entries} = useSuperDict();
     const testKey = '12345';
     const testXyz1 = {
@@ -74,6 +74,9 @@ export function Test({children, className, ...rest}) {
 
     return (
         <>
+            <Stringify data={allIdsLoaded} >
+                allIdsLoaded
+            </Stringify>
             <Stringify data={rsStatus}>
                 status
             </Stringify>
@@ -103,8 +106,9 @@ export function Test({children, className, ...rest}) {
             </div>
         </>
     );
-};
+}
 
+/*****************************
 // function initExample() {
 //     return function () {
 //         console.log('example useState initializer');
@@ -131,4 +135,4 @@ export function Test({children, className, ...rest}) {
 // };
 //
 // useEffect(callBackExample2, []);
-
+ */

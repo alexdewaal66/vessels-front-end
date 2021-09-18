@@ -6,9 +6,13 @@ import { useRequestState } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
 import { useForm } from 'react-hook-form';
 import { Details } from './Details';
+import { OrmContext } from '../contexts/OrmContext';
+
 
 export function EditEntity({metadata, item, setItem, elKey}) {
     // console.log(`▶▶▶ props=`, {metadata, item, setItem});
+    const {rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
+        = useContext(OrmContext);
 
     const [command, setCommand] = useContext(CommandContext);
     const useFormFunctions = useForm();
@@ -88,12 +92,16 @@ export function EditEntity({metadata, item, setItem, elKey}) {
         });
     }
 
+    // function onDelete(formData) {
+    //     deleteRequest({
+    //         url: `${endpoint}/${formData.id}`,
+    //         requestState: requestState,
+    //         onSuccess: () => issueCommand.delete(formData),
+    //     });
+    // }
+    //
     function onDelete(formData) {
-        deleteRequest({
-            url: `${endpoint}/${formData.id}`,
-            requestState: requestState,
-            onSuccess: () => issueCommand.delete(formData),
-        });
+        deleteItem(metadata.name, formData.id)
     }
 
     function onSubmit({requestMethod, ...formData}) {

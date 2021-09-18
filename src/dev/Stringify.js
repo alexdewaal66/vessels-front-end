@@ -7,7 +7,8 @@ export function Stringify({data, children}) {
             overflowY: "scroll",
             width: "max-content",
             padding: "1em",
-            border: "1px solid white"
+            border: "1px solid white",
+            maxWidth: "500px",
         }}
         >
             {children && (

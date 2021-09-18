@@ -2,27 +2,30 @@ import { entitiesMetadata } from './entitiesMetadata';
 import { getRequest, findItem, postRequest, putRequest, deleteRequest } from './utils';
 
 export const remote = {
-    readIds: function (metadata, requestState, onSuccess, onFail) {
+    readIds: async function (metadata, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/ids';
-        getRequest({
-            url, requestState, onSuccess, onFail});
+        await getRequest({
+            url, requestState, onSuccess, onFail
+        });
     },
 
-    readAll: function (metadata, requestState, onSuccess, onFail) {
+    readAll: async function (metadata, requestState, onSuccess, onFail) {
         const url = metadata.endpoint;
-        getRequest({
-            url, requestState, onSuccess, onFail});
+        await getRequest({
+            url, requestState, onSuccess, onFail
+        });
     },
 
-    readByExample: function (metadata, probe, requestState, onSuccess, onFail) {
+    readByExample: async function (metadata, probe, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/qbe';
-        postRequest({
-            url, payload: probe, requestState, onSuccess, onFail});
+        await postRequest({
+            url, payload: probe, requestState, onSuccess, onFail
+        });
     },
 
-    readByIds: function (metadata, idArray, requestState, onSuccess, onFail) {
+    readByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/ids';
-        postRequest({
+        await postRequest({
             url,
             payload: idArray,
             requestState,
@@ -31,30 +34,50 @@ export const remote = {
         })
     },
 
-    findByUniqueField: findItem,
-
-    read: function (metadata, id, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint + '/' + id;
-        getRequest({
-            url, requestState, onSuccess, onFail});
+    findByUniqueField: async function (metadata, probe, requestState, onSuccess, onFail) {
+        console.log(`ormHelpers » remote.findByUniqueField() \nprobe=`, probe, `metadata.name=`, metadata.name);
+        const entries = Object.entries(probe);
+        console.log(`findItem() entries=`, entries);
+        const hit = entries.find(([k, v]) => !!v && (k in metadata.findItem.params));
+        if (hit) {
+            const [key, value] = hit;
+            const param = metadata.findItem.params[key];
+            let url = metadata.endpoint + metadata.findItem.endpoint;
+            if (Array.isArray(param)) {
+                url += param[0] + '=' + value + '&' + param[1] + '=' + probe[param[1]];
+            } else {
+                url += param + '=' + value;
+            }
+            await getRequest({url, requestState, onSuccess, onFail});
+        }
     },
 
-    create: function (metadata, item, requestState, onSuccess, onFail) {
+    read: async function (metadata, id, requestState, onSuccess, onFail) {
+        const url = metadata.endpoint + '/' + id;
+        await getRequest({
+            url, requestState, onSuccess, onFail
+        });
+    },
+
+    create: async function (metadata, item, requestState, onSuccess, onFail) {
         const url = metadata.endpoint;
-        postRequest({
-            url, payload: item, requestState, onSuccess, onFail});
+        await postRequest({
+            url, payload: item, requestState, onSuccess, onFail
+        });
     },
 
-    update: function (metadata, item, requestState, onSuccess, onFail) {
+    update: async function (metadata, item, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/' + item.id;
-        putRequest({
-            url, payload: item, requestState, onSuccess, onFail});
+        await putRequest({
+            url, payload: item, requestState, onSuccess, onFail
+        });
     },
 
-    delete: function (metadata, id, requestState, onSuccess, onFail) {
+    delete: async function (metadata, id, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/' + id;
-        deleteRequest({
-            url, requestState, onSuccess, onFail});
+        await deleteRequest({
+            url, requestState, onSuccess, onFail
+        });
     },
 };
 
