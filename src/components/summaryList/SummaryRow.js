@@ -71,7 +71,6 @@ export function SummaryRow({listItem, index, metadata, selectItem, rowFocus, UIC
         <tr onClick={choose}
             onKeyDown={handleOnKeyDown}
             ref={row}
-            // tabIndex={index}
             tabIndex={0}
             key={elKey}
             className={selectedStyle}

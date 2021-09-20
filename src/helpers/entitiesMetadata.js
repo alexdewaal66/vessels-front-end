@@ -31,7 +31,7 @@ entitiesMetadata.xyz = {
     summary: ["id", "name", "xyzString", "ratio"],
     methods: "CRUD",
     findItem: {
-        endpoint: "/find?",
+        endpoint: "/find",
         params: {},
     },
 };
@@ -54,7 +54,7 @@ entitiesMetadata.zyx = {
     summary: ["id", "name"],
     methods: "CRUD",
     findItem: {
-        endpoint: "/find?",
+        endpoint: "/find",
         params: {},
     },
 };
@@ -90,7 +90,7 @@ entitiesMetadata.user = {
     summary: ["username", "email"],
     methods: "CRUD",
     findItem: {
-        endpoint: "/find?",
+        endpoint: "/find",
         params: {},
     },
 };
@@ -110,7 +110,7 @@ entitiesMetadata.authority = {
     summary: ["username", "authority"],
     methods: "R",
     findItem: {
-        endpoint: "/find?",
+        endpoint: "/find",
         params: {},
     },
 };
@@ -142,7 +142,7 @@ entitiesMetadata.country = {
     summary: ["id", "shortNameNL", "alpha2Code", "alpha3Code"],
     methods: "R",
     findItem: {
-        endpoint: "/find?",
+        endpoint: "/find",
         params: {
             shortNameNL: "name",
             shortNameEN: "name",
@@ -165,7 +165,7 @@ entitiesMetadata.subdivision = {
             type: types.str, label: "Alfa 2 code", validation: {maxLength: 2},
             details: "country",
         },
-        subCode: {
+        subdivisionCode: {
             type: types.str, label: "Code", validation: {maxLength: 3},
         },
         name: {
@@ -175,12 +175,14 @@ entitiesMetadata.subdivision = {
             type: types.str, label: "Type", validation: {maxLength: 100},
         },
     },
-    summary: ["id", "name", "alpha2Code", "subCode"],
+    summary: ["id", "name", "alpha2Code", "subdivisionCode"],
+    // selectors: ["name", "alpha2Code"],
     methods: "R",
     findItem: {
-        endpoint: "/find?",
+        endpoint: "/find",
         params: {
-            // alpha2Code: ["alpha2Code", "subCode"],
+            subdivisionCode: "subcode",
+            alpha2Code: "alpha2code",
         },
     },
 };
@@ -210,6 +212,7 @@ entitiesMetadata.unLocode = {
         },
         subdivisionCode: {
             type: types.str, label: "deelsectorcode", validation: {maxLength: 3},
+            details: "subdivision", requires: ["alpha2Code"],
         },
         functionClassifier: {
             type: types.str, label: "functie classificatie", validation: {maxLength: 8},
@@ -233,7 +236,7 @@ entitiesMetadata.unLocode = {
     summary: ["id", "alpha2Code", "locationCode", "nameWoDiacritics"],
     methods: "R",
     findItem: {
-        endpoint: "/find?",
+        endpoint: "/find",
         params: {},
     },
 };
@@ -299,7 +302,7 @@ entitiesMetadata.vesselType = {
     methods: "CRUD",
     summary: ["id", "nameNL", "nameEN"],
     findItem: {
-        endpoint: "/find?",
+        endpoint: "/find",
         params: {},
     },
 };

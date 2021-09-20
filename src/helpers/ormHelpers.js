@@ -35,19 +35,19 @@ export const remote = {
     },
 
     findByUniqueField: async function (metadata, probe, requestState, onSuccess, onFail) {
-        console.log(`ormHelpers » remote.findByUniqueField() \nprobe=`, probe, `metadata.name=`, metadata.name);
+        // console.log(`ormHelpers » remote.findByUniqueField() \nprobe=`, probe, `metadata.name=`, metadata.name);
         const entries = Object.entries(probe);
-        console.log(`findItem() entries=`, entries);
-        const hit = entries.find(([k, v]) => !!v && (k in metadata.findItem.params));
-        if (hit) {
-            const [key, value] = hit;
-            const param = metadata.findItem.params[key];
+        // console.log(`ormHelpers » remote.findByUniqueField() \nentries=`, entries);
+        const hits = entries.filter(([k, v]) => !!v && (k in metadata.findItem.params));
+        console.log(`ormHelpers » remote.findByUniqueField() \nhits=`, hits);
+        if (hits) {
             let url = metadata.endpoint + metadata.findItem.endpoint;
-            if (Array.isArray(param)) {
-                url += param[0] + '=' + value + '&' + param[1] + '=' + probe[param[1]];
-            } else {
-                url += param + '=' + value;
-            }
+            hits.forEach( (hit, i) => {
+                const [key, value] = hit;
+                const param = metadata.findItem.params[key];
+                url += (i === 0 ? '?' : '&') + param + '=' + value;
+            });
+            console.log(`ormHelpers » remote.findByUniqueField() \nurl=`, url);
             await getRequest({url, requestState, onSuccess, onFail});
         }
     },

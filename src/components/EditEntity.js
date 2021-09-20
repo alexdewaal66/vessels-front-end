@@ -64,32 +64,38 @@ export function EditEntity({metadata, item, setItem, elKey}) {
     }
 
 
+    // function onPut(formData) {
+    //     putRequest({
+    //         url: `${endpoint}/${formData.id}`,
+    //         payload: formData,
+    //         requestState: requestState,
+    //         onSuccess: () => issueCommand.put(formData),
+    //     });
+    // }
     function onPut(formData) {
-        putRequest({
-            url: `${endpoint}/${formData.id}`,
-            payload: formData,
-            requestState: requestState,
-            onSuccess: () => issueCommand.put(formData),
-        });
+        saveItem(metadata.name, formData);
     }
 
-    function extractNewId(message, label) {
-        const parts = message.split(' ');
-        return (parts[0] === label) ? parseInt(parts[1]) : null;
-    }
+    // function extractNewId(message, label) {
+    //     const parts = message.split(' ');
+    //     return (parts[0] === label) ? parseInt(parts[1]) : null;
+    // }
 
+    // function onPost(formData) {
+    //     postRequest({
+    //         url: endpoint,
+    //         payload: formData,
+    //         requestState: requestState,
+    //         onSuccess: (response) => {
+    //             issueCommand.post({
+    //                 ...formData,
+    //                 id: extractNewId(response.data, metadata.label),
+    //             });
+    //         },
+    //     });
+    // }
     function onPost(formData) {
-        postRequest({
-            url: endpoint,
-            payload: formData,
-            requestState: requestState,
-            onSuccess: (response) => {
-                issueCommand.post({
-                    ...formData,
-                    id: extractNewId(response.data, metadata.label),
-                });
-            },
-        });
+        newItem(metadata.name, formData)
     }
 
     // function onDelete(formData) {
@@ -163,27 +169,27 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                                    {...register('requestMethod')}
                                    key="requestMethod"
                             />
-                            {Object.entries(item).map(([k, v]) => (
-                                    <Fragment key={elKey + ' / FieldRow() ' + k}>
+                            {Object.entries(item).map(([itemPropName, v]) => (
+                                    <Fragment key={elKey + ' / FieldRow() ' + itemPropName}>
                                         {/*{console.log('item, k,v:', item, k, v)}*/}
-                                        <FieldRow elKey={elKey + ' edit_row ' + k}
-                                                  key={elKey + ' edit_row ' + k}
+                                        <FieldRow elKey={elKey + ' edit_row ' + itemPropName}
+                                                  key={elKey + ' edit_row ' + itemPropName}
                                         >
                                             <FieldDesc
-                                                key={elKey + ' edit_desc ' + k}
+                                                key={elKey + ' edit_desc ' + itemPropName}
                                             >
-                                                {metadata.properties[k]?.label || k}
+                                                {metadata.properties[itemPropName]?.label || itemPropName}
                                             </FieldDesc>
                                             <FieldEl>
-                                                <Details metadata={metadata} field={k} value={v}
-                                                         key={elKey + ' edit_details ' + k}
+                                                <Details metadata={metadata} field={itemPropName} value={v} item={item}
+                                                         key={elKey + ' edit_details ' + itemPropName}
                                                 >
                                                     <Input metadata={metadata}
-                                                           field={k}
+                                                           field={itemPropName}
                                                            defaultValue={v || ''}
                                                            useFormFunctions={useFormFunctions}
                                                            readOnly={readOnly}
-                                                           key={elKey + ` / Input(${k}=${v})`}
+                                                           key={elKey + ` / Input(${itemPropName}=${v})`}
                                                     />
                                                 </Details>
                                             </FieldEl>

@@ -251,7 +251,7 @@ export function useStorage() {
             .then(setFinished);
     }
 
-    function loadItemsByIds(entityName, idArray, setFinished) {
+    function loadItemsByIds(entityName, idArray, onFinished) {
         if (!(entityName in forest)) return;
         const tree = forest[entityName];
         const absentItemsIdArray = idArray.filter(id => !tree.state[id].item.valid);
@@ -264,10 +264,10 @@ export function useStorage() {
             action: {type: 'loadItemsByIds', entityName},
         });
         readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree)
-            .then(setFinished);
+            .then(onFinished);
     }
 
-    function loadItemByUniqueFields(entityName, probe, setResult, setFinished) {
+    function loadItemByUniqueFields(entityName, probe, setResult, onFinished) {
         // console.log(`loadItemByUniqueFields(${entityName}, probe) \nprobe=`, probe);
         const tree = forest[entityName];
         const requestState = new RequestState();
@@ -278,10 +278,10 @@ export function useStorage() {
             action: {type: 'loadItemByUniqueFields', entityName, probe},
         });
         readAndStoreItemByUniqueFields(entitiesMetadata[entityName], probe, requestState, tree, setResult)
-            .then(setFinished);
+            .then(onFinished);
     }
 
-    function saveItem(entityName, item, setFinished) {
+    function saveItem(entityName, item, onFinished) {
         const id = item.id;
         console.log(`saveItem(${entityName}, ⬇) \n item=`, item);
         if (!forest[entityName]?.state[id]) {
@@ -297,10 +297,10 @@ export function useStorage() {
             action: {type: 'deleteItem', entityName, id},
         });
         updateAndStoreItem(entitiesMetadata[entityName], item, requestState, tree)
-            .then(setFinished);
+            .then(onFinished);
     }
 
-    function newItem(entityName, item, setFinished) {
+    function newItem(entityName, item, onFinished) {
         item.id = 0;
         console.log(`newItem(${entityName}, ⬇) \n item=`, item);
         if (forest[entityName]?.state[item.id]) {
@@ -316,10 +316,10 @@ export function useStorage() {
             action: {type: 'newItem', entityName, id: 0},
         });
         createAndStoreItem(entitiesMetadata[entityName], item, requestState, tree)
-            .then(setFinished);
+            .then(onFinished);
     }
 
-    function deleteItem(entityName, id, setFinished) {
+    function deleteItem(entityName, id, onFinished) {
         console.log(`deleteItem(${entityName}, ${id})`);
         if (!forest[entityName]?.state[id]) {
             console.error(`id doesn't exist in storage:`, forest[entityName]?.state);
@@ -334,7 +334,7 @@ export function useStorage() {
             action: {type: 'deleteItem', entityName, id},
         });
         deleteAndStoreItem(entitiesMetadata[entityName], id, requestState, tree)
-            .then(setFinished);
+            .then(onFinished);
     }
 
     return {

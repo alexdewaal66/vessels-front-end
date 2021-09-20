@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { getRequest, now } from '../../helpers/utils';
-import { useConditionalEffect, useMountEffect, useRequestState } from '../../helpers/customHooks';
+import { now } from '../../helpers/utils';
+import { useConditionalEffect, useRequestState } from '../../helpers/customHooks';
 import { SummaryTable } from './';
 import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
 import { createEmptyItem } from '../../helpers/entitiesMetadata';
 import { ShowRequestState } from '../ShowRequestState';
 import { OrmContext } from '../../contexts/OrmContext';
-import { Stringify } from '../../dev/Stringify';
-import { validities, itemStates } from '../../helpers/useStorage';
+import { validities } from '../../helpers/useStorage';
 
 export function SummaryList({
                                 metadata, initialId, receiver, UICues,
@@ -15,7 +14,7 @@ export function SummaryList({
                             }) {
     elKey += '/SList';
     const entityName = metadata.name;
-    const {allIdsLoaded, store, rsStatus, loadItemsByIds}
+    const {allIdsLoaded, store, loadItemsByIds}
         = useContext(OrmContext);
     const {small, hasFocus} = UICues;
     // console.log(`▶▶▶ props=`, {metadata, initialId, receiver, UICues, useFormFunctions, hiddenFieldName, elKey});
@@ -28,15 +27,15 @@ export function SummaryList({
     const [command, setCommand] = useContext(CommandContext);
     const [focusIndexCopy, setFocusIndexCopy] = useState();
 
-    const [loadCntr, setLoadCntr] = useState(0);
+    const [loadCounter, setLoadCounter] = useState(0);
     const [pendingBlocks, setPendingBlocks] = useState([]);
 
     function setSingleBlock(index, value) {
-        setPendingBlocks( currentBlocks =>
-            [...currentBlocks.slice(0, index), value, ...currentBlocks.slice(index+1)])
+        setPendingBlocks(currentBlocks =>
+            [...currentBlocks.slice(0, index), value, ...currentBlocks.slice(index + 1)])
     }
 
-    console.log(`SummaryList \nloadCntr=`, loadCntr, `\npendingBlocks=`, pendingBlocks);
+    // console.log(`SummaryList \nloadCounter=`, loadCounter, `\npendingBlocks=`, pendingBlocks);
 
     function editItem(item) {
         // console.log(`editItem() item.id=`, item.id);
@@ -127,28 +126,30 @@ export function SummaryList({
 
 
     function loadUnloadedItems() {
-        const blockSize = 50;
+        if (loadCounter > 1) return;
+
+        const blockSize = 5000;
         const tree = store[metadata.name];
 
         if (pendingBlocks.length === 0) {
-            const blockCount = Math.ceil(Object.entries(tree.state).length / blockSize);
+            const blockCount = 1 + Math.ceil(Object.entries(tree.state).length / blockSize);
             setPendingBlocks(Array(blockCount).fill(false));
             return;
         }
-        if (loadCntr > 5) return;
 
-        const unloadedFilter = (entry) => {
-            const val = entry[1].validity === validities.id;
-            const bNr = Math.floor(parseInt(entry[0]) / blockSize);
-            const pb = pendingBlocks[bNr];
-            // console.log(`unloadedFilter() \nval=`, val, `\nbNr=`, bNr, `\npb=`, pb);
-            return val && !pb;
+        const unloadedFilter = (entry, index) => {
+            const hasOnlyId = entry[1].validity === validities.id;
+            // const blockNr = Math.floor(parseInt(entry[0]) / blockSize);
+            const blockNr = Math.floor(index / blockSize);
+            const isBlockPending = pendingBlocks[blockNr];
+            // console.log(`unloadedFilter() \nhasOnlyId=`, hasOnlyId, `\nblockNr=`, blockNr, `\nisBlockPending=`, isBlockPending);
+            return hasOnlyId && !isBlockPending;
         };
 
         const entries = Object.entries(tree.state);
-        console.log(`SummaryList » loadUnloadedItems()\n\tentries=`, entries, `\n\tpendingBlocks=`, pendingBlocks);
+        // console.log(`SummaryList » loadUnloadedItems()\n\tentries=`, entries, `\n\tpendingBlocks=`, pendingBlocks);
         const first = entries.findIndex(unloadedFilter);
-        console.log(`SummaryList » loadUnloadedItems()\nfirst=`, first);
+        // console.log(`SummaryList » loadUnloadedItems()\nfirst=`, first);
         if (first === -1) return;
 
         const unloaded = entries.slice(first, first + blockSize).filter(unloadedFilter);
@@ -156,30 +157,32 @@ export function SummaryList({
         if (unloaded.length > 0) {
             const endIndex = Math.min(blockSize, unloaded.length);
             const unloadedIds = unloaded.slice(0, endIndex).map(e => e[1].item.id);
-            console.log(`SummaryList » loadUnloadedItems()\n\tunloadedIds=`, unloadedIds);
-            setLoadCntr(c => c + 1);
+            // console.log(`SummaryList » loadUnloadedItems()\n\tunloadedIds=`, unloadedIds);
+            setLoadCounter(c => c + 1);
             // set the block to be loaded as 'pending'
-            const currentBlockNr = Math.floor(parseInt(entries[first][0]) / blockSize);
+            // const currentBlockNr = Math.floor(parseInt(entries[first][0]) / blockSize);
+            const currentBlockNr = Math.floor(first / blockSize);
             // console.log(`entries[first]=`, entries[first]);
             // console.log(`currentBlockNr=`, currentBlockNr);
             setSingleBlock(currentBlockNr, true);
-            loadItemsByIds(entityName, unloadedIds, () => {
-                setLoadCntr(c => c - 1);
-                console.log(`setFinished() before set`,
-                    `\n\tcurrentBlockNr=`, currentBlockNr,
-                    `\n\tpendingBlocks=`, pendingBlocks);
-                setSingleBlock(currentBlockNr, false);
-                console.log(`setFinished() after set`,
-                    `\n\tcurrentBlockNr=`, currentBlockNr,
-                    `\n\tpendingBlocks=`, pendingBlocks);
-            });
+            loadItemsByIds(entityName, unloadedIds,
+                () => {
+                    setLoadCounter(c => c - 1);
+                    // console.log(`setFinished() before set`, `\n\tcurrentBlockNr=`, currentBlockNr, `\n\tpendingBlocks=`, pendingBlocks);
+                    setSingleBlock(currentBlockNr, false);
+                    // console.log(`setFinished() after set`, `\n\tcurrentBlockNr=`, currentBlockNr, `\n\tpendingBlocks=`, pendingBlocks);
+                },
+                (error) => {
+                    console.log(`❌ error=`, error);
+                }
+            );
         }
     }
 
     useConditionalEffect(
         loadUnloadedItems,
-        (loadCntr < 5),
-        [loadCntr, pendingBlocks]
+        (loadCounter < 5),
+        [loadCounter, pendingBlocks]
     );
 
 
