@@ -7,6 +7,7 @@ import { createEmptyItem } from '../../helpers/entitiesMetadata';
 import { ShowRequestState } from '../ShowRequestState';
 import { OrmContext } from '../../contexts/OrmContext';
 import { validities } from '../../helpers/useStorage';
+import { useBGLoading } from '../../helpers/useBGLoading';
 
 export function SummaryList({
                                 metadata, initialId, receiver, UICues,
@@ -14,8 +15,8 @@ export function SummaryList({
                             }) {
     elKey += '/SList';
     const entityName = metadata.name;
-    const {allIdsLoaded, store, loadItemsByIds}
-        = useContext(OrmContext);
+    const storage = useContext(OrmContext);
+    const {allIdsLoaded, store, loadItemsByIds} = storage;
     const {small, hasFocus} = UICues;
     // console.log(`▶▶▶ props=`, {metadata, initialId, receiver, UICues, useFormFunctions, hiddenFieldName, elKey});
     // const {endpoint} = metadata;
@@ -25,17 +26,8 @@ export function SummaryList({
     const [preSelectedId, setPreSelectedId] = useState(initialId);
     const [selectedId, setSelectedId] = useState(initialId);
     const [command, setCommand] = useContext(CommandContext);
-    const [focusIndexCopy, setFocusIndexCopy] = useState();
 
-    const [loadCounter, setLoadCounter] = useState(0);
-    const [pendingBlocks, setPendingBlocks] = useState([]);
-
-    function setSingleBlock(index, value) {
-        setPendingBlocks(currentBlocks =>
-            [...currentBlocks.slice(0, index), value, ...currentBlocks.slice(index + 1)])
-    }
-
-    // console.log(`SummaryList \nloadCounter=`, loadCounter, `\npendingBlocks=`, pendingBlocks);
+    useBGLoading(storage, metadata);
 
     function editItem(item) {
         // console.log(`editItem() item.id=`, item.id);
@@ -89,11 +81,6 @@ export function SummaryList({
 
     function fetchList() {
         console.log(now() + ' fetchList()');
-        // getRequest({
-        //     url: endpoint,
-        //     requestState: requestListState,
-        //     onSuccess: (response) => updateList(response.data),
-        // })
         // console.log(`SummaryList » fetchList() \nstore[${metadata.name}].state=`, store[metadata.name].state);
         const entries = Object.entries(store[metadata.name].state);
         // console.log(`SummaryList » fetchList() \nentries=`, entries);
@@ -102,88 +89,24 @@ export function SummaryList({
         updateList(list);
     }
 
+    // console.log(`❗❗ metadata.name=`, metadata.name);
     useConditionalEffect(fetchList, allIdsLoaded, [store[metadata.name].state]);
 
 
-    // function loadItemsNearSelectedId() {
-    //     const selectedIndex = Math.max(list.findIndex(item => item.id === selectedId), 0);
-    //     const startIndex = Math.max(0, selectedIndex - 50);
-    //     const endIndex   = Math.min( selectedIndex + 50, list.length);
+    // function loadItemsNearId(id, list) {
+    //     const index = Math.max(list.findIndex(item => item.id === id), 0);
+    //     loadItemsNearIndex(index, list);
+    // }
+    // useConditionalEffect(() => loadItemsNearId(selectedId, list), !!selectedId ,[selectedId]);
+    //
+    //
+    // function loadItemsNearIndex(index, list) {
+    //     const startIndex = Math.max(0, index - 50);
+    //     const endIndex   = Math.min( index + 50, list.length);
     //     const nearIds = list.slice(startIndex, endIndex).map(e => e.id);
     //     loadItemsByIds(entityName, nearIds);
     // }
-    // useConditionalEffect(loadItemsNearSelectedId, !!selectedId ,[selectedId]);
-    //
-    //
-    // function loadItemsNearFocusIndex() {
-    //     const startIndex = Math.max(0, focusIndexCopy - 50);
-    //     const endIndex   = Math.min( focusIndexCopy + 50, list.length);
-    //     const nearIds = list.slice(startIndex, endIndex).map(e => e.id);
-    //     console.log(`nearIds=`, nearIds);
-    //     loadItemsByIds(entityName, nearIds);
-    // }
-    // useConditionalEffect(loadItemsNearFocusIndex, !!focusIndexCopy ,[focusIndexCopy]);
-
-
-    function loadUnloadedItems() {
-        if (loadCounter > 1) return;
-
-        const blockSize = 5000;
-        const tree = store[metadata.name];
-
-        if (pendingBlocks.length === 0) {
-            const blockCount = 1 + Math.ceil(Object.entries(tree.state).length / blockSize);
-            setPendingBlocks(Array(blockCount).fill(false));
-            return;
-        }
-
-        const unloadedFilter = (entry, index) => {
-            const hasOnlyId = entry[1].validity === validities.id;
-            // const blockNr = Math.floor(parseInt(entry[0]) / blockSize);
-            const blockNr = Math.floor(index / blockSize);
-            const isBlockPending = pendingBlocks[blockNr];
-            // console.log(`unloadedFilter() \nhasOnlyId=`, hasOnlyId, `\nblockNr=`, blockNr, `\nisBlockPending=`, isBlockPending);
-            return hasOnlyId && !isBlockPending;
-        };
-
-        const entries = Object.entries(tree.state);
-        // console.log(`SummaryList » loadUnloadedItems()\n\tentries=`, entries, `\n\tpendingBlocks=`, pendingBlocks);
-        const first = entries.findIndex(unloadedFilter);
-        // console.log(`SummaryList » loadUnloadedItems()\nfirst=`, first);
-        if (first === -1) return;
-
-        const unloaded = entries.slice(first, first + blockSize).filter(unloadedFilter);
-        // console.log(`SummaryList » loadUnloadedItems()\nunloaded=`, unloaded);
-        if (unloaded.length > 0) {
-            const endIndex = Math.min(blockSize, unloaded.length);
-            const unloadedIds = unloaded.slice(0, endIndex).map(e => e[1].item.id);
-            // console.log(`SummaryList » loadUnloadedItems()\n\tunloadedIds=`, unloadedIds);
-            setLoadCounter(c => c + 1);
-            // set the block to be loaded as 'pending'
-            // const currentBlockNr = Math.floor(parseInt(entries[first][0]) / blockSize);
-            const currentBlockNr = Math.floor(first / blockSize);
-            // console.log(`entries[first]=`, entries[first]);
-            // console.log(`currentBlockNr=`, currentBlockNr);
-            setSingleBlock(currentBlockNr, true);
-            loadItemsByIds(entityName, unloadedIds,
-                () => {
-                    setLoadCounter(c => c - 1);
-                    // console.log(`setFinished() before set`, `\n\tcurrentBlockNr=`, currentBlockNr, `\n\tpendingBlocks=`, pendingBlocks);
-                    setSingleBlock(currentBlockNr, false);
-                    // console.log(`setFinished() after set`, `\n\tcurrentBlockNr=`, currentBlockNr, `\n\tpendingBlocks=`, pendingBlocks);
-                },
-                (error) => {
-                    console.log(`❌ error=`, error);
-                }
-            );
-        }
-    }
-
-    useConditionalEffect(
-        loadUnloadedItems,
-        (loadCounter < 5),
-        [loadCounter, pendingBlocks]
-    );
+    // useConditionalEffect(() => loadItemsNearIndex(focusIndexCopy, list), !!focusIndexCopy ,[focusIndexCopy]);
 
 
     const conditions = {
@@ -213,9 +136,7 @@ export function SummaryList({
     return (
         <>
             <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
-            {/*<Stringify data={store[entityName].state}>*/}
-            {/*    {entityName}*/}
-            {/*</Stringify>*/}
+            {/*<Stringify data={store[entityName].state}>{entityName}</Stringify>*/}
             {list && (
                 <div>
                     {/*<div>SL: selectedId={selectedId} ; initialId={initialId}</div>*/}
@@ -227,7 +148,6 @@ export function SummaryList({
                                   hasFocus={hasFocus}
                                   elKey={elKey}
                                   key={elKey}
-                                  setFocusIndexCopy={setFocusIndexCopy}
                         // elKey={elKey+selectedId}
                         // key={elKey+selectedId}
                     />

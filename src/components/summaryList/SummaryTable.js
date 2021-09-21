@@ -5,7 +5,7 @@ import { now } from '../../helpers/utils';
 
 export function SummaryTable({
                                  list, metadata, selectedId, selectItem, small,
-                                 hasFocus, elKey, setFocusIndexCopy
+                                 hasFocus, elKey
                              }) {
     const smallStyle = (small) ? summaryStyle.small : '';
     elKey += '/STable';
@@ -18,7 +18,6 @@ export function SummaryTable({
 
     function setFocusIndex(i) {
         setFocusIndexState(i);
-        setFocusIndexCopy(i);
         setTableFocus(true);
         // console.log(now(), `elKey=`, elKey, `\nnew focusIndex should be: `, i);
     }

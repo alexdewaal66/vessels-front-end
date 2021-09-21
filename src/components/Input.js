@@ -40,7 +40,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
     const elKey = `Input(${metadata.name},${field},${defaultValue})`;
 
     // console.log(`metadata=`, metadata, `\nfield=`, field, `\nproperty=`, property);
-    readOnly = readOnly || metadata.methods === 'R' || property.readOnly;
+    readOnly = readOnly || metadata.methods === 'R' || property?.readOnly;
     // const [command, setCommand] = useContext(CommandContext);
     // const [fieldNameOfListedEntity, setFieldNameOfListedEntity] = useState(null);
     let inputType = {};

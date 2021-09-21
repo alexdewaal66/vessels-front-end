@@ -204,7 +204,7 @@ export function useStorage() {
         unLocode: useDict(),
         subdivision: useDict(),
         user: useDict(),
-        // authority: useDict(),
+        authority: useDict(),
     };
 
     const [allIdsLoaded, setAllIdsLoaded] = useState(null);

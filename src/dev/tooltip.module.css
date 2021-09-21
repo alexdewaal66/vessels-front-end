@@ -6,8 +6,8 @@
 .container .text {
     visibility: hidden;
     /*width: 50%;*/
-    background-color: hsla(0, 50%, 0%, 0.30);
-    color: hsla(0, 50%, 100%, 0.90);
+    background-color: hsla(0, 00%, 50%, 0.80);
+    color: hsla(0, 50%, 100%, 0.95);
     text-align: center;
     padding: 5px;
     border-radius: 6px;

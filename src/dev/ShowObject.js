@@ -6,32 +6,39 @@ export function ShowObject({entityName, data, tooltip}) {
     if (data) {
         // console.log(`data=`, data);
         return (
-            <ul>
-                {Object.entries(data).map(([key, value]) =>
-                    <li key={key}>
-                        {tooltip ? (
-                            <TTC>{key} :
-                                <TT>{typeof value}</TT>
-                            </TTC>
-                        ) : (
-                            <>{entityName ? (
-                                <>
-                                    {entitiesMetadata[entityName].properties[key].label} :
-                                </>
+            <>
+                {entityName && (
+                    <>
+                        {entitiesMetadata[entityName].label}
+                    </>
+                )}
+                <ul>
+                    {Object.entries(data).map(([key, value]) =>
+                        <li key={key}>
+                            {tooltip ? (
+                                <TTC>{key} :
+                                    <TT>{typeof value}</TT>
+                                </TTC>
                             ) : (
-                                <>
-                                    {key} :
+                                <>{entityName ? (
+                                    <span style={{whiteSpace: 'pre'}}>
+                                        {entitiesMetadata[entityName].properties[key].label} :
+                                    </span>
+                                ) : (
+                                    <>
+                                        {key} :
+                                    </>
+                                )}
                                 </>
                             )}
-                            </>
-                        )}
-                        {typeof value === 'object'
-                            ? <ShowObject data={value}/>
-                            : <>{value}</>
-                        }
-                    </li>
-                )}
-            </ul>
+                            {typeof value === 'object'
+                                ? <ShowObject data={value}/>
+                                : <>{value}</>
+                            }
+                        </li>
+                    )}
+                </ul>
+            </>
         );
     } else return null;
 }

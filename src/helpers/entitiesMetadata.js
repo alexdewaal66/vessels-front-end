@@ -326,7 +326,7 @@ export function initializeEntitiesMetadata() {
 }
 
 export function createEmptyItem(metadata) {
-    console.log(`--------metadata.name=`, metadata.name);
+    // console.log(`entitiesMetadata » createEmptyItem() \n\tmetadata.name=`, metadata.name);
     const item = {};
     Object.keys(metadata.properties).forEach(key => {
         switch (metadata.properties[key].type) {
