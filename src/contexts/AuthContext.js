@@ -64,7 +64,7 @@ export function AuthContextProvider({children}) {
         return expiration - Date.now() > oneMinute ? Jwt : null;
     }
 
-    useMountEffect(() => {
+    useMountEffect(function checkJwtAndActAccordingly()  {
         const Jwt = getJwtIfValid();
         if (!Jwt) {
             // geen geldige JWT

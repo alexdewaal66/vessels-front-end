@@ -5,7 +5,8 @@ import { Stringify } from './Stringify';
 import { useSuperDict } from '../helpers/useDict';
 import { OrmContext } from '../contexts/OrmContext';
 import { ShowRequestState } from '../components';
-
+import { transform } from '../helpers/transform';
+import { ShowObject } from './ShowObject';
 
 export function Test({children, className, ...rest}) {
     const {allIdsLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
@@ -13,7 +14,7 @@ export function Test({children, className, ...rest}) {
     const {createEntry, entries} = useSuperDict();
     const testKey = '12345';
     const testXyz1 = {
-        id:4,
+        id: 4,
         name: 'testXyz1',
         xyzString: 'test-test-test',
         description: 'testXyz1-testXyz1-testXyz1-testXyz1-testXyz1',
@@ -21,7 +22,7 @@ export function Test({children, className, ...rest}) {
         zyx: null,
     }
     const testXyz2 = {
-        id:5,
+        id: 5,
         name: 'testXyz2',
         xyzString: 'test-test-test',
         description: 'testXyz2-testXyz2-testXyz2-testXyz2-testXyz2',
@@ -29,7 +30,7 @@ export function Test({children, className, ...rest}) {
         zyx: null,
     }
 
-    useMountEffect( () => {
+    useMountEffect(() => {
         createEntry(testKey, 'allereerste');
     });
 
@@ -44,7 +45,7 @@ export function Test({children, className, ...rest}) {
 
     const loadFirst100Items = (entityName) => () => {
         const idArray = Object.keys(store[entityName].state);
-        const firstBunch = idArray.slice(0,100);
+        const firstBunch = idArray.slice(0, 100);
         loadItemsByIds(entityName, firstBunch);
     };
 
@@ -74,7 +75,9 @@ export function Test({children, className, ...rest}) {
 
     return (
         <>
-            <Stringify data={allIdsLoaded} >
+            {'= < > ∼ ≠'}
+            <ShowObject data={transform('unLocode', 'functionClassifier', '1-345---')} />
+            <Stringify data={allIdsLoaded}>
                 allIdsLoaded
             </Stringify>
             <Stringify data={rsStatus}>
@@ -93,7 +96,7 @@ export function Test({children, className, ...rest}) {
                     <button type={'submit'}>deleteTestXyz</button>
                 </form>
                 <button onClick={updateTestDict}>updateTestDict</button>
-                <Stringify data={entries[testKey]} >testEntries[{testKey}]</Stringify>
+                <Stringify data={entries[testKey]}>testEntries[{testKey}]</Stringify>
                 {Object.keys(store).map(entityName =>
                     <React.Fragment key={entityName}>
                         <button onClick={loadFirstItem(entityName)}>Laad eerste {entityName}</button>
@@ -108,31 +111,55 @@ export function Test({children, className, ...rest}) {
     );
 }
 
-/*****************************
-// function initExample() {
-//     return function () {
-//         console.log('example useState initializer');
-//         return 0;
-//     };
-// }
-//
-// const cleanupExample1 = () => {
-//     console.log('example useEffect cleanup named');
-// };
-//
-// const callBackExample1 = () => {
-//     console.log('example useEffect callback #1');
-//     return cleanupExample1;
-// };
-//
-// useEffect(callBackExample1, []);
-//
-// const callBackExample2 = () => {
-//     console.log('example useEffect callback #2');
-//     return () => {
-//         console.log('example useEffect cleanup inline');
-//     };
-// };
-//
-// useEffect(callBackExample2, []);
- */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+function initExample() {
+    return function () {
+        console.log('example useState initializer');
+        return 0;
+    };
+}
+
+const cleanupExample1 = () => {
+    console.log('example useEffect cleanup named');
+};
+
+const callBackExample1 = () => {
+    console.log('example useEffect callback #1');
+    return cleanupExample1;
+};
+
+useEffect(callBackExample1, []);
+
+const callBackExample2 = () => {
+    console.log('example useEffect callback #2');
+    return () => {
+        console.log('example useEffect cleanup inline');
+    };
+};
+
+useEffect(callBackExample2, []);
+* * * * * * * * * * * * * * * * * * * * * * * * * */
+const queryOperators = [
+    '==', '!=', '>', '>=', '<', '<=',
+    // numeric
+    '≈',
+    // string
+    '~%', '%~', '%~%'
+
+];
+
+const xyzQuery = {
+    probe: {
+        name: 'era',
+        xyzString: 'vacuum',
+        ratio: 13.5,
+        zyx: {id: 3}
+    },
+    operator: {
+        name: 'contains',
+        xyzString: 'contains',
+        ratio: '<=',
+        zyx: '='
+    },
+    match: 'any'
+};

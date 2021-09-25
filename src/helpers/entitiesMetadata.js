@@ -215,7 +215,7 @@ entitiesMetadata.unLocode = {
             details: "subdivision", requires: ["alpha2Code"],
         },
         functionClassifier: {
-            type: types.str, label: "functie classificatie", validation: {maxLength: 8},
+            type: types.str, label: "functie classificatie", validation: {maxLength: 8}, details: "transform",
         },
         status: {
             type: types.str, label: "status", validation: {maxLength: 2},

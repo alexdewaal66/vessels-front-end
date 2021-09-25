@@ -4,6 +4,7 @@ import { useConditionalEffect } from '../helpers/customHooks';
 import { ShowRequestState } from './ShowRequestState';
 import { OrmContext } from '../contexts/OrmContext';
 import { ShowObject } from '../dev/ShowObject';
+import { transform } from '../helpers/transform';
 
 
 export function Details({metadata, field, value, item, children}) {
@@ -11,6 +12,7 @@ export function Details({metadata, field, value, item, children}) {
     const [detailsId, setDetailsId] = useState();
     const property = metadata.properties[field];
     const target = property?.details;
+    let data = null;
 
     function fetchItem() {
         const probe = item;
@@ -18,18 +20,27 @@ export function Details({metadata, field, value, item, children}) {
         loadItemByUniqueFields(target, probe, setDetailsId);
     }
 
-    useConditionalEffect(fetchItem, !!target, [target]);
+    useConditionalEffect(fetchItem, (target && value && target !== 'transform'), [target]);
 
 
     return (
         <TTC>
             <ShowRequestState {...rsStatus} description={rsStatus.description + '(details) '}/>
             {children}
-            {target && (
+            {target && value && (
                 <React.Fragment key={field + target}>
                     &nbsp;»
                     <TT style={{textAlign: "left", marginLeft: "100%", top: "0"}}>
-                        <ShowObject entityName={target} data={store[target].state[detailsId]?.item}/>
+                        <ShowObject
+                            entityName={target === 'transform'
+                                ? null
+                                : target
+                            }
+                            data={target === 'transform'
+                                ? transform(metadata.name, field, value)
+                                : store[target].state[detailsId]?.item
+                            }
+                        />
                     </TT>
                 </React.Fragment>
             )}

@@ -14,23 +14,19 @@ export function ShowObject({entityName, data, tooltip}) {
                 )}
                 <ul>
                     {Object.entries(data).map(([key, value]) =>
-                        <li key={key}>
-                            {tooltip ? (
-                                <TTC>{key} :
+                        <li key={key} style={{listStyleType: 'none'}}>
+                            {tooltip
+                                ? <TTC>{key} :
                                     <TT>{typeof value}</TT>
                                 </TTC>
-                            ) : (
-                                <>{entityName ? (
-                                    <span style={{whiteSpace: 'pre'}}>
-                                        {entitiesMetadata[entityName].properties[key].label} :
-                                    </span>
-                                ) : (
-                                    <>
-                                        {key} :
-                                    </>
-                                )}
-                                </>
-                            )}
+                                : <span style={{whiteSpace: 'pre'}}>
+                                    {entityName
+                                        ? entitiesMetadata[entityName].properties[key].label
+                                        : key
+                                    }
+                                    :
+                                </span>
+                            }
                             {typeof value === 'object'
                                 ? <ShowObject data={value}/>
                                 : <>{value}</>
@@ -40,5 +36,5 @@ export function ShowObject({entityName, data, tooltip}) {
                 </ul>
             </>
         );
-    } else return null;
+    } else return null
 }

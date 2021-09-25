@@ -10,7 +10,7 @@ export function SummaryRow({listItem, index, metadata, selectItem, rowFocus, UIC
     elKey += `/SRow`;
 
 
-    useEffect(() => {
+    useEffect(function scrollAndFocusIfNecessary() {
         if (hasVisualPriority)
             row.current.scrollIntoView({block: "center"});
         if (hasFocus) {

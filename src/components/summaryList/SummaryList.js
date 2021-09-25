@@ -50,7 +50,7 @@ export function SummaryList({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => {
+    useEffect(function whyIsThisNotSuperfluous()  {
         if (preSelectedId !== initialId) {
             setSelectedId(initialId);
             setPreSelectedId(initialId);
