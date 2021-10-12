@@ -16,10 +16,10 @@ const functionClassifiers = {
         3: 'Wegterminal',
         4: 'Luchthaven',
         5: 'Postkantoor',
-        6: 'multimodale functies, ICDs etc.',
-        7: 'vaste transport functies (bv. olie platform)',
+        6: 'Multimodale functies, ICDs etc.',
+        7: 'Vaste transport functies (bv. olieplatform)',
         B: 'Grensovergang',
-        0: 'gebruik is onbekend en moet nog vastgelegd worden',
+        0: 'Gebruik onbekend. Moet nog vastgelegd worden',
     },
 };
 
@@ -27,7 +27,7 @@ const functionClassifiers = {
 const transformations = {
     unLocode: {
         functionClassifier: (value) => {
-            console.log(`transformations.unLocode.functionClassifier(${value})`);
+            // console.log(`transformations.unLocode.functionClassifier(${value})`);
             let output = {};
             for (const c of value) {
                 if (c !== '-')
@@ -39,6 +39,6 @@ const transformations = {
 };
 
 export function transform(entityName, propertyName, value) {
-    console.log('transform()');
+    // console.log('transform()');
     return transformations[entityName][propertyName](value);
 }

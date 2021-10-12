@@ -9,7 +9,7 @@ import { now } from '../helpers/utils';
 
 export function Entity({metadata = entitiesMetadata.xyz, initialId}) {
     // const metadata = entity ?? entitiesMetadata.xyz;
-    console.log(now() + `metadata.name=`, metadata.name);
+    // console.log(`${now()} \n Entity(${metadata.name},  ${initialId})`);
     const elKey =` Entity(${metadata.name},${initialId})`;
     const [item, setItem] = useState(null);
 

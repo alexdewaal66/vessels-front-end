@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
-import { subtypes, types } from '../helpers/endpoints';
-import { entitiesMetadata } from '../helpers/entitiesMetadata';
+import { entitiesMetadata, subtypes, types } from '../helpers/entitiesMetadata';
 import { SummaryList } from './summaryList';
 import { Stringify } from '../dev/Stringify';
+import { now } from '../helpers/utils';
+// import { ShowObject } from '../dev/ShowObject';
 // import { CommandContext, useCommand } from '../contexts/CommandContext';
 
 const inputTypes = {
@@ -38,18 +39,24 @@ const referenceSize = 80;
 export function Input({metadata, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
     const property = metadata.properties[field];
     const elKey = `Input(${metadata.name},${field},${defaultValue})`;
+    const nullFieldRef = useRef(null);
 
-    // console.log(`metadata=`, metadata, `\nfield=`, field, `\nproperty=`, property);
+    // console.log(`Input » metadata=`, metadata, `\n field=`, field, `\n property=`, property);
     readOnly = readOnly || metadata.methods === 'R' || property?.readOnly;
     // const [command, setCommand] = useContext(CommandContext);
-    // const [fieldNameOfListedEntity, setFieldNameOfListedEntity] = useState(null);
     let inputType = {};
     let maxLength = property?.validation?.maxLength;
     let inputSize = null;
     let rows = null;
     let cols = null;
     let step = null;
-    let hiddenFieldName;
+    let hiddenFieldName, nullFieldName;
+    let fieldValue = defaultValue;
+
+    // function clearNull() {
+    //     nullFieldRef.current.checked = null;
+    // }
+
 
     switch (property?.type) {
         case types.str:
@@ -59,6 +66,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                     inputSize = Math.min(referenceSize, maxLength);
                     break;
                 default:
+                    // console.log(`Input » types.str » default \n\t maxLength=`, maxLength);
                     if (maxLength < 4 * referenceSize) {
                         inputType = inputTypes.text;
                         maxLength = maxLength || referenceSize;
@@ -77,10 +85,19 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             step = 'any';
             break;
         case types.obj:
-            hiddenFieldName = 'hidden_' + field + '_' + property.target +'_id';
+            console.log(now() + ` Input(${metadata.name}) » case 'obj' \n\t defaultValue=`, defaultValue);
+            nullFieldName = 'null_' + field + '_' + property.target;
+            hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
             return (
                 <>
-                    {/*<div>IN: {hiddenFieldName} = {defaultValue.id}</div>*/}
+                    {/*<div>IN: {hiddenFieldName} = <ShowObject data={defaultValue}/></div>*/}
+                    <label><input type="checkbox"
+                                  defaultChecked={!defaultValue}
+                                  name={nullFieldName}
+                                  {...useFormFunctions.register(nullFieldName)}
+                                  ref={nullFieldRef}
+                                  key={elKey + nullFieldName + '_obj'}
+                    />geen</label>
                     <input type="hidden"
                            readOnly={true}
                            name={hiddenFieldName}
@@ -90,18 +107,18 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                     />
                     <SummaryList metadata={entitiesMetadata[property.target]}
                                  initialId={defaultValue.id}
-                                 small
                                  receiver={'Input'}
                                  key={elKey + hiddenFieldName + '_obj'}
                                  elKey={elKey + hiddenFieldName + '_obj'}
-                                 UICues={{small:true, hasFocus: false}}
+                                 UICues={{small: true, hasFocus: false}}
                                  useFormFunctions={useFormFunctions}
-                                 hiddenFieldName={hiddenFieldName}
+                                 inputHelpFields={[hiddenFieldName, nullFieldName]}
                     />
                 </>
             );
         case types.arr:
-            hiddenFieldName = 'hidden_' + field + '_' + property.target +'_id_list';
+            console.log(now() + ` Input(${metadata.name}) » case 'arr' \n\t defaultValue=`, defaultValue);
+            hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id_list';
             return (
                 <>
                     <div>IN: {hiddenFieldName} = {defaultValue.id}</div>
@@ -118,7 +135,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                                  receiver={'Input'}
                                  key={elKey + hiddenFieldName + '_arr'}
                                  elKey={elKey}
-                                 UICues={{small:true, hasFocus: false}}
+                                 UICues={{small: true, hasFocus: false}}
                                  useFormFunctions={useFormFunctions}
                                  hiddenFieldName={hiddenFieldName}
                     />
@@ -126,6 +143,10 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             );
         case types.bool:
             inputType = inputTypes.checkbox;
+            break;
+        case types.date:
+            inputType = inputTypes.date;
+            fieldValue = defaultValue.toString().split('T')[0];
             break;
         default:
             return (<>
@@ -143,8 +164,8 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             name={field}
             rows={rows}
             cols={cols}
-            defaultValue={defaultValue}
-            defaultChecked={defaultValue}
+            defaultValue={fieldValue}
+            // defaultChecked={defaultValue}
             readOnly={readOnly}
             {...useFormFunctions.register(field, property?.validation)}
             {...rest}

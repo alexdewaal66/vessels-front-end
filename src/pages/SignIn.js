@@ -17,7 +17,7 @@ function SignIn() {
     const authContext = useContext(AuthContext);
     const {fetchUserData} = authContext;
     const requestState = useRequestState();
-    console.log(now() + ` authContext=\n\t`, authContext);
+    console.log(now() + `SignIn » authContext=`, authContext);
 
 
     async function onSubmit(formData) {

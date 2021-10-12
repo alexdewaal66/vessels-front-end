@@ -11,7 +11,7 @@ export function Command({commandList, choice, children, className, ...rest}) {
         <nav className={pageLayout.command} {...rest}>
             {children}
             <div className={commandStyles.nav}>
-                <h4>Opdrachten:</h4>
+                <h4>Gegegvens:</h4>
 
                 <ul className={commandStyles.ul}>
                     {commandList?.displayOrder.map(command =>

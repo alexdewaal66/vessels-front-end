@@ -7,7 +7,7 @@ import { Aside, Command, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { pages } from './index';
 
-function SignIn() {
+function SignOut() {
     const history = useHistory();
     const {handleSubmit} = useForm();
     const authContext = useContext(AuthContext);
@@ -44,4 +44,4 @@ function SignIn() {
     );
 }
 
-export default SignIn;
+export default SignOut;

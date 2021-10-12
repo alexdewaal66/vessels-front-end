@@ -2,18 +2,17 @@ import React, { createContext } from 'react';
 import { useStorage } from '../helpers/useStorage';
 import { ShowRequestState } from '../components';
 
-// O.R.M. = Object Rest Mapping 😏
-export const OrmContext = createContext({});
+export const StorageContext = createContext({});
 
-export function OrmContextProvider({children}) {
-    const storage= useStorage();
+export function StorageContextProvider({children}) {
+    const storage = useStorage();
     const {rsStatus} = storage;
 
     return (
-        <OrmContext.Provider value={storage}>
+        <StorageContext.Provider value={storage}>
             <ShowRequestState {...rsStatus} />
                 {children}
-        </OrmContext.Provider>
+        </StorageContext.Provider>
     )
 }
 

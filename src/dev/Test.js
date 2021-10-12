@@ -1,20 +1,21 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { cx } from '../helpers/multipleStyles';
 import { useMountEffect } from '../helpers/customHooks';
 import { Stringify } from './Stringify';
 import { useSuperDict } from '../helpers/useDict';
-import { OrmContext } from '../contexts/OrmContext';
+import { StorageContext } from '../contexts/StorageContext';
 import { ShowRequestState } from '../components';
 import { transform } from '../helpers/transform';
 import { ShowObject } from './ShowObject';
+import { now } from '../helpers/utils';
 
 export function Test({children, className, ...rest}) {
     const {allIdsLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
-        = useContext(OrmContext);
+        = useContext(StorageContext);
     const {createEntry, entries} = useSuperDict();
     const testKey = '12345';
     const testXyz1 = {
-        id: 4,
+        id: -4,
         name: 'testXyz1',
         xyzString: 'test-test-test',
         description: 'testXyz1-testXyz1-testXyz1-testXyz1-testXyz1',
@@ -22,7 +23,7 @@ export function Test({children, className, ...rest}) {
         zyx: null,
     }
     const testXyz2 = {
-        id: 5,
+        id: -5,
         name: 'testXyz2',
         xyzString: 'test-test-test',
         description: 'testXyz2-testXyz2-testXyz2-testXyz2-testXyz2',
@@ -55,7 +56,7 @@ export function Test({children, className, ...rest}) {
     }
 
     function createTestXyz() {
-        console.log('saveTestXyz');
+        console.log(now() + 'Test » createTestXyz() \n\t testXyz2=', testXyz2);
         newItem('xyz', testXyz2);
     }
 
@@ -75,8 +76,13 @@ export function Test({children, className, ...rest}) {
 
     return (
         <>
-            {'= < > ∼ ≠'}
-            <ShowObject data={transform('unLocode', 'functionClassifier', '1-345---')} />
+            {'= < > ∼ ≈ ≠'}
+            <ShowObject data={
+                useMemo(() =>
+                        transform('unLocode', 'functionClassifier', '1-345---'),
+                    []
+                )
+            }/>
             <Stringify data={allIdsLoaded}>
                 allIdsLoaded
             </Stringify>
@@ -141,9 +147,9 @@ useEffect(callBackExample2, []);
 * * * * * * * * * * * * * * * * * * * * * * * * * */
 const queryOperators = [
     '==', '!=', '>', '>=', '<', '<=',
-    // numeric
-    '≈',
-    // string
+    // numeric: approximation, delta, range
+    '≈', '±', '..',
+    // string: startsWith, endsWith, contains
     '~%', '%~', '%~%'
 
 ];

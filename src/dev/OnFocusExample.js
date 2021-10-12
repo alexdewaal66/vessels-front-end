@@ -6,9 +6,9 @@ export function OnFocusExample({children, className, ...rest}) {
 
     function logTargets(e, m) {
         console.log(now() + m,
-            '\n\te.target=       ', e.target,
-            '\n\te.currentTarget=', e.currentTarget,
-            '\n\te.relatedTarget=', e.relatedTarget);
+            '\n\t e.target=       ', e.target,
+            '\n\t e.currentTarget=', e.currentTarget,
+            '\n\t e.relatedTarget=', e.relatedTarget);
     }
 
     function handleFocus(e) {

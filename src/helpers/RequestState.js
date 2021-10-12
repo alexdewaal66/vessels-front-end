@@ -4,7 +4,7 @@ export class RequestState {
     value = requestStates.IDLE;
     errorMsg = '';
     setErrorMsg = (msg) => {
-        console.log(`RequestState() » setErrorMsg()\n\tmsg=`, msg);
+        console.log(`RequestState() » setErrorMsg()\n\t msg=`, msg);
         this.errorMsg = msg;
     };
 

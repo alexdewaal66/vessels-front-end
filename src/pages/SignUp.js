@@ -14,7 +14,7 @@ function SignUp() {
     const requestState = useRequestState();
     const history = useHistory();
 
-    console.log(now() + ' registration state:\n\t', requestState);
+    console.log(now() + 'SignUp » registration state:', requestState);
 
     function onSubmit(formData) {
         console.log(now() + ' onSubmit()');

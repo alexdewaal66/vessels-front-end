@@ -1,22 +1,29 @@
 import { entitiesMetadata } from './entitiesMetadata';
 import { useDict } from './useDict';
 import { useMountEffect } from './customHooks';
-import { remote } from './ormHelpers';
+import { remote } from './storageHelpers';
 import { now, makeId } from './utils';
 import { useState } from 'react';
 import { RequestState } from './RequestState';
+import { createEmptyItem } from './entitiesMetadata';
 
 export const validities = {none: 0, id: 1, summary: 2, full: 3};
 
+const idToEntry = id => [id, {
+    item: {id},
+    validity: validities.id,
+}];
+
+const idItemToEntry = idItem => [idItem.id, {
+    item: idItem,
+    validity: validities.id,
+}];
+
 function transformAndStoreIdArray(data, tree) {
-    const branches = Object.fromEntries(data.map(id =>
-            [id, {
-                item: {id},
-                // valid: true,
-                validity: validities.id,
-            }]
-        )
-    );
+    const entries = (typeof data[0] === 'number')
+        ? data.map(idToEntry)
+        : data.map(idItemToEntry);
+    const branches = Object.fromEntries(entries);
     // console.log(`->-> branches=`, branches);
     tree.setMany(branches);
 }
@@ -65,7 +72,7 @@ async function readAndStoreItemsByIds(metadata, idArray, requestState, tree) {
 
 async function readAndStoreItem(metadata, id, requestState, tree) {
     // const branch = tree.state[id];
-    // console.log(`>>> readAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
+    console.log(`useStorage » readAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
     if (!tree.state[id].item.valid) {
         await remote.read(
             metadata, id, requestState,
@@ -76,11 +83,12 @@ async function readAndStoreItem(metadata, id, requestState, tree) {
                     // valid: true,
                     validity: validities.full,
                 });
-                // console.log(`loadItem(${entityName}, ${id}) item=`, item);
+                console.log(`useStorage » loadItem(${metadata.name}, ${id}) item=`, item);
             },
             () => {
                 const current = tree.state[id];
                 tree.set(id, {item: current.item, fetchFailed: now(), validity: validities.id});
+                // tree.set(id, {item: createEmptyItem(metadata), fetchFailed: now(), validity: validities.id});
             }
         );
     }
@@ -130,19 +138,21 @@ async function updateAndStoreItem(metadata, item, requestState, tree) {
     }
 }
 
-function extractNewId(message, label) {
+function extractNewId(message, name) {
+    // message is formed like 'Xyz 237 created'
     const parts = message.split(' ');
-    return (parts[0] === label) ? parseInt(parts[1]) : null;
+    return (parts[0].toLowerCase() === name) ? parseInt(parts[1]) : null;
 }
 
 async function createAndStoreItem(metadata, item, requestState, tree) {
     // const branch = tree.state[item.id];
-    console.log(`>>> createAndStoreItem(${metadata.name}, ${item.id}) tree=`, tree);
+    console.log(`useStorage.js » createAndStoreItem(${metadata.name}, ⬇, *, ⬇)`,
+        `item=`, item, `tree=`, tree);
     if (!tree.state[item.id]) {
         await remote.create(
             metadata, item, requestState,
             (response) => {
-                item.id = extractNewId(response.data, metadata.label);
+                item.id = extractNewId(response.data, metadata.name);
                 console.log(`created item.id=`, item.id);
                 tree.add(item.id, {
                     item, sent: now(),
@@ -159,6 +169,8 @@ async function createAndStoreItem(metadata, item, requestState, tree) {
                 });
             }
         );
+    } else {
+        console.error(`useStorage.js » createAndStoreItem()\n\t item.id=${item.id} already exists`);
     }
 }
 
@@ -200,6 +212,8 @@ export function useStorage() {
         xyz: useDict(),
         zyx: useDict(),
         vesselType: useDict(),
+        hull: useDict(),
+        vessel: useDict(),
         country: useDict(),
         unLocode: useDict(),
         subdivision: useDict(),
@@ -224,11 +238,10 @@ export function useStorage() {
             .then(setFinished);
     }
 
-    function getItem(entityName, id, propName) {
+    function getItem(entityName, id) {
         const entry = forest[entityName].state[id];
         if (entry.valid) {
-            const item = entry.item;
-            return propName ? item[propName] : item;
+            return entry.item;
         }
     }
 
@@ -301,12 +314,13 @@ export function useStorage() {
     }
 
     function newItem(entityName, item, onFinished) {
-        item.id = 0;
-        console.log(`newItem(${entityName}, ⬇) \n item=`, item);
-        if (forest[entityName]?.state[item.id]) {
-            console.error(`id already exists in storage:`, forest[entityName]?.state);
-            return;
-        }
+        console.log(now() + `useStorage » newItem(${entityName}, ⬇, *) \n\t item=`, item);
+        item.id = -1;
+        console.log(`useStorage » newItem(${entityName}, ⬇, *) \n\t item=`, item);
+        // if (forest[entityName]?.state[item.id]) {
+        //     console.error(`id already exists in storage:`, forest[entityName]?.state);
+        //     return;
+        // }
         const tree = forest[entityName];
         const requestState = new RequestState();
         setRsStatus({

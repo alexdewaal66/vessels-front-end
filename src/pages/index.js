@@ -3,11 +3,6 @@ import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Profile from './Profile';
 import SignOut from './SignOut';
-import { Search, Vessel, Entity } from '../components';
-import { Test } from '../dev/Test';
-import { Colors } from '../dev/Colors';
-import { OnFocusExample } from '../dev/OnFocusExample';
-import { entitiesMetadata } from '../helpers/entitiesMetadata';
 
 const pages = {
     home: {name: 'Home', path: '/', component: Home, exact: true, isVisible: () => true, },
@@ -25,45 +20,6 @@ pages.displayOrder = [
     pages.profile,
 ];
 
-// curried component just for fun
-const EntityN = (metadata, n) => () => <Entity metadata={metadata} initialId={n} />;
-
-const homeCommands = {
-    empty: {label: 'test useDict', component: Test},
-    search: {label: 'Zoek', component: Search},
-    vessels: {label: 'Vaartuigen', component: Vessel},
-    xyz: {label: 'Entity', component: Entity},
-    xyzN3: {label: 'Xyz(3)', component: EntityN(entitiesMetadata.xyz,3)},
-    xyzN4: {label: 'Xyz(4)', component: EntityN(entitiesMetadata.xyz,4)},
-    zyx: {label: 'Zyx', component: EntityN(entitiesMetadata.zyx)},
-    users: {label: 'Gebruikers', component: EntityN(entitiesMetadata.user, 0)},
-    countries: {label: 'Landen', component: EntityN(entitiesMetadata.country)},
-    subdivisions: {label: 'Deelsector', component: EntityN(entitiesMetadata.subdivision)},
-    unLocode: {label: "Locatiecode", component: EntityN(entitiesMetadata.unLocode)},
-    unLocoden360: {label: "Locatiecode(360)", component: EntityN(entitiesMetadata.unLocode, 360)},
-    vesselTypes: {label: 'Scheepstypes', component: EntityN(entitiesMetadata.vesselType)},
-    colors: {label: 'Kleuren', component: Colors},
-    focus: {label: 'Focus', component: OnFocusExample},
-};
-
-homeCommands.displayOrder = [
-    homeCommands.empty,
-    homeCommands.search,
-    homeCommands.vessels,
-    homeCommands.users,
-    homeCommands.xyz,
-    homeCommands.xyzN3,
-    homeCommands.xyzN4,
-    homeCommands.zyx,
-    homeCommands.countries,
-    homeCommands.subdivisions,
-    homeCommands.unLocode,
-    homeCommands.unLocoden360,
-    homeCommands.vesselTypes,
-    homeCommands.colors,
-    homeCommands.focus,
-];
 
 
-
-export { Home, SignUp, SignIn, SignOut, Profile, EntityN, pages, homeCommands };
+export { Home, SignUp, SignIn, SignOut, Profile, pages};

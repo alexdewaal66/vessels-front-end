@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthContextProvider } from './contexts/AuthContext';
 import { StatusContextProvider } from './contexts/StatusContext';
-import { OrmContextProvider } from './contexts/OrmContext';
+import { StorageContextProvider } from './contexts/StorageContext';
 import { initializeEntitiesMetadata } from './helpers/entitiesMetadata';
 
 initializeEntitiesMetadata();
@@ -15,11 +15,11 @@ ReactDOM.render(
     <React.StrictMode>
         <Router>
             <StatusContextProvider>
-                <OrmContextProvider>
+                <StorageContextProvider>
                     <AuthContextProvider>
                         <App/>
                     </AuthContextProvider>
-                </OrmContextProvider>
+                </StorageContextProvider>
             </StatusContextProvider>
         </Router>
     </React.StrictMode>,

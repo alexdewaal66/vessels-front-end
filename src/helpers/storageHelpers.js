@@ -24,6 +24,7 @@ export const remote = {
     },
 
     readByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
+        // console.log(`storageHelpers » remote.readByIds()\n\t metadata=`, metadata, `\n\t idArray=`, idArray);
         const url = metadata.endpoint + '/ids';
         await postRequest({
             url,
@@ -35,11 +36,11 @@ export const remote = {
     },
 
     findByUniqueField: async function (metadata, probe, requestState, onSuccess, onFail) {
-        // console.log(`ormHelpers » remote.findByUniqueField() \nprobe=`, probe, `metadata.name=`, metadata.name);
+        // console.log(`storageHelpers » remote.findByUniqueField() \nprobe=`, probe, `metadata.name=`, metadata.name);
         const entries = Object.entries(probe);
-        // console.log(`ormHelpers » remote.findByUniqueField() \nentries=`, entries);
+        // console.log(`storageHelpers » remote.findByUniqueField() \nentries=`, entries);
         const hits = entries.filter(([k, v]) => !!v && (k in metadata.findItem.params));
-        console.log(`ormHelpers » remote.findByUniqueField() \nhits=`, hits);
+        console.log(`storageHelpers » remote.findByUniqueField() \nhits=`, hits);
         if (hits) {
             let url = metadata.endpoint + metadata.findItem.endpoint;
             hits.forEach( (hit, i) => {
@@ -47,7 +48,7 @@ export const remote = {
                 const param = metadata.findItem.params[key];
                 url += (i === 0 ? '?' : '&') + param + '=' + value;
             });
-            console.log(`ormHelpers » remote.findByUniqueField() \nurl=`, url);
+            // console.log(`storageHelpers » remote.findByUniqueField() \nurl=`, url);
             await getRequest({url, requestState, onSuccess, onFail});
         }
     },

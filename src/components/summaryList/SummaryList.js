@@ -5,34 +5,35 @@ import { SummaryTable } from './';
 import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
 import { createEmptyItem } from '../../helpers/entitiesMetadata';
 import { ShowRequestState } from '../ShowRequestState';
-import { OrmContext } from '../../contexts/OrmContext';
-import { validities } from '../../helpers/useStorage';
+import { StorageContext } from '../../contexts/StorageContext';
 import { useBGLoading } from '../../helpers/useBGLoading';
 
 export function SummaryList({
                                 metadata, initialId, receiver, UICues,
-                                useFormFunctions, hiddenFieldName, elKey
+                                useFormFunctions, inputHelpFields, elKey
                             }) {
+    //TODO❗❗ GEEN RIJ SELECTEREN BINNEN EEN INPUT ALS VERWIJZING NULL IS, IS NU RIJ 1
     elKey += '/SList';
     const entityName = metadata.name;
-    const storage = useContext(OrmContext);
+    const storage = useContext(StorageContext);
     const {allIdsLoaded, store, loadItemsByIds} = storage;
     const {small, hasFocus} = UICues;
     // console.log(`▶▶▶ props=`, {metadata, initialId, receiver, UICues, useFormFunctions, hiddenFieldName, elKey});
-    // const {endpoint} = metadata;
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
-    const [hasItemZero, setHasItemZero] = useState(false);
     const [preSelectedId, setPreSelectedId] = useState(initialId);
     const [selectedId, setSelectedId] = useState(initialId);
     const [command, setCommand] = useContext(CommandContext);
 
+    console.log(`SummaryList(${metadata.name}) \n\t list=`, list);
     useBGLoading(storage, metadata);
 
     function editItem(item) {
-        // console.log(`editItem() item.id=`, item.id);
-        setSelectedId(item.id);
-        if (hiddenFieldName) {
+        console.log(now() + `\n SummaryList(${entityName}) » editItem() \n\t item.id=`, item.id);
+        setSelectedId(item?.id);
+        if (inputHelpFields) {
+            const [hiddenFieldName, nullFieldName] = inputHelpFields;
+            useFormFunctions.setValue(nullFieldName, false);
             if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
                 // console.log('>>> setValue');
                 useFormFunctions.setValue(hiddenFieldName, item.id);
@@ -50,7 +51,7 @@ export function SummaryList({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(function whyIsThisNotSuperfluous()  {
+    useEffect(function whyIsThisNotSuperfluous() {
         if (preSelectedId !== initialId) {
             setSelectedId(initialId);
             setPreSelectedId(initialId);
@@ -58,20 +59,15 @@ export function SummaryList({
     })
 
     function updateList(newList = list, newSelectedId = selectedId ?? initialId) {
+        // console.log(now() + ` SummaryList(${entityName}) » updateList() \n\t newList=`, newList);
+
         if (newList.length === 0) {
             const item = createEmptyItem(metadata);
-            // console.log(`----------item=`, item);
+            // console.log(now() + `SummaryList » updateList() \n\t item=`, item);
             newList.push(item);
-            // console.log(`-----------newList=`, newList);
-            setHasItemZero(true);
-        } else if (hasItemZero) {
-            const itemZeroIndex = newList.findIndex(item => item.id === 0);
-            if (itemZeroIndex !== -1) {
-                newList.splice(itemZeroIndex, 1);
-                setHasItemZero(false);
-            }
+            newSelectedId = 0;
         }
-        // console.log(now() + ` updateList() selectedId=`, selectedId);
+        // console.log(now() + `SummaryList »  updateList() \n\t selectedId=`, selectedId);
         newList.sort((a, b) => a.id - b.id);
         setList(newList);
         setSelectedId(newSelectedId);
@@ -81,32 +77,16 @@ export function SummaryList({
 
     function fetchList() {
         console.log(now() + ' fetchList()');
-        // console.log(`SummaryList » fetchList() \nstore[${metadata.name}].state=`, store[metadata.name].state);
-        const entries = Object.entries(store[metadata.name].state);
-        // console.log(`SummaryList » fetchList() \nentries=`, entries);
+        // console.log(`SummaryList » fetchList() \n\t store[${entityName}].state=`, store[entityName].state);
+        const entries = Object.entries(store[entityName].state);
+        // console.log(`SummaryList » fetchList() \n\t entries=`, entries);
         const list = entries.map(e => e[1].item);
-        // console.log(`SummaryList » fetchList() \nlist=`, list);
+        // console.log(`SummaryList » fetchList() \n\t list=`, list);
         updateList(list);
     }
 
-    // console.log(`❗❗ metadata.name=`, metadata.name);
-    useConditionalEffect(fetchList, allIdsLoaded, [store[metadata.name].state]);
-
-
-    // function loadItemsNearId(id, list) {
-    //     const index = Math.max(list.findIndex(item => item.id === id), 0);
-    //     loadItemsNearIndex(index, list);
-    // }
-    // useConditionalEffect(() => loadItemsNearId(selectedId, list), !!selectedId ,[selectedId]);
-    //
-    //
-    // function loadItemsNearIndex(index, list) {
-    //     const startIndex = Math.max(0, index - 50);
-    //     const endIndex   = Math.min( index + 50, list.length);
-    //     const nearIds = list.slice(startIndex, endIndex).map(e => e.id);
-    //     loadItemsByIds(entityName, nearIds);
-    // }
-    // useConditionalEffect(() => loadItemsNearIndex(focusIndexCopy, list), !!focusIndexCopy ,[focusIndexCopy]);
+    // console.log(`❗❗ entityName=`, entityName);
+    useConditionalEffect(fetchList, allIdsLoaded, [store[entityName].state]);
 
 
     const conditions = {
