@@ -47,7 +47,6 @@ entitiesMetadata.xyz = {
             },
         },
         zyx: {
-            // type: types.obj, label: 'zyx', target: 'zyx',
             type: types.obj,
         },
     },
@@ -63,6 +62,7 @@ entitiesMetadata.zyx = {
     label: 'Zyx',
     endpoint: '/zyxs',
     id: ['id'],
+    multiple: true,
     properties: {
         id: {
             type: types.num, label: 'id', readOnly: true,
@@ -263,6 +263,38 @@ entitiesMetadata.unLocode = {
         params: {},
     },
 };
+
+entitiesMetadata.address = {
+    label: 'Adres',
+    endpoint: '/addresses',
+    id: ['id'],
+    properties: {
+        id: {
+            type: types.num, label: 'id',
+        },
+        address1: {
+            type: types.str, label: 'adres1', validation: {maxLength: 200},
+        },
+        address2: {
+            type: types.str, label: 'adres2', validation: {maxLength: 200},
+        },
+        city: {
+            type: types.str, label: 'plaats', validation: {maxLength: 100},
+        },
+        postalCode: {
+            type: types.str, label: 'postcode', validation: {maxLength: 20},
+        },
+        country: {
+            type: types.obj, label: 'land',
+        },
+    },
+    methods: 'CRUD',
+    summary: ['id', 'address1', 'city', 'country.alpha2Code'],
+    findItem: {
+        endpoint: '/find',
+        params: {},
+    },
+}
 
 
 entitiesMetadata.vesselType = {

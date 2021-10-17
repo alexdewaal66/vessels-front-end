@@ -31,17 +31,17 @@ export function useBGLoading(storage, metadata) {
         };
 
         const entries = Object.entries(tree.state);
-        // console.log(`SummaryList » loadUnloadedItems()\n\t entries=`, entries, `\n\t pendingBlocks=`, pendingBlocks);
+        // console.log(`SummaryList_1S » loadUnloadedItems()\n\t entries=`, entries, `\n\t pendingBlocks=`, pendingBlocks);
         const first = entries.findIndex(unloadedFilter);
-        // console.log(`SummaryList » loadUnloadedItems()\nfirst=`, first);
+        // console.log(`SummaryList_1S » loadUnloadedItems()\nfirst=`, first);
         if (first === -1) return;
 
         const unloaded = entries.slice(first, first + blockSize).filter(unloadedFilter);
-        // console.log(`SummaryList » loadUnloadedItems()\nunloaded=`, unloaded);
+        // console.log(`SummaryList_1S » loadUnloadedItems()\nunloaded=`, unloaded);
         if (unloaded.length > 0) {
             const endIndex = Math.min(blockSize, unloaded.length);
             const unloadedIds = unloaded.slice(0, endIndex).map(e => e[1].item.id);
-            // console.log(`SummaryList » loadUnloadedItems()\n\t unloadedIds=`, unloadedIds);
+            // console.log(`SummaryList_1S » loadUnloadedItems()\n\t unloadedIds=`, unloadedIds);
             setLoadCounter(c => c + 1);
             // set the block to be loaded as 'pending'
             const currentBlockNr = Math.floor(first / blockSize);
@@ -56,7 +56,7 @@ export function useBGLoading(storage, metadata) {
         }
     }
 
-    // console.log(`SummaryList \nloadCounter=`, loadCounter, `\npendingBlocks=`, pendingBlocks);
+    // console.log(`SummaryList_1S \nloadCounter=`, loadCounter, `\npendingBlocks=`, pendingBlocks);
 
     useConditionalEffect(
         loadUnloadedItems,

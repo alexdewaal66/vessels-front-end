@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { SummaryHeading, SummaryRowMS, summaryStyle } from './';
+import { SummaryHeading, SummaryRow_1S, summaryStyle } from './';
 import { cx } from '../../helpers/multipleStyles';
 import { now } from '../../helpers/utils';
 
-export function SummaryTableMS({
-                                 list, metadata, selectedIds, selectItem, small,
+export function SummaryTable_1S({
+                                 list, metadata, selectedId, selectItem, small,
                                  hasFocus, elKey
                              }) {
     const smallStyle = (small) ? summaryStyle.small : '';
@@ -12,7 +12,7 @@ export function SummaryTableMS({
 
     const entityName = metadata.name;
     // console.log(now() +  ` entityName=`, entityName);
-    const selectedIndex = Math.max(list.findIndex(item => selectedIds.has(item.id)), 0);
+    const selectedIndex = Math.max(list.findIndex(item => item.id === selectedId), 0);
     const [focusIndex, setFocusIndexState] = useState(selectedIndex);
     const [hasTableFocus, setTableFocus] = useState(hasFocus);
 
@@ -66,8 +66,7 @@ export function SummaryTableMS({
     function UICues(index) {
         return {
             hasFocus: (index === focusIndex && hasTableFocus),
-            // isSelected: (index === selectedIndex),
-            isSelected: selectedIds.has(list[index].id),
+            isSelected: (index === selectedIndex),
             hasVisualPriority: hasTableFocus ? (index === focusIndex) : (index === selectedIndex)
         }
     }
@@ -86,14 +85,14 @@ export function SummaryTableMS({
                     </thead>
                     <tbody>
                     {list.map((listItem, index) => (
-                        <SummaryRowMS listItem={listItem}
-                                      index={index}
-                                      metadata={metadata}
-                                      selectItem={selectItem}
-                                      key={elKey + index}
-                                      elKey={elKey + index}
-                                      rowFocus={rowFocus}
-                                      UICues={UICues(index)}
+                        <SummaryRow_1S listItem={listItem}
+                                       index={index}
+                                       metadata={metadata}
+                                       selectItem={selectItem}
+                                       key={elKey + index}
+                                       elKey={elKey + index}
+                                       rowFocus={rowFocus}
+                                       UICues={UICues(index)}
                         />
                     ))}
                     </tbody>

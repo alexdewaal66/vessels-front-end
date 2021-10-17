@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { entitiesMetadata } from '../helpers/entitiesMetadata';
 import { CommandContextProvider } from '../contexts/CommandContext';
 import { EditEntity } from './EditEntity';
-import { SummaryList } from './summaryList';
+import { SummaryList } from './summaryListMS';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
 import { now } from '../helpers/utils';
 

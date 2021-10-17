@@ -215,6 +215,7 @@ export function useStorage() {
         hull: useDict(),
         vessel: useDict(),
         country: useDict(),
+        address: useDict(),
         unLocode: useDict(),
         subdivision: useDict(),
         user: useDict(),

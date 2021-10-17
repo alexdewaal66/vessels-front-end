@@ -1,7 +1,7 @@
 import summaryStyle from './summary.module.css';
 export { summaryStyle };
 
-export * from './SummaryListMS';
-export * from './SummaryTableMS';
+export * from './SummaryList_1S';
+export * from './SummaryTable_1S';
 export * from './SummaryHeading';
-export * from './SummaryRowMS';
+export * from './SummaryRow_1S';

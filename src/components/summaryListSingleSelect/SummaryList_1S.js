@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { now } from '../../helpers/utils';
 import { useConditionalEffect, useRequestState } from '../../helpers/customHooks';
-import { SummaryTable } from './';
+import { SummaryTable_1S } from './';
 import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
 import { createEmptyItem } from '../../helpers/entitiesMetadata';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts/StorageContext';
 import { useBGLoading } from '../../helpers/useBGLoading';
 
-export function SummaryList({
+export function SummaryList_1S({
                                 metadata, initialId, receiver, UICues,
                                 useFormFunctions, inputHelpFields, elKey
                             }) {
@@ -59,15 +59,15 @@ export function SummaryList({
     })
 
     function updateList(newList = list, newSelectedId = selectedId ?? initialId) {
-        // console.log(now() + ` SummaryList(${entityName}) » updateList() \n\t newList=`, newList);
+        // console.log(now() + ` SummaryList_1S(${entityName}) » updateList() \n\t newList=`, newList);
 
         if (newList.length === 0) {
             const item = createEmptyItem(metadata);
-            // console.log(now() + `SummaryList » updateList() \n\t item=`, item);
+            // console.log(now() + `SummaryList_1S » updateList() \n\t item=`, item);
             newList.push(item);
             newSelectedId = 0;
         }
-        // console.log(now() + `SummaryList »  updateList() \n\t selectedId=`, selectedId);
+        // console.log(now() + `SummaryList_1S »  updateList() \n\t selectedId=`, selectedId);
         newList.sort((a, b) => a.id - b.id);
         setList(newList);
         setSelectedId(newSelectedId);
@@ -77,11 +77,11 @@ export function SummaryList({
 
     function fetchList() {
         console.log(now() + ' fetchList()');
-        // console.log(`SummaryList » fetchList() \n\t store[${entityName}].state=`, store[entityName].state);
+        // console.log(`SummaryList_1S » fetchList() \n\t store[${entityName}].state=`, store[entityName].state);
         const entries = Object.entries(store[entityName].state);
-        // console.log(`SummaryList » fetchList() \n\t entries=`, entries);
+        // console.log(`SummaryList_1S » fetchList() \n\t entries=`, entries);
         const list = entries.map(e => e[1].item);
-        // console.log(`SummaryList » fetchList() \n\t list=`, list);
+        // console.log(`SummaryList_1S » fetchList() \n\t list=`, list);
         updateList(list);
     }
 
@@ -91,7 +91,7 @@ export function SummaryList({
 
     const conditions = {
         entityType: metadata,
-        receiver: 'SummaryList',
+        receiver: 'SummaryList_1S',
         operations: {
             put: (formData) => {
                 const index = list.findIndex(item => item.id === formData.id);
@@ -120,14 +120,14 @@ export function SummaryList({
             {list && (
                 <div>
                     {/*<div>SL: selectedId={selectedId} ; initialId={initialId}</div>*/}
-                    <SummaryTable metadata={metadata}
-                                  list={list}
-                                  selectedId={selectedId}
-                                  selectItem={editItem}
-                                  small={small}
-                                  hasFocus={hasFocus}
-                                  elKey={elKey}
-                                  key={elKey}
+                    <SummaryTable_1S metadata={metadata}
+                                     list={list}
+                                     selectedId={selectedId}
+                                     selectItem={editItem}
+                                     small={small}
+                                     hasFocus={hasFocus}
+                                     elKey={elKey}
+                                     key={elKey}
                         // elKey={elKey+selectedId}
                         // key={elKey+selectedId}
                     />

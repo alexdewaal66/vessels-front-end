@@ -3,7 +3,7 @@ import { summaryStyle } from './index';
 
 const keys = {tab: 9, enter: 13, escape:27, space: 32, arrowUp: 38, arrowDown: 40, home: 36, end: 35, pageUp: 33, pageDown: 34};
 
-export function SummaryRowMS({listItem, index, metadata, selectItem, rowFocus, UICues, elKey}) {
+export function SummaryRow({listItem, index, metadata, selectItem, rowFocus, UICues, elKey}) {
     const { hasFocus, isSelected, hasVisualPriority } = UICues;
     const row = useRef(null);
     const selectedStyle = isSelected ? summaryStyle.selected : null;
@@ -67,6 +67,13 @@ export function SummaryRowMS({listItem, index, metadata, selectItem, rowFocus, U
         e.preventDefault();// suppress default scrolling
     }
 
+    function property(object, propertyName) {
+        const parts = propertyName.split('.');
+        return (parts.length === 1)
+            ? object?.[parts[0]]
+            : object?.[parts[0]]?.[parts[1]];
+    }
+
     return (
         <tr onClick={choose}
             onKeyDown={handleOnKeyDown}
@@ -78,7 +85,8 @@ export function SummaryRowMS({listItem, index, metadata, selectItem, rowFocus, U
             {metadata.summary.map(propertyName =>
                 <td key={elKey + propertyName}
                 >
-                    {listItem[propertyName]}
+                    {property(listItem, propertyName)}
+                    {/*{listItem[propertyName]}*/}
                 </td>
             )}
         </tr>

@@ -1,28 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { now } from '../../helpers/utils';
 import { useConditionalEffect, useRequestState } from '../../helpers/customHooks';
-import { SummaryTableMS } from './';
+import { SummaryTable, summaryStyle } from './';
 import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
 import { createEmptyItem } from '../../helpers/entitiesMetadata';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts/StorageContext';
 import { useBGLoading } from '../../helpers/useBGLoading';
 import { Stringify } from '../../dev/Stringify';
+import { TTC, TT } from '../../dev/Tooltips';
 
 const keys = {shift: 16, control: 17, alt: 18};
 
-export function SummaryListMultiSelect({
-                                           metadata, initialIdList, receiver, UICues,
-                                           useFormFunctions, inputHelpFields, elKey
-                                       }) {
+export function SummaryList({
+                                  metadata, initialIdList, receiver, UICues,
+                                  useFormFunctions, inputHelpFields, elKey
+                              }) {
     //TODO❗❗ GEEN RIJ SELECTEREN BINNEN EEN INPUT ALS VERWIJZING NULL IS, IS NU RIJ 1
     elKey += '/SList';
     const entityName = metadata.name;
+    const isMulti = metadata.multiple;
     const storage = useContext(StorageContext);
     const {allIdsLoaded, store, loadItemsByIds} = storage;
     const {small, hasFocus} = UICues;
-    // console.log(`▶▶▶ props=`, {metadata, initialIdList, receiver, UICues, useFormFunctions, hiddenFieldName, elKey});
-    // const {endpoint} = metadata;
+    console.log(now() + ` SummaryList() ▶▶▶ props=`, {metadata, initialIdList, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     // const [preSelectedIdList, setPreSelectedIdList] = useState(initialIdList);
@@ -30,7 +31,7 @@ export function SummaryListMultiSelect({
     const [command, setCommand] = useContext(CommandContext);
     const [isCtrlDown, setIsCtrlDown] = useState(false);
 
-    console.log(`SummaryListMS(${entityName}) » body `,
+    console.log(now(), `\n SummaryListMS(${entityName}) » body `,
         `\n\t initialIdList=`, initialIdList,
         // `\n\t preSelectedIdList=`, preSelectedIdList,
         `\n\t selectedIds=`, selectedIds,
@@ -38,41 +39,49 @@ export function SummaryListMultiSelect({
     useBGLoading(storage, metadata);
 
     function editItem(item) {
-        let ifBranch = '';
+        let conditions;
         console.log(now() + `\n SummaryListMS(${entityName}) » editItem()`,
             `\n\t item.id=`, item.id,
             `\n\t isCtrlDown=`, isCtrlDown);
-        /*     ┌————————————┬———————————————————┬————————————————————┐
-               │ isCtrlDown │  was selected     │  action            │
-               ├————————————┼———————————————————┼————————————————————┤
-               │    T       │       T           │   remove from list │
-               │    T       │       F           │   add to list      │
-               │    F       │       *           │   set as only item │
-               └————————————┴———————————————————┴————————————————————┘  */
-        if (isCtrlDown) {
+        /* ┌——————————————————————————————┬———————————————————┬————————————————————————————┐
+           │ small && multi && isCtrlDown │  was selected     │  action                    │
+           ├——————————————————————————————┼———————————————————┼————————————————————————————┤
+           │                T             │       T           │   remove from list         │
+           │                T             │       F           │   add to list              │
+           │                F             │       *           │   set as only item         │
+           └——————————————————————————————┴———————————————————┴————————————————————————————┘  */
+        if (small && isMulti && isCtrlDown) {
             if (selectedIds.has(item.id)) {
                 setSelectedIds(ids => {
                     const copy = new Set(ids);
                     copy.delete(item.id);
                     return copy;
                 });
-                ifBranch = 'T-T';
+                conditions = 'T-T';
             } else {
                 setSelectedIds(ids => new Set(ids).add(item.id))
-                ifBranch = 'T-F';
+                conditions = 'T-F';
             }
         } else {
             setSelectedIds(new Set([item.id]));
-            ifBranch = 'F-*';
+            conditions = 'F-*';
         }
         console.log(now() + `\n SummaryListMS(${entityName}) » editItem()`,
-            `\n\t ifBranch=`, ifBranch);
+            `\n\t ifBranch=`, conditions);
         if (inputHelpFields) {
-            const [hiddenFieldName, nullFieldName] = inputHelpFields;
-            useFormFunctions.setValue(nullFieldName, false);
+            const [hiddenFieldName, nullFieldName, nullFieldRef] = inputHelpFields;
+            useFormFunctions.setValue(nullFieldName, +(selectedIds.size > 0));
+            nullFieldRef.current.checked = (selectedIds.size === 0);
             if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
-                // console.log('>>> setValue');
-                useFormFunctions.setValue(hiddenFieldName, item.id);
+                console.log(now(),
+                    `\n SummaryListMS(${entityName}) » editItem() >>> setValue`,
+                    `\n hiddenFieldName=`, hiddenFieldName,
+                    `\n nullFieldName=`, nullFieldName);
+                useFormFunctions.setValue(hiddenFieldName, [...selectedIds].toString());
+                console.log(now(),
+                    `\n SummaryListMS(${entityName}) » editItem() >>> setValue`,
+                    `\n form value hiddenFieldName=`, useFormFunctions.getValues(hiddenFieldName),
+                    `\n form value nullFieldName=`, useFormFunctions.getValues(nullFieldName));
             } else {
                 const idList = useFormFunctions.getValues(hiddenFieldName).split(',');
                 if (!idList.includes(item.id.toString())) {
@@ -95,31 +104,43 @@ export function SummaryListMultiSelect({
     // })
 
     function updateList(newList = list, singleSelectedId) {
-        // console.log(now() + ` SummaryListMS(${entityName}) » updateList() \n\t newList=`, newList);
+        console.log(now() + `\n SummaryList_1S(${entityName}) » updateList() \n\t newList=`, newList);
         let selectedItem;
         if (newList.length === 0) {
-            selectedItem = createEmptyItem(metadata);
-            // console.log(now() + `SummaryListMS(${entityName}) » updateList() \n\t selectedItem=`, selectedItem);
-            newList.push(selectedItem);
-            // console.log(now() + ` SummaryListMS(${entityName}) » updateList() \n\t newList=`, newList);
+            if (small) {
+                // lege lijst && klein
+            } else {
+                // maak 'leeg' object om te kunnen editen en bewaren als nieuw
+                console.log(`createEmptyItem(${entityName})`);
+                selectedItem = createEmptyItem(metadata);
+                console.log(now() + `\n SummaryListMS(${entityName}) » updateList() \n\t selectedItem=`, selectedItem);
+                newList.push(selectedItem);
+                // console.log(now() + `\n SummaryList_1S(${entityName}) » updateList() \n\t newList=`, newList);
+            }
         } else {
             newList.sort((a, b) => a.id - b.id);
-            selectedItem = newList.find(item => item.id === singleSelectedId);
+            if (small) {
+                selectedItem = null;
+            } else if (singleSelectedId) {
+                selectedItem = newList.find(item => item.id === singleSelectedId);
+            } else {
+                selectedItem = newList[0];
+            }
         }
-        // console.log(now() + `SummaryList »  updateList() \n\t selectedIds=`, selectedIds);
         setList(newList);
-        setSelectedIds(singleSelectedId);
-        editItem(selectedItem ?? newList[0]);
+        setSelectedIds(new Set(selectedItem ? [selectedItem.id] : null));
+        console.log(now() + `\n SummaryListMS(${entityName}) »  updateList() \n\t selectedIds=`, selectedIds);
+        if (selectedItem) editItem(selectedItem);// ?? newList[0]);
     }
 
     function fetchList() {
         console.log(now() + ' fetchList()');
-        // console.log(`SummaryListMS » fetchList() \n\t store[${entityName}].state=`, store[entityName].state);
+        // console.log(`SummaryList_1S » fetchList() \n\t store[${entityName}].state=`, store[entityName].state);
         const entries = Object.entries(store[entityName].state);
-        // console.log(`SummaryListMS » fetchList() \n\t entries=`, entries);
+        // console.log(`SummaryList_1S » fetchList() \n\t entries=`, entries);
         // const list = entries.map(e => e[1].item);
         const list = entries.map(e => e[1].item);
-        // console.log(`SummaryList » fetchList() \n\t list=`, list);
+        // console.log(`SummaryList_1S » fetchList() \n\t list=`, list);
         updateList(list);
     }
 
@@ -161,30 +182,29 @@ export function SummaryListMultiSelect({
     }
 
     return (
-        <div onKeyDown={handleOnKeyDown} onKeyUp={handleOnKeyUp}>
+        <TTC onKeyDown={handleOnKeyDown} onKeyUp={handleOnKeyUp} >
             <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
             {/*<Stringify data={store[entityName].state}>{entityName}</Stringify>*/}
-            <div>isCtrlDown={isCtrlDown.toString()}</div>
+            {/*<TT>*/}
+            {/*    <div>isCtrlDown={isCtrlDown.toString()}</div>*/}
+            {/*    <div>size: {selectedIds.size} ; id's: {[...selectedIds].toString()}</div>*/}
+            {/*</TT>*/}
             {list && (
                 <div>
                     {/*<div>SL: selectedIds={selectedIds} ; initialIdList={initialIdList}</div>*/}
-                    <SummaryTableMS metadata={metadata}
-                                    list={list}
-                                    selectedIds={selectedIds}
-                                    selectItem={editItem}
-                                    small={small}
-                                    hasFocus={hasFocus}
-                                    elKey={elKey}
-                                    key={elKey}
+                    <SummaryTable metadata={metadata}
+                                  list={list}
+                                  selectedIds={selectedIds}
+                                  selectItem={editItem}
+                                  small={small}
+                                  hasFocus={hasFocus}
+                                  elKey={elKey}
+                                  key={elKey}
                         // elKey={elKey+selectedIds}
                         // key={elKey+selectedIds}
                     />
-                    <Stringify
-                        // data={selectedIds}
-                        data={[...selectedIds].sort((a, b) => a - b)}
-                    />
                 </div>
             )}
-        </div>
+        </TTC>
     );
 }

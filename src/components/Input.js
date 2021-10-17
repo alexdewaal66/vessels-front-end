@@ -1,9 +1,11 @@
 import React, { useRef } from 'react';
 
 import { entitiesMetadata, subtypes, types } from '../helpers/entitiesMetadata';
-import { SummaryList } from './summaryList';
+import { SummaryList } from './summaryListMS';
 import { Stringify } from '../dev/Stringify';
 import { now } from '../helpers/utils';
+import { TTC, TT } from '../dev/Tooltips';
+import { ShowObject } from '../dev/ShowObject';
 // import { ShowObject } from '../dev/ShowObject';
 // import { CommandContext, useCommand } from '../contexts/CommandContext';
 
@@ -53,11 +55,6 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
     let hiddenFieldName, nullFieldName;
     let fieldValue = defaultValue;
 
-    // function clearNull() {
-    //     nullFieldRef.current.checked = null;
-    // }
-
-
     switch (property?.type) {
         case types.str:
             switch (property?.subtype) {
@@ -98,13 +95,24 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                                   ref={nullFieldRef}
                                   key={elKey + nullFieldName + '_obj'}
                     />geen</label>
-                    <input type="hidden"
-                           readOnly={true}
-                           name={hiddenFieldName}
-                           defaultValue={defaultValue.id}
-                           {...useFormFunctions.register(hiddenFieldName)}
-                           key={elKey + hiddenFieldName + '_objId'}
-                    />
+                    <TTC>
+                        <input type="hidden"
+                               readOnly={true}
+                               name={hiddenFieldName}
+                               id={field}
+                               defaultValue={defaultValue.id}
+                               {...useFormFunctions.register(hiddenFieldName)}
+                               key={elKey + hiddenFieldName + '_objId'}
+                        />
+                        <TT>
+                            <Stringify data={useFormFunctions.watch(hiddenFieldName)} >
+                                {hiddenFieldName}
+                            </Stringify>
+                            <Stringify data={useFormFunctions.getValues(hiddenFieldName)} />
+                            <Stringify data={nullFieldRef?.current?.value} />
+                        </TT>
+                    </TTC>
+
                     <SummaryList metadata={entitiesMetadata[property.target]}
                                  initialId={defaultValue.id}
                                  receiver={'Input'}
@@ -112,7 +120,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                                  elKey={elKey + hiddenFieldName + '_obj'}
                                  UICues={{small: true, hasFocus: false}}
                                  useFormFunctions={useFormFunctions}
-                                 inputHelpFields={[hiddenFieldName, nullFieldName]}
+                                 inputHelpFields={[hiddenFieldName, nullFieldName, nullFieldRef]}
                     />
                 </>
             );

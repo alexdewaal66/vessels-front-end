@@ -4,15 +4,15 @@ import { cx } from '../../helpers/multipleStyles';
 import { now } from '../../helpers/utils';
 
 export function SummaryTable({
-                                 list, metadata, selectedId, selectItem, small,
+                                 list, metadata, selectedIds, selectItem, small,
                                  hasFocus, elKey
                              }) {
-    const smallStyle = (small) ? summaryStyle.small : '';
+    const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
     elKey += '/STable';
 
     const entityName = metadata.name;
     // console.log(now() +  ` entityName=`, entityName);
-    const selectedIndex = Math.max(list.findIndex(item => item.id === selectedId), 0);
+    const selectedIndex = selectedIds ? Math.max(list.findIndex(item => selectedIds.has(item.id)), 0) : null;
     const [focusIndex, setFocusIndexState] = useState(selectedIndex);
     const [hasTableFocus, setTableFocus] = useState(hasFocus);
 
@@ -66,7 +66,8 @@ export function SummaryTable({
     function UICues(index) {
         return {
             hasFocus: (index === focusIndex && hasTableFocus),
-            isSelected: (index === selectedIndex),
+            // isSelected: (index === selectedIndex),
+            isSelected: selectedIds?.has(list[index].id),
             hasVisualPriority: hasTableFocus ? (index === focusIndex) : (index === selectedIndex)
         }
     }
@@ -74,7 +75,7 @@ export function SummaryTable({
     return (
         <div>
             {/*<div>ST: focusIndex={focusIndex} ; selectedIndex={selectedIndex}</div>*/}
-            <div className={cx(summaryStyle.tableFixHead, smallStyle)}
+            <div className={cx(summaryStyle.tableFixHead, sizeStyle)}
                  onFocus={handleFocus}
                  onBlur={handleBlur}
                  tabIndex={0}
@@ -101,5 +102,3 @@ export function SummaryTable({
         </div>
     );
 }
-
-

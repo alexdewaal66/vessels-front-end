@@ -136,6 +136,7 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                                         {/*{console.log('item, k,v:', item, k, v)}*/}
                                         <FieldRow elKey={elKey + ' edit_row ' + itemPropName}
                                                   key={elKey + ' edit_row ' + itemPropName}
+                                                  field={itemPropName}
                                         >
                                             <FieldDesc
                                                 key={elKey + ' edit_desc ' + itemPropName}
@@ -167,6 +168,7 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                                                 disabled={requestState.isPending}
                                                 onClick={setRequestMethod('put')}
                                                 key="submit_put"
+                                                accessKey={'w'}
                                         >
                                             Wijzig
                                         </button>
@@ -174,13 +176,15 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                                                 disabled={requestState.isPending}
                                                 onClick={setRequestMethod('post')}
                                                 key="submit_post"
+                                                accessKey={'n'}
                                         >
-                                            Bewaar als nieuw
+                                            Maak nieuw
                                         </button>
                                         <button type="submit" className="form-button"
                                                 disabled={requestState.isPending}
                                                 onClick={setRequestMethod('delete')}
                                                 key="submit_del"
+                                                accessKey={'v'}
                                         >
                                             Verwijder
                                         </button>
