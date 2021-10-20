@@ -48,6 +48,7 @@ entitiesMetadata.xyz = {
         },
         zyx: {
             type: types.obj,
+            // multiple: true,
         },
     },
     summary: ['id', 'name', 'xyzString', 'ratio'],
@@ -62,7 +63,6 @@ entitiesMetadata.zyx = {
     label: 'Zyx',
     endpoint: '/zyxs',
     id: ['id'],
-    multiple: true,
     properties: {
         id: {
             type: types.num, label: 'id', readOnly: true,
@@ -438,42 +438,65 @@ export function initializeEntitiesMetadata() {
     let typos = '';
     for (const entitiesKey in entitiesMetadata) {
         const entity = entitiesMetadata[entitiesKey];
-        for (const propName in entity.properties) {
-            if (entity.properties.hasOwnProperty(propName)) {
-                const prop = entity.properties[propName];
-                if (prop.type === types.obj) {
-                    if (!prop.target) {
-                        if (entitiesMetadata.hasOwnProperty(propName)) {
-                            prop.target = propName;
-                            prop.label = entitiesMetadata[propName].label.toLowerCase();
-                        } else {
-                            typos += `\t❌ in ${entitiesKey}.properties : '${propName}'\n`;
-                        }
-                    } else {
-                        if (entitiesMetadata.hasOwnProperty(prop.target)) {
-                            prop.label = entitiesMetadata[prop.target].label.toLowerCase();
-                        } else {
-                            typos += `\t❌ in ${entitiesKey}.properties.${propName}.target : '${prop.target}'\n`;
-                        }
-                    }
-                }
-            } else {
-                typos += `\t❌ in ${entitiesKey}.properties : '${propName}'\n`;
-            }
-        }
         entity.name = entitiesKey;
-        for (const summaryElement of entity.summary) {
-            if (!entity.properties[summaryElement]) {
-                typos += `\t❌ in ${entitiesKey}.summary : '${summaryElement}'\n`;
-            }
-        }
+        typos = checkProperties(entitiesKey, entity, typos);
+        typos = checkSummaries(entitiesKey, entity, typos);
     }
     if (typos === '') {
         console.log('✔ entitiesMetadata appears to have no typos.');
     } else {
-        console.log('❌ entitiesMetadata has typos:\n' + typos);
+        console.error('❌ entitiesMetadata has typos:\n' + typos);
     }
 }
+
+function checkProperties(entitiesKey, entity, typos) {
+    for (const propName in entity.properties) {
+        if (entity.properties.hasOwnProperty(propName)) {
+            const prop = entity.properties[propName];
+            if (prop.type === types.obj) {
+                typos = checkInternalReference(entitiesKey, propName, prop, typos);
+            }
+        } else {
+            typos += `\t❌ in ${entitiesKey}.properties : '${propName}'\n`;
+        }
+    }
+    return typos;
+}
+
+function checkInternalReference(entitiesKey, propName, prop, typos) {
+    if (!prop.target) {
+        if (entitiesMetadata.hasOwnProperty(propName)) {
+            prop.target = propName;
+            prop.label = entitiesMetadata[propName].label.toLowerCase();
+        } else {
+            typos += `\t❌ in ${entitiesKey}.properties : '${propName}'\n`;
+        }
+    } else {
+        if (entitiesMetadata.hasOwnProperty(prop.target)) {
+            prop.label = entitiesMetadata[prop.target].label.toLowerCase();
+        } else {
+            typos += `\t❌ in ${entitiesKey}.properties.${propName}.target : '${prop.target}'\n`;
+        }
+    }
+    return typos;
+}
+
+function checkSummaries(entitiesKey, entity, typos) {
+    for (const summaryElement of entity.summary) {
+        const parts = summaryElement.split('.');
+        if (
+            (parts.length === 1 && !entity.properties[summaryElement])
+            ||
+            (parts.length === 2 && !entitiesMetadata[parts[0]].properties[parts[1]])
+            ||
+            parts.length > 2
+        ) {
+            typos += `\t❌ in ${entitiesKey}.summary : '${summaryElement}'\n`;
+        }
+    }
+    return typos;
+}
+
 
 export function createEmptyItem(metadata) {
     // console.log(`entitiesMetadata » createEmptyItem() \n\t metadata.name=`, metadata.name);
