@@ -1,17 +1,16 @@
-import React from 'react';
+import React, { useState} from 'react';
 import { Main, Command, Aside, Content } from '../pageLayouts';
-import { useOOState } from '../helpers/customHooks';
 import { homeCommands } from './homeCommands';
 
 export default function Home() {
-    const choice = useOOState(homeCommands.empty);
+    const [choice, setChoice] = useState(homeCommands.vessel);
 
     return (
         <Content>
-            <Command commandList={homeCommands} choice={choice}>
+            <Command commandList={homeCommands.displayOrder} choice={choice} setChoice={setChoice}>
             </Command>
             <Main>
-                <choice.value.component self={choice.value} />
+                <choice.component self={choice} />
             </Main>
             <Aside>
                 ASIDE

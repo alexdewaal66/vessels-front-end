@@ -3,21 +3,22 @@ import commandStyles from './command.module.css';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
 
 
-export function Command({commandList, choice, children, className, ...rest}) {
+export function Command({commandList, choice, setChoice, children, className, ...rest}) {
 
-    const makeChoice = c => () => choice.set(c);
+    const makeChoice = c => () => setChoice(c);
 
     return (
         <nav className={pageLayout.command} {...rest}>
             {children}
             <div className={commandStyles.nav}>
-                <h4>Gegegvens:</h4>
+                <h4>Gegevens:</h4>
 
                 <ul className={commandStyles.ul}>
-                    {commandList?.displayOrder.map(command =>
+                    {/*{commandList?.map(command =>*/}
+                    {commandList?.map(command =>
                         <li key={command.label}
                             onClick={makeChoice(command)}
-                            className={choice.value === command
+                            className={choice === command
                                 ? commandStyles.selected
                                 : null
                             }
