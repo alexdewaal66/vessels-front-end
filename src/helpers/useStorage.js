@@ -308,7 +308,7 @@ export function useStorage() {
             requestState,
             description: `het bewaren van ${entitiesMetadata[entityName].label} (id=${id}) `,
             advice: '',
-            action: {type: 'deleteItem', entityName, id},
+            action: {type: 'saveItem', entityName, id},
         });
         updateAndStoreItem(entitiesMetadata[entityName], item, requestState, tree)
             .then(onFinished);

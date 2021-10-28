@@ -31,7 +31,7 @@
 }
 
 
-.table thead th {
+.table thead {
     position: sticky;
     top: 0;
 }
@@ -103,5 +103,20 @@ tr.selected:focus {
     box-shadow: inset 0 0 10px 5px var(--compl-color-bg-light), inset 0 0 40px var(--faint-color);
 }
 
-/*
- */
+th .sort {
+    display: inline;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+th .filter {
+    display: inline;
+    height: 1em;
+}
+
+th .input {
+
+}

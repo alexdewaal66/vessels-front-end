@@ -241,7 +241,7 @@ entitiesMetadata.unLocode = {
             type: types.str, label: 'functie classificatie', validation: {maxLength: 8}, details: 'transform',
         },
         status: {
-            type: types.str, label: 'status', validation: {maxLength: 2},
+            type: types.str, label: 'status', validation: {maxLength: 2}, details: 'transform',
         },
         updateYear: {
             type: types.str, label: 'Jaartal update', validation: {maxLength: 4},

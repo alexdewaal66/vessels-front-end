@@ -1,16 +1,14 @@
 import React, {useState} from 'react';
-import { entitiesMetadata } from '../helpers/entitiesMetadata';
+import { entitiesMetadata, now } from '../helpers';
 import { CommandContextProvider } from '../contexts/CommandContext';
 import { EditEntity } from './EditEntity';
 import { SummaryList } from './summaryListMS';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
-import { now } from '../helpers/utils';
 
 
-export function Entity({metadata = entitiesMetadata.xyz, initialId}) {
-    // const metadata = entity ?? entitiesMetadata.xyz;
-    // console.log(`${now()} \n Entity(${metadata.name},  ${initialId})`);
-    const elKey =` Entity(${metadata.name},${initialId})`;
+export function Entity({metadata = entitiesMetadata.xyz, initialIdList}, self) {
+    console.log(`${now()} \n Entity(${metadata.name},  ${initialIdList?.toString()}, self=${self.label})`);
+    const elKey =` Entity(${metadata.name},${initialIdList?.toString()})`;
     const [item, setItem] = useState(null);
 
 
@@ -20,7 +18,7 @@ export function Entity({metadata = entitiesMetadata.xyz, initialId}) {
                 <span className={pageLayout.firstPart}>
                     {/*<div>{metadata.name}</div>*/}
                     <SummaryList metadata={metadata}
-                                 initialId={initialId}
+                                 initialIdList={initialIdList}
                                  receiver={'EditEntity'}
                                  key={elKey}
                                  elKey={elKey}

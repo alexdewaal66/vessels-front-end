@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
 
-import { entitiesMetadata, subtypes, types } from '../helpers/entitiesMetadata';
+import { entitiesMetadata, subtypes, types, now } from '../helpers';
 import { SummaryList } from './summaryListMS';
 import { Stringify } from '../dev/Stringify';
-import { now } from '../helpers/utils';
 import { TTC, TT } from '../dev/Tooltips';
 import { ShowObject } from '../dev/ShowObject';
+import { InputObject } from './InputObject';
 // import { ShowObject } from '../dev/ShowObject';
 // import { CommandContext, useCommand } from '../contexts/CommandContext';
 
@@ -41,7 +41,6 @@ const referenceSize = 80;
 export function Input({metadata, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
     const property = metadata.properties[field];
     const elKey = `Input(${metadata.name},${field},${defaultValue})`;
-    const nullFieldRef = useRef(null);
 
     // console.log(`Input » metadata=`, metadata, `\n field=`, field, `\n property=`, property);
     readOnly = readOnly || metadata.methods === 'R' || property?.readOnly;
@@ -52,7 +51,6 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
     let rows = null;
     let cols = null;
     let step = null;
-    let hiddenFieldName, nullFieldName;
     let fieldValue = defaultValue;
 
     switch (property?.type) {
@@ -82,73 +80,40 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             step = 'any';
             break;
         case types.obj:
-            console.log(now() + ` Input(${metadata.name}) » case 'obj' \n\t defaultValue=`, defaultValue);
-            nullFieldName = 'null_' + field + '_' + property.target;
-            hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
+            /////////////////////////////////////////////////////////////
             return (
-                <>
-                    {/*<div>IN: {hiddenFieldName} = <ShowObject data={defaultValue}/></div>*/}
-                    <label><input type="checkbox"
-                                  defaultChecked={!defaultValue}
-                                  name={nullFieldName}
-                                  {...useFormFunctions.register(nullFieldName)}
-                                  ref={nullFieldRef}
-                                  key={elKey + nullFieldName + '_obj'}
-                    />geen</label>
-                    <TTC>
-                        <input type="hidden"
-                               readOnly={true}
-                               name={hiddenFieldName}
-                               id={field}
-                               defaultValue={defaultValue.id}
-                               {...useFormFunctions.register(hiddenFieldName)}
-                               key={elKey + hiddenFieldName + '_objId'}
-                        />
-                        <TT>
-                            <Stringify data={useFormFunctions.watch(hiddenFieldName)} >
-                                {hiddenFieldName}
-                            </Stringify>
-                            <Stringify data={useFormFunctions.getValues(hiddenFieldName)} />
-                            <Stringify data={nullFieldRef?.current?.value} />
-                        </TT>
-                    </TTC>
-
-                    <SummaryList metadata={entitiesMetadata[property.target]}
-                                 initialId={defaultValue.id}
-                                 receiver={'Input'}
-                                 key={elKey + hiddenFieldName + '_obj'}
-                                 elKey={elKey + hiddenFieldName + '_obj'}
-                                 UICues={{small: true, hasFocus: false}}
-                                 useFormFunctions={useFormFunctions}
-                                 inputHelpFields={[hiddenFieldName, nullFieldName, nullFieldRef]}
-                    />
-                </>
+                <InputObject metadata={metadata}
+                             field={field}
+                             defaultValue={defaultValue}
+                             useFormFunctions={useFormFunctions}
+                             elKey={elKey}
+                />
             );
-        case types.arr:
-            console.log(now() + ` Input(${metadata.name}) » case 'arr' \n\t defaultValue=`, defaultValue);
-            hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id_list';
-            return (
-                <>
-                    <div>IN: {hiddenFieldName} = {defaultValue.id}</div>
-                    <input type="hidden"
-                           readOnly={true}
-                           name={hiddenFieldName}
-                           defaultValue={defaultValue.id}
-                           {...useFormFunctions.register(hiddenFieldName)}
-                           key={elKey + hiddenFieldName + '_arrIdx'}
-                    />
-                    <SummaryList metadata={entitiesMetadata[property.target]}
-                                 initialId={defaultValue.id}
-                                 small
-                                 receiver={'Input'}
-                                 key={elKey + hiddenFieldName + '_arr'}
-                                 elKey={elKey}
-                                 UICues={{small: true, hasFocus: false}}
-                                 useFormFunctions={useFormFunctions}
-                                 hiddenFieldName={hiddenFieldName}
-                    />
-                </>
-            );
+        // case types.arr:
+        //     console.log(now() + ` Input(${metadata.name}) » case 'arr' \n\t defaultValue=`, defaultValue);
+        //     hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id_list';
+        //     return (
+        //         <>
+        //             <div>IN: {hiddenFieldName} = {defaultValue.id}</div>
+        //             <input type="hidden"
+        //                    readOnly={true}
+        //                    name={hiddenFieldName}
+        //                    defaultValue={defaultValue.id}
+        //                    {...useFormFunctions.register(hiddenFieldName)}
+        //                    key={elKey + hiddenFieldName + '_arrIdx'}
+        //             />
+        //             <SummaryList metadata={entitiesMetadata[property.target]}
+        //                          initialId={defaultValue.id}
+        //                          small
+        //                          receiver={'Input'}
+        //                          key={elKey + hiddenFieldName + '_arr'}
+        //                          elKey={elKey}
+        //                          UICues={{small: true, hasFocus: false}}
+        //                          useFormFunctions={useFormFunctions}
+        //                          hiddenFieldName={hiddenFieldName}
+        //             />
+        //         </>
+        //     );
         case types.bool:
             inputType = inputTypes.checkbox;
             break;

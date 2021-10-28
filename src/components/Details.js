@@ -1,10 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { TTC, TT } from '../dev/Tooltips';
-import { useConditionalEffect } from '../helpers/customHooks';
+import { useConditionalEffect, transform } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
 import { StorageContext } from '../contexts/StorageContext';
 import { ShowObject } from '../dev/ShowObject';
-import { transform } from '../helpers/transform';
 
 
 export function Details({metadata, field, value, item, children}) {

@@ -23,6 +23,22 @@ const functionClassifiers = {
     },
 };
 
+const status = {
+    EN: {
+        AA:	'Approved by competent national government agency',
+        AC:	'Approved by Customs Authority',
+        AF:	'Approved by national facilitation body',
+        AI:	'Code adopted by international organisation (IATA or ECLAC)',
+        AS:	'Approved by national standardisation body',
+        RL:	'Recognised location - Existence and representation of location name confirmed by check against nominated gazetteer or other reference work',
+        RN:	'Request from credible national sources for locations in their own country',
+        RQ:	'Request under consideration',
+        RR:	'Request rejected',
+        QQ:	'Original entry not verified since date indicated',
+        XX:	'Entry that will be removed from the next issue of UN/LOCODE»',
+    },
+    NL: {},
+};
 
 const transformations = {
     unLocode: {
@@ -34,8 +50,11 @@ const transformations = {
                     output[c] = functionClassifiers.NL[c];
             }
             return output;
-        }
-    }
+        },
+        status: (value) => {
+            return {[value]: status.EN[value]};
+        },
+    },
 };
 
 export function transform(entityName, propertyName, value) {

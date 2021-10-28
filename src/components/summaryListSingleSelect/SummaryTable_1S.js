@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { SummaryHeading, SummaryRow_1S, summaryStyle } from './';
-import { cx } from '../../helpers/multipleStyles';
-import { now } from '../../helpers/utils';
+import { cx, now } from '../../helpers';
 
 export function SummaryTable_1S({
                                  list, metadata, selectedId, selectItem, small,

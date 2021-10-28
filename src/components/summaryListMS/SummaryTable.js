@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
-import { cx } from '../../helpers/multipleStyles';
-import { now } from '../../helpers/utils';
+import { cx, now } from '../../helpers';
+import { lgv, erv } from '../../dev/log';
 
 export function SummaryTable({
                                  list, metadata, selectedIds, selectItem, small,
-                                 hasFocus, elKey
+                                 hasFocus, elKey, setSorting, setFiltering
                              }) {
     const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
     elKey += '/STable';
 
     const entityName = metadata.name;
-    // console.log(now() +  ` entityName=`, entityName);
+    const logRoot = `SummaryTable(${entityName})`;
+
+    // find 'first' selected item in list
     const selectedIndex = selectedIds ? Math.max(list.findIndex(item => selectedIds.has(item.id)), 0) : null;
     const [focusIndex, setFocusIndexState] = useState(selectedIndex);
     const [hasTableFocus, setTableFocus] = useState(hasFocus);
@@ -19,7 +21,7 @@ export function SummaryTable({
     function setFocusIndex(i) {
         setFocusIndexState(i);
         setTableFocus(true);
-        // console.log(now(), `elKey=`, elKey, `\nnew focusIndex should be: `, i);
+        // console.log(now(), `elKey=`, elKey, `\n new focusIndex should be: `, i);
     }
 
     const rowFocus = {
@@ -82,7 +84,10 @@ export function SummaryTable({
             >
                 <table className={summaryStyle.table}>
                     <thead>
-                    <SummaryHeading metadata={metadata} elKey={entityName}/>
+                    <SummaryHeading metadata={metadata}
+                                    elKey={entityName}
+                                    setSorting={setSorting}
+                                    setFiltering={setFiltering}/>
                     </thead>
                     <tbody>
                     {list.map((listItem, index) => (
