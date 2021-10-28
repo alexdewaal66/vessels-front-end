@@ -5,7 +5,7 @@ import headerStyles from './header.module.css'
 import { pageLayout } from './';
 import { AuthContext } from '../contexts/AuthContext';
 import { withCondition } from '../enhancers/withCondition';
-import { cx } from '../helpers/multipleStyles';
+import { cx } from '../helpers';
 
 
 const CondLi = withCondition('li');

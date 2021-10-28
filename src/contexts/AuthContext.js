@@ -1,10 +1,8 @@
 import React, { createContext, useState } from 'react';
-import { getRequest, now, persistentVars } from '../helpers/utils';
+import { getRequest, now, persistentVars, useRequestState, useMountEffect, endpoints } from '../helpers';
 import jwt_decode from 'jwt-decode';
 import { pages } from '../pages';
 import { useHistory } from 'react-router-dom';
-import { useRequestState, useMountEffect } from '../helpers/customHooks';
-import { endpoints } from '../helpers/endpoints';
 import { Statusbar } from '../pageLayouts/Statusbar';
 
 export const AuthContext = createContext({});

@@ -1,4 +1,4 @@
-import { useDict, setEntryProp } from '../../helpers/useDict';
+import { useDict, setEntryProp } from '../../helpers';
 
 export function useRequestStateDict() {
     const dict = useDict();

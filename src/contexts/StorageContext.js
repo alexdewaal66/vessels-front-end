@@ -1,5 +1,5 @@
 import React, { createContext } from 'react';
-import { useStorage } from '../helpers/useStorage';
+import { useStorage } from '../helpers';
 import { ShowRequestState } from '../components';
 
 export const StorageContext = createContext({});

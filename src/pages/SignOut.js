@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
-import { now } from '../helpers/utils';
+import { now } from '../helpers';
 import { Aside, Command, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { pages } from './index';

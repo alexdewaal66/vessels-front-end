@@ -1,13 +1,9 @@
 import React, { useContext, useMemo } from 'react';
-import { cx } from '../helpers/multipleStyles';
-import { useMountEffect } from '../helpers/customHooks';
+import { useMountEffect, useSuperDict, transform, cx, now } from '../helpers';
 import { Stringify } from './Stringify';
-import { useSuperDict } from '../helpers/useDict';
 import { StorageContext } from '../contexts/StorageContext';
 import { ShowRequestState } from '../components';
-import { transform } from '../helpers/transform';
 import { ShowObject } from './ShowObject';
-import { now } from '../helpers/utils';
 
 export function Test({children, className, ...rest}) {
     const {allIdsLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { TTC, TT } from './Tooltips';
-import { entitiesMetadata } from '../helpers/entitiesMetadata';
+import { entitiesMetadata } from '../helpers';
 
 export function ShowObject({entityName, data, tooltip}) {
     function property(key) {

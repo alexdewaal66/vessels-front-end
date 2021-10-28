@@ -7,7 +7,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthContextProvider } from './contexts/AuthContext';
 import { StatusContextProvider } from './contexts/StatusContext';
 import { StorageContextProvider } from './contexts/StorageContext';
-import { initializeEntitiesMetadata } from './helpers/entitiesMetadata';
+import { initializeEntitiesMetadata } from './helpers';
 
 initializeEntitiesMetadata();
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { now } from '../helpers/utils';
+import { now } from '../helpers';
 import styles from './onfocusexample.module.css'
 
 export function OnFocusExample({children, className, ...rest}) {

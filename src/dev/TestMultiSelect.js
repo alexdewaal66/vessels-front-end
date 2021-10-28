@@ -1,7 +1,6 @@
 import React from 'react';
 import { SummaryList } from '../components/summaryListMS';
-import { entitiesMetadata } from '../helpers/entitiesMetadata';
-import { now } from '../helpers/utils';
+import { entitiesMetadata, now } from '../helpers';
 import { CommandContextProvider } from '../contexts/CommandContext';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
 import { EditEntity } from '../components';
