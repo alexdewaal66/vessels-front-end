@@ -6,7 +6,7 @@ export function Statusbar({children}) {
 
     useEffect(() => {
         setStatusMessage(children);
-    }, []);
+    }, [children, setStatusMessage]);
 
     return null;
 }

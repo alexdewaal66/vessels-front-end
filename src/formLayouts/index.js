@@ -1,3 +1,5 @@
+import formStyles from  './forms.module.css';
+export { formStyles };
 export * from './Form';
 export * from './Fieldset';
 export * from './FieldRow';

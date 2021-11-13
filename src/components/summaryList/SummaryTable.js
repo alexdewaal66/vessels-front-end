@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
-import { cx, now } from '../../helpers';
-import { lgv, erv } from '../../dev/log';
+import { cx } from '../../helpers';
+import { logv, errv } from '../../dev/log';
 
 export function SummaryTable({
-                                 list, metadata, selectedIds, selectItem, small,
+                                 list, metadata, selectedIds, clickItem, small,
                                  hasFocus, elKey, setSorting, setFiltering
                              }) {
     const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
@@ -94,7 +94,7 @@ export function SummaryTable({
                         <SummaryRow listItem={listItem}
                                     index={index}
                                     metadata={metadata}
-                                    selectItem={selectItem}
+                                    clickItem={clickItem}
                                     key={elKey + index}
                                     elKey={elKey + index}
                                     rowFocus={rowFocus}

@@ -1,5 +1,4 @@
-import { entitiesMetadata } from './entitiesMetadata';
-import { getRequest, findItem, postRequest, putRequest, deleteRequest } from './utils';
+import { getRequest, postRequest, putRequest, deleteRequest } from './utils';
 
 export const remote = {
     readIds: async function (metadata, requestState, onSuccess, onFail) {

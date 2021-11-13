@@ -1,13 +1,19 @@
-import { SummaryList } from './summaryListMS';
-import { entitiesMetadata, now } from '../helpers';
+import { SummaryList } from './summaryList';
+import { entitiesMetadata } from '../helpers';
 import React, { useRef } from 'react';
+import { logv } from '../dev/log';
 
 export function InputObject({metadata, field, defaultValue, useFormFunctions, elKey}) {
+    const logRoot = `${InputObject.name}(${metadata.name})`;
+    logv(logRoot, {field, defaultValue});
     const property = metadata.properties[field];
     const nullFieldRef = useRef(null);
     let hiddenFieldName, nullFieldName;
+    const initialIdList = Array.isArray(defaultValue)
+        ? defaultValue.map(item => item.id)
+        : [defaultValue.id];
 
-    console.log(now() + ` Input(${metadata.name}) » case 'obj' \n\t defaultValue=`, defaultValue);
+    logv(null, {initialIdList});
     nullFieldName = 'null_' + field + '_' + property.target;
     hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
 
@@ -35,7 +41,7 @@ export function InputObject({metadata, field, defaultValue, useFormFunctions, el
                    key={elKey + hiddenFieldName + '_objId'}
             />
             <SummaryList metadata={entitiesMetadata[property.target]}
-                         initialIdList={defaultValue.id}
+                         initialIdList={initialIdList}
                          receiver={'Input'}
                          key={elKey + hiddenFieldName + '_obj'}
                          elKey={elKey + hiddenFieldName + '_obj'}

@@ -8,10 +8,9 @@
     height: 85vh;
 }
 
-/*.tall {*/
-/*    !*box-sizing: border-box;*!*/
-/*    height: 100%;*/
-/*}*/
+.tall {
+    /*min-width: 33%;*/
+}
 
 .small {
     height: calc(6 * 1.7em);

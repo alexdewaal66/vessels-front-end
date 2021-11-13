@@ -12,6 +12,7 @@ export function useConditionalEffect(operation, condition, deps) {
 }
 
 export function useMountEffect(fun) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(fun, []);
 }
 

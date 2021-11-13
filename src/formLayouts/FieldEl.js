@@ -1,9 +1,9 @@
 import React from 'react';
-import forms from './/forms.module.css';
+import { formStyles } from './';
 
 export function FieldEl({ children, ...rest}) {
     return (
-        <span className={forms.cell} {...rest} >
+        <span className={formStyles.cell} {...rest} >
             {children}
         </span>
     );

@@ -1,16 +1,18 @@
 import React, { useState} from 'react';
 import { Main, Command, Aside, Content } from '../pageLayouts';
 import { homeCommands } from './homeCommands';
+import { logv } from '../dev/log';
 
 export default function Home() {
-    const [choice, setChoice] = useState(homeCommands.vessel);
+    const [choice, setChoice] = useState(homeCommands.default);
 
     return (
         <Content>
             <Command commandList={homeCommands.displayOrder} choice={choice} setChoice={setChoice}>
             </Command>
             <Main>
-                <choice.component self={choice} />
+                {(logv('-----HOME-----', {'choice.label': choice.label}), '')}
+                <choice.component />
             </Main>
             <Aside>
                 ASIDE

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { endpoints } from './endpoints';
 import { statusCodes } from '../dev/statusCodes';
+import { errv, logv } from '../dev/log';
 
 export function now() {
     const date = new Date();
@@ -95,13 +96,11 @@ export async function deleteRequest({url, requestState, onSuccess, onFail}) {
 }
 
 export async function makeRequest({method, url, payload, requestState = null, onSuccess, onFail}) {
+    const logPath = makeRequest.name + '() ';
     const headers = addJwtToHeaders();
 
     requestState?.setAtPending();
-    console.log(
-        now() + ' makeRequest() arguments=',
-        {method, url, payload, requestState, onSuccess}
-    );
+    // logv(logPath + 'arguments=', {method, url, payload, requestState, onSuccess});
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,
@@ -111,13 +110,13 @@ export async function makeRequest({method, url, payload, requestState = null, on
             data: payload,
             timeout: 15_000,
         });
-        console.log(now() + ' makeRequest() response=', response);
+        // logv(logPath + 'response=', {response});
         requestState?.setAtSuccess();
         if (onSuccess) onSuccess(response);
     } catch (e) {
         if (e?.response)
             e.response.statusText = statusCodes[e.response.status];
-        console.error(now() + ' makeRequest() error=', e);
+        errv(logPath + 'error=', {e});
         requestState?.setAtError();
         requestState?.setErrorMsg(e.toString());
         if (onFail) onFail(e);

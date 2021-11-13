@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useConditionalEffect, useRequestState, useBGLoading, createEmptyItem, now } from '../../helpers';
-import { SummaryTable, summaryStyle } from './';
+import React, { useContext, useState } from 'react';
+import { useConditionalEffect, useRequestState, useBGLoading, createEmptyItem } from '../../helpers';
+import { SummaryTable } from './';
 import { CommandContext, operationNames, useCommand } from '../../contexts/CommandContext';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts/StorageContext';
-import { Stringify } from '../../dev/Stringify';
-import { TTC, TT } from '../../dev/Tooltips';
-import { lgv } from '../../dev/log';
+// import { Stringify } from '../../dev/Stringify';
+import { TTC } from '../../dev/Tooltips';
+import { errv, logv } from '../../dev/log';
 
 const keys = {shift: 16, control: 17, alt: 18};
 
@@ -17,37 +17,35 @@ export function SummaryList({
     //TODO❗❗ GEEN RIJ SELECTEREN BINNEN EEN INPUT ALS VERWIJZING NULL IS, IS NU RIJ 1
     elKey += '/SList';
     const entityName = metadata.name;
-    let logRoot = `SummaryList(${entityName})`;
+    let logRoot = `${SummaryList.name}(${entityName})`;
     const storage = useContext(StorageContext);
-    const {allIdsLoaded, store} = storage;
+    const {allIdsLoaded, store, getItem} = storage;
+    // logv(logRoot, {tree: store[entityName].state});
     const {small, hasFocus, isMulti} = UICues;
-    console.log(now() + ` SummaryList() ▶▶▶ props=`,
-        {metadata, initialIdList, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
+    // logv(logRoot + ` ▶▶▶ props:`,
+    //     {metadata, initialIdList, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
-    // const [preSelectedIdList, setPreSelectedIdList] = useState(initialIdList);
 
-    // const [selectedIds, setSelectedIds] = useState(new Set(initialIdList));
     const [selectedIds, setSelectedIds] = useState(new Set());
 
-    const [centeredId, setCenteredId] = useState();
     const [command, setCommand] = useContext(CommandContext);
     const [isCtrlDown, setIsCtrlDown] = useState(false);
     const [sorting, setSorting] = useState({propertyName: 'id', order: 'up'});
-    const [filtering, setFiltering] = useState({})
+    // const [filtering, setFiltering] = useState({})
 
-    console.log(now(), `\n SummaryListMS(${entityName}) » body `,
-        `\n\t initialIdList=`, initialIdList,
-        // `\n\t preSelectedIdList=`, preSelectedIdList,
-        `\n\t selectedIds=`, selectedIds,
-        `\n\t list=`, list);
+    // logv(logRoot + ` states:`, {
+    //     initialIdList, allIdsLoaded,
+    //     'store[entityName].state': store[entityName].state,
+    //     selectedIds, list
+    // });
     useBGLoading(storage, metadata);
 
-    function editItem(item) {
-        const logPath = logRoot + ` » editItem()`;
+    function clickItem(item) {
+        const logPath = `${logRoot} » ${clickItem.name}()`;
         let conditionsLog;
         let newSelectedIds;
-        lgv(logPath, {'item?.id': item?.id, isCtrlDown});
+        logv(logPath, {'item?.id': item?.id, isCtrlDown});
         if (small && isMulti && isCtrlDown) {
             if (selectedIds.has(item.id)) {
                 setSelectedIds(ids => {
@@ -69,49 +67,40 @@ export function SummaryList({
             setSelectedIds(newSelectedIds);
             conditionsLog = 'F-*';
         }
-        console.log(now() + `\n SummaryListMS(${entityName}) » editItem()`,
-            `\n\t conditionsLog=`, conditionsLog);
+        // logv(logPath, {conditionsLog});
         if (inputHelpFields) {
             manipulateInputHelpFields(item, newSelectedIds);
         } else {
-            // console.log('>>> setCommand from editItem()');
+            console.log('>>> setCommand from clickItem()');
             setCommand({operation: operationNames.edit, data: item, entityType: metadata, receiver: receiver});
         }
     }
 
     function manipulateInputHelpFields(item, newSelectedIds) {
+        const {getValues: getFormValues, setValue: setFormValue} = useFormFunctions;
+        const logPath = logRoot + manipulateInputHelpFields.name + '() ';
         const [hiddenFieldName, nullFieldRef] = inputHelpFields;
-        // useFormFunctions.setValue(nullFieldName, +(selectedIds.size > 0));
         nullFieldRef.current.value = (newSelectedIds.size === 0);
         nullFieldRef.current.checked = (newSelectedIds.size === 0);
-        // console.log(now(),
-        //     `\n SummaryListMS(${entityName}) » editItem() >>> setValue`,
-        //     `\n❗❗❗ checkbox written with (newSelectedIds.size === 0):`, (newSelectedIds.size === 0),
-        //     `\n❗❗❗ newSelectedIds.size =`, newSelectedIds.size);
-        if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
-            // console.log(now(),
-            //     `\n SummaryListMS(${entityName}) » editItem() >>> setValue`,
-            //     `\n hiddenFieldName=`, hiddenFieldName,);
-            useFormFunctions.setValue(hiddenFieldName, [...selectedIds].toString());
-            // console.log(now(),
-            //     `\n SummaryListMS(${entityName}) » editItem() >>> setValue`,
-            //     `\n form value hiddenFieldName=`, useFormFunctions.getValues(hiddenFieldName));
-        } else {
-            const idList = useFormFunctions.getValues(hiddenFieldName).split(',');
-            if (!idList.includes(item.id.toString())) {
-                idList.push(item.id.toString());
-                useFormFunctions.setValue(hiddenFieldName, idList.join());
-            }
-        }
+        logv(logPath, {
+            item, newSelectedIds, hiddenFieldName,
+            hiddenField: getFormValues(hiddenFieldName)
+        });
+        // if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
+        setFormValue(hiddenFieldName, [...newSelectedIds].toString());
+        // } else {
+        //     const idList = getFormValues(hiddenFieldName).split(',');
+        //     if (!idList.includes(item.id.toString())) {
+        //         idList.push(item.id.toString());
+        //         setFormValue(hiddenFieldName, idList.join());
+        //     }
+        // }
+        logv(null, {
+            item, newSelectedIds, hiddenFieldName,
+            hiddenField: getFormValues(hiddenFieldName),
+            formValues: getFormValues()
+        });
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    // useEffect(function whyIsThisNotSuperfluous() {
-    //     if (preSelectedIdList !== initialIdList) {
-    //         setSelectedIds(initialIdList);
-    //         setPreSelectedIdList(initialIdList);
-    //     }
-    // })
 
     useConditionalEffect(() => updateList([...list])
         , (!!sorting && !!list), [sorting]);
@@ -136,54 +125,72 @@ export function SummaryList({
     };
 
     function updateList(newList, singleSelectedId) {
-        const logPath = logRoot + ` » updateList()`;
-        lgv(logPath, {newList});
+        const logPath = logRoot + ` » ${updateList.name}()`;
+        logv(logPath, {newList, singleSelectedId});
         let selectedItem;
         if (newList.length === 0) {
             if (small) {
                 setSelectedIds(new Set());
                 selectedItem = null;
             } else {// maak 'leeg' object om te kunnen editen en bewaren als nieuw
-                // console.log(`createEmptyItem(${entityName})`);
+                console.log(`createEmptyItem(${entityName})`);
                 selectedItem = createEmptyItem(metadata);
-                // lgv(logPath + '|newList|=0, small', {selectedItem});
+                // logv(logPath + '|newList|=0, small', {selectedItem});
                 newList.push(selectedItem);
-                // lgv(logPath,  {newList});
+                // logv(logPath,  {newList});
                 setSelectedIds(new Set([selectedItem.id]));
             }
         } else { // newList.Length > 0
             // newList.sort((a, b) => a.id - b.id);
-            lgv(logPath, {sorting, newList});
+            // logv(logPath, {sorting, newList});
             sortList[sorting.order](newList);
-            lgv(logPath, {newList});
+            // logv(logPath, {newList});
             if (small) {
+                const firstId = initialIdList?.[0]
+                const shouldAnIdBeSelected = !!firstId;
+                logv(null, {initialIdList, shouldAnIdBeSelected});
+                if (shouldAnIdBeSelected) {
+                    selectedItem = store[entityName].state[firstId].item;
+                    const selectedItem2 = getItem(entityName, firstId);
+                    logv(logPath + ' » if (small) » if (shouldAnIdBeSelected)', {
+                        firstId, selectedItem, selectedItem2
+                    })
+                    setSelectedIds(ids => new Set([...ids, firstId]));
+                } else {
+                    selectedItem = null;
+                    setSelectedIds(new Set());
+                }
             } else {
                 if (singleSelectedId) {
-                    selectedItem = newList.find(item => item.id === singleSelectedId);
+                    if (singleSelectedId < 0) logv('❌❌❌❌ '+ logPath);
+                    // selectedItem = newList.find(item => item.id === singleSelectedId);
+                    selectedItem =  getItem(entityName, singleSelectedId);
+                    logv(logPath + ' if (singleSelectedId)', {selectedItem});
                     setSelectedIds(new Set([singleSelectedId]));
                 } else {
-                    setSelectedIds(new Set(initialIdList));// superfluous??
-                    selectedItem = initialIdList
+                    const shouldAnIdBeSelected = !!(initialIdList?.[0]);
+                    // logv(null, {initialIdList, shouldAnIdBeSelected});
+                    selectedItem = shouldAnIdBeSelected
                         ? newList.find(item => item.id === initialIdList[0])
                         : newList[0];
+                    // logv(logPath, {selectedItem});
+                    setSelectedIds(ids => new Set([...ids, selectedItem?.id]))
                 }
             }
         }
         setList(newList);
-        console.log(now() + `\n SummaryListMS(${entityName}) »  updateList()`,
-            `\n\t selectedIds=`, selectedIds,
-            `\n\t selectedItem=`, selectedItem);
+        // logv(logPath, {selectedIds, selectedItem});
         // if (selectedItem)
-        editItem(selectedItem);
+        clickItem(selectedItem);
     }
 
     function fetchList() {
-        console.log(now() + ' fetchList()');
-        // console.log(`SummaryList » fetchList() \n\t store[${entityName}].state=`, store[entityName].state);
+        const logPath = logRoot + fetchList.name + '()';
+        // logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
         const entries = Object.entries(store[entityName].state);
-        // console.log(`SummaryList » fetchList() \n\t entries=`, entries);
+        // logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
-        // console.log(`SummaryList » fetchList() \n\t list=`, list);
+        // logv(logPath, {list});
         updateList(list, null);
         // sorteren
         // if  |iIL| > |list|  -->  error
@@ -197,7 +204,7 @@ export function SummaryList({
         //                        setSelectedIds(new Set([list[0].id]))
         //          else  -->
         //                  setSelectedIds(new Set([initialIdList[0]]))
-        //          editItem() ??
+        //          clickItem() ??
         //
         // if small  -->
         //          if |iIL| = 0  OR  |list| = 0  -->
@@ -210,28 +217,30 @@ export function SummaryList({
         //                          setSelectedIds(new Set([initialIdList[0]]))
         //                  if isMulti
         //                          setSelectedIds(new Set(initialIdList))
-        //          editItem() ??
+        //          clickItem() ??
     }
 
-    useConditionalEffect(fetchList, allIdsLoaded, [store[entityName].state]);
+    useConditionalEffect(fetchList, allIdsLoaded, [store[entityName].state, allIdsLoaded]);
 
     const conditions = {
         entityType: metadata,
-        receiver: 'SummaryList',
+        receiver: SummaryList.name,
         operations: {
             put: (formData) => {
-                const index = list.findIndex(item => item.id === formData.id);
-                console.log(now() + ` onChange.update() index=`, index);
+                const id = formData.id;
+                const index = list.findIndex(item => item.id === id);
                 const newList = [...list.slice(0, index), formData, ...list.slice(index + 1)];
-                updateList(newList, formData.id);
-                // hersorteren niet nodig als alleen op id's
+                logv(logRoot + ' » conditions.put()', {id, index, newList});
+                updateList(newList, id);
+                // hersorteren nodig
                 // focus behouden:
                 //          setSelectedIds(new Set([formData.id]) )
             },
             post: (formData) => {
                 const newList = [...list, formData];
+                logv(logRoot + ' » conditions.post()', {formData, newList});
                 updateList(newList, formData.id);
-                // hersorteren niet nodig als alleen op id's
+                // hersorteren nodig
                 // toevoegen aan selectedIds
                 // krijgt focus
                 //          setSelectedIds(new Set([formData.id]) )
@@ -251,12 +260,12 @@ export function SummaryList({
     useCommand(conditions, command);
 
     function handleOnKeyDown(e) {
-        if (e.keyCode = keys.control)
+        if (e.keyCode === keys.control)
             setIsCtrlDown(true);
     }
 
     function handleOnKeyUp(e) {
-        if (e.keyCode = keys.control)
+        if (e.keyCode === keys.control)
             setIsCtrlDown(false);
     }
 
@@ -274,13 +283,13 @@ export function SummaryList({
                     <SummaryTable metadata={metadata}
                                   list={list}
                                   selectedIds={selectedIds}
-                                  selectItem={editItem}
+                                  clickItem={clickItem}
                                   small={small}
                                   hasFocus={hasFocus}
                                   elKey={elKey}
                                   key={elKey}
                                   setSorting={setSorting}
-                                  setFiltering={setFiltering}
+                        // setFiltering={setFiltering}
                         // elKey={elKey+selectedIds}
                         // key={elKey+selectedIds}
                     />

@@ -1,5 +1,5 @@
 import { Test } from '../dev/Test';
-import { Entity, Search, Vessel } from '../components';
+import { Entity, Search, Welcome } from '../components';
 import { entitiesMetadata } from '../helpers';
 import { Colors } from '../dev/Colors';
 import { OnFocusExample } from '../dev/OnFocusExample';
@@ -8,11 +8,12 @@ import { TestMultiSelect } from '../dev/TestMultiSelect';
 const EntityN = (metadata, n) => () => <Entity metadata={metadata} initialIdList={[n]}/>;
 
 const homeCommands = {
+    default: {label: 'Welkom', component: Welcome},
     tms: {label: 'test multi-select', component: TestMultiSelect},
     tstDict: {label: 'test useDict', component: Test},
     search: {label: 'Zoek', component: Search},
     vessel: {label: 'Vaartuig', component: EntityN(entitiesMetadata.vessel)},
-    default: {label: 'Entity', component: Entity},
+    xyz: {label: 'Xyz', component: EntityN(entitiesMetadata.xyz)},
     xyzN3: {label: 'Xyz(3)', component: EntityN(entitiesMetadata.xyz, 3)},
     zyx: {label: 'Zyx', component: EntityN(entitiesMetadata.zyx)},
     userN0: {label: 'Gebruiker(0)', component: EntityN(entitiesMetadata.user, 0)},

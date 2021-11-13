@@ -141,27 +141,27 @@ const callBackExample2 = () => {
 
 useEffect(callBackExample2, []);
 * * * * * * * * * * * * * * * * * * * * * * * * * */
-const queryOperators = [
-    '==', '!=', '>', '>=', '<', '<=',
-    // numeric: approximation, delta, range
-    '≈', '±', '..',
-    // string: startsWith, endsWith, contains
-    '~%', '%~', '%~%'
-
-];
-
-const xyzQuery = {
-    probe: {
-        name: 'era',
-        xyzString: 'vacuum',
-        ratio: 13.5,
-        zyx: {id: 3}
-    },
-    operator: {
-        name: 'contains',
-        xyzString: 'contains',
-        ratio: '<=',
-        zyx: '='
-    },
-    match: 'any'
-};
+// const queryOperators = [
+//     '==', '!=', '>', '>=', '<', '<=',
+//     // numeric: approximation, delta, range
+//     '≈', '±', '..',
+//     // string: startsWith, endsWith, contains
+//     '~%', '%~', '%~%'
+//
+// ];
+//
+// const xyzQuery = {
+//     probe: {
+//         name: 'era',
+//         xyzString: 'vacuum',
+//         ratio: 13.5,
+//         zyx: {id: 3}
+//     },
+//     operator: {
+//         name: 'contains',
+//         xyzString: 'contains',
+//         ratio: '<=',
+//         zyx: '='
+//     },
+//     match: 'any'
+// };

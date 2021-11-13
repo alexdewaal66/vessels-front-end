@@ -1,13 +1,15 @@
 import React, {useState} from 'react';
-import { entitiesMetadata, now } from '../helpers';
+import { entitiesMetadata } from '../helpers';
 import { CommandContextProvider } from '../contexts/CommandContext';
 import { EditEntity } from './EditEntity';
-import { SummaryList } from './summaryListMS';
+import { SummaryList } from './summaryList';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
+import { logv } from '../dev/log';
 
 
-export function Entity({metadata = entitiesMetadata.xyz, initialIdList}, self) {
-    console.log(`${now()} \n Entity(${metadata.name},  ${initialIdList?.toString()}, self=${self.label})`);
+export function Entity({metadata = entitiesMetadata.vessel, initialIdList}) {
+    const logRoot = Entity.name + `(${metadata.name}) `;
+    // logv(logRoot, {initialIdList});
     const elKey =` Entity(${metadata.name},${initialIdList?.toString()})`;
     const [item, setItem] = useState(null);
 
@@ -19,7 +21,7 @@ export function Entity({metadata = entitiesMetadata.xyz, initialIdList}, self) {
                     {/*<div>{metadata.name}</div>*/}
                     <SummaryList metadata={metadata}
                                  initialIdList={initialIdList}
-                                 receiver={'EditEntity'}
+                                 receiver={EditEntity.name}
                                  key={elKey}
                                  elKey={elKey}
                                  UICues={{hasFocus:true}}

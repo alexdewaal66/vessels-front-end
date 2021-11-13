@@ -4,3 +4,6 @@ export * from './Entity';
 export * from './EditEntity';
 export * from './Input';
 export * from './ShowRequestState';
+export * from './Welcome';
+export * from './Details';
+export * from './EditButtons';

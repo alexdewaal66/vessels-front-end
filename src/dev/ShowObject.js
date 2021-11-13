@@ -2,12 +2,13 @@ import React, { useMemo } from 'react';
 import { TTC, TT } from './Tooltips';
 import { entitiesMetadata } from '../helpers';
 
+function property(key, entityName) {
+    return entityName
+        ? entitiesMetadata[entityName].properties[key].label
+        : key;
+}
+
 export function ShowObject({entityName, data, tooltip}) {
-    function property(key) {
-        return entityName
-            ? entitiesMetadata[entityName].properties[key].label
-            : key;
-    }
 
     // if (data) console.log(`ShowObject \n\t data=`, data);
 
@@ -27,7 +28,7 @@ export function ShowObject({entityName, data, tooltip}) {
                                 <TT>{typeof value}</TT>
                             </TTC>
                             : <span style={{whiteSpace: 'pre'}}>
-                                    {property(key)}:&nbsp;
+                                    {property(key, entityName)}:&nbsp;
                                 </span>
                         }
                         {typeof value === 'object'

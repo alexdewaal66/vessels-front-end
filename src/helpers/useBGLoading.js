@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { validities } from './useStorage';
 import { useConditionalEffect } from './customHooks';
+import { logv } from '../dev/log';
 
 export function useBGLoading(storage, metadata) {
     const entityName = metadata.name;
+    const logRoot = `${useBGLoading.name}(${entityName})`;
     const {store, loadItemsByIds} = storage;
     const [loadCounter, setLoadCounter] = useState(0);
     const [pendingBlocks, setPendingBlocks] = useState([]);
@@ -14,8 +16,10 @@ export function useBGLoading(storage, metadata) {
     }
 
     function loadUnloadedItems() {
+        const logPath = `${logRoot} » ${loadUnloadedItems.name}()`;
         const blockSize = 5000;
         const tree = store[entityName];
+        // logv(logPath, {loadCounter, pendingBlocks});
 
         if (pendingBlocks.length === 0) {
             const blockCount = 1 + Math.ceil(Object.entries(tree.state).length / blockSize);
@@ -31,21 +35,21 @@ export function useBGLoading(storage, metadata) {
         };
 
         const entries = Object.entries(tree.state);
-        // console.log(`useBGLoading » loadUnloadedItems()\n\t entries=`, entries, `\n\t pendingBlocks=`, pendingBlocks);
+        // logv(logPath, {entries, pendingBlocks});
         const first = entries.findIndex(unloadedFilter);
-        // console.log(`useBGLoading » loadUnloadedItems()\n\t first=`, first);
+        // logv('^', {first});
         if (first === -1) return;
 
         const unloaded = entries.slice(first, first + blockSize).filter(unloadedFilter);
-        // console.log(`useBGLoading » loadUnloadedItems()\n\t unloaded=`, unloaded);
+        // logv(logPath, {unloaded});
         if (unloaded.length > 0) {
             const endIndex = Math.min(blockSize, unloaded.length);
             const unloadedIds = unloaded.slice(0, endIndex).map(e => e[1].item.id);
-            // console.log(`useBGLoading » loadUnloadedItems()\n\t unloadedIds=`, unloadedIds);
+            // logv(logPath, {unloadedIds});
             setLoadCounter(c => c + 1);
             // set the block to be loaded as 'pending'
             const currentBlockNr = Math.floor(first / blockSize);
-            // console.log(`useBGLoading » loadUnloadedItems()\n\t entries[first]=`, entries[first], `currentBlockNr=`, currentBlockNr);
+            // logv(logPath, {first, 'entries[first]': entries[first], currentBlockNr});
             setSingleBlock(currentBlockNr, true);
             loadItemsByIds(entityName, unloadedIds,
                 () => {
@@ -56,7 +60,7 @@ export function useBGLoading(storage, metadata) {
         }
     }
 
-    // console.log(`SummaryList_1S \nloadCounter=`, loadCounter, `\npendingBlocks=`, pendingBlocks);
+    // logv(logRoot, {loadCounter, pendingBlocks});
 
     useConditionalEffect(
         loadUnloadedItems,

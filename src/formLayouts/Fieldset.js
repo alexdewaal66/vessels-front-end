@@ -1,10 +1,10 @@
 import React from 'react';
-import forms from './forms.module.css';
+import { formStyles } from './'
 
 export function Fieldset({ children, border, ...rest}) {
-    let style = forms.border;
+    let style = formStyles.border;
     if (!border) {
-        style = forms.noBorder;
+        style = formStyles.noBorder;
     }
 
     return (

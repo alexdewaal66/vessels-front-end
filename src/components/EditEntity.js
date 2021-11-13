@@ -1,30 +1,32 @@
 import React, { useContext, Fragment } from 'react';
 import { CommandContext, operationNames, useCommand } from '../contexts/CommandContext';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
-import { postRequest, putRequest, deleteRequest, now, useRequestState } from '../helpers';
+import { useRequestState } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
 import { useForm } from 'react-hook-form';
-import { Details } from './Details';
+import { Details, EditButtons } from './';
 import { StorageContext } from '../contexts/StorageContext';
+import { AuthContext } from '../contexts/AuthContext';
+import { logv } from '../dev/log';
+import { SummaryList } from './summaryList';
 
 
 export function EditEntity({metadata, item, setItem, elKey}) {
-    // console.log(`▶▶▶ props=`, {metadata, item, setItem});
-    const {store, saveItem, newItem, deleteItem, getItem}
+    const logRoot = EditEntity.name + '() ';
+    // logv(logRoot + ` props=`, {metadata, item, setItem});
+    const {store, saveItem, newItem, deleteItem}
         = useContext(StorageContext);
+    const {user} = useContext(AuthContext);
 
     const [command, setCommand] = useContext(CommandContext);
     const useFormFunctions = useForm();
-    const {handleSubmit, register, setValue} = useFormFunctions;
+    const {handleSubmit, register, setValue, getValues} = useFormFunctions;
     const requestState = useRequestState();
-    const {endpoint} = metadata;
-    const readOnly = metadata.methods === 'R';
-    // console.log(now() + ` listItem=`, listItem);
-
+    const readOnly = (metadata.methods === 'R') || !user;
 
     const conditions = {
         entityType: metadata,
-        receiver: 'EditEntity',
+        receiver: EditEntity.name,
         operations: {
             edit: (item) => {
                 setItem(item);
@@ -41,15 +43,17 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                 operation: operationNames.put,
                 data: formData,
                 entityType: metadata,
-                receiver: 'SummaryList',
+                receiver: SummaryList.name,
             })
         },
         post: (formData) => {
+            const logPath = `${logRoot} » issueCommand.post()`;
+            logv(logPath, {formData});
             setCommand({
                 operation: operationNames.post,
                 data: formData,
                 entityType: metadata,
-                receiver: 'SummaryList',
+                receiver: SummaryList.name,
             })
         },
         delete: (formData) => {
@@ -57,48 +61,54 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                 operation: operationNames.delete,
                 data: formData,
                 entityType: metadata,
-                receiver: 'SummaryList',
+                receiver: SummaryList.name,
             })
         },
     }
 
+    function extractDataFromHelpField(hiddenFieldName, formData) {
+        const logPath = extractDataFromHelpField.name + `(${hiddenFieldName})`;
+        logv(logPath, {formData});
+        const parts = hiddenFieldName.split('_');
+        const field = parts[1];
+        const target = parts[2];
+        const nullFieldName = 'null_' + field + '_' + target;
+        const isNull = !!formData[nullFieldName];
+        logv(null, {field, target, nullFieldName, isNull});
+        if (isNull) {
+            formData[field] = null;
+        } else {
+            if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
+                // logv(null, {nullFieldName, isNull});
+                const idValue = formData[hiddenFieldName];
+                formData[field] = (idValue === 0) ? null : store[target].state[idValue].item;
+            } else {
+                const idList = formData[hiddenFieldName].split(',');
+                formData[field] = {id: idList};
+            }
+        }
+        delete formData[hiddenFieldName];
+        delete formData[nullFieldName];
+    }
 
     function onSubmit({requestMethod, ...formData}) {
-        // console.log(`${now()} \n\t EditEntity(${metadata.name}) » onSubmit() \n\t requestMethod=`, requestMethod);
-        console.log(`❗ ${now()}\n EditEntity(${metadata.name}) » onSubmit() \n\t formData=`, formData);
-
-        // console.log(now() + ' EditEntity(${metadata.name}) » onSubmit() \n\t typeof formData.id =', typeof formData.id);
+        const logPath = `${logRoot} » ${onSubmit.name}()`;
+        logv(logPath, {requestMethod, formData});
+        // logv(null, {'typeof formData.id': typeof formData.id});
         //todo: repair datatypes of formData values, for now, just id
         formData.id = +formData.id;
         const hiddenFieldNames = Object.keys(formData).filter(key => key.split('_')[0] === 'hidden');
-        hiddenFieldNames.forEach(hiddenFieldName => {
-            const parts = hiddenFieldName.split('_');
-            const field = parts[1];
-            const target = parts[2];
-            const nullFieldName = 'null_' + field + '_' + target;
-            const isNull = !!formData[nullFieldName];
-            if (isNull) {
-                formData[field] = null;
-            } else {
-                if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
-                    // console.log(now() + ` EditEntity(${metadata.name}) » onSubmit`, `\n\t nullFieldName=`, nullFieldName, `\n\t isNull`, isNull);
-                    const idValue = formData[hiddenFieldName];
-                    formData[field] = (idValue === 0) ? null : store[target].state[idValue].item;
-                } else {
-                    const idList = formData[hiddenFieldName].split(',');
-                    formData[field] = {id: idList};
-                }
-            }
-            delete formData[hiddenFieldName];
-            delete formData[nullFieldName];
-        });
-        console.log(`hiddenFields=`, hiddenFieldNames);
+        hiddenFieldNames.forEach(hiddenFieldName => extractDataFromHelpField(hiddenFieldName, formData));
+        logv(null, {hiddenFieldNames});
         switch (requestMethod) {
             case 'put':
                 saveItem(metadata.name, formData);
+                issueCommand.put(formData);
                 break;
             case 'post':
-                newItem(metadata.name, formData)
+                logv(logPath + ' » case \'post\'', {});
+                newItem(metadata.name, formData, issueCommand.post);
+                // issueCommand.post(formData)
                 break;
             case 'delete':
                 //todo: ask confirmation
@@ -114,7 +124,10 @@ export function EditEntity({metadata, item, setItem, elKey}) {
     }
 
     const setRequestMethod = (method) => () => {
+        const logPath = logRoot + `setRequestMethod(${method})`;
+        logv(logPath, {'requestMethod': getValues('requestMethod')});
         setValue('requestMethod', method);
+        logv(null, {'requestMethod': getValues('requestMethod')});
     };
 
     return (
@@ -160,35 +173,7 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                                 )
                             )}
                             {!readOnly && (
-                                <FieldRow>
-                                    <FieldEl/>
-                                    <FieldEl>
-                                        <button type="submit" className="form-button"
-                                                disabled={requestState.isPending}
-                                                onClick={setRequestMethod('put')}
-                                                key="submit_put"
-                                                accessKey={'w'}
-                                        >
-                                            Wijzig
-                                        </button>
-                                        <button type="submit" className="form-button"
-                                                disabled={requestState.isPending}
-                                                onClick={setRequestMethod('post')}
-                                                key="submit_post"
-                                                accessKey={'n'}
-                                        >
-                                            Maak nieuw
-                                        </button>
-                                        <button type="submit" className="form-button"
-                                                disabled={requestState.isPending}
-                                                onClick={setRequestMethod('delete')}
-                                                key="submit_del"
-                                                accessKey={'v'}
-                                        >
-                                            Verwijder
-                                        </button>
-                                    </FieldEl>
-                                </FieldRow>
+                                <EditButtons requestState={requestState} setRequestMethod={setRequestMethod}/>
                             )}
                         </Fieldset>
                     </Form>

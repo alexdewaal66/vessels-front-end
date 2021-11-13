@@ -1,10 +1,7 @@
-import React, { useRef } from 'react';
+import React  from 'react';
 
-import { entitiesMetadata, subtypes, types, now } from '../helpers';
-import { SummaryList } from './summaryListMS';
+import { subtypes, types } from '../helpers';
 import { Stringify } from '../dev/Stringify';
-import { TTC, TT } from '../dev/Tooltips';
-import { ShowObject } from '../dev/ShowObject';
 import { InputObject } from './InputObject';
 // import { ShowObject } from '../dev/ShowObject';
 // import { CommandContext, useCommand } from '../contexts/CommandContext';
@@ -89,31 +86,6 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                              elKey={elKey}
                 />
             );
-        // case types.arr:
-        //     console.log(now() + ` Input(${metadata.name}) » case 'arr' \n\t defaultValue=`, defaultValue);
-        //     hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id_list';
-        //     return (
-        //         <>
-        //             <div>IN: {hiddenFieldName} = {defaultValue.id}</div>
-        //             <input type="hidden"
-        //                    readOnly={true}
-        //                    name={hiddenFieldName}
-        //                    defaultValue={defaultValue.id}
-        //                    {...useFormFunctions.register(hiddenFieldName)}
-        //                    key={elKey + hiddenFieldName + '_arrIdx'}
-        //             />
-        //             <SummaryList metadata={entitiesMetadata[property.target]}
-        //                          initialId={defaultValue.id}
-        //                          small
-        //                          receiver={'Input'}
-        //                          key={elKey + hiddenFieldName + '_arr'}
-        //                          elKey={elKey}
-        //                          UICues={{small: true, hasFocus: false}}
-        //                          useFormFunctions={useFormFunctions}
-        //                          hiddenFieldName={hiddenFieldName}
-        //             />
-        //         </>
-        //     );
         case types.bool:
             inputType = inputTypes.checkbox;
             break;

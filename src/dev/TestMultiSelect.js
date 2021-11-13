@@ -1,9 +1,7 @@
 import React from 'react';
-import { SummaryList } from '../components/summaryListMS';
+import { SummaryList } from '../components/summaryList';
 import { entitiesMetadata, now } from '../helpers';
 import { CommandContextProvider } from '../contexts/CommandContext';
-import pageLayout from '../pageLayouts/pageLayout.module.css';
-import { EditEntity } from '../components';
 
 export function TestMultiSelect({metadata = entitiesMetadata.zyx, initialIdList = []}) {
     console.log(`${now()} \n EntityMS(entity=${metadata.name},  initialIdList=${initialIdList})`);
