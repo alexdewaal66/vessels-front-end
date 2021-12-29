@@ -3,7 +3,7 @@ export * from './endpoints';
 export * from './entitiesMetadata';
 export * from './multipleStyles';
 export * from './RequestState';
-export * from './storageHelpers';
+export * from './remote';
 export * from './transform';
 export * from './useBGLoading';
 export * from './useDict';

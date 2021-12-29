@@ -5,6 +5,7 @@ const dictActions = {
     setMany: 'setMany',
     set: 'set',
     del: 'del',
+    // transformEntry: 'transformEntry',
 };
 
 function UseDictException(message) {
@@ -15,23 +16,34 @@ function UseDictException(message) {
 function dictReducer(state, {type, payload: {key, value}}) {
     // console.log(`dictReducer() state=`, state);
     switch (type) {
-        case dictActions.add:
+        // case dictActions.transformEntry:
+        //     const entry = state?.[key];
+        //     return {...state, [key]: value(entry)};
+        case
+        dictActions.add
+        :
             if (key in state) {
                 throw new UseDictException(`can not add new entry ${key}, it already exists`);
             } else {
                 return {...state, [key]: value};
             }
-        case dictActions.setMany:
+        case
+        dictActions.setMany
+        :
             // console.log(`dictReducer\ntype=`, type,`\nstate=`, state, `\nvalue=`, value);
             // skip presence test
             return {...state, ...value};
-        case dictActions.set:
+        case
+        dictActions.set
+        :
             if (key in state) {
                 return {...state, [key]: value};
             } else {
                 throw new UseDictException(`can not set entry ${key}, it doesn't exist`);
             }
-        case dictActions.del:
+        case
+        dictActions.del
+        :
             if (key in state) {
                 const copy = {...state};
                 delete copy[key];
@@ -53,15 +65,18 @@ export function useDict(initialState = {}, initializer) {
         dispatch({type: dictActions.setMany, payload: {value}});
     const set = (key, value) =>
         dispatch({type: dictActions.set, payload: {key, value}});
-    const del = (key, value= null) =>
+    const del = (key, value = null) =>
         dispatch({type: dictActions.del, payload: {key, value: null}});
-
-    return {state, get, add, setMany, set, del};
+    // const transformEntry = (key, transformer) =>
+    //     dispatch({type: dictActions.transformEntry, payload: {key, value: transformer}});
+    return {
+        state, get, add, setMany, set, del,
+        // transformEntry,
+    };
 }
 
 export const setEntryProp = (dict, key, propName) =>
     (v) => dict.set(key, {...dict.state[key], [propName]: v});
-
 
 
 export function useSuperDict() {

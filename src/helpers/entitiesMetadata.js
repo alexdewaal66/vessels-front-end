@@ -1,3 +1,5 @@
+import { logv } from '../dev/log';
+
 export const entitiesMetadata = {};
 
 export const types = {
@@ -29,9 +31,7 @@ entitiesMetadata.xyz = {
     endpoint: '/xyzs',
     id: ['id'],
     properties: {
-        id: {
-            type: types.num, label: 'id', readOnly: true,
-        },
+        id: {type: types.num, label: 'id', readOnly: true,},
         name: {
             type: types.str, label: 'naam', validation: {maxLength: 20},
         },
@@ -92,7 +92,7 @@ entitiesMetadata.user = {
         },
         password: {
             label: 'password', type: types.str, validation: {
-                required: true, validation: {maxLength: 256},
+                required: true, maxLength: 256,
             }
         },
         enabled: {
@@ -124,10 +124,10 @@ entitiesMetadata.authority = {
     id: ['username', 'role'],
     properties: {
         username: {
-            type: types.str, label: 'username'
+            type: types.str, label: 'username', validation: {maxLength: 100},
         },
         role: {
-            type: types.str, label: 'rol'
+            type: types.str, label: 'rol', validation: {maxLength: 100},
         },
     },
     summary: ['username', 'role'],
@@ -285,11 +285,11 @@ entitiesMetadata.address = {
             type: types.str, label: 'postcode', validation: {maxLength: 20},
         },
         country: {
-            type: types.obj, label: 'land',
+            type: types.obj, label: 'land', target: 'country',
         },
     },
     methods: 'CRUD',
-    summary: ['id', 'address1', 'city', 'country.alpha2Code'],
+    summary: ['id', 'address1', 'address2', 'city', 'country.alpha2Code'],
     findItem: {
         endpoint: '/find',
         params: {},
@@ -369,7 +369,9 @@ entitiesMetadata.hull = {
             type: types.str, label: 'rompnummer', validation: {maxLength: 20},
         },
         constructionDate: {type: types.date, label: 'bouwdatum',},
-        builder: {type: types.str, label: 'scheepswerf',}
+        builder: {
+            type: types.str, label: 'scheepswerf', validation: {maxLength: 255},
+        },
     },
     methods: 'CRUD',
     summary: ['id', 'hullNumber'],
@@ -434,13 +436,73 @@ entitiesMetadata.vessel = {
     }
 };
 
+entitiesMetadata.organisation = {
+    label: 'Organisatie',
+    endpoint: '/organisations',
+    id: ['id'],
+    properties: {
+        id: {type: types.num, label: 'id', readOnly: true,},
+        shortName: {type: types.str, label: 'naam', validation: {maxLength: 50},},
+        longName: {type: types.str, label: 'volledige naam', validation: {maxLength: 200},},
+        description: {type: types.str, label: 'beschrijving', validation: {maxLength: 1000},},
+        url: {type: types.str, subtype: subtypes.url, label: 'url', validation: {maxLength: 2000},},
+        email: {type: types.str, subtype: subtypes.email, label: 'email', validation: {maxLength: 320},},
+        address: {type: types.obj,},
+    },
+    methods: 'CRUD',
+    summary: ['id', 'shortName'],
+    findItem: {
+        endpoint: '/find',
+        params: {}
+    }
+};
+
+entitiesMetadata.relation = {
+    label: 'Relatie',
+    endpoint: '/relations',
+    id: ['id'],
+    properties: {
+        id: {type: types.num, label: 'id', readOnly: true,},
+        organisation1: {type: types.obj, label: 'organisatie 1', target: 'organisation'},
+        organisation2: {type: types.obj, label: 'organisatie 2', target: 'organisation'},
+        relationType: {type: types.obj},
+    },
+    summary: ['id', 'organisation1.shortName', 'organisation2.shortName',
+        // 'relationType'
+    ],
+    methods: 'CRUD',
+    findItem: {
+        endpoint: '/find',
+        params: {},
+    },
+};
+
+entitiesMetadata.relationType = {
+    label: 'soort relatie',
+    endpoint: '/relationtypes',
+    id: ['id'],
+    properties: {
+        id: {type: types.num, label: 'id', readOnly: true,},
+        nameNL: {type: types.str, label: 'naam (nl)', validation: {maxLength: 100},},
+        nameEN: {type: types.str, label: 'naam (en)', validation: {maxLength: 100},},
+        descNL: {type: types.str, label: 'beschrijving (nl)', validation: {maxLength: 1000},},
+        descEN: {type: types.str, label: 'beschrijving (en)', validation: {maxLength: 1000},},
+    },
+    summary: ['id', 'nameNL', 'nameEN'],
+    methods: 'CRUD',
+    findItem: {
+        endpoint: '/find',
+        params: {},
+    },
+};
+
 export function initializeEntitiesMetadata() {
     let typos = '';
     for (const entitiesKey in entitiesMetadata) {
         const entity = entitiesMetadata[entitiesKey];
         entity.name = entitiesKey;
-        typos = checkProperties(entitiesKey, entity, typos);
-        typos = checkSummaries(entitiesKey, entity, typos);
+        typos = checkProperties(entity, typos);
+        typos = checkSummaries(entity, typos);
     }
     if (typos === '') {
         console.log('✔ entitiesMetadata appears to have no typos.');
@@ -449,49 +511,69 @@ export function initializeEntitiesMetadata() {
     }
 }
 
-function checkProperties(entitiesKey, entity, typos) {
+function checkProperties(entity, typos) {
     for (const propName in entity.properties) {
         if (entity.properties.hasOwnProperty(propName)) {
             const prop = entity.properties[propName];
-            if (prop.type === types.obj) {
-                typos = checkInternalReference(entitiesKey, propName, prop, typos);
+            switch (prop.type) {
+                case types.obj:
+                    typos = checkInternalReference(entity.name, propName, prop, typos);
+                    break;
+                case types.str:
+                    typos = checkStringValidation(entity.name, propName, prop, typos);
+                    break;
             }
         } else {
-            typos += `\t❌ in ${entitiesKey}.properties : '${propName}'\n`;
+            typos += `\t❌ in ${entity.name}.properties : '${propName}'\n`;
         }
     }
     return typos;
 }
 
-function checkInternalReference(entitiesKey, propName, prop, typos) {
+function checkInternalReference(entityName, propName, prop, typos) {
     if (!prop.target) {
         if (entitiesMetadata.hasOwnProperty(propName)) {
             prop.target = propName;
-            prop.label = entitiesMetadata[propName].label.toLowerCase();
+            if (!prop.label) {
+                // logical or assignment '||=' results in 'Error: Module parse failed: Unexpected token'
+                prop.label = entitiesMetadata[propName].label.toLowerCase();
+            }
         } else {
-            typos += `\t❌ in ${entitiesKey}.properties : '${propName}'\n`;
+            typos += `\t❌ in ${entityName}.properties : '${propName}'\n`;
         }
     } else {
         if (entitiesMetadata.hasOwnProperty(prop.target)) {
-            prop.label = entitiesMetadata[prop.target].label.toLowerCase();
+            if (!prop.label) {
+                prop.label = entitiesMetadata[prop.target].label.toLowerCase();
+            }
         } else {
-            typos += `\t❌ in ${entitiesKey}.properties.${propName}.target : '${prop.target}'\n`;
+            typos += `\t❌ in ${entityName}.properties.${propName}.target : '${prop.target}'\n`;
         }
     }
     return typos;
 }
 
-function checkSummaries(entitiesKey, entity, typos) {
+function checkStringValidation(entitiesKey, propName, prop, typos) {
+    if (!prop.validation) {
+        typos += `\t❌ missing validation in ${entitiesKey}.properties.${propName}\n`;
+    } else if (!prop.validation.maxLength) {
+        typos += `\t❌ missing maxLength in ${entitiesKey}.properties.${propName}.validation\n`;
+    }
+    return typos;
+}
+
+function checkSummaries(entity, typos) {
     for (const summaryElement of entity.summary) {
         const parts = summaryElement.split('.');
-        if (
-            (parts.length === 1 && !entity.properties[summaryElement])
-            ||
-            (parts.length === 2 && !entitiesMetadata[parts[0]].properties[parts[1]])
-            ||
-            parts.length > 2
-        ) {
-            typos += `\t❌ in ${entitiesKey}.summary : '${summaryElement}'\n`;
+        const singlePartTypo = (parts.length === 1 && !entity.properties[summaryElement]);
+        let dualPartsTypo = false;
+        if (parts.length === 2) {
+            const targetEntityName = entity.properties[parts[0]].target;
+            dualPartsTypo = !entitiesMetadata[targetEntityName].properties[parts[1]];
+            // logv('❗ entitiesMetadata.js » checkSummaries', {entity, parts});
+        }
+        if (singlePartTypo || dualPartsTypo || parts.length > 2) {
+            typos += `\t❌ in ${entity.name}.summary : '${summaryElement}'\n`;
         }
     }
     return typos;

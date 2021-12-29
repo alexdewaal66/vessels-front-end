@@ -1,4 +1,4 @@
-import { requestStates } from './utils';
+import { requestStates } from './remote';
 
 export class RequestState {
     value = requestStates.IDLE;

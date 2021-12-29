@@ -1,5 +1,5 @@
 import React from 'react';
-import { SummaryList } from '../components/summaryList';
+import { SummaryListSmall } from '../components/summaryList';
 import { entitiesMetadata, now } from '../helpers';
 import { CommandContextProvider } from '../contexts/CommandContext';
 
@@ -11,7 +11,7 @@ export function TestMultiSelect({metadata = entitiesMetadata.zyx, initialIdList 
         <>TestMultiSelect
             <CommandContextProvider>
                     {/*<div>{metadata.name}</div>*/}
-                    <SummaryList metadata={metadata}
+                    <SummaryListSmall metadata={metadata}
                                  initialIdList={initialIdList}
                                  receiver={'TestMultiSelect'}
                                  UICues={{small: true, hasFocus: false}}

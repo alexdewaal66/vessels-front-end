@@ -1,7 +1,7 @@
 import { entitiesMetadata } from './entitiesMetadata';
 import { useDict } from './useDict';
 import { useMountEffect } from './customHooks';
-import { remote } from './storageHelpers';
+import { remote } from './remote';
 import { now, makeId } from './utils';
 import { useState } from 'react';
 import { RequestState } from './RequestState';
@@ -149,7 +149,7 @@ function extractNewId(message, name) {
 async function createAndStoreItem(metadata, item, requestState, tree) {
     const logPath = `${logRoot} » ${createAndStoreItem.name}(${metadata.name}, ⬇, *, ⬇)`;
     // const branch = tree.state[item.id];
-    logv(logPath, {item, tree});
+    // logv(logPath, {item, tree});
     if (!tree.state[item.id]) {
         await remote.create(
             metadata, item, requestState,
@@ -221,6 +221,9 @@ export function useStorage() {
         subdivision: useDict(),
         user: useDict(),
         authority: useDict(),
+        organisation: useDict(),
+        relation: useDict(),
+        relationType: useDict(),
     };
 
     const [allIdsLoaded, setAllIdsLoaded] = useState(null);
@@ -243,11 +246,11 @@ export function useStorage() {
     function getItem(entityName, id) {
         const logPath = `${logRoot} » ${getItem.name}(${entityName}, ${id})`;
         const entry = forest[entityName].state[id];
-        logv(logPath, {entry});
+        // logv(logPath, {entry});
         if (entry?.validity === validities.full) {
             return entry.item;
         } else {
-            errv(logPath, {entityName, id, entry});
+            logv('❌ ' + logPath, {entityName, id, entry});
         }
     }
 
@@ -321,9 +324,9 @@ export function useStorage() {
 
     function newItem(entityName, item, onFinished) {
         const logPath = `${logRoot} » ${newItem.name}(${entityName}, ⬇, *)`;
-        logv(logPath, {entityName, item, onFinished});
+        // logv(logPath, {entityName, item, onFinished});
         item.id = -1;
-        logv(null, item);
+        // logv(null, item);
         // if (forest[entityName]?.state[item.id]) {
         //     console.error(`id already exists in storage:`, forest[entityName]?.state);
         //     return;

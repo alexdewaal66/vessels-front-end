@@ -4,7 +4,7 @@ import { cx } from '../../helpers';
 import { logv, errv } from '../../dev/log';
 
 export function SummaryTable({
-                                 list, metadata, selectedIds, clickItem, small,
+                                 list, metadata, selectedIds, chooseItem, small,
                                  hasFocus, elKey, setSorting, setFiltering
                              }) {
     const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
@@ -70,7 +70,8 @@ export function SummaryTable({
             hasFocus: (index === focusIndex && hasTableFocus),
             // isSelected: (index === selectedIndex),
             isSelected: selectedIds?.has(list[index].id),
-            hasVisualPriority: hasTableFocus ? (index === focusIndex) : (index === selectedIndex)
+            hasVisualPriority: hasTableFocus ? (index === focusIndex) : (index === selectedIndex),
+            small
         }
     }
 
@@ -94,7 +95,7 @@ export function SummaryTable({
                         <SummaryRow listItem={listItem}
                                     index={index}
                                     metadata={metadata}
-                                    clickItem={clickItem}
+                                    chooseItem={chooseItem}
                                     key={elKey + index}
                                     elKey={elKey + index}
                                     rowFocus={rowFocus}

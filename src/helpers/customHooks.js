@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { requestStates } from './utils';
+import { requestStates } from './remote';
 
 export function useConditionalEffect(operation, condition, deps) {
     useEffect(() => {
@@ -16,25 +16,20 @@ export function useMountEffect(fun) {
     useEffect(fun, []);
 }
 
-export function useOOState(initialValue) {
-    const [value, set] = useState(initialValue);
-    return {value, set};
-}
-
 
 export function useRequestState(initialValue = requestStates.IDLE) {
     const [value, set] = useState(initialValue);
     const [errorMsg, setErrorMsg] = useState('');
 
-    const isIdle    = (value === requestStates.IDLE);
+    const isIdle = (value === requestStates.IDLE);
     const isPending = (value === requestStates.PENDING);
     const isSuccess = (value === requestStates.SUCCESS);
-    const isError   = (value === requestStates.ERROR);
+    const isError = (value === requestStates.ERROR);
 
-    const setAtIdle    = () => set(requestStates.IDLE);
+    const setAtIdle = () => set(requestStates.IDLE);
     const setAtPending = () => set(requestStates.PENDING);
     const setAtSuccess = () => set(requestStates.SUCCESS);
-    const setAtError   = () => set(requestStates.ERROR);
+    const setAtError = () => set(requestStates.ERROR);
 
     return {
         errorMsg, setErrorMsg,
@@ -42,4 +37,31 @@ export function useRequestState(initialValue = requestStates.IDLE) {
         setAtIdle, setAtPending, setAtSuccess, setAtError
     };
 
+}
+
+export const keys = {
+    shift: {code: 16, name: 'Shift'},
+    control: {code: 17, name: 'Control'},
+    alt: {code: 18, name: 'Alt'}
+};
+
+export function useKeyPressed(key) {
+
+    const [isKeyDown, setIsKeyDown] = useState(false);
+
+    function handleOnKeyDown(e) {
+        if (e.keyCode === key.code)
+            setIsKeyDown(true);
+    }
+
+    function handleOnKeyUp(e) {
+        if (e.keyCode === key.code)
+            setIsKeyDown(false);
+    }
+
+    return {
+        ['is' + key.name + 'Down']: isKeyDown,
+        ['handleOn' + key.name + 'Up']: handleOnKeyUp,
+        ['handleOn' + key.name + 'Down']: handleOnKeyDown
+    };
 }

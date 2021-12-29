@@ -13,7 +13,7 @@ export function SummaryFilter({metadata, elKey}) {
     function inputSize(propertyName) {
         const property = metadata.properties[propertyName];
         const maxLength = property?.validation?.maxLength || 4;
-        logv(logRoot + `inputSize(${propertyName})`, {property, maxLength});
+        // logv(logRoot + `inputSize(${propertyName})`, {property, maxLength});
         return Math.min(20, maxLength);
     }
 

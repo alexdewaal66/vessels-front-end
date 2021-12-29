@@ -7,3 +7,5 @@ export * from './ShowRequestState';
 export * from './Welcome';
 export * from './Details';
 export * from './EditButtons';
+export * from './InputObject';
+export * from './InputObject2';

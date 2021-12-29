@@ -1,5 +1,9 @@
-export function cx(...classes) {
-    return classes.join(' ');
+/**
+ * @param {string} cssClasses
+ * @returns {string}
+ */
+export function cx(...cssClasses) {
+    return cssClasses.join(' ');
 }
 /*
 usage:

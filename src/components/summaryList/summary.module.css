@@ -43,11 +43,26 @@
     cursor: pointer;
 }
 
+.table tr:first-child {
+    border-top: transparent solid 5px;
+}
+
+.table tr:last-child {
+    border-bottom: transparent solid 5px;
+}
+
+.table .nullRow {
+    outline-color: white;
+    border: transparent solid 5px;
+    color: red;
+    font-style: italic;
+}
+
 .table tr:nth-child(even) {
     background-color: var(--color-bg-light);
 }
 
-.table tr:hover, .table tr:focus {
+.table tr:hover {
     background-color: var(--color-bg-darker);
 }
 
@@ -56,6 +71,11 @@
     color: var(--compl-color-em-normal);
     background-color: var(--compl-color-bg-light);
     text-shadow: 0 0 0.5px var(--compl-color-em-normal);
+}
+
+.table .nullRow:focus {
+    color: red;
+    font-style: italic;
 }
 
 .table thead th, .table td {
@@ -94,12 +114,17 @@ tr.selected, tr.selected:focus {
     box-shadow: inset 0 0 10px 5px white, inset 0 0 40px var(--faint-color);
     outline: var(--color-de-normal) solid 1px;
 }
+
 tr.selected:focus {
     outline: black solid 2px;
     color: var(--compl-color-em-darker);
     background-color: var(--compl-color-bg-normal);
     text-shadow: 0 0 .5px var(--compl-color-em-darker);
     box-shadow: inset 0 0 10px 5px var(--compl-color-bg-light), inset 0 0 40px var(--faint-color);
+}
+
+th span {
+    white-space: nowrap;
 }
 
 th .sort {

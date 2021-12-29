@@ -18,13 +18,13 @@ export function SummaryHeading({
 
     const up = (propertyName) => () => {
         const logPath = logRoot + ' » up()';
-        logv(logPath, {propertyName});
+        // logv(logPath, {propertyName});
         setSorting({propertyName, order: 'up'})
     };
 
     const down = (propertyName) => () => {
         const logPath = logRoot + ' » down()';
-        logv(logPath, {propertyName});
+        // logv(logPath, {propertyName});
         setSorting({propertyName, order: 'down'})
     };
 
@@ -36,8 +36,11 @@ export function SummaryHeading({
                     <th key={elKey + propertyName + '_h'}>
                         {/*{metadata.properties[propertyName].label || propertyName}*/}
                         {label(metadata.properties, propertyName) || propertyName}
-                        <button type={'button'} onClick={up(propertyName)} className={summaryStyle.sort}>▲</button>
-                        <button type={'button'} onClick={down(propertyName)} className={summaryStyle.sort}>▼</button>
+                        <span>
+                            <button type={'button'} onClick={up(propertyName)} className={summaryStyle.sort}>▲</button>
+                            <button type={'button'} onClick={down(propertyName)} className={summaryStyle.sort}>▼
+                            </button>
+                        </span>
                     </th>
                 )}
             </tr>

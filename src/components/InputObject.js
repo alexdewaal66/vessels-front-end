@@ -1,11 +1,11 @@
-import { SummaryList } from './summaryList';
-import { entitiesMetadata } from '../helpers';
-import React, { useRef } from 'react';
+import { entitiesMetadata, useMountEffect } from '../helpers';
+import React, { useRef, useState } from 'react';
 import { logv } from '../dev/log';
+import { SummaryListSmall } from './summaryList';
 
 export function InputObject({metadata, field, defaultValue, useFormFunctions, elKey}) {
     const logRoot = `${InputObject.name}(${metadata.name})`;
-    logv(logRoot, {field, defaultValue});
+    // logv(logRoot, {field, defaultValue, '!defaultValue': !defaultValue});
     const property = metadata.properties[field];
     const nullFieldRef = useRef(null);
     let hiddenFieldName, nullFieldName;
@@ -13,24 +13,29 @@ export function InputObject({metadata, field, defaultValue, useFormFunctions, el
         ? defaultValue.map(item => item.id)
         : [defaultValue.id];
 
-    logv(null, {initialIdList});
+    // logv(null, {initialIdList});
     nullFieldName = 'null_' + field + '_' + property.target;
     hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
 
-    function nullHandler() {
-        console.log(`----------->>> nullFieldRef.current.checked=`, nullFieldRef.current.checked);
+    const checkNullField = (value) => () => {
+        const logPath = `${logRoot} » ${checkNullField.name}`;
+        // logv(logPath, {value});
+        nullFieldRef.current.value = value;
+        nullFieldRef.current.checked = value;
     }
+
+    useMountEffect(checkNullField(!defaultValue));
 
     return (
         <>
-            {/*<div>IN: {hiddenFieldName} = <ShowObject data={defaultValue}/></div>*/}
             <label><input type="checkbox"
-                          defaultChecked={!defaultValue}
+                          value={!defaultValue}
+                          checked={!defaultValue}
                           name={nullFieldName}
                           {...useFormFunctions.register(nullFieldName)}
                           ref={nullFieldRef}
                           key={elKey + nullFieldName + '_obj'}
-                          onClick={nullHandler}
+                          onClick={checkNullField(true)}
             />geen</label>
             <input type="hidden"
                    readOnly={true}
@@ -40,12 +45,12 @@ export function InputObject({metadata, field, defaultValue, useFormFunctions, el
                    {...useFormFunctions.register(hiddenFieldName)}
                    key={elKey + hiddenFieldName + '_objId'}
             />
-            <SummaryList metadata={entitiesMetadata[property.target]}
+            <SummaryListSmall metadata={entitiesMetadata[property.target]}
                          initialIdList={initialIdList}
                          receiver={'Input'}
                          key={elKey + hiddenFieldName + '_obj'}
                          elKey={elKey + hiddenFieldName + '_obj'}
-                         UICues={{small: true, hasFocus: false}}
+                         UICues={{hasFocus: false}}
                          useFormFunctions={useFormFunctions}
                          inputHelpFields={[hiddenFieldName, nullFieldRef]}
             />

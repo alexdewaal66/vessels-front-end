@@ -1,5 +1,6 @@
 import React, { useContext, Fragment } from 'react';
-import { CommandContext, operationNames, useCommand } from '../contexts/CommandContext';
+import { CommandContext, operationNames } from '../contexts/CommandContext';
+// import { ObserverContext } from '../contexts/ObserverContext';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
 import { useRequestState } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
@@ -8,17 +9,19 @@ import { Details, EditButtons } from './';
 import { StorageContext } from '../contexts/StorageContext';
 import { AuthContext } from '../contexts/AuthContext';
 import { logv } from '../dev/log';
-import { SummaryList } from './summaryList';
+import { SummaryListTall } from './summaryList';
 
 
-export function EditEntity({metadata, item, setItem, elKey}) {
+export function EditEntity({metadata, item, setItem, elKey,}) {
+    const entityName = metadata.name;
     const logRoot = EditEntity.name + '() ';
     // logv(logRoot + ` props=`, {metadata, item, setItem});
     const {store, saveItem, newItem, deleteItem}
         = useContext(StorageContext);
     const {user} = useContext(AuthContext);
 
-    const [command, setCommand] = useContext(CommandContext);
+    const {useCommand, setCommand} = useContext(CommandContext);
+    // const {useObserver, raise} = useContext(ObserverContext);
     const useFormFunctions = useForm();
     const {handleSubmit, register, setValue, getValues} = useFormFunctions;
     const requestState = useRequestState();
@@ -35,7 +38,22 @@ export function EditEntity({metadata, item, setItem, elKey}) {
         },
     }
 
-    useCommand(conditions, command);
+    useCommand(conditions);
+
+    const commands = [
+        {
+            conditions: {
+                operation: operationNames.edit,
+                entityName
+            },
+            handler: (item) => {
+                setItem(item);
+                useFormFunctions.reset();
+            },
+        }
+    ];
+
+    // useObserver(commands);
 
     const issueCommand = {
         put: (formData) => {
@@ -43,17 +61,17 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                 operation: operationNames.put,
                 data: formData,
                 entityType: metadata,
-                receiver: SummaryList.name,
+                receiver: SummaryListTall.name,
             })
         },
         post: (formData) => {
             const logPath = `${logRoot} » issueCommand.post()`;
-            logv(logPath, {formData});
+            // logv(logPath, {formData});
             setCommand({
                 operation: operationNames.post,
                 data: formData,
                 entityType: metadata,
-                receiver: SummaryList.name,
+                receiver: SummaryListTall.name,
             })
         },
         delete: (formData) => {
@@ -61,27 +79,28 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                 operation: operationNames.delete,
                 data: formData,
                 entityType: metadata,
-                receiver: SummaryList.name,
+                receiver: SummaryListTall.name,
             })
         },
     }
 
     function extractDataFromHelpField(hiddenFieldName, formData) {
         const logPath = extractDataFromHelpField.name + `(${hiddenFieldName})`;
-        logv(logPath, {formData});
+        // logv(logPath, {formData});
         const parts = hiddenFieldName.split('_');
         const field = parts[1];
         const target = parts[2];
         const nullFieldName = 'null_' + field + '_' + target;
         const isNull = !!formData[nullFieldName];
-        logv(null, {field, target, nullFieldName, isNull});
+        // logv(null, {field, target, nullFieldName, isNull});
         if (isNull) {
             formData[field] = null;
         } else {
             if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
                 // logv(null, {nullFieldName, isNull});
-                const idValue = formData[hiddenFieldName];
-                formData[field] = (idValue === 0) ? null : store[target].state[idValue].item;
+                const idValue = +formData[hiddenFieldName];
+                // logv(null, {target, idValue, '!!idValue':!!idValue})
+                formData[field] = !!idValue ? store[target].state[idValue].item :  null;
             } else {
                 const idList = formData[hiddenFieldName].split(',');
                 formData[field] = {id: idList};
@@ -93,26 +112,25 @@ export function EditEntity({metadata, item, setItem, elKey}) {
 
     function onSubmit({requestMethod, ...formData}) {
         const logPath = `${logRoot} » ${onSubmit.name}()`;
-        logv(logPath, {requestMethod, formData});
+        // logv(logPath, {requestMethod, formData});
         // logv(null, {'typeof formData.id': typeof formData.id});
         //todo: repair datatypes of formData values, for now, just id
         formData.id = +formData.id;
         const hiddenFieldNames = Object.keys(formData).filter(key => key.split('_')[0] === 'hidden');
         hiddenFieldNames.forEach(hiddenFieldName => extractDataFromHelpField(hiddenFieldName, formData));
-        logv(null, {hiddenFieldNames});
+        // logv(null, {hiddenFieldNames});
         switch (requestMethod) {
             case 'put':
-                saveItem(metadata.name, formData);
+                saveItem(entityName, formData);
                 issueCommand.put(formData);
                 break;
             case 'post':
-                logv(logPath + ' » case \'post\'', {});
-                newItem(metadata.name, formData, issueCommand.post);
-                // issueCommand.post(formData)
+                // logv(logPath + ' » case \'post\'', {});
+                newItem(entityName, formData, issueCommand.post);
                 break;
             case 'delete':
                 //todo: ask confirmation
-                deleteItem(metadata.name, formData.id)
+                deleteItem(entityName, formData.id)
                 break;
             default:
                 const err = `Unsupported requestMethod: '${requestMethod}'`;
@@ -125,9 +143,9 @@ export function EditEntity({metadata, item, setItem, elKey}) {
 
     const setRequestMethod = (method) => () => {
         const logPath = logRoot + `setRequestMethod(${method})`;
-        logv(logPath, {'requestMethod': getValues('requestMethod')});
+        // logv(logPath, {'requestMethod': getValues('requestMethod')});
         setValue('requestMethod', method);
-        logv(null, {'requestMethod': getValues('requestMethod')});
+        // logv(null, {'requestMethod': getValues('requestMethod')});
     };
 
     return (
@@ -153,6 +171,9 @@ export function EditEntity({metadata, item, setItem, elKey}) {
                                             <FieldDesc
                                                 key={elKey + ' edit_desc ' + itemPropName}
                                             >
+                                                {/*{logv('❌❌❌ EditEntity » render()',*/}
+                                                {/*    {metadata, itemPropName, prop: metadata.properties[itemPropName]}*/}
+                                                {/*), ''}*/}
                                                 {metadata.properties[itemPropName]?.label || itemPropName}
                                             </FieldDesc>
                                             <FieldEl>
@@ -182,3 +203,5 @@ export function EditEntity({metadata, item, setItem, elKey}) {
         </>
     );
 }
+
+// export const MemoizedEditEntity = React.memo(EditEntity);
