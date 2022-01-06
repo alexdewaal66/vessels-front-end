@@ -1,6 +1,5 @@
 import React, { useContext, Fragment } from 'react';
 import { CommandContext, operationNames } from '../contexts/CommandContext';
-// import { ObserverContext } from '../contexts/ObserverContext';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
 import { useRequestState } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
@@ -39,21 +38,6 @@ export function EditEntity({metadata, item, setItem, elKey,}) {
     }
 
     useCommand(conditions);
-
-    const commands = [
-        {
-            conditions: {
-                operation: operationNames.edit,
-                entityName
-            },
-            handler: (item) => {
-                setItem(item);
-                useFormFunctions.reset();
-            },
-        }
-    ];
-
-    // useObserver(commands);
 
     const issueCommand = {
         put: (formData) => {

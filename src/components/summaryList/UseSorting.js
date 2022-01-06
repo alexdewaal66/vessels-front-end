@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { compare, useConditionalEffect } from '../../helpers';
+import { logv } from '../../dev/log';
 
 export function useSorting(operation, list) {
+    const logRoot = `${useSorting.name}()`;
     const [sorting, setSorting] = useState({propertyName: 'id', order: 'up'});
 
     useConditionalEffect(

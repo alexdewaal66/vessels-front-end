@@ -3,16 +3,31 @@ import { summaryStyle } from './index';
 import { logv } from '../../dev/log';
 import { cx } from '../../helpers';
 
-const keys = {tab: 9, enter: 13, escape:27, space: 32, arrowUp: 38, arrowDown: 40, home: 36, end: 35, pageUp: 33, pageDown: 34};
+const keys = {
+    tab: 9,
+    enter: 13,
+    escape: 27,
+    space: 32,
+    arrowUp: 38,
+    arrowDown: 40,
+    home: 36,
+    end: 35,
+    pageUp: 33,
+    pageDown: 34
+};
 
-export function SummaryRow({listItem, index, metadata, chooseItem, rowFocus, UICues, elKey}) {
+export function SummaryRow({
+                               listItem, index, metadata, chooseItem,
+                               rowFocus, UICues, elKey
+                           }) {
     const logRoot = SummaryRow.name + `(${metadata.name}«${listItem.id}»)`;
-    const { hasFocus, isSelected, hasVisualPriority, small } = UICues;
+    const {hasFocus, isSelected, hasVisualPriority, small} = UICues;
     const row = useRef(null);
+    const isNullRow = (small && listItem.id === 0);
     const selectedStyle = cx(
         isSelected ? summaryStyle.selected : null,
-        (small && listItem.id === 0) ? summaryStyle.nullRow : null
-        );
+        isNullRow ? summaryStyle.nullRow : null
+    );
     elKey += `/SRow`;
 
 
@@ -87,12 +102,14 @@ export function SummaryRow({listItem, index, metadata, chooseItem, rowFocus, UIC
             key={elKey}
             className={selectedStyle}
         >
-            {metadata.summary.map(propertyName =>
-                <td key={elKey + propertyName} >
-                    {property(listItem, propertyName)}
-                    {/*{listItem[propertyName]}*/}
+            {metadata.summary.map((propertyName) =>
+                <td key={elKey + propertyName}>
+                    {(isNullRow)
+                        ? '➖➖'
+                        : property(listItem, propertyName)}
                 </td>
             )}
+            <td>&nbsp;</td>
         </tr>
     );
 }

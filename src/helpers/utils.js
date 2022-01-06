@@ -32,3 +32,11 @@ export function compare(p, q) {
     if (p > q) return 1;
     return 0;
 }
+
+export function emptyFields(fieldNames) {
+    const fields = {};
+    fieldNames.forEach(fieldName => {
+        fields[fieldName] = null;
+    });
+    return fields;
+}

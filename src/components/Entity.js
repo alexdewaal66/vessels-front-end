@@ -8,11 +8,10 @@ import { logv } from '../dev/log';
 
 
 export function Entity({metadata = entitiesMetadata.vessel, initialIdList}) {
-    const logRoot = `➖➖➖➖➖➖➖ ${Entity.name}(${metadata.name}) ➖➖➖➖➖➖`;
-    // logv(logRoot, {initialIdList});
+    const logRoot = `${Entity.name}(${metadata.name})`;
     const elKey =` Entity(${metadata.name},${initialIdList?.toString()})`;
     const [item, setItem] = useState(null);
-    logv(logRoot, {item});
+    logv(logRoot, {initialIdList, item});
 
 
     return (

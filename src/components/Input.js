@@ -2,7 +2,7 @@ import React  from 'react';
 
 import { subtypes, types } from '../helpers';
 import { Stringify } from '../dev/Stringify';
-import { InputObject2 } from './';
+import { InputObject } from './';
 // import { ShowObject } from '../dev/ShowObject';
 // import { CommandContext, useCommand } from '../contexts/CommandContext';
 
@@ -77,9 +77,8 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             step = 'any';
             break;
         case types.obj:
-            /////////////////////////////////////////////////////////////
             return (
-                <InputObject2 metadata={metadata}
+                <InputObject metadata={metadata}
                              field={field}
                              defaultValue={defaultValue}
                              useFormFunctions={useFormFunctions}

@@ -1,6 +1,7 @@
 import { logv } from '../dev/log';
 
 export const entitiesMetadata = {};
+const logRoot = 'entitiesMetadata';
 
 export const types = {
     str: 'string',
@@ -110,13 +111,19 @@ entitiesMetadata.user = {
             label: 'machtigingen', type: types.obj, target: 'authority'
         },
     },
-    summary: ['username', 'email'],
+    summary: ['id', 'email'],
     methods: 'CRUD',
     findItem: {
         endpoint: '/find',
         params: {},
     },
 };
+Object.defineProperty(entitiesMetadata.user.properties, 'id',{
+    enumerable: true,
+    get() {
+        return this.username;
+    }
+});
 
 entitiesMetadata.authority = {
     label: 'Machtiging',
@@ -464,8 +471,8 @@ entitiesMetadata.relation = {
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
         organisation1: {type: types.obj, label: 'organisatie 1', target: 'organisation'},
-        organisation2: {type: types.obj, label: 'organisatie 2', target: 'organisation'},
         relationType: {type: types.obj},
+        organisation2: {type: types.obj, label: 'organisatie 2', target: 'organisation'},
     },
     summary: ['id', 'organisation1.shortName', 'organisation2.shortName',
         // 'relationType'
@@ -495,6 +502,16 @@ entitiesMetadata.relationType = {
         params: {},
     },
 };
+
+
+export function getSummaryProp(metadata, element) {
+    const parts = element.split('.');
+    const prop = metadata.properties[parts[0]];
+    if (prop.type === types.obj) {
+        return entitiesMetadata[prop.target].properties[parts[1]];
+    }
+    return prop;
+}
 
 export function initializeEntitiesMetadata() {
     let typos = '';
@@ -581,13 +598,32 @@ function checkSummaries(entity, typos) {
 
 
 export function createEmptyItem(metadata) {
-    // console.log(`entitiesMetadata » createEmptyItem() \n\t metadata.name=`, metadata.name);
+    const logPath = `${logRoot} » ${createEmptyItem.name}(↓)`;
+    // logv(logPath, {metadata_name: metadata.name});
+    const emptyObject = createEmptyObject(metadata, Object.keys(metadata.properties));
+    // logv(null, {emptyObject});
+    return emptyObject;
+}
+
+export function createEmptySummary(metadata) {
+    const logPath = `${logRoot} » ${createEmptySummary.name}(↓)`;
+    // logv(logPath, {metadata_name: metadata.name});
+    const emptyObject = createEmptyObject(metadata, metadata.summary);
+    // logv(null, {emptyObject});
+    return emptyObject;
+}
+
+function createEmptyObject(metadata, propNames) {
+    const logPath = `❗❗ ${logRoot} » ${createEmptyObject.name}(↓, ↓)`;
+    // logv(logPath, {e_type: metadata.name, propNames});
     const item = {};
-    Object.keys(metadata.properties).forEach(key => {
-        switch (metadata.properties[key].type) {
-            case types.num:
-                item[key] = 0;
-                break;
+    propNames.forEach(key => {
+        const prop = getSummaryProp(metadata, key);
+        // logv(null, {key, prop});
+        switch (prop?.type) {
+            // case types.num:
+            //     item[key] = 0;
+            //     break;
             case types.str:
                 item[key] = '';
                 break;
@@ -598,7 +634,3 @@ export function createEmptyItem(metadata) {
     return item;
 }
 
-/*
-
-
- */

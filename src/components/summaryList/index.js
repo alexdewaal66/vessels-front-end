@@ -3,7 +3,7 @@ export { summaryStyle };
 
 export * from './SummaryListTall';
 export * from './SummaryListSmall';
-export * from './SummaryListSmall2';
+export * from './SummaryListSmall';
 export * from './SummaryTable';
 export * from './SummaryHeading';
 export * from './SummaryRow';

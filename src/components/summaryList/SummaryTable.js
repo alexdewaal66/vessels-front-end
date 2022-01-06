@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { cx } from '../../helpers';
 import { logv, errv } from '../../dev/log';
+import { useFilters } from './UseFilters';
 
 export function SummaryTable({
                                  list, metadata, selectedIds, chooseItem, small,
@@ -11,10 +12,16 @@ export function SummaryTable({
     elKey += '/STable';
 
     const entityName = metadata.name;
+    const idName = metadata.id[0];
     const logRoot = `SummaryTable(${entityName})`;
 
+    logv(logRoot, {list});
+
+    const {matchItem, mergeConstraints} = useFilters(metadata);
+    const displayList = list.filter(matchItem);
+
     // find 'first' selected item in list
-    const selectedIndex = selectedIds ? Math.max(list.findIndex(item => selectedIds.has(item.id)), 0) : null;
+    const selectedIndex = selectedIds ? Math.max(displayList.findIndex(item => selectedIds.has(item[idName])), 0) : null;
     const [focusIndex, setFocusIndexState] = useState(selectedIndex);
     const [hasTableFocus, setTableFocus] = useState(hasFocus);
 
@@ -29,19 +36,19 @@ export function SummaryTable({
             setFocusIndex(fi => Math.max(0, fi - 1));
         },
         down: function () {
-            setFocusIndex(fi => Math.min(list.length - 1, fi + 1));
+            setFocusIndex(fi => Math.min(displayList.length - 1, fi + 1));
         },
         tenUp: function () {
             setFocusIndex(fi => Math.max(0, fi - 10));
         },
         tenDown: function () {
-            setFocusIndex(fi => Math.min(list.length - 1, fi + 10));
+            setFocusIndex(fi => Math.min(displayList.length - 1, fi + 10));
         },
         first: function () {
             setFocusIndex(0);
         },
         last: function focusLast() {
-            setFocusIndex(list.length - 1);
+            setFocusIndex(displayList.length - 1);
         },
         set: setFocusIndex
     };
@@ -69,7 +76,7 @@ export function SummaryTable({
         return {
             hasFocus: (index === focusIndex && hasTableFocus),
             // isSelected: (index === selectedIndex),
-            isSelected: selectedIds?.has(list[index].id),
+            isSelected: selectedIds?.has(displayList[index][idName]),
             hasVisualPriority: hasTableFocus ? (index === focusIndex) : (index === selectedIndex),
             small
         }
@@ -88,10 +95,12 @@ export function SummaryTable({
                     <SummaryHeading metadata={metadata}
                                     elKey={entityName}
                                     setSorting={setSorting}
-                                    setFiltering={setFiltering}/>
+                                    setFiltering={setFiltering}
+                                    mergeConstraints={mergeConstraints}
+                    />
                     </thead>
                     <tbody>
-                    {list.map((listItem, index) => (
+                    {displayList.map((listItem, index) => (
                         <SummaryRow listItem={listItem}
                                     index={index}
                                     metadata={metadata}
@@ -100,6 +109,7 @@ export function SummaryTable({
                                     elKey={elKey + index}
                                     rowFocus={rowFocus}
                                     UICues={UICues(index)}
+
                         />
                     ))}
                     </tbody>

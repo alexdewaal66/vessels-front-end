@@ -5,7 +5,7 @@ import { SummaryFilter } from './SummaryFilter';
 
 export function SummaryHeading({
                                    metadata, elKey,
-                                   setSorting, setFiltering
+                                   setSorting, mergeConstraints
                                }) {
     const logRoot = `SummaryHeading(${metadata.name})`;
 
@@ -43,8 +43,12 @@ export function SummaryHeading({
                         </span>
                     </th>
                 )}
+                <th/>
             </tr>
-            {/*<SummaryFilter metadata={metadata} elKey={elKey} />*/}
+            <SummaryFilter metadata={metadata}
+                           mergeConstraints={mergeConstraints}
+                           elKey={elKey}
+            />
         </>
     );
 }

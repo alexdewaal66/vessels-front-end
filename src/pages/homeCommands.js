@@ -12,6 +12,7 @@ const homeCommands = {
     vessel: {label: 'Vaartuig', component: EntityN(entitiesMetadata.vessel)},
     vesselType: {label: 'Scheepstype', component: EntityN(entitiesMetadata.vesselType)},
     hull: {label: 'Romp', component: EntityN(entitiesMetadata.hull)},
+    user: {label: 'Gebruiker', component: EntityN(entitiesMetadata.user)},
     userN0: {label: 'Gebruiker(0)', component: EntityN(entitiesMetadata.user, 0)},
     country: {label: 'Land', component: EntityN(entitiesMetadata.country)},
     address: {label: 'Adres', component: EntityN(entitiesMetadata.address)},

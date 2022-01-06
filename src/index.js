@@ -9,7 +9,7 @@ import { StatusContextProvider } from './contexts/StatusContext';
 import { StorageContextProvider } from './contexts/StorageContext';
 import { TestMountDismountContext, TestMountDismountContextProvider } from './dev/TestMountDismountContext';
 import { initializeEntitiesMetadata } from './helpers';
-import { ObserverContext, ObserverContextProvider } from './contexts/ObserverContext';
+// import { ObserverContext, ObserverContextProvider } from './contexts/ObserverContext';
 
 initializeEntitiesMetadata();
 

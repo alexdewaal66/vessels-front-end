@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { logv } from '../dev/log';
+import { logv } from '../log';
 
 export const ObserverContext = createContext({});
 

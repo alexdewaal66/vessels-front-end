@@ -1,6 +1,5 @@
 import React from 'react';
 import { logv } from '../dev/log';
-import { EditEntity } from './EditEntity';
 import { FieldEl, FieldRow } from '../formLayouts';
 
 export function EditButtons({requestState, setRequestMethod}) {
