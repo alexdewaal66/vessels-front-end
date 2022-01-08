@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { summaryStyle } from './index';
 import { logv } from '../../dev/log';
 import filterSymbol from '../../assets/filter.svg';
-import { createEmptySummary, getSummaryProp, types } from '../../helpers';
+import { createEmptySummary, getSummaryProp } from '../../helpers';
 
 const enterKey = 13;
 
@@ -53,16 +53,14 @@ export function SummaryFilter({metadata, mergeConstraints, elKey}) {
     function inputSize(key) {
         const property = getSummaryProp(metadata, key);
         const maxLength = property?.validation?.maxLength || 4;
-        // if (!property)
-        //     logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
+        // if (!property)  logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
         return Math.min(18, maxLength / 2);
     }
 
     function inputLength(key) {
         const property = getSummaryProp(metadata, key);
         const maxLength = property?.validation?.maxLength || 4;
-        // if (!property)
-        //     logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
+        // if (!property)  logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
         return 2 * maxLength + 1;
     }
 
@@ -80,7 +78,7 @@ export function SummaryFilter({metadata, mergeConstraints, elKey}) {
                     />
                     <button type={'button'}
                             onClick={clearFieldHandler(propertyName)}
-                            className={summaryStyle.sort}
+                            className={summaryStyle.filterButton}
                     >
                         ␡
                     </button>
@@ -92,12 +90,10 @@ export function SummaryFilter({metadata, mergeConstraints, elKey}) {
                         className={summaryStyle.sort}
                 >
                     <img src={filterSymbol} alt={'Filter symbol'}
-                         className={summaryStyle.filter}
+                         className={summaryStyle.filterButton}
                     />
                 </button>
             </th>
         </tr>
     );
 }
-
-/* ⨃⩒⩣⩡Y⊻⋁Υ🝖 */

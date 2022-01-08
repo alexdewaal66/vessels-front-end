@@ -13,7 +13,7 @@
 }
 
 .small {
-    height: calc(6 * 1.7em);
+    height: calc(7 * 1.7em);
 }
 
 .table {
@@ -139,6 +139,18 @@ th .sort {
 th .filter {
     display: inline;
     height: 1em;
+    padding: 0;
+    /*font-size: smaller;*/
+    /*font-weight: normal;*/
+}
+
+th .filterButton {
+    display: inline;
+    height: 1em;
+    padding: 0;
+    border: none;
+    font-size: smaller;
+    font-weight: normal;
 }
 
 th .input {

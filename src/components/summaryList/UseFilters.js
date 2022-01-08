@@ -1,70 +1,69 @@
 import { useState } from 'react';
-import { createEmptySummary, emptyFields, types, useConditionalEffect } from '../../helpers';
+import { createEmptySummary, emptyFields, entitiesMetadata, types, useConditionalEffect } from '../../helpers';
 import { logv } from '../../dev/log';
 
-// export function useFilters(operation, list, metadata) {
 export function useFilters(metadata) {
     const logRoot = `${useFilters.name}()`;
-    // const [constraints, setConstraints] = useState(emptyFields(metadata.summary));
     const [constraints, setConstraints] = useState(createEmptySummary(metadata));
     const [noConstraints, setNoConstraints] = useState(true);
 
-    function mergeConstraints(updatedValues) {
+    const matchers = {
+        str: (itemValue, filterValue) => {
+            return itemValue.toLowerCase().includes(filterValue);
+        },
+        num: (itemValue, filterValue) => {
+            return filterValue.lo <= itemValue && itemValue <= filterValue.hi;
+        },
+        always: () => {
+            return true;
+        }
+    };
+
+    function preprocess(constraints) {
+        Object.entries(constraints).forEach(([fieldName, filterValue]) => {
+            if (filterValue) {
+                let newFilter = {};
+                switch (metadata.properties[fieldName].type) {
+                    case types.str:
+                        newFilter.matcher = matchers.str;
+                        newFilter.value = filterValue.toLowerCase();
+                        break;
+                    case types.num:
+                        const [lo, hi] = filterValue.split('-');
+                        newFilter.matcher = matchers.num;
+                        newFilter.value = {
+                            lo: (!lo) ? -Infinity : +lo,
+                            hi: (!hi) ? +Infinity : +hi
+                        };
+                        break;
+                    default:
+                        newFilter.matcher = matchers.always;
+                }
+                constraints[fieldName] = newFilter;
+            }
+        });
+    }
+
+    function mergeConstraints(updatedConstraints) {
         const logPath = `➖➖ ${logRoot} » ${mergeConstraints.name}()`;
-        setConstraints(currentValues => {
-                const newValues = {...currentValues, ...updatedValues};
-                const allEmpty = Object.values(newValues).every(value => !(value || value === 0));
+        preprocess(updatedConstraints);
+        setConstraints(currentConstraints => {
+                const newConstraints = {...currentConstraints, ...updatedConstraints};
+                const allEmpty = Object.values(newConstraints).every(constraint => !constraint);
                 setNoConstraints(allEmpty);
-                logv(logPath, {newValues, allEmpty});
-                return newValues;
+                logv(logPath, {newValues: newConstraints, allEmpty});
+                return newConstraints;
             }
         );
     }
 
-    // useConditionalEffect(
-    //     () => operation([...list]),
-    //     !!constraints && !!list,
-    //     [constraints]
-    // );
-
     function matchField(item, constraint) {
-        const logPath = `${logRoot} » ${matchField.name}(↓, ↓)`;
-        const [fieldName, filterValue] = constraint;
-        if (!filterValue) return true;
+        const logPath = `🔶🔶 ${logRoot} » ${matchField.name}(↓, ↓)`;
+        const [fieldName, filter] = constraint;
+        logv(logPath, {item, constraint});
+        if (!filter) return true;
         if (!item[fieldName]) return true;
-        const value = item[fieldName];
-        switch (metadata.properties[fieldName].type) {
-            case types.str:
-                const lowerCaseFieldValue = value.toLowerCase();
-                return lowerCaseFieldValue.includes(filterValue.toLowerCase() || '');
-            case types.num:
-                logv(logPath, {item, constraint});
-                let comparator = '=';
-                let measure1 = filterValue;
-                let measure2;
-                if ('=<>'.includes(filterValue[0])) {
-                    comparator = filterValue[0];
-                    measure1 = filterValue.substring(1);
-                } else if (filterValue.includes('-')) {
-                    comparator = '-';
-                    [measure1, measure2] = filterValue.split('-');
-                }
-                measure1 = +measure1;
-                measure2 = +measure2;
-                switch (comparator) {
-                    case '<':
-                        return value < measure1;
-                    case '>':
-                        return value > measure1;
-                    case '-':
-                        logv(logPath, {measure1, measure2});
-                        return measure1 <= value && value <= measure2;
-                    default:
-                        return value === measure1;
-                }
-            default:
-                return true;
-        }
+        return filter.matcher(item[fieldName], filter.value);
     }
 
     function matchItem(item) {

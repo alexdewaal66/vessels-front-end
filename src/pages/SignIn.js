@@ -5,7 +5,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { useRequestState, endpoints, now, persistentVars, postRequest } from '../helpers';
 import forms from '../formLayouts/forms.module.css';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
-import { Aside, Command, Main } from '../pageLayouts';
+import { Aside, Menu, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { ShowRequestState } from '../components';
 
@@ -87,9 +87,9 @@ function SignIn() {
 
                 <p>Heb je nog geen account? <Link to="/signup">Registreer</Link> je dan eerst.</p>
             </Main>
-            <Command>
+            <Menu>
                 COMMAND
-            </Command>
+            </Menu>
             <Aside>
                 ASIDE
             </Aside>

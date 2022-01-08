@@ -4,12 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { AuthContextProvider } from './contexts/AuthContext';
 import { StatusContextProvider } from './contexts/StatusContext';
 import { StorageContextProvider } from './contexts/StorageContext';
-import { TestMountDismountContext, TestMountDismountContextProvider } from './dev/TestMountDismountContext';
+import { AuthContextProvider } from './contexts/AuthContext';
+import { ChoiceContextProvider } from './contexts/ChoiceContext';
 import { initializeEntitiesMetadata } from './helpers';
-// import { ObserverContext, ObserverContextProvider } from './contexts/ObserverContext';
 
 initializeEntitiesMetadata();
 
@@ -17,13 +16,13 @@ ReactDOM.render(
     <React.StrictMode>
         <Router>
             <StatusContextProvider>
-                {/*<ObserverContextProvider>*/}
-                    <StorageContextProvider>
-                        <AuthContextProvider>
+                <StorageContextProvider>
+                    <AuthContextProvider>
+                        <ChoiceContextProvider>
                             <App/>
-                        </AuthContextProvider>
-                    </StorageContextProvider>
-                {/*</ObserverContextProvider>*/}
+                        </ChoiceContextProvider>
+                    </AuthContextProvider>
+                </StorageContextProvider>
             </StatusContextProvider>
         </Router>
     </React.StrictMode>,

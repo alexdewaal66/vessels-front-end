@@ -1,19 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { summaryStyle } from './index';
 import { logv } from '../../dev/log';
-import { cx } from '../../helpers';
+import { cx, entitiesMetadata } from '../../helpers';
+import { ChoiceContext } from '../../contexts/ChoiceContext';
+import { EntityN } from '../../pages/homeMenuItems';
 
 const keys = {
     tab: 9,
     enter: 13,
     escape: 27,
     space: 32,
-    arrowUp: 38,
-    arrowDown: 40,
-    home: 36,
-    end: 35,
-    pageUp: 33,
-    pageDown: 34
+    arrowUp: 38, arrowDown: 40,
+    home: 36, end: 35,
+    pageUp: 33, pageDown: 34
 };
 
 export function SummaryRow({
@@ -28,6 +27,7 @@ export function SummaryRow({
         isSelected ? summaryStyle.selected : null,
         isNullRow ? summaryStyle.nullRow : null
     );
+    const {makeChoice} = useContext(ChoiceContext);
     elKey += `/SRow`;
 
 
@@ -109,7 +109,15 @@ export function SummaryRow({
                         : property(listItem, propertyName)}
                 </td>
             )}
-            <td>&nbsp;</td>
+            {small && listItem.id ? (
+                <td>
+                    <span onClick={makeChoice({component: EntityN(metadata, listItem.id)})}>
+                        ➡
+                    </span>
+                </td>
+            ) : (
+                <td>&nbsp;</td>
+            )}
         </tr>
     );
 }

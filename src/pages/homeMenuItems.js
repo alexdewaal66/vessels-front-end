@@ -7,7 +7,7 @@ import { TestMultiSelect } from '../dev/TestMultiSelect';
 
 const EntityN = (metadata, n) => () => <Entity metadata={metadata} initialIdList={[n]}/>;
 
-const homeCommands = {
+const homeMenuItems = {
     default: {label: 'Welkom', component: Welcome},
     vessel: {label: 'Vaartuig', component: EntityN(entitiesMetadata.vessel)},
     vesselType: {label: 'Scheepstype', component: EntityN(entitiesMetadata.vesselType)},
@@ -32,6 +32,6 @@ const homeCommands = {
     focus: {label: 'Focus', component: OnFocusExample},
 };
 
-homeCommands.displayOrder = Object.keys(homeCommands).map(key => homeCommands[key]);
+homeMenuItems.displayOrder = Object.keys(homeMenuItems).map(key => homeMenuItems[key]);
 
-export { homeCommands, EntityN };
+export { homeMenuItems, EntityN };

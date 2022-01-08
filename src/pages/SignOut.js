@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
 import { now } from '../helpers';
-import { Aside, Command, Main } from '../pageLayouts';
+import { Aside, Menu, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { pages } from './index';
 
@@ -34,9 +34,9 @@ function SignOut() {
                     </button>
                 </form>
             </Main>
-            <Command>
+            <Menu>
                 COMMAND
-            </Command>
+            </Menu>
             <Aside>
                 ASIDE
             </Aside>

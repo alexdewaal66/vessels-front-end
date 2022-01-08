@@ -141,7 +141,7 @@ export function EditEntity({metadata, item, setItem, elKey,}) {
                         <Fieldset border={false}>
                             <input type="hidden"
                                    name="requestMethod"
-                                   value="none"
+                                   value="always"
                                    {...register('requestMethod')}
                                    key="requestMethod"
                             />

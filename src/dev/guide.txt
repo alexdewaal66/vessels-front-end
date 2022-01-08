@@ -4,5 +4,5 @@ Where to make changes for a new entity:
 1. useStorage.js - useStorage() - forest
 2. entitiesMetadata.js
     - add property
-3. homeCommands.js - homeCommands
+3. homeMenuItems.js - homeMenuItems
 

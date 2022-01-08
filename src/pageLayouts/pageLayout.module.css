@@ -92,7 +92,7 @@ html, body {
     border-width: 2px;
 }
 
-.command {
+.menu {
     flex-grow: 0;
     order: -1;
     border-right: 1px solid;
@@ -103,7 +103,7 @@ html, body {
     border-left: 1px solid;
 }
 
-.command, .aside {
+.menu, .aside {
     --color-darker: var(--alt1-color-darker);
     --color-normal: var(--alt1-color-normal);
     --color-light: var(--alt1-color-light);

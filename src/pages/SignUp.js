@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useRequestState, endpoints, now, postRequest } from '../helpers';
 import { pages } from './index';
-import { Aside, Command, Main, Content } from '../pageLayouts';
+import { Aside, Menu, Main, Content } from '../pageLayouts';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
 import { ShowRequestState } from '../components';
 
@@ -87,9 +87,9 @@ function SignUp() {
 
                     <p>Heb je al een account? Je kunt je <Link to={pages.signIn.path}>hier</Link> inloggen.</p>
                 </Main>
-                <Command>
+                <Menu>
                     COMMAND
-                </Command>
+                </Menu>
                 <Aside>
                     ASIDE
                 </Aside>

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { Aside, Command, Main, Content } from '../pageLayouts';
+import { Aside, Menu, Main, Content } from '../pageLayouts';
 import { pages } from './index';
 import { ShowObject } from '../dev/ShowObject';
 
@@ -55,9 +55,9 @@ function Profile() {
                 </section>
                 <p>Terug naar de <Link to={pages.home.path}>Homepagina</Link></p>
             </Main>
-            <Command>
+            <Menu>
                 COMMAND
-            </Command>
+            </Menu>
             <Aside>
                 ASIDE
             </Aside>
