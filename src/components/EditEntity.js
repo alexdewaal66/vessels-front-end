@@ -22,7 +22,7 @@ export function EditEntity({metadata, item, setItem, elKey,}) {
     const {useCommand, setCommand} = useContext(CommandContext);
     // const {useObserver, raise} = useContext(ObserverContext);
     const useFormFunctions = useForm();
-    const {handleSubmit, register, setValue, getValues} = useFormFunctions;
+    const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
     const readOnly = (metadata.methods === 'R') || !user;
 
@@ -70,28 +70,19 @@ export function EditEntity({metadata, item, setItem, elKey,}) {
 
     function extractDataFromHelpField(hiddenFieldName, formData) {
         const logPath = extractDataFromHelpField.name + `(${hiddenFieldName})`;
-        // logv(logPath, {formData});
+        logv(logPath, {formData});
         const parts = hiddenFieldName.split('_');
         const field = parts[1];
         const target = parts[2];
-        const nullFieldName = 'null_' + field + '_' + target;
-        const isNull = !!formData[nullFieldName];
-        // logv(null, {field, target, nullFieldName, isNull});
-        if (isNull) {
-            formData[field] = null;
+        if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
+            const idValue = +formData[hiddenFieldName];
+            logv(null, {target, idValue, '!!idValue':!!idValue})
+            formData[field] = !!idValue ? store[target].state[idValue].item : null;
         } else {
-            if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
-                // logv(null, {nullFieldName, isNull});
-                const idValue = +formData[hiddenFieldName];
-                // logv(null, {target, idValue, '!!idValue':!!idValue})
-                formData[field] = !!idValue ? store[target].state[idValue].item :  null;
-            } else {
-                const idList = formData[hiddenFieldName].split(',');
-                formData[field] = {id: idList};
-            }
+            const idList = formData[hiddenFieldName].split(',');
+            formData[field] = {id: idList};
         }
         delete formData[hiddenFieldName];
-        delete formData[nullFieldName];
     }
 
     function onSubmit({requestMethod, ...formData}) {
@@ -116,6 +107,9 @@ export function EditEntity({metadata, item, setItem, elKey,}) {
                 //todo: ask confirmation
                 deleteItem(entityName, formData.id)
                 break;
+            case 'search':
+            //not a useStorage method (yet)
+            //
             default:
                 const err = `Unsupported requestMethod: '${requestMethod}'`;
                 console.error(err);
@@ -177,9 +171,10 @@ export function EditEntity({metadata, item, setItem, elKey,}) {
                                     </Fragment>
                                 )
                             )}
-                            {!readOnly && (
-                                <EditButtons requestState={requestState} setRequestMethod={setRequestMethod}/>
-                            )}
+                            <EditButtons requestState={requestState}
+                                         setRequestMethod={setRequestMethod}
+                                         readOnly={readOnly}
+                            />
                         </Fieldset>
                     </Form>
                 </div>

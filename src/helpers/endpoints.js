@@ -3,5 +3,6 @@ export const endpoints = {
     signIn: '/authenticate',
     users: '/users/',
     profile: '/profile',
+    files: '/files'
 };
 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { summaryStyle } from './index';
 import { logv } from '../../dev/log';
-import { cx, entitiesMetadata } from '../../helpers';
+import { cx, endpoints, getSummaryProp, types } from '../../helpers';
 import { ChoiceContext } from '../../contexts/ChoiceContext';
 import { EntityN } from '../../pages/homeMenuItems';
 
@@ -87,11 +87,28 @@ export function SummaryRow({
         e.preventDefault();// suppress default scrolling
     }
 
-    function property(object, propertyName) {
+    function getProperty(object, propertyName) {
         const parts = propertyName.split('.');
         return (parts.length === 1)
             ? object?.[parts[0]]
             : object?.[parts[0]]?.[parts[1]];
+    }
+
+    function renderProperty(object, propertyName) {
+        const logPath = `🖍🖍🖍🖍 ${logRoot} » ${renderProperty.name}()`;
+        const property = getProperty(object, propertyName);
+        // logv(logPath, {object, propertyName, property});
+        const propType = getSummaryProp(metadata, propertyName).type;
+        // logv(logPath, {propType});
+        if (propType === types.img) {
+            logv(logPath, {object, propertyName, property});
+            return (
+                <img src={endpoints.baseURL + 'files/' + property}
+                     alt="thumbnail"
+                />
+            );
+        }
+        return property;
     }
 
     return (
@@ -106,7 +123,7 @@ export function SummaryRow({
                 <td key={elKey + propertyName}>
                     {(isNullRow)
                         ? '➖➖'
-                        : property(listItem, propertyName)}
+                        : renderProperty(listItem, propertyName)}
                 </td>
             )}
             {small && listItem.id ? (

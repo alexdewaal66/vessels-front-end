@@ -9,3 +9,4 @@ export * from './Details';
 export * from './EditButtons';
 export * from './InputObject';
 export * from './InputObject';
+export * from './InputImageFile';

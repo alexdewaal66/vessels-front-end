@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react';
 import {
-    createEmptyItem, emptyFields,
-    keys,
+    createEmptyItem,
+    keys, useKeyPressed,
     useBGLoading,
     useConditionalEffect,
-    useKeyPressed,
     useRequestState
 } from '../../helpers';
 import { SummaryTable } from './';
@@ -17,8 +16,7 @@ import { useSorting } from './UseSorting';
 
 export function SummaryListSmall({
                                      metadata, initialIdList, UICues,
-                                     useFormFunctions, inputHelpFields,
-                                     elKey
+                                     setHiddenField, elKey
                                  }) {
     elKey += '/SListSmall';
     const entityName = metadata.name;
@@ -62,23 +60,7 @@ export function SummaryListSmall({
             newSelectedIds = new Set([item?.id || 0]);
             selectedIds.new(newSelectedIds);
         }
-        manipulateInputHelpFields(item, newSelectedIds);
-    }
-
-    function manipulateInputHelpFields(item, newSelectedIds) {
-        const logPath = logRoot + manipulateInputHelpFields.name + '() ';
-        const {getValues: getFormValues, setValue: setFormValue} = useFormFunctions;
-        const [hiddenFieldName] = inputHelpFields;
-        // logv(logPath, {
-        //     noneSelected, item, newSelectedIds, hiddenFieldName,
-        //     hiddenField: getFormValues(hiddenFieldName)
-        // });
-        setFormValue(hiddenFieldName, [...newSelectedIds].toString());
-        // logv(null, {
-        //     item, newSelectedIds, hiddenFieldName,
-        //     hiddenField: getFormValues(hiddenFieldName),
-        //     formValues: getFormValues()
-        // });
+        setHiddenField([...newSelectedIds].toString());
     }
 
     function updateListSmall(newList) {
@@ -115,7 +97,6 @@ export function SummaryListSmall({
         const entries = Object.entries(store[entityName].state);
         // logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
-        // const nullItem = emptyFields(metadata.summary);
         const nullItem = createEmptyItem(metadata);
         nullItem.id = 0;
         list.push(nullItem);

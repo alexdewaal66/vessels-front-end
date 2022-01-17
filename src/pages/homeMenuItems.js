@@ -4,6 +4,7 @@ import { entitiesMetadata } from '../helpers';
 import { Colors } from '../dev/Colors';
 import { OnFocusExample } from '../dev/OnFocusExample';
 import { TestMultiSelect } from '../dev/TestMultiSelect';
+import { TestMultipartFile } from '../dev/TestMultipartFile';
 
 const EntityN = (metadata, n) => () => <Entity metadata={metadata} initialIdList={[n]}/>;
 
@@ -30,6 +31,8 @@ const homeMenuItems = {
     zyx: {label: 'Zyx', component: EntityN(entitiesMetadata.zyx)},
     colors: {label: 'Kleuren', component: Colors},
     focus: {label: 'Focus', component: OnFocusExample},
+    file: {label: 'Bestand', component: TestMultipartFile},
+    image: {label: 'Plaatje', component: EntityN(entitiesMetadata.image)},
 };
 
 homeMenuItems.displayOrder = Object.keys(homeMenuItems).map(key => homeMenuItems[key]);

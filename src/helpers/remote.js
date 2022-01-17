@@ -24,13 +24,14 @@ export async function getRequest({url, requestState, onSuccess, onFail}) {
     });
 }
 
-export async function postRequest({url, payload, requestState, onSuccess, onFail}) {
+export async function postRequest({url, payload, headers, requestState, onSuccess, onFail}) {
     // eslint-disable-next-line no-unused-vars
     await makeRequest({
         method: 'post',
-        url, payload, requestState, onSuccess, onFail
+        url, payload, headers, requestState, onSuccess, onFail
     });
 }
+
 
 export async function putRequest({url, payload, requestState, onSuccess, onFail}) {
     // eslint-disable-next-line no-unused-vars
@@ -49,10 +50,10 @@ export async function deleteRequest({url, requestState, onSuccess, onFail}) {
     });
 }
 
-export async function makeRequest({method, url, payload, requestState = null, onSuccess, onFail}) {
-    const doLog = false;// url.includes('xyz') || url.includes('zyx');
+export async function makeRequest({method, url, payload, headers, requestState = null, onSuccess, onFail}) {
+    const doLog = false;// || url.includes('xyz') || url.includes('zyx');
     const logPath = '----------------' + makeRequest.name + '() ';
-    const headers = addJwtToHeaders();
+    headers = addJwtToHeaders(headers);
 
     requestState?.setAtPending();
     if (doLog) logv(logPath + 'arguments=', {method, url, payload, requestState, onSuccess});
@@ -79,6 +80,7 @@ export async function makeRequest({method, url, payload, requestState = null, on
 }
 
 export const remote = {
+
     readIds: async function (metadata, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/ids';
         await getRequest({
@@ -101,7 +103,7 @@ export const remote = {
     },
 
     readByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
-        // console.log(`storageHelpers » remote.readByIds()\n\t metadata=`, metadata, `\n\t idArray=`, idArray);
+        // console.log(`remote.js » remote.readByIds()\n\t metadata=`, metadata, `\n\t idArray=`, idArray);
         const url = metadata.endpoint + '/ids';
         await postRequest({
             url,
@@ -113,7 +115,7 @@ export const remote = {
     },
 
     findByUniqueField: async function (metadata, probe, requestState, onSuccess, onFail) {
-        // console.log(`storageHelpers » remote.findByUniqueField() \nprobe=`, probe, `metadata.name=`, metadata.name);
+        // logv('storageHelpers » remote.findByUniqueField()', {probe, 'metadata.name': metadata.name});
         const entries = Object.entries(probe);
         // console.log(`storageHelpers » remote.findByUniqueField() \nentries=`, entries);
         const hits = entries.filter(([k, v]) => !!v && (k in metadata.findItem.params));
@@ -134,6 +136,16 @@ export const remote = {
         const url = metadata.endpoint + '/' + id;
         await getRequest({
             url, requestState, onSuccess, onFail
+        });
+    },
+
+    fileUpload: async function (file, requestState, onSuccess, onFail) {
+        const url = '/files';
+        const headers = addJwtToHeaders({'content-type': 'multipart/form-data'});
+        const payload = new FormData();
+        payload.append('file', file);
+        await postRequest({
+            url, payload, headers, requestState, onSuccess, onFail
         });
     },
 

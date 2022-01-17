@@ -10,7 +10,9 @@ export const types = {
     img: 'image',
     arr: 'array',
     obj: 'object',
-    date: 'date'
+    date: 'date',
+    url: 'url',
+    file: 'file',
 };
 
 export const subtypes = {
@@ -20,7 +22,6 @@ export const subtypes = {
     url: 'url',
     color: 'color',
     datetimeLocal: 'datetimeLocal',
-    file: 'file',
     month: 'month',
     tel: 'tel',
     time: 'time',
@@ -396,6 +397,7 @@ entitiesMetadata.vessel = {
         id: {type: types.num, label: 'id', readOnly: true,},
         hull: {type: types.obj,},
         name: {type: types.str, label: 'naam', validation: {maxLength: 100},},
+        image: {type: types.img, label: 'afbeelding', target: 'image'},
         mmsi: {type: types.str, label: 'mmsi', validation: {maxLength: 10},},
         callSign: {type: types.str, label: 'roepletters', validation: {maxLength: 10},},
         vesselType: {
@@ -436,7 +438,7 @@ entitiesMetadata.vessel = {
         // validate: () => crossField.validate(getValues(endDateFieldName), getValues(startDateFieldName))
     },
     methods: 'CRUD',
-    summary: ['id', 'name'],
+    summary: ['id', 'name', 'image.thumbnailId'],
     findItem: {
         endpoint: '/find',
         params: {}
@@ -503,6 +505,39 @@ entitiesMetadata.relationType = {
     },
 };
 
+entitiesMetadata.file = {
+    label: 'bestand',
+    endpoint: '/files',
+    id: ['id'],
+    properties: {
+        id: {type: types.num, label: 'id', readOnly: true,},
+        fileName: {type: types.str, label: 'bestandsnaam', validation: {maxLength: 259},},
+        fileType: {type: types.str, label: 'bestandstype', validation: {maxLength: 20},},
+    },
+    summary: ['id', 'fileName', 'fileType'],
+    methods: 'CRUD',
+    findItem: {
+        endpoint: '/find',
+        params: {},
+    },
+};
+
+entitiesMetadata.image = {
+    label: 'afbeelding',
+    endpoint: '/images',
+    id: ['id'],
+    properties: {
+        id: {type: types.num, label: 'id', readOnly: true,},
+        fullSizeId: {type: types.file, label: 'volledig', target: 'file',},
+        thumbnailId: {type: types.file, label: 'postzegel', target: 'file', readOnly: true,},
+    },
+    summary: ['id', 'thumbnailId'],
+    methods: 'CRUD',
+    findItem: {
+        endpoint: '/find',
+        params: {},
+    },
+};
 
 export function getSummaryProp(metadata, element) {
     const parts = element.split('.');
@@ -586,7 +621,7 @@ function checkSummaries(entity, typos) {
         let dualPartsTypo = false;
         if (parts.length === 2) {
             const targetEntityName = entity.properties[parts[0]].target;
-            dualPartsTypo = !entitiesMetadata[targetEntityName].properties[parts[1]];
+            dualPartsTypo = !entitiesMetadata[targetEntityName]?.properties[parts[1]];
             // logv('❗ entitiesMetadata.js » checkSummaries', {entity, parts});
         }
         if (singlePartTypo || dualPartsTypo || parts.length > 2) {

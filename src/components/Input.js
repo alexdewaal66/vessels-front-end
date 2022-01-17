@@ -1,8 +1,9 @@
-import React  from 'react';
+import React from 'react';
 
 import { subtypes, types } from '../helpers';
 import { Stringify } from '../dev/Stringify';
-import { InputObject } from './';
+import { InputObject, InputImageFile } from './';
+import { logv } from '../dev/log';
 // import { ShowObject } from '../dev/ShowObject';
 // import { CommandContext, useCommand } from '../contexts/CommandContext';
 
@@ -36,11 +37,12 @@ const aspectRatio = 15;
 const referenceSize = 80;
 
 export function Input({metadata, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
+    const logRoot = `${Input.name}(${metadata.name})`;
     const property = metadata.properties[field];
     const elKey = `Input(${metadata.name},${field},${defaultValue})`;
 
-    // console.log(`Input » metadata=`, metadata, `\n field=`, field, `\n property=`, property);
     readOnly = readOnly || metadata.methods === 'R' || property?.readOnly;
+    logv(logRoot, {field, property, readOnly});
     // const [command, setCommand] = useContext(CommandContext);
     let inputType = {};
     let maxLength = property?.validation?.maxLength;
@@ -92,6 +94,16 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             inputType = inputTypes.date;
             fieldValue = defaultValue.toString().split('T')[0];
             break;
+        case types.file:
+            return (
+                <InputImageFile metadata={metadata}
+                                field={field}
+                                defaultValue={defaultValue}
+                                useFormFunctions={useFormFunctions}
+                                elKey={elKey}
+                                readOnly={readOnly}
+                />
+            );
         default:
             return (<>
                 metadata: <Stringify data={metadata}/>

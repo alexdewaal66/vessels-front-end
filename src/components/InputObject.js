@@ -7,14 +7,17 @@ export function InputObject({metadata, field, defaultValue, useFormFunctions, el
     const logRoot = `${InputObject.name}(${metadata.name})`;
     // logv(logRoot, {field, defaultValue, '!defaultValue': !defaultValue});
     const property = metadata.properties[field];
-    let hiddenFieldName;
     const initialIdList = Array.isArray(defaultValue)
         ? defaultValue.map(item => item.id)
         : [defaultValue.id];
 
     // logv(null, {initialIdList});
 
-    hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
+    const hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
+
+    function setHiddenField(value) {
+        useFormFunctions.setValue(hiddenFieldName, value);
+    }
 
     return (
         <>
@@ -32,8 +35,7 @@ export function InputObject({metadata, field, defaultValue, useFormFunctions, el
                               key={elKey + hiddenFieldName + '_obj'}
                               elKey={elKey + hiddenFieldName + '_obj'}
                               UICues={{hasFocus: false}}
-                              useFormFunctions={useFormFunctions}
-                              inputHelpFields={[hiddenFieldName]}
+                              setHiddenField={setHiddenField}
             />
         </>
     );

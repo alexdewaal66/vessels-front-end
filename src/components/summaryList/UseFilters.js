@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createEmptySummary, emptyFields, entitiesMetadata, types, useConditionalEffect } from '../../helpers';
+import { createEmptySummary, types } from '../../helpers';
 import { logv } from '../../dev/log';
 
 export function useFilters(metadata) {
@@ -51,7 +51,7 @@ export function useFilters(metadata) {
                 const newConstraints = {...currentConstraints, ...updatedConstraints};
                 const allEmpty = Object.values(newConstraints).every(constraint => !constraint);
                 setNoConstraints(allEmpty);
-                logv(logPath, {newValues: newConstraints, allEmpty});
+                // logv(logPath, {newValues: newConstraints, allEmpty});
                 return newConstraints;
             }
         );
@@ -60,7 +60,7 @@ export function useFilters(metadata) {
     function matchField(item, constraint) {
         const logPath = `🔶🔶 ${logRoot} » ${matchField.name}(↓, ↓)`;
         const [fieldName, filter] = constraint;
-        logv(logPath, {item, constraint});
+        // logv(logPath, {item, constraint});
         if (!filter) return true;
         if (!item[fieldName]) return true;
         return filter.matcher(item[fieldName], filter.value);
@@ -68,7 +68,7 @@ export function useFilters(metadata) {
 
     function matchItem(item) {
         const logPath = `${logRoot} » ${matchItem.name}(↓)`;
-        logv(logPath, {item, noConstraints});
+        // logv(logPath, {item, noConstraints});
         return noConstraints ||
             Object.entries(constraints).every(constraint => matchField(item, constraint));
     }

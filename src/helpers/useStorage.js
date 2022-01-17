@@ -5,7 +5,7 @@ import { remote } from './remote';
 import { now, makeId } from './utils';
 import { useState } from 'react';
 import { RequestState } from './RequestState';
-import { errv, logv } from '../dev/log';
+import { logv } from '../dev/log';
 
 export const validities = {none: 0, id: 1, summary: 2, full: 3};
 
@@ -43,7 +43,7 @@ async function readAndStoreAllIds(forest) {
     const treeNames = Object.keys(forest);
     // const isFinished = Array(treeNames.length).fill(false);
     await Promise.all(
-        treeNames.map(async (name, index) => {
+        treeNames.map(async name => {
                 const requestState = new RequestState();
                 await readAndStoreIds(entitiesMetadata[name], requestState, forest[name]);
             }
@@ -180,7 +180,7 @@ async function deleteAndStoreItem(metadata, id, requestState, tree) {
     if (tree.state[id]) {
         await remote.delete(
             metadata, id, requestState,
-            (response) => {
+            () => {
                 console.log(`deleted id=`, id);
                 tree.del(id);
             },
@@ -224,6 +224,8 @@ export function useStorage() {
         organisation: useDict(),
         relation: useDict(),
         relationType: useDict(),
+        file: useDict(),
+        image: useDict(),
     };
 
     const [allIdsLoaded, setAllIdsLoaded] = useState(null);
