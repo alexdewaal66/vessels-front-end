@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { summaryStyle } from './index';
-import { logv } from '../../dev/log';
+import { errv } from '../../dev/log';
 import { cx, endpoints, getSummaryProp, types } from '../../helpers';
 import { ChoiceContext } from '../../contexts/ChoiceContext';
 import { EntityN } from '../../pages/homeMenuItems';
@@ -16,19 +16,23 @@ const keys = {
 };
 
 export function SummaryRow({
-                               listItem, index, metadata, chooseItem,
+                               item, index, metadata, chooseItem,
                                rowFocus, UICues, elKey
                            }) {
-    const logRoot = SummaryRow.name + `(${metadata.name}«${listItem.id}»)`;
+    const entityName = metadata.name;
+    const logRoot = SummaryRow.name + `(${entityName}«${item.id}»)`;
     const {hasFocus, isSelected, hasVisualPriority, small} = UICues;
     const row = useRef(null);
-    const isNullRow = (small && listItem.id === 0);
+    const isNullRow = (small && item.id === 0);
     const selectedStyle = cx(
         isSelected ? summaryStyle.selected : null,
         isNullRow ? summaryStyle.nullRow : null
     );
     const {makeChoice} = useContext(ChoiceContext);
     elKey += `/SRow`;
+
+    // const {store, saveItem, newItem, deleteItem} = useContext(StorageContext);
+    // const entry = store[entityName].state[item.id];
 
 
     useEffect(function scrollAndFocusIfNecessary() {
@@ -46,7 +50,7 @@ export function SummaryRow({
     }
 
     function choose() {
-        chooseItem(listItem);
+        chooseItem(item);
         setFocus();
     }
 
@@ -88,24 +92,33 @@ export function SummaryRow({
     }
 
     function getProperty(object, propertyName) {
+        const logPath = `${logRoot} » ${getProperty.name}()`;
         const parts = propertyName.split('.');
-        return (parts.length === 1)
-            ? object?.[parts[0]]
-            : object?.[parts[0]]?.[parts[1]];
+        switch (parts.length) {
+            case 1:
+                return object?.[parts[0]];
+            case 2:
+                return object?.[parts[0]]?.[parts[1]];
+            case 3:
+                return object?.[parts[0]]?.[parts[1]]?.[parts[2]];
+            default:
+                errv(logPath, {object, propertyName, parts}, 'Too many parts.');
+        }
     }
 
     function renderProperty(object, propertyName) {
-        const logPath = `🖍🖍🖍🖍 ${logRoot} » ${renderProperty.name}()`;
+        // const logPath = `🖍🖍🖍🖍 ${logRoot} » ${renderProperty.name}()`;
+        // const doLog = propertyName.includes('image');
         const property = getProperty(object, propertyName);
-        // logv(logPath, {object, propertyName, property});
-        const propType = getSummaryProp(metadata, propertyName).type;
-        // logv(logPath, {propType});
-        if (propType === types.img) {
-            logv(logPath, {object, propertyName, property});
-            return (
-                <img src={endpoints.baseURL + 'files/' + property}
-                     alt="thumbnail"
-                />
+        // if (doLog) logv(logPath, {object, propertyName, property});
+        let propType = getSummaryProp(metadata, propertyName).type;
+        // if (doLog) logv(null, {propType});
+        if (propType === types.img || propType === types.file) {
+            // logv(null, {object, propertyName, property});
+            return (property
+                    ? <img src={endpoints.baseURL + 'files/' + property}
+                           alt="thumbnail"/>
+                    : <>--</>
             );
         }
         return property;
@@ -123,12 +136,12 @@ export function SummaryRow({
                 <td key={elKey + propertyName}>
                     {(isNullRow)
                         ? '➖➖'
-                        : renderProperty(listItem, propertyName)}
+                        : renderProperty(item, propertyName)}
                 </td>
             )}
-            {small && listItem.id ? (
+            {small && item.id ? (
                 <td>
-                    <span onClick={makeChoice({component: EntityN(metadata, listItem.id)})}>
+                    <span onClick={makeChoice({component: EntityN(metadata, item.id)})}>
                         ➡
                     </span>
                 </td>

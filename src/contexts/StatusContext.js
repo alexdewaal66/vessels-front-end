@@ -5,16 +5,12 @@ export const StatusContext = createContext({});
 export function StatusContextProvider({children}) {
     const [statusMessage, setStatusMessage] = useState('');
 
-    // const [rsStatus, setRsStatus] = useState({
-    //     requestState: null,
-    //     description: '-nog geen beschrijving-',
-    //     advice: '-nog geen advies-'
-    // });
-
+    function updateStatusMessage(message) {
+        if (message !== statusMessage) setStatusMessage(message);
+    }
 
     return (
-        // <StatusContext.Provider value={{statusMessage, setStatusMessage, rsStatus, setRsStatus}}>
-        <StatusContext.Provider value={{statusMessage, setStatusMessage}}>
+        <StatusContext.Provider value={{statusMessage, updateStatusMessage}}>
                 {children}
         </StatusContext.Provider>
     )

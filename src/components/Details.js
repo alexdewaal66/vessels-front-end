@@ -7,7 +7,7 @@ import { ShowObject } from '../dev/ShowObject';
 
 
 export function Details({metadata, field, value, item, children}) {
-    const {rsStatus, store, loadItemByUniqueFields} = useContext(StorageContext);
+    const {rsStatus, getItem, loadItemByUniqueFields} = useContext(StorageContext);
     const [detailsId, setDetailsId] = useState();
     const property = metadata.properties[field];
     const target = property?.details;
@@ -36,7 +36,7 @@ export function Details({metadata, field, value, item, children}) {
                             }
                             data={target === 'transform'
                                 ? transform(metadata.name, field, value)
-                                : store[target].state[detailsId]?.item
+                                : getItem(target, detailsId)
                             }
                         />
                     </TT>

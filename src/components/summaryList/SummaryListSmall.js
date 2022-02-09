@@ -30,7 +30,7 @@ export function SummaryListSmall({
         initialIdList = [0];
 
     // logv(logRoot + ` ▶▶▶ props:`,
-    //     {metadata, initialIdList, UICues, useFormFunctions, inputHelpFields, elKey});
+    //     {metadata, initialId, UICues, useFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     const selectedIds = useSet();
@@ -40,7 +40,7 @@ export function SummaryListSmall({
     const {sort, setSorting} = useSorting(updateListSmall, list);
 
     // logv(logRoot + ` states:`, {
-    //     initialIdList, allIdsLoaded,
+    //     initialId, allIdsLoaded,
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
@@ -74,7 +74,7 @@ export function SummaryListSmall({
             sort(newList);
             const firstId = initialIdList?.[0]
             const shouldAnIdBeSelected = !!firstId;
-            // logv(null, {initialIdList, shouldAnIdBeSelected});
+            // logv(null, {initialId, shouldAnIdBeSelected});
             if (shouldAnIdBeSelected) {
                 selectedItem = getItem(entityName, firstId);
                 // logv( '❗❗❗' + logPath + ' » if (shouldAnIdBeSelected)',

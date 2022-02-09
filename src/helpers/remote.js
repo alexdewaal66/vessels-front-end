@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { endpoints } from './endpoints';
 import { statusCodes } from '../dev/statusCodes';
-import { logv, errv } from '../dev/log';
+import { logv } from '../dev/log';
 
 export const requestStates = {IDLE: 'idle', PENDING: 'pending', SUCCESS: 'success', ERROR: 'error'};
 // enumeration of variable names saved in local storage
@@ -51,7 +51,7 @@ export async function deleteRequest({url, requestState, onSuccess, onFail}) {
 }
 
 export async function makeRequest({method, url, payload, headers, requestState = null, onSuccess, onFail}) {
-    const doLog = false;// || url.includes('xyz') || url.includes('zyx');
+    const doLog = false ;//|| url.includes('files') || url.includes('images');
     const logPath = '----------------' + makeRequest.name + '() ';
     headers = addJwtToHeaders(headers);
 
@@ -141,7 +141,7 @@ export const remote = {
 
     fileUpload: async function (file, requestState, onSuccess, onFail) {
         const url = '/files';
-        const headers = addJwtToHeaders({'content-type': 'multipart/form-data'});
+        const headers = {'content-type': 'multipart/form-data'};
         const payload = new FormData();
         payload.append('file', file);
         await postRequest({
@@ -151,9 +151,13 @@ export const remote = {
 
     create: async function (metadata, item, requestState, onSuccess, onFail) {
         const url = metadata.endpoint;
-        await postRequest({
-            url, payload: item, requestState, onSuccess, onFail
-        });
+        if (metadata.name === 'file') {
+            await this.fileUpload(item, requestState, onSuccess, onFail);
+        } else {
+            await postRequest({
+                url, payload: item, requestState, onSuccess, onFail
+            });
+        }
     },
 
     update: async function (metadata, item, requestState, onSuccess, onFail) {

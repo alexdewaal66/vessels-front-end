@@ -13,8 +13,8 @@ export function Test({children, className, ...rest}) {
     const {allIdsLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
         = useContext(StorageContext);
     const {createEntry, entries} = useSuperDict();
-    const primes = useSet([1,2,3,5,7,11,13,15]);
-    logv(logRoot, {primes});
+    const primesSet = useSet([1,2,3,5,7,11,13,15]);
+    logv(logRoot, {primes: primesSet});
 
     const testKey = '12345';
     const testXyz1 = {
@@ -42,25 +42,25 @@ export function Test({children, className, ...rest}) {
         createEntry(testKey, 'allereerste');
     });
 
-    function add17toPrimes() {
-        primes.add(17);
+    function add17toPrimesSet() {
+        primesSet.add(17);
     }
 
-    function del15fromPrimes() {
-        primes.del(15);
+    function del15fromPrimesSet() {
+        primesSet.del(15);
     }
 
-    function reversePrimesIf17Present() {
-        if (primes.has(17)) {
-            const primesArray = [...primes.all];
+    function reversePrimesSetIf17Present() {
+        if (primesSet.has(17)) {
+            const primesArray = [...primesSet.all];
             primesArray.sort((a,b) => b - a);
-            primes.new(primesArray);
+            primesSet.new(primesArray);
         }
     }
 
-    function sortPrimesIf15NotPresent() {
-        if (!primes.has(15)) {
-            primes.new(pr => [...pr].sort((a,b) => a-b));
+    function sortPrimesSetIf15NotPresent() {
+        if (!primesSet.has(15)) {
+            primesSet.new(pr => [...pr].sort((a, b) => a-b));
         }
     }
 
@@ -105,13 +105,14 @@ export function Test({children, className, ...rest}) {
 
     return (
         <>
-            <Stringify data={[...primes.all]}>
+
+            <Stringify data={[...primesSet.all]}>
                 priemgetallen
             </Stringify>
-            <button onClick={add17toPrimes}>voeg 17 toe</button>
-            <button onClick={del15fromPrimes}>haal 15 weg</button>
-            <button onClick={reversePrimesIf17Present}>sorteer omlaag als 17 er is</button>
-            <button onClick={sortPrimesIf15NotPresent}>sorteer als geen 15</button>
+            <button onClick={add17toPrimesSet}>voeg 17 toe</button>
+            <button onClick={del15fromPrimesSet}>haal 15 weg</button>
+            <button onClick={reversePrimesSetIf17Present}>sorteer omlaag als 17 er is</button>
+            <button onClick={sortPrimesSetIf15NotPresent}>sorteer als geen 15</button>
             <p>{'= < > ∼ ≈ ≠'}</p>
             <ShowObject data={
                 useMemo(() =>

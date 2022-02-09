@@ -11,13 +11,13 @@ import { SummaryTable } from './';
 import { CommandContext, operationNames } from '../../contexts/CommandContext';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts/StorageContext';
-import { logv } from '../../dev/log';
+import { logv, pathMkr } from '../../dev/log';
 import { useSet } from '../../helpers/useSet';
 import { useSorting } from './UseSorting';
 
 
 export function SummaryListTall({
-                                    metadata, initialIdList, UICues,
+                                    metadata, initialId, UICues,
                                     receiver,
                                     elKey
                                 }) {
@@ -30,10 +30,11 @@ export function SummaryListTall({
     // logv(logRoot, {tree: store[entityName].state});
     const {hasFocus} = UICues;
     // logv(logRoot + ` ▶▶▶ props:`,
-    //     {metadata, initialIdList, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
+    //     {metadata, initialId, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     const selectedIds = useSet();
+    const [lastSavedItemId, setLastSavedItemId] = useState(null);
 
     const {handleOnKeyUp, handleOnKeyDown} = useKeyPressed(keys.control);
 
@@ -42,7 +43,7 @@ export function SummaryListTall({
     const {sort, setSorting} = useSorting(updateListTall, list);
 
     // logv(logRoot + ` states:`, {
-    //     initialIdList, allIdsLoaded,
+    //     initialId, allIdsLoaded,
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
@@ -52,7 +53,7 @@ export function SummaryListTall({
     function chooseItemTall(item) {
         const logPath = `${logRoot} » ${chooseItemTall.name}()`;
         let newSelectedIds;
-        // logv(logPath, {item, isKeyDown});
+        logv(logPath, {item});
         newSelectedIds = new Set([item?.[idName]]);
         selectedIds.new(newSelectedIds);
         // console.log('>>> setCommand from chooseItemTall()');
@@ -62,26 +63,26 @@ export function SummaryListTall({
 
     function updateListTall(newList, singleSelectedId) {
         const logPath = `${logRoot} » ${updateListTall.name}()`;
-        // logv(logPath, {newList, singleSelectedId});
+        logv('>>>>>>>>>>' + logPath, {newList, singleSelectedId});
         let selectedItem;
         if (newList.length === 0) {
             selectedItem = createEmptyItem(metadata);
             // logv(logPath + '|newList|=0', {selectedItem});
             newList.push(selectedItem);
-            // logv(logPath,  {newList});
+            // logv(logPath, {newList});
             selectedIds.new([selectedItem[idName]]);
         } else {
             sort(newList);
             if (singleSelectedId) {
                 // if (singleSelectedId < 0) logv('❌❌❌❌ ' + logPath);
                 selectedItem = getItem(entityName, singleSelectedId);
-                // logv(logPath + ' if (singleSelectedId)', {selectedItem});
-                selectedIds.new([singleSelectedId]);
+                // logv(logPath + ' if (singleSelectedId)', {singleSelectedId, selectedItem});
+                selectedIds.new([singleSelectedId]);//todo: obsolete line??
             } else {
-                const shouldAnIdBeSelected = !!(initialIdList?.[0]);
-                // logv(null, {initialIdList, shouldAnIdBeSelected});
+                const shouldAnIdBeSelected = !!(lastSavedItemId || initialId);
+                logv(null, {initialId, shouldAnIdBeSelected});
                 selectedItem = shouldAnIdBeSelected
-                    ? newList.find(item => item[idName] === initialIdList[0])
+                    ? newList.find(item => item[idName] === initialId)
                     : newList[0];
                 // logv(logPath, {selectedItem});
                 if (selectedItem)
@@ -94,20 +95,22 @@ export function SummaryListTall({
     }
 
     function fetchList() {
-        const logPath = logRoot + fetchList.name + '()';
-        // logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
+        const logPath = pathMkr(logRoot, fetchList);//`${logRoot} » ${fetchList.name}()`;
+        logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
         const entries = Object.entries(store[entityName].state);
         // logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
         // logv(logPath, {list});
-        updateListTall(list, null);
+        updateListTall(list, (lastSavedItemId || initialId));
     }
-
 
     useConditionalEffect(
         fetchList,
         allIdsLoaded,
-        [store[entityName].state, allIdsLoaded]
+        [
+            store[entityName].state,
+            allIdsLoaded, lastSavedItemId
+        ]
     );
 
     const conditions = {
@@ -115,19 +118,14 @@ export function SummaryListTall({
         receiver: SummaryListTall.name,
         operations: {
             put: (formData) => {
-                // const id = ;
-                const index = list.findIndex(item => item[idName] === formData.id);
-                const newList = [...list.slice(0, index), formData, ...list.slice(index + 1)];
-                // logv(logRoot + ' » conditions.put()', {id, index, newList});
-                updateListTall(newList, formData.id);
+                setLastSavedItemId(formData.id);
+                // logv(logRoot + 'conditions.put()', {})
             },
             post: (formData) => {
-                updateListTall(list, formData.id);
+                setLastSavedItemId(formData.id);
             },
-            delete: (formData) => {
-                const index = list.findIndex(item => item[idName] === formData.id);
-                const newList = [...list.slice(0, index), ...list.slice(index + 1)];
-                updateListTall(newList, null);
+            delete: () => {
+                setLastSavedItemId(null);
             },
         }
     }
@@ -149,6 +147,7 @@ export function SummaryListTall({
                                   elKey={elKey}
                                   key={elKey}
                                   setSorting={setSorting}
+                                  lastSavedItemId={lastSavedItemId}
                     />
                 </div>
             )}

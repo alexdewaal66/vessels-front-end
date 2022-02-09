@@ -76,6 +76,8 @@ html, body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
+    overflow-x: auto;
+    resize: horizontal;
 }
 
 .main :is(textarea, input, select, button) {
@@ -96,11 +98,14 @@ html, body {
     flex-grow: 0;
     order: -1;
     border-right: 1px solid;
+    /*resize: horizontal;*/
 }
 
 .aside {
     flex-grow: 1;
     border-left: 1px solid;
+    overflow: scroll;
+    resize: horizontal;
 }
 
 .menu, .aside {

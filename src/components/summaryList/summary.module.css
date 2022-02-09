@@ -5,6 +5,7 @@
     width: fit-content;
 
     overflow-y: auto;
+    overflow-x: hidden;
     height: 85vh;
 }
 
@@ -49,6 +50,7 @@
 
 .table tr:last-child {
     border-bottom: transparent solid 5px;
+    padding-right: 1em;
 }
 
 .table .nullRow {

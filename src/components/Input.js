@@ -42,7 +42,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
     const elKey = `Input(${metadata.name},${field},${defaultValue})`;
 
     readOnly = readOnly || metadata.methods === 'R' || property?.readOnly;
-    logv(logRoot, {field, property, readOnly});
+    // logv(logRoot, {field, property, readOnly});
     // const [command, setCommand] = useContext(CommandContext);
     let inputType = {};
     let maxLength = property?.validation?.maxLength;
@@ -94,6 +94,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             inputType = inputTypes.date;
             fieldValue = defaultValue.toString().split('T')[0];
             break;
+        case types.img:
         case types.file:
             return (
                 <InputImageFile metadata={metadata}
@@ -101,7 +102,6 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
                                 defaultValue={defaultValue}
                                 useFormFunctions={useFormFunctions}
                                 elKey={elKey}
-                                readOnly={readOnly}
                 />
             );
         default:

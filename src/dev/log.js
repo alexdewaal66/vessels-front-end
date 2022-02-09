@@ -6,12 +6,21 @@ import { now } from '../helpers';
 // ];
 
 export function includesAny(haystack, ...needles) {
+    //example: includesAny('image,file,vessel', metadata.name
     haystack = haystack.toLowerCase();
     return needles.some((needle) => haystack.includes(needle.toLowerCase()));
 }
 
 export function cLogv(path, vars) {
 
+}
+
+export function rootMkr(component, ...args) {
+    return `${component.name}(${args.join(', ')})`;
+}
+
+export function pathMkr(logRoot, currentFunction, ...args) {
+    return `${logRoot} » ${currentFunction.name}(${args.join(', ')})`;
 }
 
 export function logv(path, vars, prompt) {

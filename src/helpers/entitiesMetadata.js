@@ -1,7 +1,5 @@
-import { logv } from '../dev/log';
-
 export const entitiesMetadata = {};
-const logRoot = 'entitiesMetadata';
+// const logRoot = 'entitiesMetadata';
 
 export const types = {
     str: 'string',
@@ -52,8 +50,11 @@ entitiesMetadata.xyz = {
             type: types.obj,
             // multiple: true,
         },
+        image: {
+            type: types.img, label: 'afbeelding', target: 'image'
+        },
     },
-    summary: ['id', 'name', 'xyzString', 'ratio'],
+    summary: ['id', 'name', 'xyzString', 'image.thumbnailId'],
     methods: 'CRUD',
     findItem: {
         endpoint: '/find',
@@ -526,10 +527,11 @@ entitiesMetadata.image = {
     label: 'afbeelding',
     endpoint: '/images',
     id: ['id'],
+    needsReload: true,
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
         fullSizeId: {type: types.file, label: 'volledig', target: 'file',},
-        thumbnailId: {type: types.file, label: 'postzegel', target: 'file', readOnly: true,},
+        thumbnailId: {type: types.file, label: 'miniatuur', target: 'file', noEdit: true,},
     },
     summary: ['id', 'thumbnailId'],
     methods: 'CRUD',
@@ -569,11 +571,13 @@ function checkProperties(entity, typos) {
             const prop = entity.properties[propName];
             switch (prop.type) {
                 case types.obj:
-                    typos = checkInternalReference(entity.name, propName, prop, typos);
+                // case types.img:
+                    typos = checkAndSetInternalReference(entity.name, propName, prop, typos);
                     break;
                 case types.str:
                     typos = checkStringValidation(entity.name, propName, prop, typos);
                     break;
+                default:
             }
         } else {
             typos += `\t❌ in ${entity.name}.properties : '${propName}'\n`;
@@ -582,7 +586,7 @@ function checkProperties(entity, typos) {
     return typos;
 }
 
-function checkInternalReference(entityName, propName, prop, typos) {
+function checkAndSetInternalReference(entityName, propName, prop, typos) {
     if (!prop.target) {
         if (entitiesMetadata.hasOwnProperty(propName)) {
             prop.target = propName;
@@ -633,24 +637,22 @@ function checkSummaries(entity, typos) {
 
 
 export function createEmptyItem(metadata) {
-    const logPath = `${logRoot} » ${createEmptyItem.name}(↓)`;
+    // const logPath = pathMkr(logRoot, createEmptyItem, '(↓)');
     // logv(logPath, {metadata_name: metadata.name});
-    const emptyObject = createEmptyObject(metadata, Object.keys(metadata.properties));
     // logv(null, {emptyObject});
-    return emptyObject;
+    return createEmptyObject(metadata, Object.keys(metadata.properties));
 }
 
 export function createEmptySummary(metadata) {
-    const logPath = `${logRoot} » ${createEmptySummary.name}(↓)`;
+    // const logPath = pathMkr(logRoot, createEmptySummary, '(↓)');
     // logv(logPath, {metadata_name: metadata.name});
-    const emptyObject = createEmptyObject(metadata, metadata.summary);
     // logv(null, {emptyObject});
-    return emptyObject;
+    return createEmptyObject(metadata, metadata.summary);
 }
 
 function createEmptyObject(metadata, propNames) {
-    const logPath = `❗❗ ${logRoot} » ${createEmptyObject.name}(↓, ↓)`;
-    // logv(logPath, {e_type: metadata.name, propNames});
+    // const logPath = pathMkr(logRoot, createEmptyObject, '(↓, ↓)');
+    // logv(logPath, {metadata_name: metadata.name, propNames});
     const item = {};
     propNames.forEach(key => {
         const prop = getSummaryProp(metadata, key);

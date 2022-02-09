@@ -1,23 +1,25 @@
 import { useState } from 'react';
 import { validities } from './useStorage';
 import { useConditionalEffect } from './customHooks';
-import { logv } from '../dev/log';
+
+const blockSize = 5000;
 
 export function useBGLoading(storage, metadata) {
     const entityName = metadata.name;
-    const logRoot = `${useBGLoading.name}(${entityName})`;
+    // const logRoot = `${useBGLoading.name}(${entityName})`;
     const {store, loadItemsByIds} = storage;
     const [loadCounter, setLoadCounter] = useState(0);
     const [pendingBlocks, setPendingBlocks] = useState([]);
 
     function setSingleBlock(index, value) {
+        // const logPath = `${logRoot} » ${setSingleBlock.name}()`;
+        // logv(logPath, {index, value, pendingBlocks})
         setPendingBlocks(currentBlocks =>
             [...currentBlocks.slice(0, index), value, ...currentBlocks.slice(index + 1)])
     }
 
     function loadUnloadedItems() {
-        const logPath = `${logRoot} » ${loadUnloadedItems.name}()`;
-        const blockSize = 5000;
+        // const logPath = `${logRoot} » ${loadUnloadedItems.name}()`;
         const tree = store[entityName];
         // logv(logPath, {loadCounter, pendingBlocks});
 
@@ -64,7 +66,7 @@ export function useBGLoading(storage, metadata) {
 
     useConditionalEffect(
         loadUnloadedItems,
-        (loadCounter < 3),
+        (loadCounter < 1),
         [loadCounter, pendingBlocks]
     );
 }

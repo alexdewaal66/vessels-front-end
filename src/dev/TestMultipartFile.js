@@ -30,11 +30,11 @@ export function TestMultipartFile() {
         const logPath = `🛄🛄🛄🛄 ${logRoot} » ${onSuccess.name}()`;
         logv(null, {response}, 'succes ');
         const dataParts = response.data.split(' ');
-        const fileId = (dataParts[0] === 'StandardMultipartFile' && dataParts[2] === 'created')
+        const fileId = (dataParts[0] === 'file' && dataParts[2] === 'created')
             ? dataParts[1]
             : null;
         logv(null, {fileId}, 'Succes');
-        setFeedback('✔');
+        setFeedback('✔ #' + fileId);
     }
 
     function onFail(error) {
@@ -59,6 +59,5 @@ export function TestMultipartFile() {
 }
 
 /*
-                           {...register('chosenFile')}
 
  */

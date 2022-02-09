@@ -2,11 +2,11 @@ import { useContext, useEffect } from 'react';
 import { StatusContext } from '../contexts/StatusContext';
 
 export function Statusbar({children}) {
-    const {setStatusMessage} = useContext(StatusContext);
+    const {updateStatusMessage} = useContext(StatusContext);
 
     useEffect(() => {
-        setStatusMessage(children);
-    }, [children, setStatusMessage]);
+        updateStatusMessage(children);
+    }, [children]);
 
     return null;
 }

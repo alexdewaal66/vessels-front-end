@@ -6,7 +6,8 @@ import { useFilters } from './UseFilters';
 
 export function SummaryTable({
                                  list, metadata, selectedIds, chooseItem, small,
-                                 hasFocus, elKey, setSorting, setFiltering
+                                 hasFocus, elKey, setSorting, setFiltering,
+                                 lastSavedItemId
                              }) {
     const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
     elKey += '/STable';
@@ -15,7 +16,7 @@ export function SummaryTable({
     const idName = metadata.id[0];
     const logRoot = `SummaryTable(${entityName})`;
 
-    logv(logRoot, {list});
+    // logv(logRoot, {list});
 
     const {matchItem, mergeConstraints} = useFilters(metadata);
     const displayList = list.filter(matchItem);
@@ -90,6 +91,7 @@ export function SummaryTable({
                  onBlur={handleBlur}
                  tabIndex={0}
             >
+                {[...selectedIds.all].toString()};{lastSavedItemId}
                 <table className={summaryStyle.table}>
                     <thead>
                     <SummaryHeading metadata={metadata}
@@ -101,7 +103,7 @@ export function SummaryTable({
                     </thead>
                     <tbody>
                     {displayList.map((listItem, index) => (
-                        <SummaryRow listItem={listItem}
+                        <SummaryRow item={listItem}
                                     index={index}
                                     metadata={metadata}
                                     chooseItem={chooseItem}

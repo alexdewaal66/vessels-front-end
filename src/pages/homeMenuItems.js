@@ -6,7 +6,7 @@ import { OnFocusExample } from '../dev/OnFocusExample';
 import { TestMultiSelect } from '../dev/TestMultiSelect';
 import { TestMultipartFile } from '../dev/TestMultipartFile';
 
-const EntityN = (metadata, n) => () => <Entity metadata={metadata} initialIdList={[n]}/>;
+const EntityN = (metadata, n) => () => <Entity metadata={metadata} initialId={n}/>;
 
 const homeMenuItems = {
     default: {label: 'Welkom', component: Welcome},
