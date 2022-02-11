@@ -7,20 +7,16 @@ import { useForm } from 'react-hook-form';
 import { Details, EditButtons } from './';
 import { StorageContext } from '../contexts/StorageContext';
 import { AuthContext } from '../contexts/AuthContext';
-import { logv } from '../dev/log';
-import { SummaryListTall } from './summaryList';
-import { Stringify } from '../dev/Stringify';
 
 
 export function EditEntity({metadata, item, setItem, receiver, elKey,}) {
     const entityName = metadata.name;
-    const logRoot = EditEntity.name + '() ';
-    // logv(logRoot + ` props=`, {metadata, item, setItem});
+    // const logRoot = rootMkr(EditEntity, metadata.name, '↓↓');
+    // logv(logRoot, {item, receiver: receiver.name});
     const {store, saveItem, newItem, deleteItem} = useContext(StorageContext);
     const {user} = useContext(AuthContext);
 
     const {useCommand, setCommand} = useContext(CommandContext);
-    // const {useObserver, raise} = useContext(ObserverContext);
     const useFormFunctions = useForm();
     const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
@@ -40,14 +36,14 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,}) {
     useCommand(conditions);
 
     function extractDataFromHelpField(hiddenFieldName, formData) {
-        const logPath = `📤📤📤📤 ${logRoot} » ${extractDataFromHelpField.name}(${hiddenFieldName})`;
-        logv(logPath, {formData});
+        // const logPath = pathMkr(logRoot, extractDataFromHelpField, hiddenFieldName);
+        // logv(logPath, {formData}, '📤📤📤📤');
         const parts = hiddenFieldName.split('_');
         const field = parts[1];
         const target = parts[2];
         if (hiddenFieldName.split('_').splice(-1)[0] === 'id') {
             const idValue = +formData[hiddenFieldName];
-            logv(null, {target, idValue, '!!idValue': !!idValue});
+            // logv(null, {target, idValue, '!!idValue': !!idValue});
             if (field.endsWith('Id')) {
                 formData[field] = idValue;
             } else {
@@ -61,8 +57,8 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,}) {
     }
 
     function onSubmit({requestMethod, ...formData}) {
-        const logPath = `🥽🥽 ${logRoot} » ${onSubmit.name}()`;
-        logv(logPath, {requestMethod, formData});
+        // const logPath = pathMkr(logRoot, onSubmit);
+        // logv(logPath, {requestMethod, formData});
         // logv(null, {'typeof formData.id': typeof formData.id});
         //todo: repair datatypes of formData values, for now, just id
         formData.id = +formData.id;
@@ -73,7 +69,7 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,}) {
             case 'put':
                 saveItem(entityName, formData,
                     (item) => {
-                        logv(`>>>> ${logPath} » case 'put'`, {item}, 'onSuccess:');
+                        // logv(logPath + ` » case 'put'`, {item}, 'onSuccess:');
                         setCommand({
                             operation: operationNames.put,
                             data: item,
@@ -84,7 +80,7 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,}) {
                 );
                 break;
             case 'post':
-                // logv(logPath + ' » case \'post\'', {});
+                // logv(logPath + ` » case 'post'`);
                 newItem(entityName, formData,
                     item => {
                         setCommand({
@@ -114,7 +110,7 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,}) {
     }
 
     const setRequestMethod = (method) => () => {
-        const logPath = logRoot + `setRequestMethod(${method})`;
+        // const logPath = pathMkr(logRoot, setRequestMethod);
         // logv(logPath, {'requestMethod': getValues('requestMethod')});
         setValue('requestMethod', method);
         // logv(null, {'requestMethod': getValues('requestMethod')});

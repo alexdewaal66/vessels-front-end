@@ -6,22 +6,22 @@ const blockSize = 5000;
 
 export function useBGLoading(storage, metadata) {
     const entityName = metadata.name;
-    // const logRoot = `${useBGLoading.name}(${entityName})`;
+    // const logRoot = rootMkr(useBGLoading, entityName);
     const {store, loadItemsByIds} = storage;
     const [loadCounter, setLoadCounter] = useState(0);
     const [pendingBlocks, setPendingBlocks] = useState([]);
 
     function setSingleBlock(index, value) {
-        // const logPath = `${logRoot} » ${setSingleBlock.name}()`;
+        // const logPath = pathMkr(logRoot, setSingleBlock, '↓↓');
         // logv(logPath, {index, value, pendingBlocks})
         setPendingBlocks(currentBlocks =>
             [...currentBlocks.slice(0, index), value, ...currentBlocks.slice(index + 1)])
     }
 
     function loadUnloadedItems() {
-        // const logPath = `${logRoot} » ${loadUnloadedItems.name}()`;
-        const tree = store[entityName];
+        // const logPath = pathMkr(logRoot, loadUnloadedItems);
         // logv(logPath, {loadCounter, pendingBlocks});
+        const tree = store[entityName];
 
         if (pendingBlocks.length === 0) {
             const blockCount = 1 + Math.ceil(Object.entries(tree.state).length / blockSize);
@@ -37,21 +37,21 @@ export function useBGLoading(storage, metadata) {
         };
 
         const entries = Object.entries(tree.state);
-        // logv(logPath, {entries, pendingBlocks});
+        // logv(null, {entries, pendingBlocks});
         const first = entries.findIndex(unloadedFilter);
-        // logv('^', {first});
+        // logv(null, {first});
         if (first === -1) return;
 
         const unloaded = entries.slice(first, first + blockSize).filter(unloadedFilter);
-        // logv(logPath, {unloaded});
+        // logv(null, {unloaded});
         if (unloaded.length > 0) {
             const endIndex = Math.min(blockSize, unloaded.length);
             const unloadedIds = unloaded.slice(0, endIndex).map(e => e[1].item.id);
-            // logv(logPath, {unloadedIds});
+            // logv(null, {unloadedIds});
             setLoadCounter(c => c + 1);
             // set the block to be loaded as 'pending'
             const currentBlockNr = Math.floor(first / blockSize);
-            // logv(logPath, {first, 'entries[first]': entries[first], currentBlockNr});
+            // logv(null, {first, 'entries[first]': entries[first], currentBlockNr});
             setSingleBlock(currentBlockNr, true);
             loadItemsByIds(entityName, unloadedIds,
                 () => {

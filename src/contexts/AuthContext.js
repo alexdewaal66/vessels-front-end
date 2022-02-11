@@ -52,7 +52,6 @@ export function AuthContextProvider({children}) {
         });
     }
 
-    // todo: move to helpers
     function getJwtIfValid() {
         const Jwt = localStorage.getItem(persistentVars.JWT);
         if (!Jwt) return null;

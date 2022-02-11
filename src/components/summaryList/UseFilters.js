@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { createEmptySummary, types } from '../../helpers';
-import { logv } from '../../dev/log';
+import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 export function useFilters(metadata) {
-    const logRoot = `${useFilters.name}()`;
+    const logRoot = rootMkr(useFilters, metadata.name);
     const [constraints, setConstraints] = useState(createEmptySummary(metadata));
     const [noConstraints, setNoConstraints] = useState(true);
 
@@ -45,7 +45,7 @@ export function useFilters(metadata) {
     }
 
     function mergeConstraints(updatedConstraints) {
-        const logPath = `➖➖ ${logRoot} » ${mergeConstraints.name}()`;
+        // const logPath = pathMkr(logRoot, mergeConstraints);
         preprocess(updatedConstraints);
         setConstraints(currentConstraints => {
                 const newConstraints = {...currentConstraints, ...updatedConstraints};
@@ -58,16 +58,16 @@ export function useFilters(metadata) {
     }
 
     function matchField(item, constraint) {
-        const logPath = `🔶🔶 ${logRoot} » ${matchField.name}(↓, ↓)`;
-        const [fieldName, filter] = constraint;
+        // const logPath = pathMkr(logRoot, matchField, '(↓↓)');
         // logv(logPath, {item, constraint});
+        const [fieldName, filter] = constraint;
         if (!filter) return true;
         if (!item[fieldName]) return true;
         return filter.matcher(item[fieldName], filter.value);
     }
 
     function matchItem(item) {
-        const logPath = `${logRoot} » ${matchItem.name}(↓)`;
+        // const logPath = pathMkr(logRoot, matchItem, '(↓)');
         // logv(logPath, {item, noConstraints});
         return noConstraints ||
             Object.entries(constraints).every(constraint => matchField(item, constraint));

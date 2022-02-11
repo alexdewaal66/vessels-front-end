@@ -2,21 +2,22 @@ import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
-import { now } from '../helpers';
 import { Aside, Menu, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { pages } from './index';
 
 function SignOut() {
+    // const logRoot = rootMkr(SignOut);
     const history = useHistory();
     const {handleSubmit} = useForm();
     const authContext = useContext(AuthContext);
     const {logout} = authContext;
-    console.log(now() + ` authContext=\n\t`, authContext);
+    // logv(logRoot, {authContext});
 
 
     function onSubmit(formData) {
-        console.log(now() + ' onSubmit()');
+        // const logPath =  pathMkr(logRoot, onSubmit, '↓')
+        // logv(logPath, {formData});
         logout();
         history.push(pages.home.path);
     }

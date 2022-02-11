@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { logv } from '../dev/log';
 import { useConditionalEffect } from '../helpers';
 
 export const CommandContext = createContext({});
@@ -15,10 +14,11 @@ const initialCommand = {operation: null, data: null, entityType: null, receiver:
 
 //todo: rewrite using useReducer ??
 export function CommandContextProvider({children}) {
+    // const logRoot = rootMkr(CommandContextProvider);
     const [command, setCommandState] = useState(initialCommand);
 
     function setCommand(newCommand) {
-        const logPath = `${CommandContextProvider.name} » ${setCommand.name}(⬇)`;
+        // const logPath = pathMkr(logRoot, setCommand, '↓');
         // logv(logPath, {currentCommand:command, newCommand});
         // setCommandState(newCommand);
         setCommandState(current =>
@@ -30,7 +30,8 @@ export function CommandContextProvider({children}) {
 
     function useCommand(conditions) {
         function executeRelevantCommand() {
-            const logPath = `${useCommand.name}(⬇) » ${executeRelevantCommand.name}()`;
+            // const logPath = pathMkr(logRoot, `${useCommand.name}(⬇) » ${executeRelevantCommand.name}()`;
+            // const logPath = pathMkr(logRoot, [useCommand, executeRelevantCommand], ['↓']);
             const match =
                 command.operation  in  conditions.operations &&
                 command.entityType === conditions.entityType &&

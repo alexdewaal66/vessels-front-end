@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import { summaryStyle } from './index';
-import { logv } from '../../dev/log';
 import filterSymbol from '../../assets/filter.svg';
 import { createEmptySummary, getSummaryProp } from '../../helpers';
 
 const enterKey = 13;
 
 export function SummaryFilter({metadata, mergeConstraints, elKey}) {
-    const logRoot = `${SummaryFilter.name}(${metadata.name})`;
-
+    // const logRoot = rootMkr(SummaryFilter, metadata.name);
 
     const [inputFields, setInputFields] = useState(createEmptySummary(metadata));
     // logv(logRoot, {inputFields});
 
     const mergeInputFields = (key, changedValue) => {
-        const logPath = `${logRoot} » ${mergeInputFields.name}(${key})`;
+        // const logPath = pathMkr(logRoot, mergeInputFields, key);
         setInputFields(currentValues => {
                 const newValues = {...currentValues, [key]: changedValue};
                 // logv(logPath, {currentValues, changedValue, newValues});
@@ -24,27 +22,27 @@ export function SummaryFilter({metadata, mergeConstraints, elKey}) {
     }
 
     const setInputFieldsHandler = (key) => (e) => {
-        const logPath = `${logRoot} » ${setInputFieldsHandler.name}(${key})`;
+        // const logPath = pathMkr(logRoot, setInputFieldsHandler, key);
         let changedValue = e.target.value;
         mergeInputFields(key, changedValue);
     }
 
     const clearFieldHandler = (key) => () => {
-        const logPath = `${logRoot} » ${clearFieldHandler.name}(${key})`;
+        // const logPath = pathMkr(logRoot, clearFieldHandler, key);
         // logv(logPath, {inputFields});
         mergeInputFields(key, '');
         mergeConstraints({[key]: ''});
     }
 
     const filterHandler = () => {
-        const logPath = `${logRoot} » ${filterHandler.name}()`;
+        // const logPath = pathMkr(logRoot, filterHandler);
         const values = {...inputFields};
         mergeConstraints(values);
     }
 
     const enterKeyHandler = (e) => {
-        const logPath = `${logRoot} » ${enterKeyHandler.name}()`;
-        logv(logPath, {key: e.keyCode});
+        // const logPath = pathMkr(logRoot, enterKeyHandler);
+        // logv(logPath, {key: e.keyCode});
         if (e.keyCode === enterKey) {
             filterHandler();
         }

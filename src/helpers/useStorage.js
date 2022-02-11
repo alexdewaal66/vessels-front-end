@@ -5,11 +5,10 @@ import { remote } from './remote';
 import { now, makeId } from './utils';
 import { useState } from 'react';
 import { RequestState } from './RequestState';
-import { logv, pathMkr } from '../dev/log';
 
 export const validities = {none: 0, id: 1, summary: 2, full: 3};
 
-const logRoot = useStorage.name + '.js';
+// const logRoot = useStorage.name + '.js';
 
 const idToEntry = id => [id, {
     item: {id},
@@ -21,6 +20,7 @@ const idItemToEntry = idItem => [idItem.id, {
     validity: validities.id,
 }];
 
+// todo: use in all exported functions
 function doNothing() {
 }
 
@@ -29,7 +29,7 @@ function transformAndStoreIdArray(data, tree) {
         ? data.map(idToEntry)
         : data.map(idItemToEntry);
     const branches = Object.fromEntries(entries);
-    // console.log(`->-> branches=`, branches);
+    // logv(pathMkr(logRoot, transformAndStoreIdArray), {branches});
     tree.setMany(branches);
 }
 
@@ -42,9 +42,8 @@ async function readAndStoreIds(metadata, requestState, tree) {
 }
 
 async function readAndStoreAllIds(forest) {
-    // console.log(`readAndStoreAllIds() forest.state=`, forest.state);
+    // logv(pathMkr(logRoot, readAndStoreAllIds), {forest});
     const treeNames = Object.keys(forest);
-    // const isFinished = Array(treeNames.length).fill(false);
     await Promise.all(
         treeNames.map(async name => {
                 const requestState = new RequestState();
@@ -59,11 +58,11 @@ function transformAndStoreItemArray(metadata, data, tree) {
     const branches = Object.fromEntries(data.map(item =>
             [item[idKeyName], {
                 item,
-                // valid: true,
                 validity: validities.full,
             }]
         )
     );
+    // logv(pathMkr(logRoot, transformAndStoreItemArray, ), {branches});
     // console.log(`->-> branches=`, branches);
     tree.setMany(branches);
 }
@@ -80,9 +79,9 @@ async function readAndStoreSummary(metadata, id, requestState, tree) {
 }
 
 async function readAndStoreItem(metadata, id, requestState, tree, onSuccess) {
-    const logPath = pathMkr(logRoot, readAndStoreItem, '(↓↓)');
+    // const logPath = pathMkr(logRoot, readAndStoreItem, '↓↓');
     // const branch = tree.state[id];
-    logv(logPath, {entityName: metadata.name, id, tree});
+    // logv(logPath, {entityName: metadata.name, id, tree});
     await remote.read(
         metadata, id, requestState,
         (response) => {
@@ -101,7 +100,7 @@ async function readAndStoreItem(metadata, id, requestState, tree, onSuccess) {
     );
 }
 
-async function readAndStoreItemByUniqueFields(metadata, probe, requestState, tree, setResult) {
+async function readAndStoreItemByUniqueFields(metadata, probe, requestState, tree, onSuccess) {
     let foundId = null;
     await remote.findByUniqueField(
         metadata, probe, requestState,
@@ -113,17 +112,17 @@ async function readAndStoreItemByUniqueFields(metadata, probe, requestState, tre
                 validity: validities.full,
             });
             foundId = item.id;
-            // console.log(`readAndStoreItemByUniqueFields() foundId=`, foundId);
-            setResult(foundId);
+            // logv(pathMkr(logRoot, readAndStoreItemByUniqueFields, metadata.name), {probe, item});
+            onSuccess(foundId);
         },
-        () => {
-        }
+        doNothing
     );
 }
 
 async function updateAndStoreItem(metadata, item, requestState, tree, onSuccess) {
+    // const logPath = pathMkr(logRoot, updateAndStoreItem, metadata.name, '↓↓');
+    // logv(logPath, {item, tree});
     // const branch = tree.state[item.id];
-    console.log(`>>> updateAndStoreItem(${metadata.name}, ${item.id}) tree=`, tree);
     if (tree.state[item.id]) {
         await remote.update(
             metadata, item, requestState,
@@ -154,7 +153,7 @@ function extractNewId(message, name) {
 // function extract
 
 async function createAndStoreItem(metadata, item, requestState, tree) {
-    const logPath = `${logRoot} » ${createAndStoreItem.name}(${metadata.name}, ⬇, *, ⬇)`;
+    // const logPath = pathMkr(logRoot, createAndStoreItem, metadata.name, '↓↓');
     // const branch = tree.state[item.id];
     // logv(logPath, {item, tree});
     if (!tree.state[item.id]) {
@@ -162,9 +161,9 @@ async function createAndStoreItem(metadata, item, requestState, tree) {
             metadata, item, requestState,
             (response) => {
                 item.id = extractNewId(response.data, metadata.name);
-                logv(logPath, {itemId: item.id});
+                // logv(logPath, {item_id: item.id});
                 if (metadata.needsReload) {
-                    logv(logPath + ' needsReload', {item})
+                    // logv(logPath + ' needsReload', {item})
                     tree.add(item.id, {
                         item, sent: now(),
                         validity: validities.id,
@@ -190,8 +189,8 @@ async function createAndStoreItem(metadata, item, requestState, tree) {
 }
 
 async function deleteAndStoreItem(metadata, id, requestState, tree) {
-    // const branch = tree.state[item.id];
-    console.log(`>>> deleteAndStoreItem(${metadata.name}, ${id}) tree=`, tree);
+    // const logPath = pathMkr(logRoot, deleteAndStoreItem, metadata.name, '↓↓');
+    // logv(logPath, {id, tree});
     if (tree.state[id]) {
         await remote.delete(
             metadata, id, requestState,
@@ -214,7 +213,7 @@ async function deleteAndStoreItem(metadata, id, requestState, tree) {
 
 
 export function useStorage() {
-    const logRoot = useStorage.name;
+    // const logRoot = rootMkr(useStorage);
     const [rsStatus, setRsStatus] = useState({
         requestState: null,
         description: '-nog geen beschrijving-',
@@ -265,13 +264,13 @@ export function useStorage() {
     }
 
     function getItem(entityName, id, requiredValidity = validities.full) {
-        const logPath = pathMkr(logRoot, getItem, entityName, id);
+        // const logPath = pathMkr(logRoot, getItem, entityName, id);
         const entry = forest[entityName].state[id];
         // logv(logPath, {entry});
         if (entry?.validity >= requiredValidity) {
             return entry.item;
         } else {
-            logv('❌ ' + logPath, {entityName, id, entry, requiredValidity});
+            // logv('❌ ' + logPath, {entityName, id, entry, requiredValidity});
         }
     }
 
@@ -280,8 +279,8 @@ export function useStorage() {
     }
 
     function loadItem(entityName, id, onSuccess) {
-        const logPath = pathMkr(logRoot, loadItem, entityName, id);
-        logv(logPath, {});
+        // const logPath = pathMkr(logRoot, loadItem, entityName, id);
+        // logv(logPath, {});
         // if (!forest[entityName]?.state[id]) return;//TODO onnodig/lastig/??
         const tree = forest[entityName];
         const requestState = new RequestState();
@@ -326,8 +325,9 @@ export function useStorage() {
     }
 
     function saveItem(entityName, item, onSuccess) {
+        // const logPath = pathMkr(logRoot, saveItem, entityName, '↓');
+        // logv(logPath, {item});
         const id = item.id;
-        console.log(`saveItem(${entityName}, ⬇) \n item=`, item);
         if (!forest[entityName]?.state[id]) {
             console.error(`id doesn't exist in storage:`, forest[entityName]?.state);
             return;
@@ -346,8 +346,8 @@ export function useStorage() {
 
     function newItem(entityName, item,
                      onSuccess = doNothing, onFail = doNothing) {
-        // const logPath = `${logRoot} » ${newItem.name}(${entityName}, ⬇, *)`;
-        // logv(logPath, {entityName, item, onSuccess});
+        // const logPath = pathMkr(logRoot, newItem, entityName, '↓');
+        // logv(logPath, {item});
         item.id = -1;// prevent collision in store
         const tree = forest[entityName];
         const requestState = new RequestState();
@@ -365,7 +365,8 @@ export function useStorage() {
     }
 
     function deleteItem(entityName, id, onSuccess) {
-        console.log(`deleteItem(${entityName}, ${id})`);
+        // const logPath = pathMkr(logRoot, deleteItem, entityName, '↓');
+        // logv(logPath, {id});
         if (!forest[entityName]?.state[id]) {
             console.error(`id doesn't exist in storage:`, forest[entityName]?.state);
             return;

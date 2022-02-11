@@ -4,7 +4,7 @@ import { Stringify } from './Stringify';
 import { StorageContext } from '../contexts/StorageContext';
 import { ShowRequestState } from '../components';
 import { ShowObject } from './ShowObject';
-import { useSet } from '../helpers/useSet';
+import { useImmutableSet } from '../helpers/useImmutableSet';
 import { logv } from './log';
 // import { TestMountDismountContext } from './TestMountDismountContext';
 
@@ -13,7 +13,7 @@ export function Test({children, className, ...rest}) {
     const {allIdsLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
         = useContext(StorageContext);
     const {createEntry, entries} = useSuperDict();
-    const primesSet = useSet([1,2,3,5,7,11,13,15]);
+    const primesSet = useImmutableSet([1,2,3,5,7,11,13,15]);
     logv(logRoot, {primes: primesSet});
 
     const testKey = '12345';

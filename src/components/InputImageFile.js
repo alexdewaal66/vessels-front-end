@@ -1,72 +1,102 @@
-import React, { useState } from 'react';
-import { logv } from '../dev/log';
-import { remote, RequestState } from '../helpers';
+import React, { Fragment, useContext, useState } from 'react';
+import { logv, pathMkr, rootMkr } from '../dev/log';
+import { endpoints, entitiesMetadata } from '../helpers';
+import { StorageContext } from '../contexts/StorageContext';
 
 export function InputImageFile({
                                    metadata, field, readOnly,
                                    defaultValue, useFormFunctions, elKey
                                }) {
-    const logRoot = `${InputImageFile.name}(${metadata.name})`;
-    logv(logRoot, {field, defaultValue, '!defaultValue': !defaultValue});
+    const logRoot = rootMkr(InputImageFile, metadata.name, '↓↓');
+    // logv(logRoot, {field, defaultValue});
     const property = metadata.properties[field];
 
+    const {newItem, loadItem} = useContext(StorageContext);
+
     const [selectedFiles, setSelectedFiles] = useState();
-    const [feedback, setFeedback] = useState('...');
+    const [imageId, setImageId] = useState(defaultValue.id);
+    const [imageFeedback, setImageFeedback] = useState('...');
+    const [fullSizeImageId, setFullSizeImageId] = useState(
+        typeof defaultValue === 'object'
+            ? defaultValue.fullSizeId
+            : defaultValue
+    );
+    const hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
+    useFormFunctions.setValue(hiddenFieldName, imageId);
 
     function onFileSelect(event) {
-        const logPath = `${logRoot} » ${onFileSelect.name}()`;
-        logv(logPath, {event});
+        // const logPath = pathMkr(logRoot, onFileSelect);
+        // logv(logPath, {event});
         setSelectedFiles(event.target.files);
-        setFeedback('...');
+        setImageFeedback('...');
     }
 
-    function onUpload(event) {
-        const logPath = `🛄🛄🛄🛄 ${logRoot} » ${onUpload.name}()`;
+    function onFileUpload(event) {
+        // const logPath = pathMkr(logRoot, onFileUpload);
         // logv(logPath, {event, selectedFile: selectedFiles});
         event.preventDefault();
         const file = selectedFiles[0];
-        logv(null, {file});
-        const requestState = new RequestState();
-        remote.fileUpload(file, requestState, onSuccess, onFail).then();
+        // logv(logPath, {file});
+        newItem('file', file, onUploadSuccess, onUploadFail);
     }
 
-    function onSuccess(response) {
-        const logPath = `🛄🛄🛄🛄 ${logRoot} » ${onSuccess.name}()`;
-        logv(null, {response}, 'succes ');
-        const dataParts = response.data.split(' ');
-        const fileId = (dataParts[0] === 'StandardMultipartFile' && dataParts[2] === 'created')
-            ? dataParts[1]
-            : null;
-        logv(null, {fileId}, 'Succes');
-        useFormFunctions.setValue(hiddenFieldName, fileId);
-        setFeedback('✔' + fileId);
+    function onUploadSuccess(fileItem) {
+        // const logPath = pathMkr(logRoot, onUploadSuccess);
+        // logv(logPath, {fileItem}, 'succes ');
+        // logv(null, {fileItem_id: fileItem.id}, 'Succes');
+        newItem('image', {id: null, fullSizeId: fileItem.id}, onImageSuccess, onImageFail);
     }
 
-    function onFail(error) {
-        const logPath = `🛄🛄🛄🛄 ${error} » ${onFail.name}()`;
-        logv(null, {error}, 'fail ');
-        setFeedback('❌');
+    function onUploadFail(error) {
+        const logPath = pathMkr(logRoot, onUploadFail);
+        logv(logPath, {error}, 'fail ');
+        setImageFeedback('❌');
     }
 
-    const hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
+    function onImageSuccess(imageItem) {
+        // const logPath = pathMkr(logRoot, onImageSuccess);
+        // logv(logPath, {imageItem});
+        setImageId(imageItem.id);
+        setFullSizeImageId(imageItem.fullSizeId);
+        useFormFunctions.setValue(hiddenFieldName, imageItem.id);
+        loadItem(entitiesMetadata.image.name, imageItem.id, onReloadSuccess);
+    }
+
+    function onReloadSuccess(imageItem) {
+        // const logPath = pathMkr(logRoot, onReloadSuccess);
+        // logv(logPath, {imageItem});
+        setImageFeedback('✔');
+    }
+
+    function onImageFail(error) {
+        const logPath = pathMkr(logRoot, onImageFail);
+        logv(logPath, {error}, 'fail ');
+        setImageFeedback('❌');
+    }
+
 
     return (
-        <>
-            <input type="text"
-                   readOnly={true}
-                   name={hiddenFieldName}
-                   id={field}
-                   defaultValue={defaultValue.id}
-                   {...useFormFunctions.register(hiddenFieldName)}
-                   key={elKey + hiddenFieldName + '_imgId'}
-            />
-            <input type="file" accept="image/jpeg"
-                   onChange={onFileSelect}
-            />
-            <button type="button" onClick={onUpload}>
-                Verstuur
-            </button>
-            &nbsp;{feedback}
-        </>
+        <Fragment key={elKey + 'inputImage'}>
+            <div>
+                <input type="file" accept="image/jpeg"
+                       onChange={onFileSelect}
+                       readOnly={readOnly}
+                />
+                <button type="button" onClick={onFileUpload}>
+                    Verstuur
+                </button>
+                &nbsp;{imageFeedback}
+            </div>
+
+            {fullSizeImageId && (
+                <>
+                    <img
+                        src={endpoints.baseURL + 'files/' + fullSizeImageId}
+                        alt="fullSize" height={400}
+                    />
+                </>
+            )}
+        </Fragment>
     );
 }
+

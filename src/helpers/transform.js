@@ -43,7 +43,7 @@ const status = {
 const transformations = {
     unLocode: {
         functionClassifier: (value) => {
-            // console.log(`transformations.unLocode.functionClassifier(${value})`);
+            // logv(pathMkr('transform.js', transformations.unLocode.functionClassifier, value));
             let output = {};
             for (const c of value) {
                 if (c !== '-')

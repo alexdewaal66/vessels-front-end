@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { summaryStyle } from './index';
-import { errv } from '../../dev/log';
+import { errv, pathMkr, rootMkr } from '../../dev/log';
 import { cx, endpoints, getSummaryProp, types } from '../../helpers';
 import { ChoiceContext } from '../../contexts/ChoiceContext';
 import { EntityN } from '../../pages/homeMenuItems';
@@ -20,7 +20,7 @@ export function SummaryRow({
                                rowFocus, UICues, elKey
                            }) {
     const entityName = metadata.name;
-    const logRoot = SummaryRow.name + `(${entityName}«${item.id}»)`;
+    const logRoot = rootMkr(SummaryRow, entityName, item.id);
     const {hasFocus, isSelected, hasVisualPriority, small} = UICues;
     const row = useRef(null);
     const isNullRow = (small && item.id === 0);
@@ -31,17 +31,10 @@ export function SummaryRow({
     const {makeChoice} = useContext(ChoiceContext);
     elKey += `/SRow`;
 
-    // const {store, saveItem, newItem, deleteItem} = useContext(StorageContext);
-    // const entry = store[entityName].state[item.id];
-
-
     useEffect(function scrollAndFocusIfNecessary() {
         if (hasVisualPriority)
             row.current.scrollIntoView({block: "center"});
-        if (hasFocus) {
-            // console.log(`index=`, index);
-            setFocus();
-        }
+        if (hasFocus) setFocus();
     });
 
     function setFocus() {
@@ -92,7 +85,7 @@ export function SummaryRow({
     }
 
     function getProperty(object, propertyName) {
-        const logPath = `${logRoot} » ${getProperty.name}()`;
+        const logPath = pathMkr(logRoot, getProperty);
         const parts = propertyName.split('.');
         switch (parts.length) {
             case 1:
@@ -107,7 +100,7 @@ export function SummaryRow({
     }
 
     function renderProperty(object, propertyName) {
-        // const logPath = `🖍🖍🖍🖍 ${logRoot} » ${renderProperty.name}()`;
+        // const logPath = pathMkr(logRoot, renderProperty);
         // const doLog = propertyName.includes('image');
         const property = getProperty(object, propertyName);
         // if (doLog) logv(logPath, {object, propertyName, property});

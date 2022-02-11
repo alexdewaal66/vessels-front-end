@@ -15,12 +15,28 @@ export function cLogv(path, vars) {
 
 }
 
+function quotedStringsJoin(args) {
+    return  args?.map(arg => (typeof arg === 'string') ? `'${arg}'` : arg).join(', ') || '';
+}
+
 export function rootMkr(component, ...args) {
-    return `${component.name}(${args.join(', ')})`;
+    return (typeof component === 'function')
+        ? `${component.name}(${quotedStringsJoin(args)})`
+        : component.endsWith('.js')
+            ? component
+            : component + '.';
 }
 
 export function pathMkr(logRoot, currentFunction, ...args) {
-    return `${logRoot} » ${currentFunction.name}(${args.join(', ')})`;
+    if (Array.isArray(currentFunction)) {
+        let path = `${logRoot} » `;
+        currentFunction.forEach((e, i) => {
+            path += rootMkr(e, args[i]);
+            path += (typeof e === 'string' || i === args.length-1) ? '' : ' » '
+        });
+        return path;
+    } else
+        return `${logRoot} » ${rootMkr(currentFunction, args)}`;
 }
 
 export function logv(path, vars, prompt) {

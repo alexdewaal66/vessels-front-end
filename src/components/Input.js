@@ -3,9 +3,6 @@ import React from 'react';
 import { subtypes, types } from '../helpers';
 import { Stringify } from '../dev/Stringify';
 import { InputObject, InputImageFile } from './';
-import { logv } from '../dev/log';
-// import { ShowObject } from '../dev/ShowObject';
-// import { CommandContext, useCommand } from '../contexts/CommandContext';
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
@@ -37,7 +34,7 @@ const aspectRatio = 15;
 const referenceSize = 80;
 
 export function Input({metadata, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
-    const logRoot = `${Input.name}(${metadata.name})`;
+    // const logRoot = rootMkr(Input, metadata.name);
     const property = metadata.properties[field];
     const elKey = `Input(${metadata.name},${field},${defaultValue})`;
 

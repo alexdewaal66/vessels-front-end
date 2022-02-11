@@ -1,15 +1,13 @@
 import React from 'react';
 import { summaryStyle } from './index';
-import { logv } from '../../dev/log';
 import { SummaryFilter } from './SummaryFilter';
 
 export function SummaryHeading({
                                    metadata, elKey,
                                    setSorting, mergeConstraints
                                }) {
-    const logRoot = `SummaryHeading(${metadata.name})`;
-
-    // console.log(`metadata=`, metadata, `elKey=`, elKey);
+    // const logRoot = rootMkr(SummaryHeading, metadata.name, '↓');
+    // logv(logRoot, {elKey});
 
     function label(object, propertyName) {
         const parts = propertyName.split('.');
@@ -17,13 +15,13 @@ export function SummaryHeading({
     }
 
     const up = (propertyName) => () => {
-        const logPath = logRoot + ' » up()';
+        // const logPath = pathMkr(logRoot, up.name);
         // logv(logPath, {propertyName});
         setSorting({propertyName, order: 'up'})
     };
 
     const down = (propertyName) => () => {
-        const logPath = logRoot + ' » down()';
+        // const logPath = pathMkr(logRoot, down.name);
         // logv(logPath, {propertyName});
         setSorting({propertyName, order: 'down'})
     };

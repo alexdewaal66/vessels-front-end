@@ -9,8 +9,7 @@ import {
 import { SummaryTable } from './';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts/StorageContext';
-import { logv } from '../../dev/log';
-import { useSet } from '../../helpers/useSet';
+import { useImmutableSet } from '../../helpers/useImmutableSet';
 import { useSorting } from './UseSorting';
 
 
@@ -20,7 +19,7 @@ export function SummaryListSmall({
                                  }) {
     elKey += '/SListSmall';
     const entityName = metadata.name;
-    let logRoot = `${SummaryListSmall.name}(${entityName})`;
+    // const logRoot = rootMkr(SummaryListSmall, entityName);
     const storage = useContext(StorageContext);
     const {allIdsLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
@@ -33,7 +32,7 @@ export function SummaryListSmall({
     //     {metadata, initialId, UICues, useFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
-    const selectedIds = useSet();
+    const selectedIds = useImmutableSet();
 
     const {isControlDown, handleOnControlUp, handleOnControlDown} = useKeyPressed(keys.control);
 
@@ -47,7 +46,7 @@ export function SummaryListSmall({
     useBGLoading(storage, metadata);
 
     function chooseItemSmall(item) {
-        const logPath = `${logRoot} » ${chooseItemSmall.name}()`;
+        // const logPath = pathMkr(logRoot, chooseItemSmall);
         let newSelectedIds;
         // logv(logPath, {item, isKeyDown: isControlDown});
         if (isMulti && isControlDown) {
@@ -64,7 +63,7 @@ export function SummaryListSmall({
     }
 
     function updateListSmall(newList) {
-        const logPath = `${logRoot} » ${updateListSmall.name}()`;
+        // const logPath = pathMkr(logRoot, updateListSmall);
         // logv(logPath, {newList});
         let selectedItem;
         if (newList.length === 0) {
@@ -92,7 +91,7 @@ export function SummaryListSmall({
 
 
     function fetchList() {
-        const logPath = logRoot + fetchList.name + '()';
+        // const logPath = pathMkr(logRoot, fetchList);
         // logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
         const entries = Object.entries(store[entityName].state);
         // logv(logPath, {entries});

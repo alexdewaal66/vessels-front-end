@@ -1,21 +1,24 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useRequestState, endpoints, now, postRequest } from '../helpers';
+import { useRequestState, endpoints, postRequest } from '../helpers';
 import { pages } from './index';
 import { Aside, Menu, Main, Content } from '../pageLayouts';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
 import { ShowRequestState } from '../components';
+import { logv, pathMkr, rootMkr } from '../dev/log';
 
 function SignUp() {
+    const logRoot = rootMkr(SignUp);
     const {handleSubmit, register} = useForm();
     const requestState = useRequestState();
     const history = useHistory();
 
-    console.log(now() + 'SignUp » registration state:', requestState);
+    logv(logRoot,{requestState}, 'registration');
 
     function onSubmit(formData) {
-        console.log(now() + ' onSubmit()');
+        const logPath =  pathMkr(logRoot, onSubmit, '↓')
+        logv(logPath, {formData});
         postRequest({
             url: endpoints.signUp,
             payload: formData,
@@ -23,7 +26,7 @@ function SignUp() {
             onSuccess: () => {
                 setTimeout(() => history.push(pages.signIn.path), 2000);
             },
-        })
+        }).then();
     }
 
     return (

@@ -1,5 +1,7 @@
 import { useReducer } from 'react';
 
+// const logRoot = useDict.name + '.js';
+
 const dictActions = {
     add: 'add',
     setMany: 'setMany',
@@ -14,36 +16,29 @@ function UseDictException(message) {
 }
 
 function dictReducer(state, {type, payload: {key, value}}) {
-    // console.log(`dictReducer() state=`, state);
+    // const logPath = pathMkr(logRoot, dictReducer, '↓↓');
+    // logv(logPath, {state});
     switch (type) {
         // case dictActions.transformEntry:
         //     const entry = state?.[key];
         //     return {...state, [key]: value(entry)};
-        case
-        dictActions.add
-        :
+        case dictActions.add:
             if (key in state) {
                 throw new UseDictException(`can not add new entry ${key}, it already exists`);
             } else {
                 return {...state, [key]: value};
             }
-        case
-        dictActions.setMany
-        :
-            // console.log(`dictReducer\ntype=`, type,`\nstate=`, state, `\nvalue=`, value);
+        case dictActions.setMany:
+            // logv(logPath, {type, state, value});
             // skip presence test
             return {...state, ...value};
-        case
-        dictActions.set
-        :
+        case dictActions.set:
             if (key in state) {
                 return {...state, [key]: value};
             } else {
                 throw new UseDictException(`can not set entry ${key}, it doesn't exist`);
             }
-        case
-        dictActions.del
-        :
+        case dictActions.del:
             if (key in state) {
                 const copy = {...state};
                 delete copy[key];
@@ -57,6 +52,7 @@ function dictReducer(state, {type, payload: {key, value}}) {
 }
 
 export function useDict(initialState = {}, initializer) {
+    // const logRoot = rootMkr(useDict);
     const [state, dispatch] = useReducer(dictReducer, initialState, initializer);
     const get = (key) => state[key];
     const add = (key, value) =>

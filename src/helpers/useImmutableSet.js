@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function useSet(initialValues) {
+export function useImmutableSet(initialValues) {
     const container = {};
     const [collection, setCollection] = useState(new Set(initialValues));
 

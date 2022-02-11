@@ -1,9 +1,8 @@
 import React from 'react';
-import { logv } from '../dev/log';
 import { FieldEl, FieldRow } from '../formLayouts';
 
 export function EditButtons({requestState, setRequestMethod, readOnly}) {
-    const logRoot = EditButtons.name;
+    // const logRoot = rootMkr(EditButtons);
 
     return (
         <FieldRow>

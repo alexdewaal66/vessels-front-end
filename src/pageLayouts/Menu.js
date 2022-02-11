@@ -2,7 +2,6 @@ import React from 'react';
 import menuStyles from './menu.module.css';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
 
-
 export function Menu({menuItems, choice, makeChoice, children, className, ...rest}) {
 
     return (
@@ -28,18 +27,3 @@ export function Menu({menuItems, choice, makeChoice, children, className, ...res
         </nav>
     );
 }
-
-/*
-                            <a className={choice.value === command
-                                ? menuStyles.selected
-                                : null
-                            }>
-                                {command.name}
-                            </a>
-
-                            <button type="button"
-                                    className={menuStyles.linkButton}
-                            >
-                                {command.name}
-                            </button>
- */

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
-import { useRequestState, endpoints, now, persistentVars, postRequest } from '../helpers';
+import { useRequestState, endpoints, persistentVars, postRequest } from '../helpers';
 import forms from '../formLayouts/forms.module.css';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
 import { Aside, Menu, Main } from '../pageLayouts';
@@ -11,15 +11,17 @@ import { ShowRequestState } from '../components';
 
 
 function SignIn() {
+    // const logRoot = rootMkr(SignIn);
     const {handleSubmit, register} = useForm();
     const authContext = useContext(AuthContext);
     const {fetchUserData} = authContext;
     const requestState = useRequestState();
-    console.log(now() + `SignIn » authContext=`, authContext);
+    // logv(logRoot, {authContext});
 
 
     async function onSubmit(formData) {
-        console.log(now() + ' onSubmit()');
+        // const logPath =  pathMkr(logRoot, onSubmit, '↓')
+        // logv(logPath, {formData});
         postRequest({
             url: endpoints.signIn,
             payload: formData,

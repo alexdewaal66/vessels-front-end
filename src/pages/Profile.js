@@ -4,10 +4,12 @@ import { AuthContext } from '../contexts/AuthContext';
 import { Aside, Menu, Main, Content } from '../pageLayouts';
 import { pages } from './index';
 import { ShowObject } from '../dev/ShowObject';
+import { logv, rootMkr } from '../dev/log';
 
 function Profile() {
+    const logRoot = rootMkr(Profile);
     const {user} = useContext(AuthContext);
-    console.log(`user=`, user);
+    logv(logRoot, {user});
 
     /*
     // fully functional but obsolete:

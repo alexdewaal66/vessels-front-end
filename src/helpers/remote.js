@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { endpoints } from './endpoints';
 import { statusCodes } from '../dev/statusCodes';
-import { logv } from '../dev/log';
+import { logv, pathMkr, rootMkr } from '../dev/log';
+
+const logRoot = 'remote.js';
 
 export const requestStates = {IDLE: 'idle', PENDING: 'pending', SUCCESS: 'success', ERROR: 'error'};
 // enumeration of variable names saved in local storage
@@ -50,13 +52,13 @@ export async function deleteRequest({url, requestState, onSuccess, onFail}) {
     });
 }
 
-export async function makeRequest({method, url, payload, headers, requestState = null, onSuccess, onFail}) {
+async function makeRequest({method, url, payload, headers, requestState = null, onSuccess, onFail}) {
     const doLog = false ;//|| url.includes('files') || url.includes('images');
-    const logPath = '----------------' + makeRequest.name + '() ';
+    const logPath = pathMkr(logRoot, makeRequest, '↓↓');
     headers = addJwtToHeaders(headers);
 
     requestState?.setAtPending();
-    if (doLog) logv(logPath + 'arguments=', {method, url, payload, requestState, onSuccess});
+    if (doLog) logv(logPath, {method, url, payload, requestState, onSuccess});
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,
@@ -66,16 +68,16 @@ export async function makeRequest({method, url, payload, headers, requestState =
             data: payload,
             timeout: 15_000,
         });
-        if (doLog) logv(logPath + 'response=', {response});
+        if (doLog) logv(null, {response});
         requestState?.setAtSuccess();
         if (onSuccess) onSuccess(response);
-    } catch (e) {
-        if (e?.response)
-            e.response.statusText = statusCodes[e.response.status];
-        logv(logPath + 'error=', {e});
+    } catch (error) {
+        if (error?.response)
+            error.response.statusText = statusCodes[error.response.status];
+        logv(logPath, {error});
         requestState?.setAtError();
-        requestState?.setErrorMsg(e.toString());
-        if (onFail) onFail(e);
+        requestState?.setErrorMsg(error.toString());
+        if (onFail) onFail(error);
     }
 }
 
@@ -103,7 +105,8 @@ export const remote = {
     },
 
     readByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
-        // console.log(`remote.js » remote.readByIds()\n\t metadata=`, metadata, `\n\t idArray=`, idArray);
+        // const logPath = pathMkr(logRoot, ['remote', remote.readByIds], null, [metadata.name, '↓']);
+        // logv(logPath,{idArray});
         const url = metadata.endpoint + '/ids';
         await postRequest({
             url,
@@ -115,11 +118,12 @@ export const remote = {
     },
 
     findByUniqueField: async function (metadata, probe, requestState, onSuccess, onFail) {
-        // logv('storageHelpers » remote.findByUniqueField()', {probe, 'metadata.name': metadata.name});
+        const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [metadata.name, '↓']);
+        // logv(logPath, {probe});
         const entries = Object.entries(probe);
         // console.log(`storageHelpers » remote.findByUniqueField() \nentries=`, entries);
         const hits = entries.filter(([k, v]) => !!v && (k in metadata.findItem.params));
-        console.log(`storageHelpers » remote.findByUniqueField() \nhits=`, hits);
+        // logv(null, hits);
         if (hits) {
             let url = metadata.endpoint + metadata.findItem.endpoint;
             hits.forEach((hit, i) => {

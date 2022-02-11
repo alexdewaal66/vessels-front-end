@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { cx } from '../../helpers';
-import { logv, errv } from '../../dev/log';
 import { useFilters } from './UseFilters';
 
 export function SummaryTable({
@@ -14,7 +13,7 @@ export function SummaryTable({
 
     const entityName = metadata.name;
     const idName = metadata.id[0];
-    const logRoot = `SummaryTable(${entityName})`;
+    // const logRoot = rootMkr(SummaryTable, entityName);
 
     // logv(logRoot, {list});
 
@@ -54,21 +53,23 @@ export function SummaryTable({
         set: setFocusIndex
     };
 
-    function handleFocus(e) {
-        if (e.currentTarget === e.target || !e.currentTarget.contains(e.relatedTarget)) {
-            // console.log(now(),'handleFocus: focused self', `\nelKey=`, elKey);
+    function handleFocus(event) {
+        // const logPath = pathMkr(logRoot, handleFocus);
+        if (event.currentTarget === event.target || !event.currentTarget.contains(event.relatedTarget)) {
+            // logv(logPath, {elKey});
             // table gained focus, set to selected row
             // setTableFocus(true);
             setFocusIndex(selectedIndex);
         }
     }
 
-    function handleBlur(e) {
-        if (!e.currentTarget.contains(e.relatedTarget)) {
-            // console.log(now(),'handleBlur: focus left self',
-            //     '\ne.currentTarget=', e.currentTarget,
-            //     '\ne.relatedTarget=', e.relatedTarget,
-            //     `\nelKey=`, elKey, '\nevent=', e);
+    function handleBlur(event) {
+        // const logPath = pathMkr(logRoot, handleBlur);
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+            // logv(logPath, {
+            //     currentTarget: event.currentTarget,
+            //     relatedTarget: event.relatedTarget,
+            //     elKey, event});
             setTableFocus(false);
         }
     }

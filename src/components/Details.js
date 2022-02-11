@@ -5,16 +5,18 @@ import { ShowRequestState } from './ShowRequestState';
 import { StorageContext } from '../contexts/StorageContext';
 import { ShowObject } from '../dev/ShowObject';
 
-
 export function Details({metadata, field, value, item, children}) {
+    // const logRoot = rootMkr(Details, metadata.name, '↓↓');
+    // logv(logRoot, {field, value, item});
     const {rsStatus, getItem, loadItemByUniqueFields} = useContext(StorageContext);
     const [detailsId, setDetailsId] = useState();
     const property = metadata.properties[field];
     const target = property?.details;
 
     function fetchItem() {
+        // const logPath = pathMkr(logRoot, fetchItem);
         const probe = item;
-        console.log(`❗ target=`, target, `probe=`, probe);
+        // logv(logPath, {target, probe});
         loadItemByUniqueFields(target, probe, setDetailsId);
     }
 
