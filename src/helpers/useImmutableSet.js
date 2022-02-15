@@ -35,6 +35,24 @@ export function useImmutableSet(initialValues) {
     }
 
     /**
+     * @param member
+     * @returns {Set}
+     */
+    container.toggle = function (member) {
+        let newSet;
+        setCollection(currentSet => {
+            newSet = new Set(currentSet);
+            if (newSet.has(member)) {
+                newSet.delete(member);
+            } else {
+                newSet.add(member);
+            }
+            return newSet;
+        });
+        return newSet;
+    }
+
+    /**
      * @param {Array|Set=} arg - Collection of elements.
      * @param {function} arg - Callback that returns a collection of elements based on current Set.
      * @returns {Set}

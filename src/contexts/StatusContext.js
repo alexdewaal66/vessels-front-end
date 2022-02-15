@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useCallback, useState } from 'react';
 
 export const StatusContext = createContext({});
 
@@ -8,10 +8,15 @@ export function StatusContextProvider({children}) {
     function updateStatusMessage(message) {
         if (message !== statusMessage) setStatusMessage(message);
     }
+    // const updateStatusMessage = useCallback(    (message) =>
+    //     {
+    //         if (message !== statusMessage) setStatusMessage(message);
+    //     }
+    // , [statusMessage]);
 
     return (
         <StatusContext.Provider value={{statusMessage, updateStatusMessage}}>
-                {children}
+            {children}
         </StatusContext.Provider>
     )
 }

@@ -5,10 +5,13 @@ import { remote } from './remote';
 import { now, makeId } from './utils';
 import { useState } from 'react';
 import { RequestState } from './RequestState';
+// import { logv, pathMkr, rootMkr } from '../dev/log';
+import { useImmutableSet } from './useImmutableSet';
+import { pathMkr, logv } from '../dev/log';
 
 export const validities = {none: 0, id: 1, summary: 2, full: 3};
 
-// const logRoot = useStorage.name + '.js';
+const logRoot = useStorage.name + '.js';
 
 const idToEntry = id => [id, {
     item: {id},
@@ -78,6 +81,17 @@ async function readAndStoreSummary(metadata, id, requestState, tree) {
 
 }
 
+/**
+ * @callback successCallback
+ * @param {Object} item
+ *//**
+ * @param metadata
+ * @param id
+ * @param requestState
+ * @param tree
+ * @param {successCallback} onSuccess
+ * @returns {Promise<void>}
+ */
 async function readAndStoreItem(metadata, id, requestState, tree, onSuccess) {
     // const logPath = pathMkr(logRoot, readAndStoreItem, '↓↓');
     // const branch = tree.state[id];
@@ -128,17 +142,17 @@ async function updateAndStoreItem(metadata, item, requestState, tree, onSuccess)
             metadata, item, requestState,
             () => {
                 tree.set(item.id, {
-                    item, sent: now(),
+                    item, success: now(),
                     validity: validities.full,
                 });
                 onSuccess(item);
             },
             () => {
-                tree.set(item.id, {
-                    item, sendFailed: now(),
-                    // valid: true,
-                    validity: validities.full,
-                });
+                // tree.set(item.id, {
+                //     item, fail: now(),
+                //     // valid: true,
+                //     validity: validities.full,
+                // });
             }
         );
     }
@@ -147,40 +161,42 @@ async function updateAndStoreItem(metadata, item, requestState, tree, onSuccess)
 function extractNewId(message, name) {
     // message is formed like 'Xyz 237 created'
     const parts = message.split(' ');
-    return (parts[0].toLowerCase() === name) ? parseInt(parts[1]) : null;
+    return (parts[0].toLowerCase() === name.toLowerCase()) ? parseInt(parts[1]) : null;
 }
 
 // function extract
 
 async function createAndStoreItem(metadata, item, requestState, tree) {
-    // const logPath = pathMkr(logRoot, createAndStoreItem, metadata.name, '↓↓');
+    const doLog = false || metadata === entitiesMetadata.vesselType ;//|| url.includes('images');
+    const logPath = pathMkr(logRoot, createAndStoreItem, metadata.name, '↓↓');
     // const branch = tree.state[item.id];
     // logv(logPath, {item, tree});
     if (!tree.state[item.id]) {
         await remote.create(
             metadata, item, requestState,
             (response) => {
+                logv(logPath, {item, response_data: response.data, metadata_name: metadata.name});
                 item.id = extractNewId(response.data, metadata.name);
-                // logv(logPath, {item_id: item.id});
+                logv(null, {item_id: item.id});
                 if (metadata.needsReload) {
                     // logv(logPath + ' needsReload', {item})
                     tree.add(item.id, {
-                        item, sent: now(),
+                        item, success: now(),
                         validity: validities.id,
                     });
                 } else {
                     tree.add(item.id, {
-                        item, sent: now(),
+                        item, success: now(),
                         validity: validities.full,
                     });
                 }
             },
             () => {
-                item.id = makeId();
-                tree.set(item.id, {
-                    item, createFailed: now(),
-                    validity: validities.full,
-                });
+                // item.id = makeId();
+                // tree.set(item.id, {
+                //     item, fail: now(),
+                //     validity: validities.full,
+                // });
             }
         );
     } else {
@@ -219,10 +235,8 @@ export function useStorage() {
         description: '-nog geen beschrijving-',
         advice: '-nog geen advies-'
     });
-    // console.log(`rsStatus=`, rsStatus);
-    // console.log(`setRsStatus=`, setRsStatus);
 
-    const forest = {
+    const store = {
         // each entity gets its own dictionary to ease manipulation of props and minimize cloning
         xyz: useDict(),
         zyx: useDict(),
@@ -242,20 +256,24 @@ export function useStorage() {
         image: useDict(),
     };
 
+    const deferredEntries = useImmutableSet();
+
+
     const [allIdsLoaded, setAllIdsLoaded] = useState(null);
     useMountEffect(() => loadAllIds(() => setAllIdsLoaded(true)));
 
-    // useMountEffect(() => readAndStoreAllIds(requestState, forest));
+    // useMountEffect(() => readAndStoreAllIds(requestState, storage.store));
 
     function loadAllIds(setFinished) {
+        // const logPath = pathMkr(logRoot, loadAllIds);
         const requestState = new RequestState();
-        // console.log(`useStorage() » loadItem() » requestState=`, requestState);
+        // logv(logPath, requestState);
         setRsStatus({
             requestState,
             description: `het ophalen van alle IDs `,
             advice: ''
         });
-        readAndStoreAllIds(forest)
+        readAndStoreAllIds(store)
             .then(setFinished);
     }
 
@@ -263,26 +281,41 @@ export function useStorage() {
         return getItem(entityName, id, validities.summary);
     }
 
+    /**
+     * @function
+     * @param entityName
+     * @param id
+     * @param requiredValidity
+     * @returns {*}
+     */
     function getItem(entityName, id, requiredValidity = validities.full) {
         // const logPath = pathMkr(logRoot, getItem, entityName, id);
-        const entry = forest[entityName].state[id];
+        const entry = store[entityName].state[id];
         // logv(logPath, {entry});
         if (entry?.validity >= requiredValidity) {
             return entry.item;
         } else {
+            // mark entry in
+            deferredEntries.add(`${entityName}/${id}`);
             // logv('❌ ' + logPath, {entityName, id, entry, requiredValidity});
         }
     }
 
-    function loadDeferredItems(deferredLoads) {
-        deferredLoads.forEach(entity => loadItem(entity.name, entity.id));
+    function loadDeferredItems(entityName) {
+        [...deferredEntries].forEach(entry => {
+            const [entryName, entryId] = entry.split('/');
+            if (entryName === entityName)
+                loadItem(entryName, +entryId, () => {
+                    deferredEntries.del(entry)
+                });// each load & each del is a state change
+        });
     }
 
     function loadItem(entityName, id, onSuccess) {
         // const logPath = pathMkr(logRoot, loadItem, entityName, id);
         // logv(logPath, {});
-        // if (!forest[entityName]?.state[id]) return;//TODO onnodig/lastig/??
-        const tree = forest[entityName];
+        // if (!storage.store[entityName]?.state[id]) return;//TODO onnodig/lastig/??
+        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -294,9 +327,8 @@ export function useStorage() {
     }
 
     function loadItemsByIds(entityName, idArray, onSuccess) {
-        if (!(entityName in forest)) return;
-        const tree = forest[entityName];
-        // const absentItemsIdArray = idArray.filter(id => !tree.state[id].item.valid);
+        if (!(entityName in store)) return;
+        const tree = store[entityName];
         const absentItemsIdArray = idArray;
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
@@ -312,7 +344,7 @@ export function useStorage() {
 
     function loadItemByUniqueFields(entityName, probe, setResult, onSuccess) {
         // console.log(`loadItemByUniqueFields(${entityName}, probe) \nprobe=`, probe);
-        const tree = forest[entityName];
+        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -328,11 +360,11 @@ export function useStorage() {
         // const logPath = pathMkr(logRoot, saveItem, entityName, '↓');
         // logv(logPath, {item});
         const id = item.id;
-        if (!forest[entityName]?.state[id]) {
-            console.error(`id doesn't exist in storage:`, forest[entityName]?.state);
+        if (!store[entityName]?.state[id]) {
+            console.error(`id doesn't exist in storage:`, store[entityName]?.state);
             return;
         }
-        const tree = forest[entityName];
+        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -349,7 +381,7 @@ export function useStorage() {
         // const logPath = pathMkr(logRoot, newItem, entityName, '↓');
         // logv(logPath, {item});
         item.id = -1;// prevent collision in store
-        const tree = forest[entityName];
+        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -367,11 +399,11 @@ export function useStorage() {
     function deleteItem(entityName, id, onSuccess) {
         // const logPath = pathMkr(logRoot, deleteItem, entityName, '↓');
         // logv(logPath, {id});
-        if (!forest[entityName]?.state[id]) {
-            console.error(`id doesn't exist in storage:`, forest[entityName]?.state);
+        if (!store[entityName]?.state[id]) {
+            console.error(`id doesn't exist in storage:`, store[entityName]?.state);
             return;
         }
-        const tree = forest[entityName];
+        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -388,7 +420,7 @@ export function useStorage() {
         allIdsLoaded,
         rsStatus,
         setRsStatus,
-        store: forest,
+        store,
         getItem,
         getSummary,
         loadDeferredItems,

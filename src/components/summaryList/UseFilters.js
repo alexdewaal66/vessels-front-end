@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { createEmptySummary, types } from '../../helpers';
-import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 export function useFilters(metadata) {
-    const logRoot = rootMkr(useFilters, metadata.name);
+    // const logRoot = rootMkr(useFilters, metadata.name);
     const [constraints, setConstraints] = useState(createEmptySummary(metadata));
     const [noConstraints, setNoConstraints] = useState(true);
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { FieldEl, FieldRow } from '../formLayouts';
 
-export function EditButtons({requestState, setRequestMethod, readOnly}) {
+export function EditButtons({requestState, setRequestMethod, readOnly, children}) {
     // const logRoot = rootMkr(EditButtons);
 
     return (
@@ -43,6 +43,7 @@ export function EditButtons({requestState, setRequestMethod, readOnly}) {
                 >
                     Zoek
                 </button>
+                {children}
             </FieldEl>
         </FieldRow>
     );

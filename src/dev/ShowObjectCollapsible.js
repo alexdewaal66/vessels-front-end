@@ -16,7 +16,7 @@ function initCollapsedKeys(data) {
     return dict;
 }
 
-export function ShowObject({entityName, data, identifier}) {
+export function ShowObjectCollapsible({entityName, data, identifier}) {
     const {store} = useContext(StorageContext);
 
     // if (identifier) data = {[identifier]: {...data}};
@@ -65,7 +65,7 @@ export function ShowObject({entityName, data, identifier}) {
                                 }
                                 {collapsedKeys[key] ? null :
                                     <>{isObject
-                                        ? <ShowObject data={value} identifier={path}/>
+                                        ? <ShowObjectCollapsible data={value} identifier={path}/>
                                         : <>{value}</>
                                     }</>
                                 }

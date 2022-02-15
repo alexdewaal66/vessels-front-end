@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { endpoints } from './endpoints';
 import { statusCodes } from '../dev/statusCodes';
-import { logv, pathMkr, rootMkr } from '../dev/log';
+import { logv, pathMkr } from '../dev/log';
 
 const logRoot = 'remote.js';
 
@@ -52,8 +52,8 @@ export async function deleteRequest({url, requestState, onSuccess, onFail}) {
     });
 }
 
-async function makeRequest({method, url, payload, headers, requestState = null, onSuccess, onFail}) {
-    const doLog = false ;//|| url.includes('files') || url.includes('images');
+export async function makeRequest({method, url, payload, headers, requestState = null, onSuccess, onFail}) {
+    const doLog = false || url.includes('vesseltypes') ;//|| url.includes('images');
     const logPath = pathMkr(logRoot, makeRequest, '↓↓');
     headers = addJwtToHeaders(headers);
 
@@ -118,7 +118,7 @@ export const remote = {
     },
 
     findByUniqueField: async function (metadata, probe, requestState, onSuccess, onFail) {
-        const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [metadata.name, '↓']);
+        // const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [metadata.name, '↓']);
         // logv(logPath, {probe});
         const entries = Object.entries(probe);
         // console.log(`storageHelpers » remote.findByUniqueField() \nentries=`, entries);

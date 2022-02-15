@@ -27,7 +27,6 @@ export function SummaryListTall({
     const storage = useContext(StorageContext);
     const {allIdsLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
-    const {hasFocus} = UICues;
     // logv(logRoot + ` ▶▶▶ props:`,
     //     {metadata, initialId, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
@@ -140,7 +139,7 @@ export function SummaryListTall({
                                   selectedIds={selectedIds}
                                   chooseItem={chooseItemTall}
                                   small={false}
-                                  hasFocus={hasFocus}
+                                  UICues={UICues}
                                   elKey={elKey}
                                   key={elKey}
                                   setSorting={setSorting}

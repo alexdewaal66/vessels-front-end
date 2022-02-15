@@ -47,7 +47,7 @@ entitiesMetadata.xyz = {
             },
         },
         zyx: {
-            type: types.obj,
+            type: types.obj, hasNull: true, isMulti: false,
             // multiple: true,
         },
         image: {
@@ -110,7 +110,8 @@ entitiesMetadata.user = {
         }
         ,
         authorities: {
-            label: 'machtigingen', type: types.obj, target: 'authority'
+            label: 'machtigingen', type: types.obj, target: 'authority',
+            hasNull: false, isMulti: true, validation: {required: true,}
         },
     },
     summary: ['id', 'email'],
@@ -120,7 +121,7 @@ entitiesMetadata.user = {
         params: {},
     },
 };
-Object.defineProperty(entitiesMetadata.user.properties, 'id',{
+Object.defineProperty(entitiesMetadata.user.properties, 'id', {
     enumerable: true,
     get() {
         return this.username;
@@ -294,7 +295,7 @@ entitiesMetadata.address = {
             type: types.str, label: 'postcode', validation: {maxLength: 20},
         },
         country: {
-            type: types.obj, label: 'land', target: 'country',
+            type: types.obj, label: 'land', target: 'country', hasNull: true, isMulti: false,
         },
     },
     methods: 'CRUD',
@@ -358,6 +359,9 @@ entitiesMetadata.vesselType = {
         },
         superType: {
             type: types.obj, label: 'supertype', target: 'vesselType',
+            hasNull: false, isMulti: false, validation: {
+                required: true, min: {value: 1, message: 'Supertype verplicht.'},
+            },
         },
     },
     methods: 'CRUD',
@@ -396,16 +400,18 @@ entitiesMetadata.vessel = {
     id: ['id'],
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
-        hull: {type: types.obj,},
+        hull: {type: types.obj, hasNull: true, isMulti: false,},
         name: {type: types.str, label: 'naam', validation: {maxLength: 100},},
         image: {type: types.img, label: 'afbeelding', target: 'image'},
         mmsi: {type: types.str, label: 'mmsi', validation: {maxLength: 10},},
         callSign: {type: types.str, label: 'roepletters', validation: {maxLength: 10},},
         vesselType: {
             // type: types.obj, label: 'romp', target: 'vesselType',
-            type: types.obj,
+            type: types.obj, hasNull: true, isMulti: false,
         },
-        homePort: {type: types.obj, label: 'thuishaven', target: 'unLocode',},
+        homePort: {
+            type: types.obj, label: 'thuishaven', target: 'unLocode', hasNull: true, isMulti: false,
+        },
         length: {
             type: types.num, label: "lengte", validation: {
                 min: {value: 0, message: 'Negatieve lengte niet toegestaan.'},
@@ -457,7 +463,7 @@ entitiesMetadata.organisation = {
         description: {type: types.str, label: 'beschrijving', validation: {maxLength: 1000},},
         url: {type: types.str, subtype: subtypes.url, label: 'url', validation: {maxLength: 2000},},
         email: {type: types.str, subtype: subtypes.email, label: 'email', validation: {maxLength: 320},},
-        address: {type: types.obj,},
+        address: {type: types.obj, hasNull: true, isMulti: false,},
     },
     methods: 'CRUD',
     summary: ['id', 'shortName'],
@@ -473,9 +479,15 @@ entitiesMetadata.relation = {
     id: ['id'],
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
-        organisation1: {type: types.obj, label: 'organisatie 1', target: 'organisation'},
-        relationType: {type: types.obj},
-        organisation2: {type: types.obj, label: 'organisatie 2', target: 'organisation'},
+        organisation1: {
+            type: types.obj, label: 'organisatie 1', target: 'organisation',
+            hasNull: false, isMulti: false, validation: {required: true,}
+        },
+        relationType: {type: types.obj, hasNull: true, isMulti: false,},
+        organisation2: {
+            type: types.obj, label: 'organisatie 2', target: 'organisation',
+            hasNull: false, isMulti: false, validation: {required: true,}
+        },
     },
     summary: ['id', 'organisation1.shortName', 'organisation2.shortName',
         // 'relationType'
@@ -571,7 +583,7 @@ function checkProperties(entity, typos) {
             const prop = entity.properties[propName];
             switch (prop.type) {
                 case types.obj:
-                // case types.img:
+                    // case types.img:
                     typos = checkAndSetInternalReference(entity.name, propName, prop, typos);
                     break;
                 case types.str:

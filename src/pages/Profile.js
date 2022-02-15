@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { Aside, Menu, Main, Content } from '../pageLayouts';
 import { pages } from './index';
-import { ShowObject } from '../dev/ShowObject';
 import { logv, rootMkr } from '../dev/log';
+import { ShowObjectOld } from '../dev/ShowObjectOld';
 
 function Profile() {
     const logRoot = rootMkr(Profile);
@@ -51,7 +51,7 @@ function Profile() {
                         <p><strong>Email:</strong> {user.email}</p>
                         <p><strong>Land:</strong> {user.country}</p>
                         <p><strong>Enabled:</strong> {user.enabled ? <>Ja</> : <>Nee</>}</p>
-                        <div><strong>Authorities:</strong> <ShowObject data={user.authorities} /></div>
+                        <div><strong>Authorities:</strong> <ShowObjectOld data={user.authorities} /></div>
                     </>
                     }
                 </section>

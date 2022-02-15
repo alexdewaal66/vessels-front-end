@@ -4,6 +4,7 @@ import jwt_decode from 'jwt-decode';
 import { pages } from '../pages';
 import { useHistory } from 'react-router-dom';
 import { Statusbar } from '../pageLayouts/Statusbar';
+import { logv } from '../dev/log';
 
 export const AuthContext = createContext({});
 
@@ -22,12 +23,12 @@ export function AuthContextProvider({children}) {
     };
 
     function fetchUserData() {
-        // console.log('in fetchUserData()');
         const userID = getUserID(localStorage.getItem(persistentVars.JWT));
         getRequest({
             url: `${endpoints.users}${userID}`,
             requestState: requestState,
             onSuccess: (response) => {
+                logv('AuthContextProvider » fetchUserData()', {response});
                 setAuthState({
                     user: response.data,
                     status: authStates.DONE,

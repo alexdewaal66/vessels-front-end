@@ -13,6 +13,8 @@ export function Entity({metadata = entitiesMetadata.vessel, initialId}) {
     const [item, setItem] = useState(null);
     logv(logRoot, {initialId, item});
 
+    const [submitTime, setSubmitTime] = useState('');
+
 
     return (
         <CommandContextProvider>
@@ -33,6 +35,8 @@ export function Entity({metadata = entitiesMetadata.vessel, initialId}) {
                                 receiver={SummaryListTall.name}
                                 key={elKey + ` / EditEntity(${item?.id})`}
                                 elKey={elKey + ` / EditEntity(${item?.id})`}
+                                submitTime={submitTime}
+                                setSubmitTime={setSubmitTime}
                     />
                 </span>
             </div>

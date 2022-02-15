@@ -3,12 +3,13 @@ import { TTC, TT } from '../dev/Tooltips';
 import { useConditionalEffect, transform } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
 import { StorageContext } from '../contexts/StorageContext';
-import { ShowObject } from '../dev/ShowObject';
+import { ShowObjectOld } from '../dev/ShowObjectOld';
 
 export function Details({metadata, field, value, item, children}) {
     // const logRoot = rootMkr(Details, metadata.name, '↓↓');
     // logv(logRoot, {field, value, item});
-    const {rsStatus, getItem, loadItemByUniqueFields} = useContext(StorageContext);
+    const storage = useContext(StorageContext);
+    const {rsStatus} = storage;
     const [detailsId, setDetailsId] = useState();
     const property = metadata.properties[field];
     const target = property?.details;
@@ -17,7 +18,7 @@ export function Details({metadata, field, value, item, children}) {
         // const logPath = pathMkr(logRoot, fetchItem);
         const probe = item;
         // logv(logPath, {target, probe});
-        loadItemByUniqueFields(target, probe, setDetailsId);
+        storage.loadItemByUniqueFields(target, probe, setDetailsId);
     }
 
     useConditionalEffect(fetchItem, (target && value && target !== 'transform'), [target]);
@@ -25,20 +26,20 @@ export function Details({metadata, field, value, item, children}) {
 
     return (
         <TTC>
-            <ShowRequestState {...rsStatus} description={rsStatus.description + '(details) '}/>
+            <ShowRequestState {...rsStatus} description={rsStatus.description}/>
             {children}
             {target && value && (
                 <React.Fragment key={field + target}>
                     &nbsp;»
                     <TT style={{textAlign: "left", marginLeft: "100%", top: "0"}}>
-                        <ShowObject
+                        <ShowObjectOld
                             entityName={target === 'transform'
                                 ? null
                                 : target
                             }
                             data={target === 'transform'
                                 ? transform(metadata.name, field, value)
-                                : getItem(target, detailsId)
+                                : storage.getItem(target, detailsId)
                             }
                         />
                     </TT>

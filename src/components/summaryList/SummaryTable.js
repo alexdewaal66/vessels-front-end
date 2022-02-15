@@ -5,13 +5,14 @@ import { useFilters } from './UseFilters';
 
 export function SummaryTable({
                                  list, metadata, selectedIds, chooseItem, small,
-                                 hasFocus, elKey, setSorting, setFiltering,
+                                 UICues, elKey, setSorting, setFiltering,
                                  lastSavedItemId
                              }) {
     const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
     elKey += '/STable';
 
     const entityName = metadata.name;
+    const {hasFocus,  borderStyle} = UICues;
     const idName = metadata.id[0];
     // const logRoot = rootMkr(SummaryTable, entityName);
 
@@ -74,7 +75,7 @@ export function SummaryTable({
         }
     }
 
-    function UICues(index) {
+    function UIRowCues(index) {
         return {
             hasFocus: (index === focusIndex && hasTableFocus),
             // isSelected: (index === selectedIndex),
@@ -91,8 +92,9 @@ export function SummaryTable({
                  onFocus={handleFocus}
                  onBlur={handleBlur}
                  tabIndex={0}
+                 style={borderStyle}
             >
-                {[...selectedIds.all].toString()};{lastSavedItemId}
+                {/*{[...selectedIds.all].toString()};{lastSavedItemId}*/}
                 <table className={summaryStyle.table}>
                     <thead>
                     <SummaryHeading metadata={metadata}
@@ -111,8 +113,7 @@ export function SummaryTable({
                                     key={elKey + index}
                                     elKey={elKey + index}
                                     rowFocus={rowFocus}
-                                    UICues={UICues(index)}
-
+                                    UICues={UIRowCues(index)}
                         />
                     ))}
                     </tbody>

@@ -11,6 +11,8 @@ import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts/StorageContext';
 import { useImmutableSet } from '../../helpers/useImmutableSet';
 import { useSorting } from './UseSorting';
+import { logv, pathMkr, rootMkr } from '../../dev/log';
+import { Stringify } from '../../dev/Stringify';
 
 
 export function SummaryListSmall({
@@ -19,17 +21,15 @@ export function SummaryListSmall({
                                  }) {
     elKey += '/SListSmall';
     const entityName = metadata.name;
-    // const logRoot = rootMkr(SummaryListSmall, entityName);
+    const logRoot = rootMkr(SummaryListSmall, entityName, '↓↓');
     const storage = useContext(StorageContext);
     const {allIdsLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
-    const {hasFocus, isMulti} = UICues;
+    const {hasFocus, isMulti, hasNull} = UICues;
 
     if (!initialIdList)
         initialIdList = [0];
 
-    // logv(logRoot + ` ▶▶▶ props:`,
-    //     {metadata, initialId, UICues, useFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     const selectedIds = useImmutableSet();
@@ -46,19 +46,22 @@ export function SummaryListSmall({
     useBGLoading(storage, metadata);
 
     function chooseItemSmall(item) {
-        // const logPath = pathMkr(logRoot, chooseItemSmall);
+        const logPath = pathMkr(logRoot, chooseItemSmall);
         let newSelectedIds;
         // logv(logPath, {item, isKeyDown: isControlDown});
         if (isMulti && isControlDown) {
-            if (selectedIds.has(item.id)) {
-                selectedIds.del(item.id);
-            } else {
-                selectedIds.add(item.id);
-            }
+            newSelectedIds = selectedIds.toggle(item.id);
+            // if (selectedIds.has(item.id)) {
+            //     selectedIds.del(item.id);
+            // } else {
+            //     selectedIds.add(item.id);
+            // }
         } else {
-            newSelectedIds = new Set([item?.id || 0]);
-            selectedIds.new(newSelectedIds);
+            // newSelectedIds = new Set([item?.id || 0]);
+            // selectedIds.new(newSelectedIds);
+            newSelectedIds = selectedIds.new([item?.id || 0]);
         }
+        logv(logPath, {newSelectedIds});
         setHiddenField([...newSelectedIds].toString());
     }
 
@@ -96,9 +99,11 @@ export function SummaryListSmall({
         const entries = Object.entries(store[entityName].state);
         // logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
-        const nullItem = createEmptyItem(metadata);
-        nullItem.id = 0;
-        list.push(nullItem);
+        if (hasNull) {
+            const nullItem = createEmptyItem(metadata);
+            nullItem.id = 0;
+            list.push(nullItem);
+        }
         // logv(logPath, {list});
         updateListSmall(list);
     }
@@ -116,12 +121,15 @@ export function SummaryListSmall({
             <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
             {list && (
                 <div>
+                    {isMulti && (
+                        <Stringify data={[...selectedIds.all]}>selectedIds</Stringify>
+                    )}
                     <SummaryTable metadata={metadata}
                                   list={list}
                                   selectedIds={selectedIds}
                                   chooseItem={chooseItemSmall}
                                   small={true}
-                                  hasFocus={hasFocus}
+                                  UICues={UICues}
                                   elKey={elKey}
                                   key={elKey}
                                   setSorting={setSorting}
