@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { SummaryListSmall } from '../components/summaryList';
-import { entitiesMetadata } from '../helpers';
+import { entityTypes } from '../helpers';
 import { CommandContextProvider } from '../contexts/CommandContext';
 import { logv, rootMkr } from './log';
 import { Stringify } from './Stringify';
 
-export function TestMultiSelect({metadata = entitiesMetadata.zyx, initialIdList = []}) {
+export function TestMultiSelect({metadata = entityTypes.zyx, initialIdList = []}) {
     const logRoot = rootMkr(TestMultiSelect);
     logv(logRoot, {initialIdList});
     const elKey = ` Entity(${metadata.name},${initialIdList.toString()})`;

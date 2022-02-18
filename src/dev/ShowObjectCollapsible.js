@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react';
-import { entitiesMetadata } from '../helpers';
+import { entityTypes } from '../helpers';
 import { logv } from './log';
 import { StorageContext } from '../contexts/StorageContext';
 
 function property(key, entityName) {
     return entityName
-        ? entitiesMetadata[entityName].properties[key].label
+        ? entityTypes[entityName].properties[key].label
         : key;
 }
 
@@ -40,7 +40,7 @@ export function ShowObjectCollapsible({entityName, data, identifier}) {
             ? <>
                 {entityName && (
                     <>
-                        {entitiesMetadata[entityName].label}
+                        {entityTypes[entityName].label}
                     </>
                 )}
                 <ul key={identifier}>

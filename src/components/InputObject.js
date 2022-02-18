@@ -1,4 +1,4 @@
-import { entitiesMetadata } from '../helpers';
+import { entityTypes } from '../helpers';
 import React from 'react';
 import { SummaryListSmall } from './summaryList';
 
@@ -27,7 +27,7 @@ export function InputObject({metadata, field, defaultValue, useFormFunctions, el
             <input type={'text'} name={hiddenFieldName} style={{opacity: '0', position: 'absolute'}}
                    {...useFormFunctions.register(hiddenFieldName, property.validation)}
             />
-            <SummaryListSmall metadata={entitiesMetadata[property.target]}
+            <SummaryListSmall metadata={entityTypes[property.target]}
                               initialIdList={initialIdList}
                               receiver={'Input'}
                               key={elKey + hiddenFieldName + '_obj'}

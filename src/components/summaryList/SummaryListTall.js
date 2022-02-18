@@ -2,7 +2,8 @@ import React, { useContext, useState } from 'react';
 import {
     createEmptyItem,
     keys,
-    useBGLoading,
+    // useBGLoading,
+    useLoading,
     useConditionalEffect,
     useKeyPressed,
     useRequestState
@@ -13,6 +14,7 @@ import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts/StorageContext';
 import { useImmutableSet } from '../../helpers/useImmutableSet';
 import { useSorting } from './UseSorting';
+import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 
 export function SummaryListTall({
@@ -23,7 +25,7 @@ export function SummaryListTall({
     elKey += '/SListTall';
     const entityName = metadata.name;
     const idName = metadata.id;
-    // const logRoot = rootMkr(SummaryListTall, entityName);
+    const logRoot = rootMkr(SummaryListTall, entityName);
     const storage = useContext(StorageContext);
     const {allIdsLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
@@ -45,7 +47,7 @@ export function SummaryListTall({
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
-    useBGLoading(storage, metadata);
+    useLoading(storage, metadata);
 
 
     function chooseItemTall(item) {
@@ -58,7 +60,7 @@ export function SummaryListTall({
     }
 
     function updateListTall(newList, singleSelectedId) {
-        // const logPath = pathMkr(logRoot, updateListTall);
+        const logPath = pathMkr(logRoot, updateListTall);
         // logv(logPath, {newList, singleSelectedId});
         let selectedItem;
         if (newList.length === 0) {
@@ -71,6 +73,7 @@ export function SummaryListTall({
             sort(newList);
             if (singleSelectedId) {
                 // if (singleSelectedId < 0) logv(null, {singleSelectedId}, '< 0');
+                if (!allIdsLoaded) logv('❌❌❌❌' + logPath, {allIdsLoaded, newList});
                 selectedItem = getItem(entityName, singleSelectedId);
                 // logv(null, {singleSelectedId, selectedItem}, '!!');
                 selectedIds.new([singleSelectedId]);//todo: obsolete line??
@@ -90,8 +93,8 @@ export function SummaryListTall({
         chooseItemTall(selectedItem);
     }
 
-    function fetchList() {
-        // const logPath = pathMkr(logRoot, fetchList);
+    function makeList() {
+        // const logPath = pathMkr(logRoot, makeList);
         // logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
         const entries = Object.entries(store[entityName].state);
         // logv(null, {entries});
@@ -101,7 +104,7 @@ export function SummaryListTall({
     }
 
     useConditionalEffect(
-        fetchList,
+        makeList,
         allIdsLoaded,
         [
             store[entityName].state,

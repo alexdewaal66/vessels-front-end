@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useMountEffect, useDict, useRequestState, remote, entitiesMetadata, cx} from '../helpers';
+import { useMountEffect, useDict, useRequestState, remote, entityTypes, cx} from '../helpers';
 import { Stringify } from './Stringify';
 
 const entityNamesWithReadIds = ['xyz', 'zyx', 'vesselType', 'country', 'unLocode', 'subdivision'];
 
 export function Empty({children, className, ...rest}) {
-    const metadata = entitiesMetadata.vesselType;
+    const metadata = entityTypes.vesselType;
     const entityIds = useDict({});
     const entityButtonsDisabled = useDict({});
     console.log(`entityIds=`, entityIds);
@@ -23,7 +23,7 @@ export function Empty({children, className, ...rest}) {
 
     function loadIds(metadata) {
         return () => {
-            remote.readIds(metadata, requestState,
+            remote.readAllIds(metadata, requestState,
                 (response) => entityIds.add(metadata.name, response.data));
             entityButtonsDisabled.set(metadata.name, true);
         }
@@ -36,12 +36,12 @@ export function Empty({children, className, ...rest}) {
             <Stringify data={entityButtonsDisabled}>entityButtonsDisabled</Stringify>
             {entityNamesWithReadIds.map(name =>
                 <>
-                    <button onClick={loadIds(entitiesMetadata[name])}
+                    <button onClick={loadIds(entityTypes[name])}
                             key={'button_load_ids_' + name}
                             id={'button_load_ids_' + name}
                             disabled={entityButtonsDisabled.state[name]}
                     >
-                        Laad {entitiesMetadata[name].label} ID's
+                        Laad {entityTypes[name].label} ID's
                     </button>
                 </>
             )}

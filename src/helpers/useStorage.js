@@ -1,4 +1,4 @@
-import { entitiesMetadata } from './entitiesMetadata';
+import { entityTypes } from './entityTypes';
 import { useDict } from './useDict';
 import { useMountEffect } from './customHooks';
 import { remote } from './remote';
@@ -37,7 +37,7 @@ function transformAndStoreIdArray(data, tree) {
 }
 
 async function readAndStoreIds(metadata, requestState, tree) {
-    await remote.readIds(
+    await remote.readAllIds(
         metadata, requestState,
         (response) =>
             transformAndStoreIdArray(response.data, tree)
@@ -50,19 +50,16 @@ async function readAndStoreAllIds(forest) {
     await Promise.all(
         treeNames.map(async name => {
                 const requestState = new RequestState();
-                await readAndStoreIds(entitiesMetadata[name], requestState, forest[name]);
+                await readAndStoreIds(entityTypes[name], requestState, forest[name]);
             }
         )
     );
 }
 
-function transformAndStoreItemArray(metadata, data, tree) {
-    const idKeyName = metadata.id;
+function transformAndStoreItemArray(metadata, data, tree, validity) {
+    const idKey = metadata.id;
     const branches = Object.fromEntries(data.map(item =>
-            [item[idKeyName], {
-                item,
-                validity: validities.full,
-            }]
+            [item[idKey], {item, validity,}]
         )
     );
     // logv(pathMkr(logRoot, transformAndStoreItemArray, ), {branches});
@@ -70,16 +67,34 @@ function transformAndStoreItemArray(metadata, data, tree) {
     tree.setMany(branches);
 }
 
-async function readAndStoreItemsByIds(metadata, idArray, requestState, tree) {
-    await remote.readByIds(
+async function readAndStoreSummariesByIds(metadata, idArray, requestState, tree) {
+    await remote.readSummariesByIds(
         metadata, idArray, requestState,
-        (response) => transformAndStoreItemArray(metadata, response.data, tree)
+        (response) => transformAndStoreItemArray(metadata, response.data, tree, validities.summary)
     )
 }
 
-async function readAndStoreSummary(metadata, id, requestState, tree) {
-
+async function readAndStoreItemsByIds(metadata, idArray, requestState, tree) {
+    await remote.readItemsByIds(
+        metadata, idArray, requestState,
+        (response) => transformAndStoreItemArray(metadata, response.data, tree, validities.full)
+    )
 }
+
+async function readAndStoreAllSummaries(metadata, requestState, tree) {
+    await remote.readAllSummaries(
+        metadata, requestState,
+        (response) => transformAndStoreItemArray(metadata, response.data, tree, validities.summary)
+    )
+}
+
+async function readAndStoreAllItems(metadata, requestState, tree) {
+    await remote.readAllItems(
+        metadata, requestState,
+        (response) => transformAndStoreItemArray(metadata, response.data, tree, validities.full)
+    )
+}
+
 
 /**
  * @callback successCallback
@@ -167,7 +182,7 @@ function extractNewId(message, name) {
 // function extract
 
 async function createAndStoreItem(metadata, item, requestState, tree) {
-    const doLog = false || metadata === entitiesMetadata.vesselType ;//|| url.includes('images');
+    const doLog = false || metadata === entityTypes.vesselType ;//|| url.includes('images');
     const logPath = pathMkr(logRoot, createAndStoreItem, metadata.name, '↓↓');
     // const branch = tree.state[item.id];
     // logv(logPath, {item, tree});
@@ -227,6 +242,7 @@ async function deleteAndStoreItem(metadata, id, requestState, tree) {
     }
 }
 
+/*************************************************************************************************/
 
 export function useStorage() {
     // const logRoot = rootMkr(useStorage);
@@ -237,7 +253,7 @@ export function useStorage() {
     });
 
     const store = {
-        // each entity gets its own dictionary to ease manipulation of props and minimize cloning
+        // each entity gets its own dictionary to ease manipulation of props and to minimize impact of state changes
         xyz: useDict(),
         zyx: useDict(),
         vesselType: useDict(),
@@ -289,14 +305,14 @@ export function useStorage() {
      * @returns {*}
      */
     function getItem(entityName, id, requiredValidity = validities.full) {
-        // const logPath = pathMkr(logRoot, getItem, entityName, id);
+        const logPath = pathMkr(logRoot, getItem, entityName, id);
         const entry = store[entityName].state[id];
         // logv(logPath, {entry});
         if (entry?.validity >= requiredValidity) {
             return entry.item;
         } else {
             // mark entry in
-            deferredEntries.add(`${entityName}/${id}`);
+            // deferredEntries.add(`${entityName}/${id}`);
             // logv('❌ ' + logPath, {entityName, id, entry, requiredValidity});
         }
     }
@@ -319,26 +335,71 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het ophalen van ${entitiesMetadata[entityName].label} (id=${id}) `,
-            advice: ''
+            description: `het ophalen van ${entityTypes[entityName].label} (id=${id}) `,
+            advice: '',
+            // action: {type: loadItem.name, entityName},
         });
-        readAndStoreItem(entitiesMetadata[entityName], id, requestState, tree, onSuccess)
+        readAndStoreItem(entityTypes[entityName], id, requestState, tree, onSuccess)
             .then();
+    }
+
+    function loadSummariesByIds(entityName, idArray, onSuccess) {
+        if (!(entityName in store)) return;
+        const tree = store[entityName];
+        const requestState = new RequestState();
+        // console.log(`useStorage() » loadItem() » requestState=`, requestState);
+        setRsStatus({
+            requestState,
+            description: `het ophalen van ${idArray.length} ${entityTypes[entityName].label} items `,
+            advice: '',
+            // action: {type: loadItemsByIds.name, entityName},
+        });
+        readAndStoreSummariesByIds(entityTypes[entityName], idArray, requestState, tree)
+            .then(onSuccess);
     }
 
     function loadItemsByIds(entityName, idArray, onSuccess) {
         if (!(entityName in store)) return;
         const tree = store[entityName];
-        const absentItemsIdArray = idArray;
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
         setRsStatus({
             requestState,
-            description: `het ophalen van ${absentItemsIdArray.length} ${entitiesMetadata[entityName].label} items `,
+            description: `het ophalen van ${idArray.length} ${entityTypes[entityName].label} items `,
             advice: '',
-            action: {type: 'loadItemsByIds', entityName},
+            // action: {type: loadItemsByIds.name, entityName},
         });
-        readAndStoreItemsByIds(entitiesMetadata[entityName], absentItemsIdArray, requestState, tree)
+        readAndStoreItemsByIds(entityTypes[entityName], idArray, requestState, tree)
+            .then(onSuccess);
+    }
+
+    function loadAllSummaries(entityName, onSuccess) {
+        if (!(entityName in store)) return;
+        const tree = store[entityName];
+        const requestState = new RequestState();
+        // console.log(`useStorage() » loadItem() » requestState=`, requestState);
+        setRsStatus({
+            requestState,
+            description: `het ophalen van alle ${entityTypes[entityName].label} items `,
+            advice: '',
+            // action: {type: loadAllSummaries.name, entityName},
+        });
+        readAndStoreAllSummaries(entityTypes[entityName], requestState, tree)
+            .then(onSuccess);
+    }
+
+    function loadAllItems(entityName, onSuccess) {
+        if (!(entityName in store)) return;
+        const tree = store[entityName];
+        const requestState = new RequestState();
+        // console.log(`useStorage() » loadItem() » requestState=`, requestState);
+        setRsStatus({
+            requestState,
+            description: `het ophalen van alle ${entityTypes[entityName].label} items `,
+            advice: '',
+            // action: {type: loadAllItems.name, entityName},
+        });
+        readAndStoreAllItems(entityTypes[entityName], requestState, tree)
             .then(onSuccess);
     }
 
@@ -348,11 +409,11 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het ophalen van de ${entitiesMetadata[entityName].label} match `,
+            description: `het ophalen van de ${entityTypes[entityName].label} match `,
             advice: '',
-            action: {type: 'loadItemByUniqueFields', entityName, probe},
+            // action: {type: loadItemByUniqueFields.name, entityName, probe},
         });
-        readAndStoreItemByUniqueFields(entitiesMetadata[entityName], probe, requestState, tree, setResult)
+        readAndStoreItemByUniqueFields(entityTypes[entityName], probe, requestState, tree, setResult)
             .then(onSuccess);
     }
 
@@ -368,11 +429,11 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het bewaren van ${entitiesMetadata[entityName].label} (id=${id}) `,
+            description: `het bewaren van ${entityTypes[entityName].label} (id=${id}) `,
             advice: '',
-            action: {type: 'saveItem', entityName, id},
+            // action: {type: saveItem.name, entityName, id},
         });
-        updateAndStoreItem(entitiesMetadata[entityName], item, requestState, tree, onSuccess).then();
+        updateAndStoreItem(entityTypes[entityName], item, requestState, tree, onSuccess).then();
     }
 
 
@@ -385,11 +446,11 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het maken van een nieuwe ${entitiesMetadata[entityName].label} `,
+            description: `het maken van een nieuwe ${entityTypes[entityName].label} `,
             advice: '',
-            action: {type: 'newItem', entityName, id: 0},
+            // action: {type: newItem.name, entityName, id: 0},
         });
-        createAndStoreItem(entitiesMetadata[entityName], item, requestState, tree)
+        createAndStoreItem(entityTypes[entityName], item, requestState, tree)
             .then(
                 () => onSuccess(item),
                 () => onFail()
@@ -407,28 +468,29 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het verwijderen van ${entitiesMetadata[entityName].label} (id=${id}) `,
+            description: `het verwijderen van ${entityTypes[entityName].label} (id=${id}) `,
             advice: '',
-            action: {type: 'deleteItem', entityName, id},
+            // action: {type: deleteItem.name, entityName, id},
         });
-        deleteAndStoreItem(entitiesMetadata[entityName], id, requestState, tree)
+        deleteAndStoreItem(entityTypes[entityName], id, requestState, tree)
             .then(onSuccess);
     }
 
 
     return {
         allIdsLoaded,
-        rsStatus,
-        setRsStatus,
+        rsStatus, setRsStatus,
         store,
-        getItem,
-        getSummary,
+        getItem, getSummary,
         loadDeferredItems,
         loadItem,
         loadItemsByIds,
+        loadAllItems,
+        loadSummariesByIds,
         saveItem,
         newItem,
         deleteItem,
         loadItemByUniqueFields
     };
 }
+

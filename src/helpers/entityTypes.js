@@ -1,5 +1,5 @@
-export const entitiesMetadata = {};
-// const logRoot = 'entitiesMetadata';
+export const entityTypes = {};
+// const logRoot = 'entityTypes';
 
 export const types = {
     str: 'string',
@@ -26,7 +26,7 @@ export const subtypes = {
     week: 'week',
 };
 
-entitiesMetadata.xyz = {
+entityTypes.xyz = {
     label: 'Xyz',
     endpoint: '/xyzs',
     id: ['id'],
@@ -62,7 +62,7 @@ entitiesMetadata.xyz = {
     },
 };
 
-entitiesMetadata.zyx = {
+entityTypes.zyx = {
     label: 'Zyx',
     endpoint: '/zyxs',
     id: ['id'],
@@ -85,7 +85,7 @@ entitiesMetadata.zyx = {
     },
 };
 
-entitiesMetadata.user = {
+entityTypes.user = {
     label: 'Gebruiker',
     endpoint: '/users',
     id: ['username'],
@@ -121,14 +121,14 @@ entitiesMetadata.user = {
         params: {},
     },
 };
-Object.defineProperty(entitiesMetadata.user.properties, 'id', {
+Object.defineProperty(entityTypes.user.properties, 'id', {
     enumerable: true,
     get() {
         return this.username;
     }
 });
 
-entitiesMetadata.authority = {
+entityTypes.authority = {
     label: 'Machtiging',
     endpoint: '/users/{username}/authorities',
     id: ['username', 'role'],
@@ -148,7 +148,7 @@ entitiesMetadata.authority = {
     },
 };
 
-entitiesMetadata.country = {
+entityTypes.country = {
     label: 'Land',
     endpoint: '/countries',
     id: ['id'],
@@ -186,7 +186,7 @@ entitiesMetadata.country = {
     }
 };
 
-entitiesMetadata.subdivision = {
+entityTypes.subdivision = {
     label: 'Deelsector',
     endpoint: '/subdivisions',
     id: ['id'],
@@ -220,7 +220,7 @@ entitiesMetadata.subdivision = {
     },
 };
 
-entitiesMetadata.unLocode = {
+entityTypes.unLocode = {
     label: 'Locatiecode',
     endpoint: '/un_locode',
     id: ['id'],
@@ -274,7 +274,7 @@ entitiesMetadata.unLocode = {
     },
 };
 
-entitiesMetadata.address = {
+entityTypes.address = {
     label: 'Adres',
     endpoint: '/addresses',
     id: ['id'],
@@ -307,7 +307,7 @@ entitiesMetadata.address = {
 }
 
 
-entitiesMetadata.vesselType = {
+entityTypes.vesselType = {
     label: 'Scheepstype',
     endpoint: '/vesseltypes',
     id: ['id'],
@@ -372,7 +372,7 @@ entitiesMetadata.vesselType = {
     },
 };
 
-entitiesMetadata.hull = {
+entityTypes.hull = {
     label: 'Romp',
     endpoint: '/hulls',
     id: ['id'],
@@ -394,7 +394,7 @@ entitiesMetadata.hull = {
     }
 };
 
-entitiesMetadata.vessel = {
+entityTypes.vessel = {
     label: 'Vaartuig',
     endpoint: '/vessels',
     id: ['id'],
@@ -452,7 +452,7 @@ entitiesMetadata.vessel = {
     }
 };
 
-entitiesMetadata.organisation = {
+entityTypes.organisation = {
     label: 'Organisatie',
     endpoint: '/organisations',
     id: ['id'],
@@ -473,7 +473,7 @@ entitiesMetadata.organisation = {
     }
 };
 
-entitiesMetadata.relation = {
+entityTypes.relation = {
     label: 'Relatie',
     endpoint: '/relations',
     id: ['id'],
@@ -499,7 +499,7 @@ entitiesMetadata.relation = {
     },
 };
 
-entitiesMetadata.relationType = {
+entityTypes.relationType = {
     label: 'soort relatie',
     endpoint: '/relationtypes',
     id: ['id'],
@@ -518,7 +518,7 @@ entitiesMetadata.relationType = {
     },
 };
 
-entitiesMetadata.file = {
+entityTypes.file = {
     label: 'bestand',
     endpoint: '/files',
     id: ['id'],
@@ -535,7 +535,7 @@ entitiesMetadata.file = {
     },
 };
 
-entitiesMetadata.image = {
+entityTypes.image = {
     label: 'afbeelding',
     endpoint: '/images',
     id: ['id'],
@@ -557,23 +557,23 @@ export function getSummaryProp(metadata, element) {
     const parts = element.split('.');
     const prop = metadata.properties[parts[0]];
     if (prop.type === types.obj) {
-        return entitiesMetadata[prop.target].properties[parts[1]];
+        return entityTypes[prop.target].properties[parts[1]];
     }
     return prop;
 }
 
 export function initializeEntitiesMetadata() {
     let typos = '';
-    for (const entitiesKey in entitiesMetadata) {
-        const entity = entitiesMetadata[entitiesKey];
+    for (const entitiesKey in entityTypes) {
+        const entity = entityTypes[entitiesKey];
         entity.name = entitiesKey;
         typos = checkProperties(entity, typos);
         typos = checkSummaries(entity, typos);
     }
     if (typos === '') {
-        console.log('✔ entitiesMetadata appears to have no typos.');
+        console.log('✔ entityTypes appears to have no typos.');
     } else {
-        console.error('❌ entitiesMetadata has typos:\n' + typos);
+        console.error('❌ entityTypes has typos:\n' + typos);
     }
 }
 
@@ -600,19 +600,19 @@ function checkProperties(entity, typos) {
 
 function checkAndSetInternalReference(entityName, propName, prop, typos) {
     if (!prop.target) {
-        if (entitiesMetadata.hasOwnProperty(propName)) {
+        if (entityTypes.hasOwnProperty(propName)) {
             prop.target = propName;
             if (!prop.label) {
                 // logical or assignment '||=' results in 'Error: Module parse failed: Unexpected token'
-                prop.label = entitiesMetadata[propName].label.toLowerCase();
+                prop.label = entityTypes[propName].label.toLowerCase();
             }
         } else {
             typos += `\t❌ in ${entityName}.properties : '${propName}'\n`;
         }
     } else {
-        if (entitiesMetadata.hasOwnProperty(prop.target)) {
+        if (entityTypes.hasOwnProperty(prop.target)) {
             if (!prop.label) {
-                prop.label = entitiesMetadata[prop.target].label.toLowerCase();
+                prop.label = entityTypes[prop.target].label.toLowerCase();
             }
         } else {
             typos += `\t❌ in ${entityName}.properties.${propName}.target : '${prop.target}'\n`;
@@ -637,8 +637,8 @@ function checkSummaries(entity, typos) {
         let dualPartsTypo = false;
         if (parts.length === 2) {
             const targetEntityName = entity.properties[parts[0]].target;
-            dualPartsTypo = !entitiesMetadata[targetEntityName]?.properties[parts[1]];
-            // logv('❗ entitiesMetadata.js » checkSummaries', {entity, parts});
+            dualPartsTypo = !entityTypes[targetEntityName]?.properties[parts[1]];
+            // logv('❗ entityTypes.js » checkSummaries', {entity, parts});
         }
         if (singlePartTypo || dualPartsTypo || parts.length > 2) {
             typos += `\t❌ in ${entity.name}.summary : '${summaryElement}'\n`;

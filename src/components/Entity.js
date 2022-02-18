@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { entitiesMetadata } from '../helpers';
+import { entityTypes } from '../helpers';
 import { CommandContextProvider } from '../contexts/CommandContext';
 import { EditEntity } from './EditEntity';
 import { SummaryListTall } from './summaryList';
@@ -7,7 +7,7 @@ import pageLayout from '../pageLayouts/pageLayout.module.css';
 import { logv } from '../dev/log';
 
 
-export function Entity({metadata = entitiesMetadata.vessel, initialId}) {
+export function Entity({metadata = entityTypes.vessel, initialId}) {
     const logRoot = `${Entity.name}(${metadata.name})`;
     const elKey =` Entity(${metadata.name},${initialId?.toString()})`;
     const [item, setItem] = useState(null);

@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { TTC, TT } from './Tooltips';
-import { entitiesMetadata } from '../helpers';
+import { entityTypes } from '../helpers';
 
 function property(key, entityName) {
     return entityName
-        ? entitiesMetadata[entityName].properties[key].label
+        ? entityTypes[entityName].properties[key].label
         : key;
 }
 
@@ -17,7 +17,7 @@ export function ShowObjectOld({entityName, data, tooltip}) {
         ? <>
             {entityName && (
                 <>
-                    {entitiesMetadata[entityName].label}
+                    {entityTypes[entityName].label}
                 </>
             )}
             <ul>

@@ -21,7 +21,7 @@ function Profile() {
         console.log(now() + ' fetchUserProfile()');
         const JWT = localStorage.getItem(persistentVars.JWT);
 
-        const { endpoint, id: [{name: idName}] } = entitiesMetadata.user;
+        const { endpoint, id: [{name: idName}] } = entityTypes.user;
         const id = user[idName];
 
         console.log('JWT=', JWT);
@@ -36,7 +36,7 @@ function Profile() {
     useMountEffect(fetchUserProfile, []);
 */
 
-    //todo: use EntityN(entitiesMetadata.user, user.username) without receiver
+    //todo: use EntityN(entityTypes.user, user.username) without receiver
     //      to enable editing one's profile
 
     return (

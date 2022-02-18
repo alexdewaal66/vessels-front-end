@@ -53,7 +53,7 @@ export async function deleteRequest({url, requestState, onSuccess, onFail}) {
 }
 
 export async function makeRequest({method, url, payload, headers, requestState = null, onSuccess, onFail}) {
-    const doLog = false || url.includes('vesseltypes') ;//|| url.includes('images');
+    const doLog = true || url.includes('vesseltypes') ;//|| url.includes('images');
     const logPath = pathMkr(logRoot, makeRequest, '↓↓');
     headers = addJwtToHeaders(headers);
 
@@ -83,14 +83,23 @@ export async function makeRequest({method, url, payload, headers, requestState =
 
 export const remote = {
 
-    readIds: async function (metadata, requestState, onSuccess, onFail) {
+    readAllIds: async function (metadata, requestState, onSuccess, onFail) {
         const url = metadata.endpoint + '/ids';
         await getRequest({
             url, requestState, onSuccess, onFail
         });
     },
 
-    readAll: async function (metadata, requestState, onSuccess, onFail) {
+    readAllSummaries: async function (metadata, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [metadata.name, '↓']);
+        // logv(logPath,{idArray});
+        const url = metadata.endpoint + '/summaries';
+        await getRequest({
+            url, requestState, onSuccess, onFail
+        })
+    },
+
+    readAllItems: async function (metadata, requestState, onSuccess, onFail) {
         const url = metadata.endpoint;
         await getRequest({
             url, requestState, onSuccess, onFail
@@ -104,8 +113,21 @@ export const remote = {
         });
     },
 
-    readByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.readByIds], null, [metadata.name, '↓']);
+    readSummariesByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [metadata.name, '↓']);
+        // logv(logPath,{idArray});
+        const url = metadata.endpoint + '/ids/summaries';
+        await postRequest({
+            url,
+            payload: idArray,
+            requestState,
+            onSuccess,
+            onFail
+        })
+    },
+
+    readItemsByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [metadata.name, '↓']);
         // logv(logPath,{idArray});
         const url = metadata.endpoint + '/ids';
         await postRequest({

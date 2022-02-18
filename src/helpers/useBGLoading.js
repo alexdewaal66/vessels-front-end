@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { validities } from './useStorage';
 import { useConditionalEffect } from './customHooks';
 
-const blockSize = 5000;
+const blockSize = 20000;
 
 export function useBGLoading(storage, metadata) {
     const entityName = metadata.name;
     // const logRoot = rootMkr(useBGLoading, entityName);
-    const {store, loadItemsByIds} = storage;
+    const {store, loadItemsByIds, loadSummariesByIds} = storage;
     const [loadCounter, setLoadCounter] = useState(0);
     const [pendingBlocks, setPendingBlocks] = useState([]);
 
@@ -53,7 +53,9 @@ export function useBGLoading(storage, metadata) {
             const currentBlockNr = Math.floor(first / blockSize);
             // logv(null, {first, 'entries[first]': entries[first], currentBlockNr});
             setSingleBlock(currentBlockNr, true);
-            loadItemsByIds(entityName, unloadedIds,
+            // loadItemsByIds(
+            loadItemsByIds(
+                entityName, unloadedIds,
                 () => {
                     setLoadCounter(c => c - 1);
                     setSingleBlock(currentBlockNr, false);

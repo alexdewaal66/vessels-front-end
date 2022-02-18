@@ -1,4 +1,4 @@
-import { entitiesMetadata } from '../helpers';
+import { entityTypes } from '../helpers';
 
 class EntityItem {
     constructor(metadata, item) {

@@ -1,10 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
     createEmptyItem,
     keys, useKeyPressed,
     useBGLoading,
+    useLoading,
     useConditionalEffect,
-    useRequestState
+    useRequestState, useMountEffect
 } from '../../helpers';
 import { SummaryTable } from './';
 import { ShowRequestState } from '../ShowRequestState';
@@ -43,7 +44,8 @@ export function SummaryListSmall({
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
-    useBGLoading(storage, metadata);
+    useLoading(storage, metadata);
+    // useLoading(storage, metadata);
 
     function chooseItemSmall(item) {
         const logPath = pathMkr(logRoot, chooseItemSmall);
@@ -93,8 +95,8 @@ export function SummaryListSmall({
     }
 
 
-    function fetchList() {
-        // const logPath = pathMkr(logRoot, fetchList);
+    function makeList() {
+        // const logPath = pathMkr(logRoot, makeList);
         // logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
         const entries = Object.entries(store[entityName].state);
         // logv(logPath, {entries});
@@ -110,7 +112,7 @@ export function SummaryListSmall({
 
 
     useConditionalEffect(
-        fetchList,
+        makeList,
         allIdsLoaded,
         [store[entityName].state, allIdsLoaded]
     );

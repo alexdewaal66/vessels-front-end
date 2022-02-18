@@ -1,6 +1,6 @@
 import React, { Fragment, useContext, useState } from 'react';
 import { logv, pathMkr, rootMkr } from '../dev/log';
-import { endpoints, entitiesMetadata } from '../helpers';
+import { endpoints, entityTypes } from '../helpers';
 import { StorageContext } from '../contexts/StorageContext';
 
 export function InputImageFile({
@@ -59,7 +59,7 @@ export function InputImageFile({
         setImageId(imageItem.id);
         setFullSizeImageId(imageItem.fullSizeId);
         useFormFunctions.setValue(hiddenFieldName, imageItem.id);
-        loadItem(entitiesMetadata.image.name, imageItem.id, onReloadSuccess);
+        loadItem(entityTypes.image.name, imageItem.id, onReloadSuccess);
     }
 
     function onReloadSuccess(imageItem) {
