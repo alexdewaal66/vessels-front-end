@@ -2,10 +2,10 @@ import { entityTypes } from '../helpers';
 import React from 'react';
 import { SummaryListSmall } from './summaryList';
 
-export function InputObject({metadata, field, defaultValue, useFormFunctions, elKey}) {
-    // const logRoot = rootMkr(InputObject, metadata.name);
+export function InputObject({entityType, field, defaultValue, useFormFunctions, elKey}) {
+    // const logRoot = rootMkr(InputObject, entityType.name);
     // logv(logRoot, {field, defaultValue, '!defaultValue': !defaultValue});
-    const property = metadata.properties[field];
+    const property = entityType.properties[field];
     const {hasNull, isMulti} = property;
     const initialIdList = Array.isArray(defaultValue)
         ? defaultValue.map(item => item.id)
@@ -27,7 +27,7 @@ export function InputObject({metadata, field, defaultValue, useFormFunctions, el
             <input type={'text'} name={hiddenFieldName} style={{opacity: '0', position: 'absolute'}}
                    {...useFormFunctions.register(hiddenFieldName, property.validation)}
             />
-            <SummaryListSmall metadata={entityTypes[property.target]}
+            <SummaryListSmall entityType={entityTypes[property.target]}
                               initialIdList={initialIdList}
                               receiver={'Input'}
                               key={elKey + hiddenFieldName + '_obj'}

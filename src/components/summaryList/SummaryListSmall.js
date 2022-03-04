@@ -14,14 +14,15 @@ import { useImmutableSet } from '../../helpers/useImmutableSet';
 import { useSorting } from './UseSorting';
 import { logv, pathMkr, rootMkr } from '../../dev/log';
 import { Stringify } from '../../dev/Stringify';
+import { Patience } from '../Patience';
 
 
 export function SummaryListSmall({
-                                     metadata, initialIdList, UICues,
+                                     entityType, initialIdList, UICues,
                                      setHiddenField, elKey
                                  }) {
     elKey += '/SListSmall';
-    const entityName = metadata.name;
+    const entityName = entityType.name;
     const logRoot = rootMkr(SummaryListSmall, entityName, '↓↓');
     const storage = useContext(StorageContext);
     const {allIdsLoaded, store, getItem} = storage;
@@ -44,8 +45,8 @@ export function SummaryListSmall({
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
-    useLoading(storage, metadata);
-    // useLoading(storage, metadata);
+    useLoading(storage, entityType);
+    // useLoading(storage, entityType);
 
     function chooseItemSmall(item) {
         const logPath = pathMkr(logRoot, chooseItemSmall);
@@ -102,7 +103,7 @@ export function SummaryListSmall({
         // logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
         if (hasNull) {
-            const nullItem = createEmptyItem(metadata);
+            const nullItem = createEmptyItem(entityType);
             nullItem.id = 0;
             list.push(nullItem);
         }
@@ -126,7 +127,7 @@ export function SummaryListSmall({
                     {isMulti && (
                         <Stringify data={[...selectedIds.all]}>selectedIds</Stringify>
                     )}
-                    <SummaryTable metadata={metadata}
+                    <SummaryTable entityType={entityType}
                                   list={list}
                                   selectedIds={selectedIds}
                                   chooseItem={chooseItemSmall}
@@ -138,6 +139,7 @@ export function SummaryListSmall({
                     />
                 </div>
             )}
+            {!list && <Patience>, lijst wordt opgebouwd.</Patience>}
         </div>
     );
 }

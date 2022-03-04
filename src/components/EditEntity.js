@@ -9,9 +9,9 @@ import { StorageContext } from '../contexts/StorageContext';
 import { AuthContext } from '../contexts/AuthContext';
 
 
-export function EditEntity({metadata, item, setItem, receiver, elKey,submitTime, setSubmitTime}) {
-    const entityName = metadata.name;
-    // const logRoot = rootMkr(EditEntity, metadata.name, '↓↓');
+export function EditEntity({entityType, item, setItem, receiver, elKey,submitTime, setSubmitTime}) {
+    const entityName = entityType.name;
+    // const logRoot = rootMkr(EditEntity, entityType.name, '↓↓');
     // logv(logRoot, {item, receiver: receiver.name});
     const {store, saveItem, newItem, deleteItem} = useContext(StorageContext);
     const {user} = useContext(AuthContext);
@@ -20,11 +20,11 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,submitTime,
     const useFormFunctions = useForm();
     const {handleSubmit, register, setValue} = useFormFunctions;
     const requestState = useRequestState();
-    const readOnly = (metadata.methods === 'R') || !user;
+    const readOnly = (entityType.methods === 'R') || !user;
 
 
     const conditions = {
-        entityType: metadata,
+        entityType: entityType,
         receiver: EditEntity.name,
         operations: {
             edit: (item) => {
@@ -92,7 +92,7 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,submitTime,
                         setCommand({
                             operation: operationNames.put,
                             data: item,
-                            entityType: metadata,
+                            entityType: entityType,
                             receiver: receiver
                         });
                     }
@@ -105,7 +105,7 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,submitTime,
                         setCommand({
                             operation: operationNames.post,
                             data: item,
-                            entityType: metadata,
+                            entityType: entityType,
                             receiver: receiver
                         });
                     }
@@ -114,7 +114,7 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,submitTime,
             case 'delete':
                 //todo: ask confirmation
                 deleteItem(entityName, formData.id)
-                setCommand({operation: operationNames.delete, data: null, entityType: metadata, receiver: receiver});
+                setCommand({operation: operationNames.delete, data: null, entityType: entityType, receiver: receiver});
                 break;
             // case 'search':
             // not a useStorage method (yet)
@@ -147,11 +147,11 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,submitTime,
                             {/*       key="requestMethod"*/}
                             {/*/>*/}
                             {/*{Object.entries(item).map(([itemPropName, v]) => (*/}
-                            {Object.keys(metadata.properties).map(itemPropName => {
+                            {Object.keys(entityType.properties).map(itemPropName => {
                                     const value = item[itemPropName];
                                     return <Fragment key={elKey + ' / FieldRow() ' + itemPropName}>
                                         {/*{console.log('item, k,v:', item, k, v)}*/}
-                                        {!metadata.properties[itemPropName].noEdit && (
+                                        {!entityType.properties[itemPropName].noEdit && (
                                             <FieldRow elKey={elKey + ' edit_row ' + itemPropName}
                                                       key={elKey + ' edit_row ' + itemPropName}
                                                       field={itemPropName}
@@ -160,16 +160,16 @@ export function EditEntity({metadata, item, setItem, receiver, elKey,submitTime,
                                                     key={elKey + ' edit_desc ' + itemPropName}
                                                 >
                                                     {/*{logv('❌❌❌ EditEntity » render()',*/}
-                                                    {/*    {metadata, itemPropName, prop: metadata.properties[itemPropName]}*/}
+                                                    {/*    {entityType, itemPropName, prop: entityType.properties[itemPropName]}*/}
                                                     {/*), ''}*/}
-                                                    {metadata.properties[itemPropName]?.label || itemPropName}
+                                                    {entityType.properties[itemPropName]?.label || itemPropName}
                                                 </FieldDesc>
                                                 <FieldEl>
-                                                    <Details metadata={metadata} field={itemPropName} value={value}
+                                                    <Details entityType={entityType} field={itemPropName} value={value}
                                                              item={item}
                                                              key={elKey + ' edit_details ' + itemPropName}
                                                     >
-                                                        <Input metadata={metadata}
+                                                        <Input entityType={entityType}
                                                                field={itemPropName}
                                                                defaultValue={value || ''}
                                                                useFormFunctions={useFormFunctions}

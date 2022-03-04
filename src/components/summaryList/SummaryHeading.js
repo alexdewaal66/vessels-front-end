@@ -3,10 +3,10 @@ import { summaryStyle } from './index';
 import { SummaryFilter } from './SummaryFilter';
 
 export function SummaryHeading({
-                                   metadata, elKey,
+                                   entityType, elKey,
                                    setSorting, mergeConstraints
                                }) {
-    // const logRoot = rootMkr(SummaryHeading, metadata.name, '↓');
+    // const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
     // logv(logRoot, {elKey});
 
     function label(object, propertyName) {
@@ -30,10 +30,10 @@ export function SummaryHeading({
     return (
         <>
             <tr>
-                {metadata.summary.map(propertyName =>
+                {entityType.summary.map(propertyName =>
                     <th key={elKey + propertyName + '_h'}>
-                        {/*{metadata.properties[propertyName].label || propertyName}*/}
-                        {label(metadata.properties, propertyName) || propertyName}
+                        {/*{entityType.properties[propertyName].label || propertyName}*/}
+                        {label(entityType.properties, propertyName) || propertyName}
                         <span>
                             <button type={'button'} onClick={up(propertyName)} className={summaryStyle.sort}>▲</button>
                             <button type={'button'} onClick={down(propertyName)} className={summaryStyle.sort}>▼
@@ -43,7 +43,7 @@ export function SummaryHeading({
                 )}
                 <th/>
             </tr>
-            <SummaryFilter metadata={metadata}
+            <SummaryFilter entityType={entityType}
                            mergeConstraints={mergeConstraints}
                            elKey={elKey}
             />

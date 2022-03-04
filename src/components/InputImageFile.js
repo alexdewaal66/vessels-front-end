@@ -4,12 +4,12 @@ import { endpoints, entityTypes } from '../helpers';
 import { StorageContext } from '../contexts/StorageContext';
 
 export function InputImageFile({
-                                   metadata, field, readOnly,
+                                   entityType, field, readOnly,
                                    defaultValue, useFormFunctions, elKey
                                }) {
-    const logRoot = rootMkr(InputImageFile, metadata.name, '↓↓');
+    const logRoot = rootMkr(InputImageFile, entityType.name, '↓↓');
     // logv(logRoot, {field, defaultValue});
-    const property = metadata.properties[field];
+    const property = entityType.properties[field];
 
     const {newItem, loadItem} = useContext(StorageContext);
 

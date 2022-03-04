@@ -2,6 +2,7 @@ import axios from 'axios';
 import { endpoints } from './endpoints';
 import { statusCodes } from '../dev/statusCodes';
 import { logv, pathMkr } from '../dev/log';
+import { entityTypes } from './entityTypes';
 
 const logRoot = 'remote.js';
 
@@ -83,40 +84,47 @@ export async function makeRequest({method, url, payload, headers, requestState =
 
 export const remote = {
 
-    readAllIds: async function (metadata, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint + '/ids';
+    readAllIds: async function (entityType, requestState, onSuccess, onFail) {
+        const url = entityType.endpoint + '/ids';
         await getRequest({
             url, requestState, onSuccess, onFail
         });
     },
 
-    readAllSummaries: async function (metadata, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [metadata.name, '↓']);
+    readAllSummaries: async function (entityType, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [entityType.name, '↓']);
         // logv(logPath,{idArray});
-        const url = metadata.endpoint + '/summaries';
+        const url = entityType.endpoint + '/summaries';
         await getRequest({
             url, requestState, onSuccess, onFail
         })
     },
 
-    readAllItems: async function (metadata, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint;
+    readAllItems: async function (entityType, requestState, onSuccess, onFail) {
+        const url = entityType.endpoint;
         await getRequest({
             url, requestState, onSuccess, onFail
         });
     },
 
-    readByExample: async function (metadata, probe, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint + '/qbe';
+    readNewItems: async function (entityType, timestamp, requestState, onSuccess, onFail) {
+        const url = entityType.endpoint + '/changed/' + timestamp;
+        await getRequest({
+            url, requestState, onSuccess, onFail
+        });
+    },
+
+    readByExample: async function (entityType, probe, requestState, onSuccess, onFail) {
+        const url = entityType.endpoint + '/qbe';
         await postRequest({
             url, payload: probe, requestState, onSuccess, onFail
         });
     },
 
-    readSummariesByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [metadata.name, '↓']);
+    readSummariesByIds: async function (entityType, idArray, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [entityType.name, '↓']);
         // logv(logPath,{idArray});
-        const url = metadata.endpoint + '/ids/summaries';
+        const url = entityType.endpoint + '/ids/summaries';
         await postRequest({
             url,
             payload: idArray,
@@ -126,10 +134,10 @@ export const remote = {
         })
     },
 
-    readItemsByIds: async function (metadata, idArray, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [metadata.name, '↓']);
+    readItemsByIds: async function (entityType, idArray, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [entityType.name, '↓']);
         // logv(logPath,{idArray});
-        const url = metadata.endpoint + '/ids';
+        const url = entityType.endpoint + '/ids';
         await postRequest({
             url,
             payload: idArray,
@@ -139,18 +147,18 @@ export const remote = {
         })
     },
 
-    findByUniqueField: async function (metadata, probe, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [metadata.name, '↓']);
+    findByUniqueField: async function (entityType, probe, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [entityType.name, '↓']);
         // logv(logPath, {probe});
         const entries = Object.entries(probe);
         // console.log(`storageHelpers » remote.findByUniqueField() \nentries=`, entries);
-        const hits = entries.filter(([k, v]) => !!v && (k in metadata.findItem.params));
+        const hits = entries.filter(([k, v]) => !!v && (k in entityType.findItem.params));
         // logv(null, hits);
         if (hits) {
-            let url = metadata.endpoint + metadata.findItem.endpoint;
+            let url = entityType.endpoint + entityType.findItem.endpoint;
             hits.forEach((hit, i) => {
                 const [key, value] = hit;
-                const param = metadata.findItem.params[key];
+                const param = entityType.findItem.params[key];
                 url += (i === 0 ? '?' : '&') + param + '=' + value;
             });
             // console.log(`storageHelpers » remote.findByUniqueField() \nurl=`, url);
@@ -158,15 +166,15 @@ export const remote = {
         }
     },
 
-    read: async function (metadata, id, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint + '/' + id;
+    read: async function (entityType, id, requestState, onSuccess, onFail) {
+        const url = entityType.endpoint + '/' + id;
         await getRequest({
             url, requestState, onSuccess, onFail
         });
     },
 
     fileUpload: async function (file, requestState, onSuccess, onFail) {
-        const url = '/files';
+        const url = entityTypes.file.endpoint;
         const headers = {'content-type': 'multipart/form-data'};
         const payload = new FormData();
         payload.append('file', file);
@@ -175,9 +183,9 @@ export const remote = {
         });
     },
 
-    create: async function (metadata, item, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint;
-        if (metadata.name === 'file') {
+    create: async function (entityType, item, requestState, onSuccess, onFail) {
+        const url = entityType.endpoint;
+        if (entityType === entityTypes.file) {
             await this.fileUpload(item, requestState, onSuccess, onFail);
         } else {
             await postRequest({
@@ -186,15 +194,15 @@ export const remote = {
         }
     },
 
-    update: async function (metadata, item, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint + '/' + item.id;
+    update: async function (entityType, item, requestState, onSuccess, onFail) {
+        const url = entityType.endpoint + '/' + item.id;
         await putRequest({
             url, payload: item, requestState, onSuccess, onFail
         });
     },
 
-    delete: async function (metadata, id, requestState, onSuccess, onFail) {
-        const url = metadata.endpoint + '/' + id;
+    delete: async function (entityType, id, requestState, onSuccess, onFail) {
+        const url = entityType.endpoint + '/' + id;
         await deleteRequest({
             url, requestState, onSuccess, onFail
         });

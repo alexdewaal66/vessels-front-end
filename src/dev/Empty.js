@@ -5,7 +5,7 @@ import { Stringify } from './Stringify';
 const entityNamesWithReadIds = ['xyz', 'zyx', 'vesselType', 'country', 'unLocode', 'subdivision'];
 
 export function Empty({children, className, ...rest}) {
-    const metadata = entityTypes.vesselType;
+    const entityType = entityTypes.vesselType;
     const entityIds = useDict({});
     const entityButtonsDisabled = useDict({});
     console.log(`entityIds=`, entityIds);
@@ -21,11 +21,11 @@ export function Empty({children, className, ...rest}) {
     useMountEffect(initEntityButtons);
 
 
-    function loadIds(metadata) {
+    function loadIds(entityType) {
         return () => {
-            remote.readAllIds(metadata, requestState,
-                (response) => entityIds.add(metadata.name, response.data));
-            entityButtonsDisabled.set(metadata.name, true);
+            remote.readAllIds(entityType, requestState,
+                (response) => entityIds.add(entityType.name, response.data));
+            entityButtonsDisabled.set(entityType.name, true);
         }
     }
 
@@ -45,7 +45,7 @@ export function Empty({children, className, ...rest}) {
                     </button>
                 </>
             )}
-            {/*<button onClick={loadIds(metadata)}>Laad {metadata.label} ID's</button>*/}
+            {/*<button onClick={loadIds(entityType)}>Laad {entityType.label} ID's</button>*/}
         </div>
     );
 }

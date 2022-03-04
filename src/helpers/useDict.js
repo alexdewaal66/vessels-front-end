@@ -1,6 +1,7 @@
 import { useReducer } from 'react';
+import { logv, pathMkr, rootMkr } from '../dev/log';
 
-// const logRoot = useDict.name + '.js';
+const logRoot = useDict.name + '.js';
 
 const dictActions = {
     add: 'add',
@@ -12,11 +13,11 @@ const dictActions = {
 
 function UseDictException(message) {
     this.message = message;
-    this.name = 'UseDictException';
+    this.name = UseDictException.name;
 }
 
 function dictReducer(state, {type, payload: {key, value}}) {
-    // const logPath = pathMkr(logRoot, dictReducer, '↓↓');
+    const logPath = pathMkr(logRoot, dictReducer, '↓↓');
     // logv(logPath, {state});
     switch (type) {
         // case dictActions.transformEntry:
@@ -34,7 +35,9 @@ function dictReducer(state, {type, payload: {key, value}}) {
             return {...state, ...value};
         case dictActions.set:
             if (key in state) {
-                return {...state, [key]: value};
+                const newState = {...state, [key]: value};
+                // if (key === 'zyx') logv(logPath, {key, value, state, newState}, 'set');
+                return newState;
             } else {
                 throw new UseDictException(`can not set entry ${key}, it doesn't exist`);
             }

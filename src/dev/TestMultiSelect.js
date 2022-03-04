@@ -5,19 +5,19 @@ import { CommandContextProvider } from '../contexts/CommandContext';
 import { logv, rootMkr } from './log';
 import { Stringify } from './Stringify';
 
-export function TestMultiSelect({metadata = entityTypes.zyx, initialIdList = []}) {
+export function TestMultiSelect({entityType = entityTypes.zyx, initialIdList = []}) {
     const logRoot = rootMkr(TestMultiSelect);
     logv(logRoot, {initialIdList});
-    const elKey = ` Entity(${metadata.name},${initialIdList.toString()})`;
+    const elKey = ` Entity(${entityType.name},${initialIdList.toString()})`;
     const [hiddenField, setHiddenField] = useState();
 
 
     return (
         <>TestMultiSelect
             <CommandContextProvider>
-                {/*<div>{metadata.name}</div>*/}
+                {/*<div>{entityType.name}</div>*/}
                 <Stringify data={hiddenField}>hiddenField</Stringify>
-                <SummaryListSmall metadata={metadata}
+                <SummaryListSmall entityType={entityType}
                                   initialIdList={initialIdList}
                                   receiver={'TestMultiSelect'}
                                   UICues={{hasFocus: false, isMulti: true}}

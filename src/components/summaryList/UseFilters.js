@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { createEmptySummary, types } from '../../helpers';
 
-export function useFilters(metadata) {
-    // const logRoot = rootMkr(useFilters, metadata.name);
-    const [constraints, setConstraints] = useState(createEmptySummary(metadata));
+export function useFilters(entityType) {
+    // const logRoot = rootMkr(useFilters, entityType.name);
+    const [constraints, setConstraints] = useState(createEmptySummary(entityType));
     const [noConstraints, setNoConstraints] = useState(true);
 
     const matchers = {
@@ -22,7 +22,7 @@ export function useFilters(metadata) {
         Object.entries(constraints).forEach(([fieldName, filterValue]) => {
             if (filterValue) {
                 let newFilter = {};
-                switch (metadata.properties[fieldName].type) {
+                switch (entityType.properties[fieldName].type) {
                     case types.str:
                         newFilter.matcher = matchers.str;
                         newFilter.value = filterValue.toLowerCase();
@@ -76,5 +76,5 @@ export function useFilters(metadata) {
     //     return list.filter(matchItem);
     // }
 
-    return {matchItem, mergeConstraints};
+    return {matchItem,constraints, mergeConstraints};
 }

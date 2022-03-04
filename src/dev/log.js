@@ -6,7 +6,7 @@ import { now } from '../helpers';
 // ];
 
 export function includesAny(haystack, ...needles) {
-    //example: includesAny('image,file,vessel', metadata.name
+    //example: includesAny('image,file,vessel', entityType.name
     haystack = haystack.toLowerCase();
     return needles.some((needle) => haystack.includes(needle.toLowerCase()));
 }

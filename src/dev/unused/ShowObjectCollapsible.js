@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
-import { entityTypes } from '../helpers';
-import { logv } from './log';
-import { StorageContext } from '../contexts/StorageContext';
+import { entityTypes } from '../../helpers';
+import { logv } from '../log';
+import { StorageContext } from '../../contexts/StorageContext';
 
 function property(key, entityName) {
     return entityName

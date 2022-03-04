@@ -18,12 +18,17 @@ export default function Home() {
                 <choice.component/>
             </Main>
             <Aside>
-                {Object.entries(store).map(([key, value]) =>
-                    <Stringify data={value.state}>{key}</Stringify>
-                    )
-                }
             </Aside>
         </Content>
     );
 }
 
+/*
+
+                {Object.entries(store).map(([key, value]) =>
+                    <Stringify data={value.state}>{key}</Stringify>
+                    )
+                }
+                <Stringify data={store.timestamps.state}>timestamps</Stringify>
+
+ */

@@ -11,9 +11,9 @@ export function useConditionalEffect(operation, condition, deps) {
     );
 }
 
-export function useMountEffect(fun) {
+export function useMountEffect(callback) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(fun, []);
+    useEffect(callback, []);
 }
 
 

@@ -1,12 +1,12 @@
 import { entityTypes } from '../helpers';
 
 class EntityItem {
-    constructor(metadata, item) {
-        this.metadata = metadata;
+    constructor(entityType, item) {
+        this.entityType = entityType;
         this.item = item;
     }
     get id() {
-        return Object.fromEntries( this.metadata.id.map( propName => [propName, this.item[propName]] ) );
+        return Object.fromEntries( this.entityType.id.map( propName => [propName, this.item[propName]] ) );
     }
 
 }

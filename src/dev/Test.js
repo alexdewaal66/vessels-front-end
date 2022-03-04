@@ -5,7 +5,7 @@ import { StorageContext } from '../contexts/StorageContext';
 import { ShowRequestState } from '../components';
 import { useImmutableSet } from '../helpers/useImmutableSet';
 import { logv } from './log';
-import { ShowObjectOld } from './ShowObjectOld';
+import { ShowObject } from './ShowObject';
 // import { TestMountDismountContext } from './TestMountDismountContext';
 
 export function Test({children, className, ...rest}) {
@@ -114,7 +114,7 @@ export function Test({children, className, ...rest}) {
             <button onClick={reversePrimesSetIf17Present}>sorteer omlaag als 17 er is</button>
             <button onClick={sortPrimesSetIf15NotPresent}>sorteer als geen 15</button>
             <p>{'= < > ∼ ≈ ≠'}</p>
-            <ShowObjectOld data={
+            <ShowObject data={
                 useMemo(() =>
                         transform('unLocode', 'functionClassifier', '1-345---'),
                     []

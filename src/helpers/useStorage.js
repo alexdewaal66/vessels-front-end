@@ -11,6 +11,27 @@ import { pathMkr, logv } from '../dev/log';
 
 export const validities = {none: 0, id: 1, summary: 2, full: 3};
 
+const initialTimestamps = {
+    xyz: 0,
+    zyx: 0,
+    vesselType: 0,
+    hull: 0,
+    vessel: 0,
+    country: 0,
+    address: 0,
+    unLocode: 0,
+    subdivision: 0,
+    user: 0,
+    authority: 0,
+    organisation: 0,
+    relation: 0,
+    relationType: 0,
+    file: 0,
+    image: 0,
+};
+
+const entityNames = Object.keys(initialTimestamps);
+
 const logRoot = useStorage.name + '.js';
 
 const idToEntry = id => [id, {
@@ -36,83 +57,100 @@ function transformAndStoreIdArray(data, tree) {
     tree.setMany(branches);
 }
 
-async function readAndStoreIds(metadata, requestState, tree) {
+async function readAndStoreIds(entityType, requestState, tree) {
     await remote.readAllIds(
-        metadata, requestState,
+        entityType, requestState,
         (response) =>
             transformAndStoreIdArray(response.data, tree)
     );
 }
 
-async function readAndStoreAllIds(forest) {
-    // logv(pathMkr(logRoot, readAndStoreAllIds), {forest});
-    const treeNames = Object.keys(forest);
+async function readAndStoreAllIds(store) {
+    // logv(pathMkr(logRoot, readAndStoreAllIds), {store});
     await Promise.all(
-        treeNames.map(async name => {
+        entityNames.map(async name => {
                 const requestState = new RequestState();
-                await readAndStoreIds(entityTypes[name], requestState, forest[name]);
+                await readAndStoreIds(entityTypes[name], requestState, store[name]);
             }
         )
     );
 }
 
-function transformAndStoreItemArray(metadata, data, tree, validity) {
-    const idKey = metadata.id;
-    const branches = Object.fromEntries(data.map(item =>
-            [item[idKey], {item, validity,}]
+async function readAndStoreAllEntities(store) {
+    // const logPath = pathMkr(logRoot, readAndStoreAllEntities);
+    // logv( logPath, {store});
+    await Promise.all(
+        entityNames.map(async name => {
+                const requestState = new RequestState();
+                await readAndStoreAllItems(name, requestState, store);
+            }
         )
     );
-    // logv(pathMkr(logRoot, transformAndStoreItemArray, ), {branches});
-    // console.log(`->-> branches=`, branches);
-    tree.setMany(branches);
 }
 
-async function readAndStoreSummariesByIds(metadata, idArray, requestState, tree) {
+function transformAndStoreItemArray(entityName, data, store, validity) {
+    const logPath = pathMkr(logRoot, transformAndStoreItemArray);
+    const doLog = entityName === entityTypes.zyx.name;
+    const idKey = entityTypes[entityName].id;
+    let youngest = store.timestamps.state[entityName] || 0;
+    const branches = Object.fromEntries(data.map(item => {
+            youngest = Math.max(youngest, item.timestamp);
+            return [item[idKey], {item, validity,}];
+        })
+    );
+    if (doLog) logv(logPath, {youngest});
+    store.timestamps.set(entityName, youngest);
+    store[entityName].setMany(branches);
+}
+
+async function readAndStoreSummariesByIds(entityName, idArray, requestState, store) {
     await remote.readSummariesByIds(
-        metadata, idArray, requestState,
-        (response) => transformAndStoreItemArray(metadata, response.data, tree, validities.summary)
+        entityTypes[entityName], idArray, requestState,
+        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.summary)
     )
 }
 
-async function readAndStoreItemsByIds(metadata, idArray, requestState, tree) {
+async function readAndStoreItemsByIds(entityName, idArray, requestState, store) {
     await remote.readItemsByIds(
-        metadata, idArray, requestState,
-        (response) => transformAndStoreItemArray(metadata, response.data, tree, validities.full)
+        entityTypes[entityName], idArray, requestState,
+        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.full)
     )
 }
 
-async function readAndStoreAllSummaries(metadata, requestState, tree) {
+async function readAndStoreAllSummaries(entityName, requestState, store) {
     await remote.readAllSummaries(
-        metadata, requestState,
-        (response) => transformAndStoreItemArray(metadata, response.data, tree, validities.summary)
+        entityTypes[entityName], requestState,
+        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.summary)
     )
 }
 
-async function readAndStoreAllItems(metadata, requestState, tree) {
+async function readAndStoreAllItems(entityName, requestState, store) {
+    if (!entityTypes[entityName]) logv(pathMkr(logRoot, readAndStoreAllItems), {entityName});
     await remote.readAllItems(
-        metadata, requestState,
-        (response) => transformAndStoreItemArray(metadata, response.data, tree, validities.full)
+        entityTypes[entityName], requestState,
+        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.full)
     )
 }
 
 
-/**
- * @callback successCallback
- * @param {Object} item
- *//**
- * @param metadata
- * @param id
- * @param requestState
- * @param tree
- * @param {successCallback} onSuccess
- * @returns {Promise<void>}
- */
-async function readAndStoreItem(metadata, id, requestState, tree, onSuccess) {
+async function readAndStoreNewItems(entityName, requestState, store) {
+    const logPath = pathMkr(logRoot, readAndStoreNewItems, entityName);
+    const timestamp1 = store.timestamps.state[entityName];
+    const timestamp2 = timestamp1 || 1640991600000; // 2022-01-01 00:00:00.000
+    logv(logPath, {entityName, timestamp1, timestamp2, });
+    await remote.readNewItems(
+        entityTypes[entityName], timestamp2, requestState,
+        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.full)
+    )
+}
+
+
+async function readAndStoreItem(entityName, id, requestState, store, onSuccess) {
     // const logPath = pathMkr(logRoot, readAndStoreItem, '↓↓');
-    // const branch = tree.state[id];
-    // logv(logPath, {entityName: metadata.name, id, tree});
+    const tree = store[entityName];
+    // logv(logPath, {entityName: entityType.name, id, tree});
     await remote.read(
-        metadata, id, requestState,
+        entityTypes[entityName], id, requestState,
         (response) => {
             const item = response.data;
             tree.set(id, {
@@ -129,32 +167,32 @@ async function readAndStoreItem(metadata, id, requestState, tree, onSuccess) {
     );
 }
 
-async function readAndStoreItemByUniqueFields(metadata, probe, requestState, tree, onSuccess) {
+async function readAndStoreItemByUniqueFields(entityName, probe, requestState, store, onSuccess) {
     let foundId = null;
     await remote.findByUniqueField(
-        metadata, probe, requestState,
+        entityTypes[entityName], probe, requestState,
         (response) => {
             const item = response.data;
-            tree.set(item.id, {
+            store[entityName].set(item.id, {
                 item, fetched: now(),
                 // valid: true,
                 validity: validities.full,
             });
             foundId = item.id;
-            // logv(pathMkr(logRoot, readAndStoreItemByUniqueFields, metadata.name), {probe, item});
+            // logv(pathMkr(logRoot, readAndStoreItemByUniqueFields, entityType.name), {probe, item});
             onSuccess(foundId);
         },
         doNothing
     );
 }
 
-async function updateAndStoreItem(metadata, item, requestState, tree, onSuccess) {
-    // const logPath = pathMkr(logRoot, updateAndStoreItem, metadata.name, '↓↓');
+async function updateAndStoreItem(entityName, item, requestState, store, onSuccess) {
+    // const logPath = pathMkr(logRoot, updateAndStoreItem, entityType.name, '↓↓');
+    const tree = store[entityName];
     // logv(logPath, {item, tree});
-    // const branch = tree.state[item.id];
     if (tree.state[item.id]) {
         await remote.update(
-            metadata, item, requestState,
+            entityTypes[entityName], item, requestState,
             () => {
                 tree.set(item.id, {
                     item, success: now(),
@@ -181,19 +219,19 @@ function extractNewId(message, name) {
 
 // function extract
 
-async function createAndStoreItem(metadata, item, requestState, tree) {
-    const doLog = false || metadata === entityTypes.vesselType ;//|| url.includes('images');
-    const logPath = pathMkr(logRoot, createAndStoreItem, metadata.name, '↓↓');
+async function createAndStoreItem(entityType, item, requestState, tree) {
+    const doLog = false;//|| entityType === entityTypes.vesselType ;//|| url.includes('images');
+    const logPath = pathMkr(logRoot, createAndStoreItem, entityType.name, '↓↓');
     // const branch = tree.state[item.id];
     // logv(logPath, {item, tree});
     if (!tree.state[item.id]) {
         await remote.create(
-            metadata, item, requestState,
+            entityType, item, requestState,
             (response) => {
-                logv(logPath, {item, response_data: response.data, metadata_name: metadata.name});
-                item.id = extractNewId(response.data, metadata.name);
-                logv(null, {item_id: item.id});
-                if (metadata.needsReload) {
+                if (doLog) logv(logPath, {item, response_data: response.data, entityName: entityType.name});
+                item.id = extractNewId(response.data, entityType.name);
+                if (doLog) logv(null, {item_id: item.id});
+                if (entityType.needsReload) {
                     // logv(logPath + ' needsReload', {item})
                     tree.add(item.id, {
                         item, success: now(),
@@ -219,12 +257,12 @@ async function createAndStoreItem(metadata, item, requestState, tree) {
     }
 }
 
-async function deleteAndStoreItem(metadata, id, requestState, tree) {
-    // const logPath = pathMkr(logRoot, deleteAndStoreItem, metadata.name, '↓↓');
+async function deleteAndStoreItem(entityType, id, requestState, tree) {
+    // const logPath = pathMkr(logRoot, deleteAndStoreItem, entityType.name, '↓↓');
     // logv(logPath, {id, tree});
     if (tree.state[id]) {
         await remote.delete(
-            metadata, id, requestState,
+            entityType, id, requestState,
             () => {
                 console.log(`deleted id=`, id);
                 tree.del(id);
@@ -270,26 +308,41 @@ export function useStorage() {
         relationType: useDict(),
         file: useDict(),
         image: useDict(),
+        timestamps: useDict(initialTimestamps),
     };
 
-    const deferredEntries = useImmutableSet();
+    // const deferredEntries = useImmutableSet();
 
 
-    const [allIdsLoaded, setAllIdsLoaded] = useState(null);
-    useMountEffect(() => loadAllIds(() => setAllIdsLoaded(true)));
+    const [allLoaded, setAllLoaded] = useState(null);
 
-    // useMountEffect(() => readAndStoreAllIds(requestState, storage.store));
+    // useMountEffect(() => loadAllIds(() => setAllLoaded(true)));
+    //
+    // function loadAllIds(setFinished) {
+    //     // const logPath = pathMkr(logRoot, loadAllIds);
+    //     const requestState = new RequestState();
+    //     // logv(logPath, requestState);
+    //     setRsStatus({
+    //         requestState,
+    //         description: `het ophalen van alle IDs `,
+    //         advice: ''
+    //     });
+    //     readAndStoreAllIds(store)
+    //         .then(setFinished);
+    // }
 
-    function loadAllIds(setFinished) {
+    useMountEffect(() => loadAllEntities(() => setAllLoaded(true)));
+
+    function loadAllEntities(setFinished) {
         // const logPath = pathMkr(logRoot, loadAllIds);
         const requestState = new RequestState();
         // logv(logPath, requestState);
         setRsStatus({
             requestState,
-            description: `het ophalen van alle IDs `,
+            description: `het ophalen van alle gegevens `,
             advice: ''
         });
-        readAndStoreAllIds(store)
+        readAndStoreAllEntities(store)
             .then(setFinished);
     }
 
@@ -297,13 +350,7 @@ export function useStorage() {
         return getItem(entityName, id, validities.summary);
     }
 
-    /**
-     * @function
-     * @param entityName
-     * @param id
-     * @param requiredValidity
-     * @returns {*}
-     */
+
     function getItem(entityName, id, requiredValidity = validities.full) {
         const logPath = pathMkr(logRoot, getItem, entityName, id);
         const entry = store[entityName].state[id];
@@ -317,21 +364,20 @@ export function useStorage() {
         }
     }
 
-    function loadDeferredItems(entityName) {
-        [...deferredEntries].forEach(entry => {
-            const [entryName, entryId] = entry.split('/');
-            if (entryName === entityName)
-                loadItem(entryName, +entryId, () => {
-                    deferredEntries.del(entry)
-                });// each load & each del is a state change
-        });
-    }
+    // function loadDeferredItems(entityName) {
+    //     [...deferredEntries].forEach(entry => {
+    //         const [entryName, entryId] = entry.split('/');
+    //         if (entryName === entityName)
+    //             loadItem(entryName, +entryId, () => {
+    //                 deferredEntries.del(entry)
+    //             });// each load & each del is a state change
+    //     });
+    // }
 
     function loadItem(entityName, id, onSuccess) {
         // const logPath = pathMkr(logRoot, loadItem, entityName, id);
         // logv(logPath, {});
         // if (!storage.store[entityName]?.state[id]) return;//TODO onnodig/lastig/??
-        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -339,13 +385,12 @@ export function useStorage() {
             advice: '',
             // action: {type: loadItem.name, entityName},
         });
-        readAndStoreItem(entityTypes[entityName], id, requestState, tree, onSuccess)
+        readAndStoreItem(entityName, id, requestState, store, onSuccess)
             .then();
     }
 
     function loadSummariesByIds(entityName, idArray, onSuccess) {
         if (!(entityName in store)) return;
-        const tree = store[entityName];
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
         setRsStatus({
@@ -354,7 +399,7 @@ export function useStorage() {
             advice: '',
             // action: {type: loadItemsByIds.name, entityName},
         });
-        readAndStoreSummariesByIds(entityTypes[entityName], idArray, requestState, tree)
+        readAndStoreSummariesByIds(entityName, idArray, requestState, store)
             .then(onSuccess);
     }
 
@@ -369,13 +414,12 @@ export function useStorage() {
             advice: '',
             // action: {type: loadItemsByIds.name, entityName},
         });
-        readAndStoreItemsByIds(entityTypes[entityName], idArray, requestState, tree)
+        readAndStoreItemsByIds(entityName, idArray, requestState, store)
             .then(onSuccess);
     }
 
     function loadAllSummaries(entityName, onSuccess) {
         if (!(entityName in store)) return;
-        const tree = store[entityName];
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
         setRsStatus({
@@ -384,13 +428,12 @@ export function useStorage() {
             advice: '',
             // action: {type: loadAllSummaries.name, entityName},
         });
-        readAndStoreAllSummaries(entityTypes[entityName], requestState, tree)
+        readAndStoreAllSummaries(entityName, requestState, store)
             .then(onSuccess);
     }
 
     function loadAllItems(entityName, onSuccess) {
         if (!(entityName in store)) return;
-        const tree = store[entityName];
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
         setRsStatus({
@@ -399,7 +442,21 @@ export function useStorage() {
             advice: '',
             // action: {type: loadAllItems.name, entityName},
         });
-        readAndStoreAllItems(entityTypes[entityName], requestState, tree)
+        readAndStoreAllItems(entityName, requestState, store)
+            .then(onSuccess);
+    }
+
+    function loadChangedItems(entityName, onSuccess) {
+        if (!(entityName in store)) return;
+        const requestState = new RequestState();
+        // logv(pathMkr(logRoot, loadChangedItems), {requestState});
+        setRsStatus({
+            requestState,
+            description: `het ophalen van nieuwe ${entityTypes[entityName].label} items `,
+            advice: '',
+            // action: {type: loadChangedItems.name, entityName},
+        });
+        readAndStoreNewItems(entityName, requestState, store)
             .then(onSuccess);
     }
 
@@ -413,7 +470,7 @@ export function useStorage() {
             advice: '',
             // action: {type: loadItemByUniqueFields.name, entityName, probe},
         });
-        readAndStoreItemByUniqueFields(entityTypes[entityName], probe, requestState, tree, setResult)
+        readAndStoreItemByUniqueFields(entityName, probe, requestState, store, setResult)
             .then(onSuccess);
     }
 
@@ -425,7 +482,6 @@ export function useStorage() {
             console.error(`id doesn't exist in storage:`, store[entityName]?.state);
             return;
         }
-        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -433,7 +489,7 @@ export function useStorage() {
             advice: '',
             // action: {type: saveItem.name, entityName, id},
         });
-        updateAndStoreItem(entityTypes[entityName], item, requestState, tree, onSuccess).then();
+        updateAndStoreItem(entityName, item, requestState, store, onSuccess).then();
     }
 
 
@@ -478,14 +534,14 @@ export function useStorage() {
 
 
     return {
-        allIdsLoaded,
+        allIdsLoaded: allLoaded,
         rsStatus, setRsStatus,
         store,
         getItem, getSummary,
-        loadDeferredItems,
         loadItem,
         loadItemsByIds,
         loadAllItems,
+        loadChangedItems,
         loadSummariesByIds,
         saveItem,
         newItem,

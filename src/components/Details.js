@@ -3,15 +3,15 @@ import { TTC, TT } from '../dev/Tooltips';
 import { useConditionalEffect, transform } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
 import { StorageContext } from '../contexts/StorageContext';
-import { ShowObjectOld } from '../dev/ShowObjectOld';
+import { ShowObject } from '../dev/ShowObject';
 
-export function Details({metadata, field, value, item, children}) {
-    // const logRoot = rootMkr(Details, metadata.name, '↓↓');
+export function Details({entityType, field, value, item, children}) {
+    // const logRoot = rootMkr(Details, entityType.name, '↓↓');
     // logv(logRoot, {field, value, item});
     const storage = useContext(StorageContext);
     const {rsStatus} = storage;
     const [detailsId, setDetailsId] = useState();
-    const property = metadata.properties[field];
+    const property = entityType.properties[field];
     const target = property?.details;
 
     function fetchItem() {
@@ -32,13 +32,13 @@ export function Details({metadata, field, value, item, children}) {
                 <React.Fragment key={field + target}>
                     &nbsp;»
                     <TT style={{textAlign: "left", marginLeft: "100%", top: "0"}}>
-                        <ShowObjectOld
+                        <ShowObject
                             entityName={target === 'transform'
                                 ? null
                                 : target
                             }
                             data={target === 'transform'
-                                ? transform(metadata.name, field, value)
+                                ? transform(entityType.name, field, value)
                                 : storage.getItem(target, detailsId)
                             }
                         />

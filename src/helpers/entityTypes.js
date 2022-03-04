@@ -553,16 +553,16 @@ entityTypes.image = {
     },
 };
 
-export function getSummaryProp(metadata, element) {
+export function getSummaryProp(entityType, element) {
     const parts = element.split('.');
-    const prop = metadata.properties[parts[0]];
+    const prop = entityType.properties[parts[0]];
     if (prop.type === types.obj) {
         return entityTypes[prop.target].properties[parts[1]];
     }
     return prop;
 }
 
-export function initializeEntitiesMetadata() {
+export function initializeEntityTypes() {
     let typos = '';
     for (const entitiesKey in entityTypes) {
         const entity = entityTypes[entitiesKey];
@@ -648,26 +648,26 @@ function checkSummaries(entity, typos) {
 }
 
 
-export function createEmptyItem(metadata) {
+export function createEmptyItem(entityType) {
     // const logPath = pathMkr(logRoot, createEmptyItem, '(↓)');
-    // logv(logPath, {metadata_name: metadata.name});
+    // logv(logPath, {entityName: entityType.name});
     // logv(null, {emptyObject});
-    return createEmptyObject(metadata, Object.keys(metadata.properties));
+    return createEmptyObject(entityType, Object.keys(entityType.properties));
 }
 
-export function createEmptySummary(metadata) {
+export function createEmptySummary(entityType) {
     // const logPath = pathMkr(logRoot, createEmptySummary, '(↓)');
-    // logv(logPath, {metadata_name: metadata.name});
+    // logv(logPath, {entityName: entityType.name});
     // logv(null, {emptyObject});
-    return createEmptyObject(metadata, metadata.summary);
+    return createEmptyObject(entityType, entityType.summary);
 }
 
-function createEmptyObject(metadata, propNames) {
+function createEmptyObject(entityType, propNames) {
     // const logPath = pathMkr(logRoot, createEmptyObject, '(↓, ↓)');
-    // logv(logPath, {metadata_name: metadata.name, propNames});
+    // logv(logPath, {entityName: entityType.name, propNames});
     const item = {};
     propNames.forEach(key => {
-        const prop = getSummaryProp(metadata, key);
+        const prop = getSummaryProp(entityType, key);
         // logv(null, {key, prop});
         switch (prop?.type) {
             // case types.num:

@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import {
     createEmptyItem,
     keys,
-    // useBGLoading,
+    useBGLoading,
     useLoading,
     useConditionalEffect,
     useKeyPressed,
@@ -15,22 +15,23 @@ import { StorageContext } from '../../contexts/StorageContext';
 import { useImmutableSet } from '../../helpers/useImmutableSet';
 import { useSorting } from './UseSorting';
 import { logv, pathMkr, rootMkr } from '../../dev/log';
+import { useRenderCounter } from '../../dev/useRenderCounter';
 
 
 export function SummaryListTall({
-                                    metadata, initialId, UICues,
+                                    entityType, initialId, UICues,
                                     receiver,
                                     elKey
                                 }) {
     elKey += '/SListTall';
-    const entityName = metadata.name;
-    const idName = metadata.id;
+    const entityName = entityType.name;
+    const idName = entityType.id;
     const logRoot = rootMkr(SummaryListTall, entityName);
     const storage = useContext(StorageContext);
     const {allIdsLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
     // logv(logRoot + ` ▶▶▶ props:`,
-    //     {metadata, initialId, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
+    //     {entityType, initialId, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     const selectedIds = useImmutableSet();
@@ -47,7 +48,10 @@ export function SummaryListTall({
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
-    useLoading(storage, metadata);
+    const intervalCounter = useLoading(storage, entityName);
+
+
+    const renderCount = useRenderCounter();
 
 
     function chooseItemTall(item) {
@@ -55,7 +59,7 @@ export function SummaryListTall({
         // logv(logPath, {item});
         selectedIds.new([item?.[idName]]);
         // console.log('>>> setCommand from chooseItemTall()');
-        setCommand({operation: operationNames.edit, data: item, entityType: metadata, receiver: receiver});
+        setCommand({operation: operationNames.edit, data: item, entityType: entityType, receiver: receiver});
         // raise({operation: operationNames.edit, entityName}, item);
     }
 
@@ -64,7 +68,7 @@ export function SummaryListTall({
         // logv(logPath, {newList, singleSelectedId});
         let selectedItem;
         if (newList.length === 0) {
-            selectedItem = createEmptyItem(metadata);
+            selectedItem = createEmptyItem(entityType);
             // logv(logPath + '|newList|≡0', {selectedItem});
             newList.push(selectedItem);
             // logv(logPath, {newList});
@@ -113,7 +117,7 @@ export function SummaryListTall({
     );
 
     const conditions = {
-        entityType: metadata,
+        entityType: entityType,
         receiver: SummaryListTall.name,
         operations: {
             put: (formData) => {
@@ -134,10 +138,13 @@ export function SummaryListTall({
 
     return (
         <div onKeyDown={handleOnKeyDown} onKeyUp={handleOnKeyUp}>
+            {renderCount}
+            <br/>
+            intervalCounter={intervalCounter}
             <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
             {list && (
                 <div>
-                    <SummaryTable metadata={metadata}
+                    <SummaryTable entityType={entityType}
                                   list={list}
                                   selectedIds={selectedIds}
                                   chooseItem={chooseItemTall}

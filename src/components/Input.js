@@ -33,12 +33,12 @@ const inputTypes = {
 const aspectRatio = 15;
 const referenceSize = 80;
 
-export function Input({metadata, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
-    // const logRoot = rootMkr(Input, metadata.name);
-    const property = metadata.properties[field];
-    const elKey = `Input(${metadata.name},${field},${defaultValue})`;
+export function Input({entityType, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
+    // const logRoot = rootMkr(Input, entityType.name);
+    const property = entityType.properties[field];
+    const elKey = `Input(${entityType.name},${field},${defaultValue})`;
 
-    readOnly = readOnly || metadata.methods === 'R' || property?.readOnly;
+    readOnly = readOnly || entityType.methods === 'R' || property?.readOnly;
     // logv(logRoot, {field, property, readOnly});
     // const [command, setCommand] = useContext(CommandContext);
     let inputType = {};
@@ -77,7 +77,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             break;
         case types.obj:
             return (
-                <InputObject metadata={metadata}
+                <InputObject entityType={entityType}
                              field={field}
                              defaultValue={defaultValue}
                              useFormFunctions={useFormFunctions}
@@ -94,7 +94,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
         case types.img:
         case types.file:
             return (
-                <InputImageFile metadata={metadata}
+                <InputImageFile entityType={entityType}
                                 field={field}
                                 defaultValue={defaultValue}
                                 useFormFunctions={useFormFunctions}
@@ -103,7 +103,7 @@ export function Input({metadata, field, defaultValue, useFormFunctions, readOnly
             );
         default:
             return (<>
-                metadata: <Stringify data={metadata}/>
+                entityType: <Stringify data={entityType}/>
                 <br/>
                 field: <Stringify data={field}/>
             </>);

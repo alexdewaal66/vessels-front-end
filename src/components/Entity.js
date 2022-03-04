@@ -7,11 +7,11 @@ import pageLayout from '../pageLayouts/pageLayout.module.css';
 import { logv } from '../dev/log';
 
 
-export function Entity({metadata = entityTypes.vessel, initialId}) {
-    const logRoot = `${Entity.name}(${metadata.name})`;
-    const elKey =` Entity(${metadata.name},${initialId?.toString()})`;
+export function Entity({entityType = entityTypes.vessel, initialId}) {
+    const logRoot = `${Entity.name}(${entityType.name})`;
+    const elKey =` Entity(${entityType.name},${initialId?.toString()})`;
     const [item, setItem] = useState(null);
-    logv(logRoot, {initialId, item});
+    // logv(logRoot, {initialId, item});
 
     const [submitTime, setSubmitTime] = useState('');
 
@@ -20,8 +20,8 @@ export function Entity({metadata = entityTypes.vessel, initialId}) {
         <CommandContextProvider>
             <div className={pageLayout.splitView}>
                 <span className={pageLayout.firstPart}>
-                    {/*<div>{metadata.name}</div>*/}
-                    <SummaryListTall metadata={metadata}
+                    {/*<div>{entityType.name}</div>*/}
+                    <SummaryListTall entityType={entityType}
                                      initialId={initialId}
                                      receiver={EditEntity.name}
                                      key={elKey}
@@ -30,7 +30,7 @@ export function Entity({metadata = entityTypes.vessel, initialId}) {
                     />
                 </span>
                 <span className={pageLayout.secondPart}>
-                    <EditEntity metadata={metadata}
+                    <EditEntity entityType={entityType}
                                 item={item} setItem={setItem}
                                 receiver={SummaryListTall.name}
                                 key={elKey + ` / EditEntity(${item?.id})`}

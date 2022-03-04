@@ -5,10 +5,10 @@ import { createEmptySummary, getSummaryProp } from '../../helpers';
 
 const enterKey = 13;
 
-export function SummaryFilter({metadata, mergeConstraints, elKey}) {
-    // const logRoot = rootMkr(SummaryFilter, metadata.name);
+export function SummaryFilter({entityType, mergeConstraints, elKey}) {
+    // const logRoot = rootMkr(SummaryFilter, entityType.name);
 
-    const [inputFields, setInputFields] = useState(createEmptySummary(metadata));
+    const [inputFields, setInputFields] = useState(createEmptySummary(entityType));
     // logv(logRoot, {inputFields});
 
     const mergeInputFields = (key, changedValue) => {
@@ -49,14 +49,14 @@ export function SummaryFilter({metadata, mergeConstraints, elKey}) {
     }
 
     function inputSize(key) {
-        const property = getSummaryProp(metadata, key);
+        const property = getSummaryProp(entityType, key);
         const maxLength = property?.validation?.maxLength || 4;
         // if (!property)  logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
         return Math.min(18, maxLength / 2);
     }
 
     function inputLength(key) {
-        const property = getSummaryProp(metadata, key);
+        const property = getSummaryProp(entityType, key);
         const maxLength = property?.validation?.maxLength || 4;
         // if (!property)  logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
         return 2 * maxLength + 1;
@@ -64,9 +64,9 @@ export function SummaryFilter({metadata, mergeConstraints, elKey}) {
 
     return (
         <tr onKeyDown={enterKeyHandler} >
-            {metadata.summary.map(propertyName =>
+            {entityType.summary.map(propertyName =>
                 <th key={elKey + propertyName + '_sort'}>
-                    {/*{(label(metadata.properties, propertyName) || propertyName).split('').reverse().join('')}*/}
+                    {/*{(label(entityType.properties, propertyName) || propertyName).split('').reverse().join('')}*/}
                     <input type={'text'}
                            onChange={setInputFieldsHandler(propertyName)}
                            size={inputSize(propertyName)}

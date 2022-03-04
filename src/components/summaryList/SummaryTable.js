@@ -4,21 +4,21 @@ import { cx } from '../../helpers';
 import { useFilters } from './UseFilters';
 
 export function SummaryTable({
-                                 list, metadata, selectedIds, chooseItem, small,
+                                 list, entityType, selectedIds, chooseItem, small,
                                  UICues, elKey, setSorting, setFiltering,
                                  lastSavedItemId
                              }) {
     const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
     elKey += '/STable';
 
-    const entityName = metadata.name;
+    const entityName = entityType.name;
     const {hasFocus,  borderStyle} = UICues;
-    const idName = metadata.id[0];
+    const idName = entityType.id[0];
     // const logRoot = rootMkr(SummaryTable, entityName);
 
     // logv(logRoot, {list});
 
-    const {matchItem, mergeConstraints} = useFilters(metadata);
+    const {matchItem, mergeConstraints} = useFilters(entityType);
     const displayList = list.filter(matchItem);
 
     // find 'first' selected item in list
@@ -97,7 +97,7 @@ export function SummaryTable({
                 {/*{[...selectedIds.all].toString()};{lastSavedItemId}*/}
                 <table className={summaryStyle.table}>
                     <thead>
-                    <SummaryHeading metadata={metadata}
+                    <SummaryHeading entityType={entityType}
                                     elKey={entityName}
                                     setSorting={setSorting}
                                     setFiltering={setFiltering}
@@ -108,7 +108,7 @@ export function SummaryTable({
                     {displayList.map((listItem, index) => (
                         <SummaryRow item={listItem}
                                     index={index}
-                                    metadata={metadata}
+                                    entityType={entityType}
                                     chooseItem={chooseItem}
                                     key={elKey + index}
                                     elKey={elKey + index}

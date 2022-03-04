@@ -16,10 +16,10 @@ const keys = {
 };
 
 export function SummaryRow({
-                               item, index, metadata, chooseItem,
+                               item, index, entityType, chooseItem,
                                rowFocus, UICues, elKey
                            }) {
-    const entityName = metadata.name;
+    const entityName = entityType.name;
     const logRoot = rootMkr(SummaryRow, entityName, item.id);
     const {hasFocus, isSelected, hasVisualPriority, small} = UICues;
     const row = useRef(null);
@@ -104,7 +104,7 @@ export function SummaryRow({
         // const doLog = propertyName.includes('image');
         const property = getProperty(object, propertyName);
         // if (doLog) logv(logPath, {object, propertyName, property});
-        let propType = getSummaryProp(metadata, propertyName).type;
+        let propType = getSummaryProp(entityType, propertyName).type;
         // if (doLog) logv(null, {propType});
         if (propType === types.img || propType === types.file) {
             // logv(null, {object, propertyName, property});
@@ -125,7 +125,7 @@ export function SummaryRow({
             key={elKey}
             className={selectedStyle}
         >
-            {metadata.summary.map((propertyName) =>
+            {entityType.summary.map((propertyName) =>
                 <td key={elKey + propertyName}>
                     {(isNullRow)
                         ? '➖➖'
@@ -134,7 +134,7 @@ export function SummaryRow({
             )}
             {small && item.id ? (
                 <td>
-                    <span onClick={makeChoice({component: EntityN(metadata, item.id)})}>
+                    <span onClick={makeChoice({component: EntityN(entityType, item.id)})}>
                         ➡
                     </span>
                 </td>
