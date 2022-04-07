@@ -1,11 +1,19 @@
-import { Test } from '../dev/Test';
 import { Entity, Search, Welcome } from '../components';
 import { entityTypes } from '../helpers';
-import { Colors } from '../dev/Colors';
-import { OnFocusExample } from '../dev/OnFocusExample';
-import { TestMultiSelect } from '../dev/TestMultiSelect';
-import { TestMultipartFile } from '../dev/TestMultipartFile';
-
+import {
+    Colors,
+    OnFocusExample,
+    // Test,
+    // TestUseStatic,
+    // TestMultiSelect
+} from '../dev';
+// import { OnFocusExample } from '../dev';
+import { Test } from '../dev/Test';
+import { TestMultiSelect } from '../dev';
+import { TestMultipartFile } from '../dev';
+// import { Test, TestMultiSelect, TestMultipartFile } from '../dev';
+import { TestUseStatic } from '../dev';
+import { TestIsoRoot } from '../dev';
 const EntityN = (entityType, n) => () => <Entity entityType={entityType} initialId={n}/>;
 
 const homeMenuItems = {
@@ -25,6 +33,8 @@ const homeMenuItems = {
     relationType: {label: 'Soort Relatie', component: EntityN(entityTypes.relationType)},
     tms: {label: 'test multi-select', component: TestMultiSelect},
     tstDict: {label: 'test useDict', component: Test},
+    testVis: {label: 'TestIsoRoot', component: TestIsoRoot},
+    testStatic: {label: 'TestUseStatic', component: TestUseStatic},
     search: {label: 'Zoek', component: Search},
     xyz: {label: 'Xyz', component: EntityN(entityTypes.xyz)},
     xyzN3: {label: 'Xyz(3)', component: EntityN(entityTypes.xyz, 3)},

@@ -33,7 +33,10 @@ const inputTypes = {
 const aspectRatio = 15;
 const referenceSize = 80;
 
-export function Input({entityType, field, defaultValue, useFormFunctions, readOnly, ...rest}) {
+export function Input({
+                          entityType, field, defaultValue,
+                          EditEntityFormFunctions, readOnly, isEligible, ...rest
+                      }) {
     // const logRoot = rootMkr(Input, entityType.name);
     const property = entityType.properties[field];
     const elKey = `Input(${entityType.name},${field},${defaultValue})`;
@@ -80,7 +83,9 @@ export function Input({entityType, field, defaultValue, useFormFunctions, readOn
                 <InputObject entityType={entityType}
                              field={field}
                              defaultValue={defaultValue}
-                             useFormFunctions={useFormFunctions}
+                             EditEntityFormFunctions={EditEntityFormFunctions}
+                             readOnly={readOnly}
+                             isEligible={isEligible}
                              elKey={elKey}
                 />
             );
@@ -97,7 +102,9 @@ export function Input({entityType, field, defaultValue, useFormFunctions, readOn
                 <InputImageFile entityType={entityType}
                                 field={field}
                                 defaultValue={defaultValue}
-                                useFormFunctions={useFormFunctions}
+                                EditEntityFormFunctions={EditEntityFormFunctions}
+                                readOnly={readOnly}
+                                isEligible={isEligible}
                                 elKey={elKey}
                 />
             );
@@ -121,10 +128,8 @@ export function Input({entityType, field, defaultValue, useFormFunctions, readOn
             defaultValue={fieldValue}
             // defaultChecked={defaultValue}
             readOnly={readOnly}
-            {...useFormFunctions.register(field, property?.validation)}
+            {...EditEntityFormFunctions.register(field, property?.validation)}
             {...rest}
         />
     );
 }
-
-

@@ -1,6 +1,6 @@
 import React from 'react';
 import { now } from '../helpers';
-import styles from './onfocusexample.module.css'
+import focusStyles from './onfocusexample.module.css'
 
 export function OnFocusExample({children, className, ...rest}) {
 
@@ -38,7 +38,7 @@ export function OnFocusExample({children, className, ...rest}) {
     return (
         <>
             <div id="A"
-                 className={styles.onfocus}
+                 className={focusStyles.onfocus}
                  tabIndex={1}
                  onFocus={handleFocus}
                  onBlur={handleBlur}
@@ -47,7 +47,7 @@ export function OnFocusExample({children, className, ...rest}) {
                 <input id="A2"/>
             </div>
             <div id="B"
-                 className={styles.onfocus}
+                 className={focusStyles.onfocus}
                  tabIndex={1}
                  onFocus={handleFocus}
                  onBlur={handleBlur}

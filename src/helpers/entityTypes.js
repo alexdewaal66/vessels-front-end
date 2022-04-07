@@ -1,6 +1,3 @@
-export const entityTypes = {};
-// const logRoot = 'entityTypes';
-
 export const types = {
     str: 'string',
     num: 'number',
@@ -25,6 +22,9 @@ export const subtypes = {
     time: 'time',
     week: 'week',
 };
+
+export const entityTypes = {};
+// const logRoot = 'entityTypes';
 
 entityTypes.xyz = {
     label: 'Xyz',

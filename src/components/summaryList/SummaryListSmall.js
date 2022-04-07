@@ -1,19 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     createEmptyItem,
     keys, useKeyPressed,
-    useBGLoading,
     useLoading,
     useConditionalEffect,
-    useRequestState, useMountEffect
+    useRequestState,
 } from '../../helpers';
 import { SummaryTable } from './';
 import { ShowRequestState } from '../ShowRequestState';
-import { StorageContext } from '../../contexts/StorageContext';
-import { useImmutableSet } from '../../helpers/useImmutableSet';
-import { useSorting } from './UseSorting';
-import { logv, pathMkr, rootMkr } from '../../dev/log';
-import { Stringify } from '../../dev/Stringify';
+import { StorageContext } from '../../contexts';
+import { useImmutableSet } from '../../helpers';
+import { useSorting } from './useSorting';
+import { logv, pathMkr, rootMkr } from '../../dev';
+import { Stringify } from '../../dev';
 import { Patience } from '../Patience';
 
 
@@ -27,7 +26,7 @@ export function SummaryListSmall({
     const storage = useContext(StorageContext);
     const {allIdsLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
-    const {hasFocus, isMulti, hasNull} = UICues;
+    const {isMulti, hasNull} = UICues;
 
     if (!initialIdList)
         initialIdList = [0];

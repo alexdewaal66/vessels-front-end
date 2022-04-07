@@ -54,7 +54,7 @@ export async function deleteRequest({url, requestState, onSuccess, onFail}) {
 }
 
 export async function makeRequest({method, url, payload, headers, requestState = null, onSuccess, onFail}) {
-    const doLog = true || url.includes('vesseltypes') ;//|| url.includes('images');
+    const doLog = false;// || url.includes('files') || url.includes('images');
     const logPath = pathMkr(logRoot, makeRequest, '↓↓');
     headers = addJwtToHeaders(headers);
 
@@ -151,7 +151,7 @@ export const remote = {
         // const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [entityType.name, '↓']);
         // logv(logPath, {probe});
         const entries = Object.entries(probe);
-        // console.log(`storageHelpers » remote.findByUniqueField() \nentries=`, entries);
+        // logv(logPath, {entries});
         const hits = entries.filter(([k, v]) => !!v && (k in entityType.findItem.params));
         // logv(null, hits);
         if (hits) {
@@ -161,7 +161,7 @@ export const remote = {
                 const param = entityType.findItem.params[key];
                 url += (i === 0 ? '?' : '&') + param + '=' + value;
             });
-            // console.log(`storageHelpers » remote.findByUniqueField() \nurl=`, url);
+            // logv(logPath, {url});
             await getRequest({url, requestState, onSuccess, onFail});
         }
     },

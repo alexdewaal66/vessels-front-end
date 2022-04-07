@@ -2,7 +2,8 @@
 .tableFixHead {
     border: 1px solid var(--color-de-normal);
     /*margin: 0.5em;*/
-    width: fit-content;
+    /*width: fit-content;*/
+    width: 33vw;
 
     overflow-y: auto;
     overflow-x: hidden;
@@ -20,7 +21,8 @@
 .table {
     border-collapse: collapse;
     --table-padding: 0.25em;
-    width: fit-content;
+    /*width: fit-content;*/
+    width: 100%;
 }
 
 .table th {
@@ -45,7 +47,7 @@
 }
 
 .table tr:first-child {
-    border-top: transparent solid 5px;
+    border-top: transparent solid 0px;
 }
 
 .table tr:last-child {

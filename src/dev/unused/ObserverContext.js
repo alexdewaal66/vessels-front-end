@@ -16,7 +16,7 @@ const commandListExample = [
         conditions: {operation: 'edit', entityName: entityName},
         handler: () => {
             setItem(item);
-            useFormFunctions.reset();
+            EditEntityFormFunctions.reset();
         }
     },
 ];

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { cx } from '../../helpers';
-import { useFilters } from './UseFilters';
+import { useFilters } from './useFilters';
 
 export function SummaryTable({
                                  list, entityType, selectedIds, chooseItem, small,
@@ -12,11 +12,12 @@ export function SummaryTable({
     elKey += '/STable';
 
     const entityName = entityType.name;
-    const {hasFocus,  borderStyle} = UICues;
+    const {hasFocus, borderStyle, readOnly} = UICues;
     const idName = entityType.id[0];
     // const logRoot = rootMkr(SummaryTable, entityName);
-
     // logv(logRoot, {list});
+
+    const tableBodyRef = useRef();
 
     const {matchItem, mergeConstraints} = useFilters(entityType);
     const displayList = list.filter(matchItem);
@@ -27,9 +28,11 @@ export function SummaryTable({
     const [hasTableFocus, setTableFocus] = useState(hasFocus);
 
     function setFocusIndex(i) {
-        setFocusIndexState(i);
-        setTableFocus(true);
-        // console.log(now(), `elKey=`, elKey, `\n new focusIndex should be: `, i);
+        if (!readOnly) {
+            setFocusIndexState(i);
+            setTableFocus(true);
+            // console.log(now(), `elKey=`, elKey, `\n new focusIndex should be: `, i);
+        }
     }
 
     const rowFocus = {
@@ -77,6 +80,7 @@ export function SummaryTable({
 
     function UIRowCues(index) {
         return {
+            ...UICues,
             hasFocus: (index === focusIndex && hasTableFocus),
             // isSelected: (index === selectedIndex),
             isSelected: selectedIds?.has(displayList[index][idName]),
@@ -104,7 +108,7 @@ export function SummaryTable({
                                     mergeConstraints={mergeConstraints}
                     />
                     </thead>
-                    <tbody>
+                    <tbody ref={tableBodyRef}>
                     {displayList.map((listItem, index) => (
                         <SummaryRow item={listItem}
                                     index={index}
@@ -114,6 +118,7 @@ export function SummaryTable({
                                     elKey={elKey + index}
                                     rowFocus={rowFocus}
                                     UICues={UIRowCues(index)}
+                                    tableBodyRef={tableBodyRef}
                         />
                     ))}
                     </tbody>

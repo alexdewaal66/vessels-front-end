@@ -35,11 +35,26 @@ button + button {
     margin-left: 2em;
 }
 
+/*.form input,*/
+/*.form textarea,*/
+/*.form button {*/
+/*    font: inherit;*/
+/*    padding: 0.2em;*/
+/*}*/
 .form input,
 .form textarea,
-.form button {
+.form .enabled {
     font: inherit;
     padding: 0.2em;
+}
+
+.form .enabled:hover {
+    background-color: white;
+}
+
+.form .disabled {
+    background-color: transparent;
+    color: gray;
 }
 
 .form input:read-only,

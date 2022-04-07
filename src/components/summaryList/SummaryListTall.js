@@ -2,20 +2,18 @@ import React, { useContext, useState } from 'react';
 import {
     createEmptyItem,
     keys,
-    useBGLoading,
     useLoading,
     useConditionalEffect,
     useKeyPressed,
     useRequestState
 } from '../../helpers';
-import { SummaryTable } from './';
-import { CommandContext, operationNames } from '../../contexts/CommandContext';
+import { SummaryTable, useSorting } from './';
+import { CommandContext, operationNames } from '../../contexts';
 import { ShowRequestState } from '../ShowRequestState';
-import { StorageContext } from '../../contexts/StorageContext';
-import { useImmutableSet } from '../../helpers/useImmutableSet';
-import { useSorting } from './UseSorting';
-import { logv, pathMkr, rootMkr } from '../../dev/log';
-import { useRenderCounter } from '../../dev/useRenderCounter';
+import { StorageContext } from '../../contexts';
+import { useImmutableSet } from '../../helpers';
+import { logv, pathMkr, rootMkr } from '../../dev';
+import { Patience } from '../Patience';
 
 
 export function SummaryListTall({
@@ -31,7 +29,7 @@ export function SummaryListTall({
     const {allIdsLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
     // logv(logRoot + ` ▶▶▶ props:`,
-    //     {entityType, initialId, receiver, UICues, useFormFunctions, inputHelpFields, elKey});
+    //     {entityType, initialId, receiver, UICues, EditEntityFormFunctions, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     const selectedIds = useImmutableSet();
@@ -48,10 +46,7 @@ export function SummaryListTall({
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
-    const intervalCounter = useLoading(storage, entityName);
-
-
-    const renderCount = useRenderCounter();
+    useLoading(storage, entityName);
 
 
     function chooseItemTall(item) {
@@ -138,11 +133,9 @@ export function SummaryListTall({
 
     return (
         <div onKeyDown={handleOnKeyDown} onKeyUp={handleOnKeyUp}>
-            {renderCount}
             <br/>
-            intervalCounter={intervalCounter}
             <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
-            {list && (
+            {list ? (
                 <div>
                     <SummaryTable entityType={entityType}
                                   list={list}
@@ -156,6 +149,8 @@ export function SummaryListTall({
                                   lastSavedItemId={lastSavedItemId}
                     />
                 </div>
+            ) : (
+                <Patience>, lijst wordt opgebouwd.</Patience>
             )}
         </div>
     );

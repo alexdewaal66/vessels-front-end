@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useMountEffect, useDict, useRequestState, remote, entityTypes, cx} from '../helpers';
 import { Stringify } from './Stringify';
 
 const entityNamesWithReadIds = ['xyz', 'zyx', 'vesselType', 'country', 'unLocode', 'subdivision'];
 
 export function Empty({children, className, ...rest}) {
-    const entityType = entityTypes.vesselType;
     const entityIds = useDict({});
     const entityButtonsDisabled = useDict({});
     console.log(`entityIds=`, entityIds);

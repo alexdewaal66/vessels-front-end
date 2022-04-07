@@ -1,7 +1,7 @@
 import { useReducer } from 'react';
-import { logv, pathMkr, rootMkr } from '../dev/log';
+// import { logv, pathMkr, rootMkr } from '../dev/log';
 
-const logRoot = useDict.name + '.js';
+// const logRoot = useDict.name + '.js';
 
 const dictActions = {
     add: 'add',
@@ -17,7 +17,7 @@ function UseDictException(message) {
 }
 
 function dictReducer(state, {type, payload: {key, value}}) {
-    const logPath = pathMkr(logRoot, dictReducer, '↓↓');
+    // const logPath = pathMkr(logRoot, dictReducer, '↓↓');
     // logv(logPath, {state});
     switch (type) {
         // case dictActions.transformEntry:

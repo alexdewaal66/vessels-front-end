@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { summaryStyle } from './index';
-import { errv, pathMkr, rootMkr } from '../../dev/log';
+import { errv, pathMkr, rootMkr } from '../../dev';
 import { cx, endpoints, getSummaryProp, types } from '../../helpers';
-import { ChoiceContext } from '../../contexts/ChoiceContext';
+import { ChoiceContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
 
 const keys = {
@@ -17,12 +17,13 @@ const keys = {
 
 export function SummaryRow({
                                item, index, entityType, chooseItem,
-                               rowFocus, UICues, elKey
+                               rowFocus, UICues, elKey, // tableBodyRef
                            }) {
     const entityName = entityType.name;
     const logRoot = rootMkr(SummaryRow, entityName, item.id);
-    const {hasFocus, isSelected, hasVisualPriority, small} = UICues;
+    const {hasFocus, isSelected, hasVisualPriority, small, readOnly} = UICues;
     const row = useRef(null);
+
     const isNullRow = (small && item.id === 0);
     const selectedStyle = cx(
         isSelected ? summaryStyle.selected : null,
@@ -43,8 +44,10 @@ export function SummaryRow({
     }
 
     function choose() {
-        chooseItem(item);
-        setFocus();
+        if (!readOnly) {
+            chooseItem(item);
+            setFocus();
+        }
     }
 
     function handleOnKeyDown(e) {

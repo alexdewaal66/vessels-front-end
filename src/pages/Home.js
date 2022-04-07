@@ -1,13 +1,16 @@
 import React, { useContext } from 'react';
 import { Main, Menu, Aside, Content } from '../pageLayouts';
 import { homeMenuItems } from './homeMenuItems';
-import { ChoiceContext } from '../contexts/ChoiceContext';
-import { Stringify } from '../dev/Stringify';
-import { StorageContext } from '../contexts/StorageContext';
+import { ChoiceContext } from '../contexts';
+import { Welcome } from '../components';
+import { Stringify } from '../dev';
+import { StorageContext } from '../contexts';
 
 export default function Home() {
     const {choice, makeChoice} = useContext(ChoiceContext);
     const {store} = useContext(StorageContext);
+    console.log('choice = ',choice);
+    const ChosenComponent = choice.component || Welcome;
 
     return (
         <Content>
@@ -15,7 +18,7 @@ export default function Home() {
             </Menu>
             <Main>
                 {/*{(logv('-----HOME-----', {choice_label: choice.label}), '')}*/}
-                <choice.component/>
+                <ChosenComponent/>
             </Main>
             <Aside>
             </Aside>
@@ -30,5 +33,6 @@ export default function Home() {
                     )
                 }
                 <Stringify data={store.timestamps.state}>timestamps</Stringify>
+                <Stringify data={store.user.state}>users</Stringify>
 
  */

@@ -1,11 +1,12 @@
 import React, { Fragment, useContext, useState } from 'react';
-import { logv, pathMkr, rootMkr } from '../dev/log';
+import { logv, pathMkr, rootMkr, Stringify } from '../dev';
 import { endpoints, entityTypes } from '../helpers';
-import { StorageContext } from '../contexts/StorageContext';
+import { StorageContext } from '../contexts';
+import {formStyles} from '../formLayouts';
 
 export function InputImageFile({
                                    entityType, field, readOnly,
-                                   defaultValue, useFormFunctions, elKey
+                                   defaultValue, EditEntityFormFunctions, elKey
                                }) {
     const logRoot = rootMkr(InputImageFile, entityType.name, '↓↓');
     // logv(logRoot, {field, defaultValue});
@@ -13,16 +14,19 @@ export function InputImageFile({
 
     const {newItem, loadItem} = useContext(StorageContext);
 
-    const [selectedFiles, setSelectedFiles] = useState();
+    const [selectedFiles, setSelectedFiles] = useState({});
     const [imageId, setImageId] = useState(defaultValue.id);
-    const [imageFeedback, setImageFeedback] = useState('...');
+    const [imageFeedback, setImageFeedback] = useState('—');
     const [fullSizeImageId, setFullSizeImageId] = useState(
         typeof defaultValue === 'object'
             ? defaultValue.fullSizeId
             : defaultValue
     );
     const hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
-    useFormFunctions.setValue(hiddenFieldName, imageId);
+    EditEntityFormFunctions.setValue(hiddenFieldName, imageId);
+
+    const isFileSelected = '0' in selectedFiles;
+    const buttonStyle = isFileSelected ? formStyles.enabled : formStyles.disabled;
 
     function onFileSelect(event) {
         // const logPath = pathMkr(logRoot, onFileSelect);
@@ -40,16 +44,25 @@ export function InputImageFile({
         newItem('file', file, onUploadSuccess, onUploadFail);
     }
 
-    function onUploadSuccess(fileItem) {
-        // const logPath = pathMkr(logRoot, onUploadSuccess);
-        // logv(logPath, {fileItem}, 'succes ');
-        // logv(null, {fileItem_id: fileItem.id}, 'Succes');
-        newItem('image', {id: null, fullSizeId: fileItem.id}, onImageSuccess, onImageFail);
-    }
-
     function onUploadFail(error) {
         const logPath = pathMkr(logRoot, onUploadFail);
         logv(logPath, {error}, 'fail ');
+        // setImageFeedback('F:❌');
+        setImageFeedback('❌');
+    }
+
+    function onUploadSuccess(fileItem) {
+        const logPath = pathMkr(logRoot, onUploadSuccess);
+        logv(logPath, {fileItem}, 'succes ');
+        logv(null, {fileItem_id: fileItem.id}, 'Succes');
+        // setImageFeedback('F:✔ id=' + fileItem.id);
+        newItem('image', {id: null, fullSizeId: fileItem.id}, onImageSuccess, onImageFail);
+    }
+
+    function onImageFail(error) {
+        const logPath = pathMkr(logRoot, onImageFail);
+        logv(logPath, {error}, 'fail ');
+        // setImageFeedback(current => current + ', I:❌');
         setImageFeedback('❌');
     }
 
@@ -58,35 +71,43 @@ export function InputImageFile({
         // logv(logPath, {imageItem});
         setImageId(imageItem.id);
         setFullSizeImageId(imageItem.fullSizeId);
-        useFormFunctions.setValue(hiddenFieldName, imageItem.id);
-        loadItem(entityTypes.image.name, imageItem.id, onReloadSuccess);
+        EditEntityFormFunctions.setValue(hiddenFieldName, imageItem.id);
+        // setImageFeedback(current => current + ', I:✔ id=' + imageItem.id);
+        loadItem(entityTypes.image.name, imageItem.id, onReloadSuccess, onReloadFail);
+    }
+
+    function onReloadFail(imageItem) {
+        // const logPath = pathMkr(logRoot, onReloadSuccess);
+        // logv(logPath, {imageItem});
+        // setImageFeedback(current => current + ', R:❌');
+        setImageFeedback('❌');
     }
 
     function onReloadSuccess(imageItem) {
         // const logPath = pathMkr(logRoot, onReloadSuccess);
         // logv(logPath, {imageItem});
+        // setImageFeedback(current => current + ', R:✔');
         setImageFeedback('✔');
-    }
-
-    function onImageFail(error) {
-        const logPath = pathMkr(logRoot, onImageFail);
-        logv(logPath, {error}, 'fail ');
-        setImageFeedback('❌');
     }
 
 
     return (
         <Fragment key={elKey + 'inputImage'}>
-            <div>
-                <input type="file" accept="image/jpeg"
-                       onChange={onFileSelect}
-                       readOnly={readOnly}
-                />
-                <button type="button" onClick={onFileUpload}>
-                    Verstuur
-                </button>
-                &nbsp;{imageFeedback}
-            </div>
+            {!readOnly && (
+                <div>
+                    <input type="file" accept="image/jpeg"
+                           onChange={onFileSelect}
+                    />
+                    <button type="button"
+                            onClick={onFileUpload}
+                            disabled={!isFileSelected}
+                            className={buttonStyle}
+                    >
+                        Verstuur
+                    </button>
+                    &nbsp;{imageFeedback}
+                </div>
+            )}
 
             {fullSizeImageId && (
                 <>

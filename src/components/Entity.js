@@ -4,16 +4,16 @@ import { CommandContextProvider } from '../contexts/CommandContext';
 import { EditEntity } from './EditEntity';
 import { SummaryListTall } from './summaryList';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
-import { logv } from '../dev/log';
+// import { logv } from '../dev/log';
 
 
 export function Entity({entityType = entityTypes.vessel, initialId}) {
-    const logRoot = `${Entity.name}(${entityType.name})`;
+    // const logRoot = `${Entity.name}(${entityType.name})`;
     const elKey =` Entity(${entityType.name},${initialId?.toString()})`;
     const [item, setItem] = useState(null);
     // logv(logRoot, {initialId, item});
 
-    const [submitTime, setSubmitTime] = useState('');
+    // const [submitTime, setSubmitTime] = useState('');
 
 
     return (
@@ -35,8 +35,8 @@ export function Entity({entityType = entityTypes.vessel, initialId}) {
                                 receiver={SummaryListTall.name}
                                 key={elKey + ` / EditEntity(${item?.id})`}
                                 elKey={elKey + ` / EditEntity(${item?.id})`}
-                                submitTime={submitTime}
-                                setSubmitTime={setSubmitTime}
+                                // submitTime={submitTime}
+                                // setSubmitTime={setSubmitTime}
                     />
                 </span>
             </div>

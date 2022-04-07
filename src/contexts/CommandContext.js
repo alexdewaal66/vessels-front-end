@@ -39,7 +39,7 @@ export function CommandContextProvider({children}) {
             // logv(logPath, {conditions, command, match});
             if (match) {
                 // logv(null, {conditions, command});
-                conditions.operations[command.operation](command.data);
+                conditions.operations[command.operation](command.data, command.requestState);
                 setCommandState(initialCommand);
             }
         }

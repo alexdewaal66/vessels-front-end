@@ -1,27 +1,54 @@
-import React, { useContext, Fragment, useState } from 'react';
-import { CommandContext, operationNames } from '../contexts/CommandContext';
-import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, Input } from '../formLayouts';
+import React, { useContext, Fragment } from 'react';
+import { CommandContext, operationNames, StorageContext, AuthContext } from '../contexts';
+import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, formStyles } from '../formLayouts';
+import { Input, ShowRequestState, Details, EditButtons } from './';
 import { now, useRequestState } from '../helpers';
-import { ShowRequestState } from './ShowRequestState';
 import { useForm } from 'react-hook-form';
-import { Details, EditButtons } from './';
-import { StorageContext } from '../contexts/StorageContext';
-import { AuthContext } from '../contexts/AuthContext';
 
-
-export function EditEntity({entityType, item, setItem, receiver, elKey,submitTime, setSubmitTime}) {
+export function EditEntity(
+    {
+        entityType, item, setItem, receiver, elKey,
+        // submitTime, setSubmitTime
+    }) {
     const entityName = entityType.name;
     // const logRoot = rootMkr(EditEntity, entityType.name, '↓↓');
     // logv(logRoot, {item, receiver: receiver.name});
-    const {store, saveItem, newItem, deleteItem} = useContext(StorageContext);
-    const {user} = useContext(AuthContext);
+    const {
+        /**
+         * @param {string} entityName
+         * @param {number} id
+         */
+        getItem,
+        /**
+         * @param {string} entityName
+         * @param {Object} item
+         * @param {function} onSuccess
+         * @param {function} onFail
+         */
+        saveItem,
+        /**
+         * @param {string} entityName
+         * @param {Object} item
+         * @param {function} onSuccess
+         * @param {function} onFail
+         */
+        newItem,
+        /**
+         * @param {string} entityName
+         * @param {number} id
+         * @param {function} onSuccess
+         * @param {function} onFail
+         */
+        deleteItem
+    } = useContext(StorageContext);
+    const auth = useContext(AuthContext);
 
     const {useCommand, setCommand} = useContext(CommandContext);
-    const useFormFunctions = useForm();
-    const {handleSubmit, register, setValue} = useFormFunctions;
+    const EditEntityFormFunctions = useForm();
+    const {handleSubmit, setValue} = EditEntityFormFunctions;
     const requestState = useRequestState();
-    const readOnly = (entityType.methods === 'R') || !user;
-
+    const readOnly = (entityType.methods === 'R') || !auth.user;
+    const isEligible = auth.isEligibleToChange(item);
 
     const conditions = {
         entityType: entityType,
@@ -29,7 +56,7 @@ export function EditEntity({entityType, item, setItem, receiver, elKey,submitTim
         operations: {
             edit: (item) => {
                 setItem(item);
-                useFormFunctions.reset();
+                EditEntityFormFunctions.reset();
             },
         },
     }
@@ -48,7 +75,8 @@ export function EditEntity({entityType, item, setItem, receiver, elKey,submitTim
             if (field.endsWith('Id')) {
                 formData[field] = idValue;
             } else {
-                formData[field] = !!idValue ? store[target].state[idValue].item : null;
+                // formData[field] = !!idValue ? store[target].state[idValue].item : null;
+                formData[field] = !!idValue ? getItem(target, idValue) : null;
             }
         } else {
             const idList = formData[hiddenFieldName].split(',');
@@ -57,16 +85,54 @@ export function EditEntity({entityType, item, setItem, receiver, elKey,submitTim
         delete formData[hiddenFieldName];
     }
 
-    function onUpdate(formData) {
-
+    function onPut(formData) {
+        saveItem(entityName, formData,
+            () => {
+                // logv(logPath + ` » case 'put'`, {item}, 'onSuccess:');
+                setCommand({
+                    operation: operationNames.put,
+                    data: formData,
+                    entityType,
+                    receiver
+                });
+                requestState.setAtSuccess();
+            },
+            requestState.setAtError
+        );
     }
 
-    function onCreate(formData) {
-
+    function onPost(formData) {
+        // logv(logPath + ` » case 'post'`);
+        newItem(entityName, formData,
+            () => {
+                setCommand({
+                    operation: operationNames.post,
+                    data: formData,
+                    entityType,
+                    receiver,
+                    requestState
+                });
+                requestState.setAtSuccess();
+            },
+            requestState.setAtError
+        );
     }
 
     function onDelete(formData) {
-
+        //todo: ask confirmation
+        deleteItem(entityName, formData.id,
+            () => {
+                setCommand({
+                    operation: operationNames.delete,
+                    data: null,
+                    entityType,
+                    receiver,
+                    requestState
+                });
+                requestState.setAtSuccess();
+            },
+            requestState.setAtError
+        );
     }
 
     function onSearch(formData) {
@@ -77,48 +143,25 @@ export function EditEntity({entityType, item, setItem, receiver, elKey,submitTim
         // const logPath = pathMkr(logRoot, onSubmit);
         // logv(logPath, {requestMethod, formData});
         // logv(null, {'typeof formData.id': typeof formData.id});
-        //todo: repair datatypes of formData values, for now, just id
-        setSubmitTime(now());
 
+        // setSubmitTime(now());
+        requestState.setAtPending();
+        //todo: repair datatypes of formData values, for now, just id
         formData.id = +formData.id;
         const hiddenFieldNames = Object.keys(formData).filter(key => key.split('_')[0] === 'hidden');
         hiddenFieldNames.forEach(hiddenFieldName => extractDataFromHelpField(hiddenFieldName, formData));
         // logv(null, {hiddenFieldNames});
         switch (requestMethod) {
             case 'put':
-                saveItem(entityName, formData,
-                    (item) => {
-                        // logv(logPath + ` » case 'put'`, {item}, 'onSuccess:');
-                        setCommand({
-                            operation: operationNames.put,
-                            data: item,
-                            entityType: entityType,
-                            receiver: receiver
-                        });
-                    }
-                );
+                onPut(formData);
                 break;
             case 'post':
-                // logv(logPath + ` » case 'post'`);
-                newItem(entityName, formData,
-                    item => {
-                        setCommand({
-                            operation: operationNames.post,
-                            data: item,
-                            entityType: entityType,
-                            receiver: receiver
-                        });
-                    }
-                );
+                onPost(formData);
                 break;
             case 'delete':
-                //todo: ask confirmation
-                deleteItem(entityName, formData.id)
-                setCommand({operation: operationNames.delete, data: null, entityType: entityType, receiver: receiver});
+                onDelete(formData);
                 break;
-            // case 'search':
-            // not a useStorage method (yet)
-            //
+            // case 'search': not a useStorage method (yet)
             default:
                 const err = `Unsupported requestMethod: '${requestMethod}'`;
                 console.error(err);
@@ -126,6 +169,7 @@ export function EditEntity({entityType, item, setItem, receiver, elKey,submitTim
                 requestState.setErrorMsg(err);
                 return;
         }
+        // requestState.setAtSuccess();
     }
 
     const setRequestMethod = (method) => () => {
@@ -172,7 +216,7 @@ export function EditEntity({entityType, item, setItem, receiver, elKey,submitTim
                                                         <Input entityType={entityType}
                                                                field={itemPropName}
                                                                defaultValue={value || ''}
-                                                               useFormFunctions={useFormFunctions}
+                                                               EditEntityFormFunctions={EditEntityFormFunctions}
                                                                readOnly={readOnly}
                                                                key={elKey + ` / Input(${itemPropName}=${value})`}
                                                         />
@@ -187,6 +231,7 @@ export function EditEntity({entityType, item, setItem, receiver, elKey,submitTim
                             <EditButtons requestState={requestState}
                                          setRequestMethod={setRequestMethod}
                                          readOnly={readOnly}
+                                         isEligible={isEligible}
                             />
                         </Fieldset>
                     </Form>

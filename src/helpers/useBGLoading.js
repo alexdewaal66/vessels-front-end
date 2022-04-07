@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { validities } from './useStorage';
 import { useConditionalEffect } from './customHooks';
-import { logv, pathMkr, rootMkr } from '../dev/log';
+// import { logv, pathMkr, rootMkr } from '../dev/log';
 
 const blockSize = 10000;
 
 export function useBGLoading(storage, entityType) {
     const entityName = entityType.name;
-    const logRoot = '\n---------------------------------------\n' + rootMkr(useBGLoading, entityName);
-    const {store, loadItemsByIds, loadSummariesByIds} = storage;
+    // const logRoot = rootMkr(useBGLoading, entityName);
+    const {store} = storage;
     const [loadCounter, setLoadCounter] = useState(0);
     const [pendingBlocks, setPendingBlocks] = useState([]);
     const tree = store[entityName];
@@ -21,7 +21,7 @@ export function useBGLoading(storage, entityType) {
     }
 
     function loadUnloadedItems() {
-        const logPath = pathMkr(logRoot, loadUnloadedItems);
+        // const logPath = pathMkr(logRoot, loadUnloadedItems);
         // logv(logPath, {loadCounter, pendingBlocks});
 
         if (pendingBlocks.length === 0) {
@@ -45,7 +45,7 @@ export function useBGLoading(storage, entityType) {
         if (first === -1) return;
 
         const unloaded = keys.slice(first, first + blockSize).filter(unloadedFilter);
-        logv(null, {unloaded});
+        // logv(null, {unloaded});
         if (unloaded.length > 0) {
             const endIndex = Math.min(blockSize, unloaded.length);
             const unloadedIds = unloaded.slice(0, endIndex);//.map(e => +e);

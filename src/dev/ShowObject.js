@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 import { TTC, TT } from './Tooltips';
 import { entityTypes } from '../helpers';
 import { logv, pathMkr, rootMkr } from './log';
@@ -25,23 +25,24 @@ export function ShowObject({entityName, data, tooltip}) {
             )}
             <ul>
                 {Object.entries(data).map(([key, value]) =>
-                    <>{(key !== 'timestamp') && (
-                        <li key={key} style={{listStyleType: 'none'}}>
-                            {tooltip
-                                ? <TTC>{key} :
-                                    <TT>{typeof value}</TT>
-                                </TTC>
-                                : <span style={{whiteSpace: 'pre'}}>
+                    <Fragment key={key}>
+                        {(key !== 'timestamp') && (
+                            <li style={{listStyleType: 'none'}}>
+                                {tooltip
+                                    ? <TTC>{key} :
+                                        <TT>{typeof value}</TT>
+                                    </TTC>
+                                    : <span style={{whiteSpace: 'pre'}}>
                                     {property(key, entityName)}:&nbsp;
                                 </span>
-                            }
-                            {typeof value === 'object'
-                                ? <ShowObject data={value}/>
-                                : <>{value}</>
-                            }
-                        </li>
-                    )}
-                    </>
+                                }
+                                {typeof value === 'object'
+                                    ? <ShowObject data={value}/>
+                                    : <>{value}</>
+                                }
+                            </li>
+                        )}
+                    </Fragment>
                 )
                 }
             </ul>

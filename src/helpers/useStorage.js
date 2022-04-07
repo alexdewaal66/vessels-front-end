@@ -1,13 +1,9 @@
 import { entityTypes } from './entityTypes';
-import { useDict } from './useDict';
-import { useMountEffect } from './customHooks';
-import { remote } from './remote';
-import { now, makeId } from './utils';
+import { useDict, useMountEffect, remote, now, RequestState } from './';
 import { useState } from 'react';
-import { RequestState } from './RequestState';
 // import { logv, pathMkr, rootMkr } from '../dev/log';
-import { useImmutableSet } from './useImmutableSet';
-import { pathMkr, logv } from '../dev/log';
+import { pathMkr, logv } from '../dev';
+
 
 export const validities = {none: 0, id: 1, summary: 2, full: 3};
 
@@ -30,7 +26,8 @@ const initialTimestamps = {
     image: 0,
 };
 
-const entityNames = Object.keys(initialTimestamps);
+export const entityNameList = Object.keys(initialTimestamps);
+export const entityNames = Object.fromEntries(entityNameList.map(name => [name, name]));
 
 const logRoot = useStorage.name + '.js';
 
@@ -43,10 +40,6 @@ const idItemToEntry = idItem => [idItem.id, {
     item: idItem,
     validity: validities.id,
 }];
-
-// todo: use in all exported functions
-function doNothing() {
-}
 
 function transformAndStoreIdArray(data, tree) {
     const entries = (typeof data[0] === 'number')
@@ -68,7 +61,7 @@ async function readAndStoreIds(entityType, requestState, tree) {
 async function readAndStoreAllIds(store) {
     // logv(pathMkr(logRoot, readAndStoreAllIds), {store});
     await Promise.all(
-        entityNames.map(async name => {
+        entityNameList.map(async name => {
                 const requestState = new RequestState();
                 await readAndStoreIds(entityTypes[name], requestState, store[name]);
             }
@@ -76,13 +69,13 @@ async function readAndStoreAllIds(store) {
     );
 }
 
-async function readAndStoreAllEntities(store) {
+async function readAndStoreAllEntities(store, onSucces, onFail) {
     // const logPath = pathMkr(logRoot, readAndStoreAllEntities);
     // logv( logPath, {store});
     await Promise.all(
-        entityNames.map(async name => {
+        entityNameList.map(async name => {
                 const requestState = new RequestState();
-                await readAndStoreAllItems(name, requestState, store);
+                await readAndStoreAllItems(name, requestState, store, onSucces, onFail);
             }
         )
     );
@@ -103,49 +96,69 @@ function transformAndStoreItemArray(entityName, data, store, validity) {
     store[entityName].setMany(branches);
 }
 
-async function readAndStoreSummariesByIds(entityName, idArray, requestState, store) {
+async function readAndStoreSummariesByIds(entityName, idArray, requestState, store, onSuccess, onFail) {
     await remote.readSummariesByIds(
         entityTypes[entityName], idArray, requestState,
-        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.summary)
+        (response) => {
+            transformAndStoreItemArray(entityName, response.data, store, validities.summary);
+            onSuccess?.(response);
+        },
+        onFail
     )
 }
 
-async function readAndStoreItemsByIds(entityName, idArray, requestState, store) {
+async function readAndStoreItemsByIds(entityName, idArray, requestState, store, onSuccess, onFail) {
     await remote.readItemsByIds(
         entityTypes[entityName], idArray, requestState,
-        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.full)
+        (response) => {
+            transformAndStoreItemArray(entityName, response.data, store, validities.full);
+            onSuccess?.(response);
+        },
+        onFail
     )
 }
 
-async function readAndStoreAllSummaries(entityName, requestState, store) {
+async function readAndStoreAllSummaries(entityName, requestState, store, onSuccess, onFail) {
     await remote.readAllSummaries(
         entityTypes[entityName], requestState,
-        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.summary)
+        (response) => {
+            transformAndStoreItemArray(entityName, response.data, store, validities.summary);
+            onSuccess?.(response);
+        },
+        onFail
     )
 }
 
-async function readAndStoreAllItems(entityName, requestState, store) {
+async function readAndStoreAllItems(entityName, requestState, store, onSuccess, onFail) {
     if (!entityTypes[entityName]) logv(pathMkr(logRoot, readAndStoreAllItems), {entityName});
     await remote.readAllItems(
         entityTypes[entityName], requestState,
-        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.full)
+        (response) => {
+            transformAndStoreItemArray(entityName, response.data, store, validities.full);
+            onSuccess?.(response);
+        },
+        onFail
     )
 }
 
 
-async function readAndStoreNewItems(entityName, requestState, store) {
-    const logPath = pathMkr(logRoot, readAndStoreNewItems, entityName);
+async function readAndStoreNewItems(entityName, requestState, store, onSuccess, onFail) {
+    // const logPath = pathMkr(logRoot, readAndStoreNewItems, entityName);
     const timestamp1 = store.timestamps.state[entityName];
     const timestamp2 = timestamp1 || 1640991600000; // 2022-01-01 00:00:00.000
-    logv(logPath, {entityName, timestamp1, timestamp2, });
+    // logv(logPath, {entityName, timestamp1, timestamp2,});
     await remote.readNewItems(
         entityTypes[entityName], timestamp2, requestState,
-        (response) => transformAndStoreItemArray(entityName, response.data, store, validities.full)
+        (response) => {
+            transformAndStoreItemArray(entityName, response.data, store, validities.full);
+            onSuccess?.(response);
+        },
+        onFail
     )
 }
 
 
-async function readAndStoreItem(entityName, id, requestState, store, onSuccess) {
+async function readAndStoreItem(entityName, id, requestState, store, onSuccess, onFail) {
     // const logPath = pathMkr(logRoot, readAndStoreItem, '↓↓');
     const tree = store[entityName];
     // logv(logPath, {entityName: entityType.name, id, tree});
@@ -158,16 +171,17 @@ async function readAndStoreItem(entityName, id, requestState, store, onSuccess) 
                 validity: validities.full,
             });
             // logv(null, {item});
-            onSuccess(item);
+            onSuccess?.(item);
         },
-        () => {
+        (error) => {
             const current = tree.state[id];
             tree.set(id, {...current, fetchFailed: now(), validity: validities.id});
+            onFail?.(error);
         }
     );
 }
 
-async function readAndStoreItemByUniqueFields(entityName, probe, requestState, store, onSuccess) {
+async function readAndStoreItemByUniqueFields(entityName, probe, requestState, store, onSuccess, onFail) {
     let foundId = null;
     await remote.findByUniqueField(
         entityTypes[entityName], probe, requestState,
@@ -180,33 +194,27 @@ async function readAndStoreItemByUniqueFields(entityName, probe, requestState, s
             });
             foundId = item.id;
             // logv(pathMkr(logRoot, readAndStoreItemByUniqueFields, entityType.name), {probe, item});
-            onSuccess(foundId);
+            onSuccess?.(foundId);
         },
-        doNothing
+        onFail
     );
 }
 
-async function updateAndStoreItem(entityName, item, requestState, store, onSuccess) {
+async function updateAndStoreItem(entityName, item, requestState, store, onSuccess, onFail) {
     // const logPath = pathMkr(logRoot, updateAndStoreItem, entityType.name, '↓↓');
     const tree = store[entityName];
     // logv(logPath, {item, tree});
     if (tree.state[item.id]) {
         await remote.update(
             entityTypes[entityName], item, requestState,
-            () => {
+            (response) => {
                 tree.set(item.id, {
                     item, success: now(),
                     validity: validities.full,
                 });
-                onSuccess(item);
+                onSuccess?.(response.data);
             },
-            () => {
-                // tree.set(item.id, {
-                //     item, fail: now(),
-                //     // valid: true,
-                //     validity: validities.full,
-                // });
-            }
+            onFail
         );
     }
 }
@@ -214,24 +222,29 @@ async function updateAndStoreItem(entityName, item, requestState, store, onSucce
 function extractNewId(message, name) {
     // message is formed like 'Xyz 237 created'
     const parts = message.split(' ');
-    return (parts[0].toLowerCase() === name.toLowerCase()) ? parseInt(parts[1]) : null;
+    if (parts[0].toLowerCase() === name.toLowerCase())
+        return parseInt(parts[1])
+    else {
+        logv(pathMkr(logRoot, extractNewId), {message, name}, 'conflicting names');
+        return null;
+    }
 }
 
-// function extract
 
-async function createAndStoreItem(entityType, item, requestState, tree) {
+async function createAndStoreItem(entityName, item, requestState, store, onSuccess, onFail) {
     const doLog = false;//|| entityType === entityTypes.vesselType ;//|| url.includes('images');
-    const logPath = pathMkr(logRoot, createAndStoreItem, entityType.name, '↓↓');
+    const logPath = pathMkr(logRoot, createAndStoreItem, entityName, '↓↓');
     // const branch = tree.state[item.id];
     // logv(logPath, {item, tree});
+    const tree = store[entityName];
     if (!tree.state[item.id]) {
         await remote.create(
-            entityType, item, requestState,
+            entityTypes[entityName], item, requestState,
             (response) => {
-                if (doLog) logv(logPath, {item, response_data: response.data, entityName: entityType.name});
-                item.id = extractNewId(response.data, entityType.name);
+                if (doLog) logv(logPath, {item, response_data: response.data, entityName});
+                item.id = extractNewId(response.data, entityName);
                 if (doLog) logv(null, {item_id: item.id});
-                if (entityType.needsReload) {
+                if (entityTypes[entityName].needsReload) {
                     // logv(logPath + ' needsReload', {item})
                     tree.add(item.id, {
                         item, success: now(),
@@ -243,31 +256,30 @@ async function createAndStoreItem(entityType, item, requestState, tree) {
                         validity: validities.full,
                     });
                 }
+                onSuccess?.(item);
             },
-            () => {
-                // item.id = makeId();
-                // tree.set(item.id, {
-                //     item, fail: now(),
-                //     validity: validities.full,
-                // });
-            }
+            onFail
         );
     } else {
-        console.error(`useStorage.js » createAndStoreItem()\n\t item.id=${item.id} already exists`);
+        const prompt = 'id already exists: ';
+        onFail?.(prompt + item.id);
+        logv(logPath, {item_id: item.id}, prompt);
     }
 }
 
-async function deleteAndStoreItem(entityType, id, requestState, tree) {
+async function deleteAndStoreItem(entityName, id, requestState, store, onSuccess, onFail) {
     // const logPath = pathMkr(logRoot, deleteAndStoreItem, entityType.name, '↓↓');
     // logv(logPath, {id, tree});
+    const tree = store[entityName];
     if (tree.state[id]) {
         await remote.delete(
-            entityType, id, requestState,
-            () => {
-                console.log(`deleted id=`, id);
+            entityTypes[entityName], id, requestState,
+            (response) => {
+                // console.log(`deleted id=`, id);
                 tree.del(id);
+                onSuccess?.(response);
             },
-            () => {
+            (error) => {
                 const current = tree.state['failedDeletions'];
                 if (current) {
                     tree.set('failedDeletions', [...current, id]);
@@ -275,6 +287,7 @@ async function deleteAndStoreItem(entityType, id, requestState, tree) {
                     tree.add('failedDeletions', [id]);
                 }
                 tree.del(id);
+                onFail?.(error);
             }
         );
     }
@@ -308,28 +321,11 @@ export function useStorage() {
         relationType: useDict(),
         file: useDict(),
         image: useDict(),
+        // timestamps is NOT an entity
         timestamps: useDict(initialTimestamps),
     };
 
-    // const deferredEntries = useImmutableSet();
-
-
     const [allLoaded, setAllLoaded] = useState(null);
-
-    // useMountEffect(() => loadAllIds(() => setAllLoaded(true)));
-    //
-    // function loadAllIds(setFinished) {
-    //     // const logPath = pathMkr(logRoot, loadAllIds);
-    //     const requestState = new RequestState();
-    //     // logv(logPath, requestState);
-    //     setRsStatus({
-    //         requestState,
-    //         description: `het ophalen van alle IDs `,
-    //         advice: ''
-    //     });
-    //     readAndStoreAllIds(store)
-    //         .then(setFinished);
-    // }
 
     useMountEffect(() => loadAllEntities(() => setAllLoaded(true)));
 
@@ -352,29 +348,14 @@ export function useStorage() {
 
 
     function getItem(entityName, id, requiredValidity = validities.full) {
-        const logPath = pathMkr(logRoot, getItem, entityName, id);
+        // const logPath = pathMkr(logRoot, getItem, entityName, id);
         const entry = store[entityName].state[id];
         // logv(logPath, {entry});
-        if (entry?.validity >= requiredValidity) {
+        if (entry?.validity >= requiredValidity)
             return entry.item;
-        } else {
-            // mark entry in
-            // deferredEntries.add(`${entityName}/${id}`);
-            // logv('❌ ' + logPath, {entityName, id, entry, requiredValidity});
-        }
     }
 
-    // function loadDeferredItems(entityName) {
-    //     [...deferredEntries].forEach(entry => {
-    //         const [entryName, entryId] = entry.split('/');
-    //         if (entryName === entityName)
-    //             loadItem(entryName, +entryId, () => {
-    //                 deferredEntries.del(entry)
-    //             });// each load & each del is a state change
-    //     });
-    // }
-
-    function loadItem(entityName, id, onSuccess) {
+    function loadItem(entityName, id, onSuccess, onFail) {
         // const logPath = pathMkr(logRoot, loadItem, entityName, id);
         // logv(logPath, {});
         // if (!storage.store[entityName]?.state[id]) return;//TODO onnodig/lastig/??
@@ -389,7 +370,7 @@ export function useStorage() {
             .then();
     }
 
-    function loadSummariesByIds(entityName, idArray, onSuccess) {
+    function loadSummariesByIds(entityName, idArray, onSuccess, onFail) {
         if (!(entityName in store)) return;
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
@@ -399,13 +380,12 @@ export function useStorage() {
             advice: '',
             // action: {type: loadItemsByIds.name, entityName},
         });
-        readAndStoreSummariesByIds(entityName, idArray, requestState, store)
-            .then(onSuccess);
+        readAndStoreSummariesByIds(entityName, idArray, requestState, store, onSuccess, onFail)
+            .then();
     }
 
-    function loadItemsByIds(entityName, idArray, onSuccess) {
+    function loadItemsByIds(entityName, idArray, onSuccess, onFail) {
         if (!(entityName in store)) return;
-        const tree = store[entityName];
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
         setRsStatus({
@@ -414,11 +394,11 @@ export function useStorage() {
             advice: '',
             // action: {type: loadItemsByIds.name, entityName},
         });
-        readAndStoreItemsByIds(entityName, idArray, requestState, store)
-            .then(onSuccess);
+        readAndStoreItemsByIds(entityName, idArray, requestState, store, onSuccess, onFail)
+            .then();
     }
 
-    function loadAllSummaries(entityName, onSuccess) {
+    function loadAllSummaries(entityName, onSuccess, onFail) {
         if (!(entityName in store)) return;
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
@@ -428,11 +408,11 @@ export function useStorage() {
             advice: '',
             // action: {type: loadAllSummaries.name, entityName},
         });
-        readAndStoreAllSummaries(entityName, requestState, store)
-            .then(onSuccess);
+        readAndStoreAllSummaries(entityName, requestState, store, onSuccess, onFail)
+            .then();
     }
 
-    function loadAllItems(entityName, onSuccess) {
+    function loadAllItems(entityName, onSuccess, onFail) {
         if (!(entityName in store)) return;
         const requestState = new RequestState();
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
@@ -442,11 +422,11 @@ export function useStorage() {
             advice: '',
             // action: {type: loadAllItems.name, entityName},
         });
-        readAndStoreAllItems(entityName, requestState, store)
-            .then(onSuccess);
+        readAndStoreAllItems(entityName, requestState, store, onSuccess, onFail)
+            .then();
     }
 
-    function loadChangedItems(entityName, onSuccess) {
+    function loadChangedItems(entityName, onSuccess, onFail) {
         if (!(entityName in store)) return;
         const requestState = new RequestState();
         // logv(pathMkr(logRoot, loadChangedItems), {requestState});
@@ -456,13 +436,12 @@ export function useStorage() {
             advice: '',
             // action: {type: loadChangedItems.name, entityName},
         });
-        readAndStoreNewItems(entityName, requestState, store)
-            .then(onSuccess);
+        readAndStoreNewItems(entityName, requestState, store, onSuccess, onFail)
+            .then();
     }
 
-    function loadItemByUniqueFields(entityName, probe, setResult, onSuccess) {
+    function loadItemByUniqueFields(entityName, probe, onSuccess, onFail) {
         // console.log(`loadItemByUniqueFields(${entityName}, probe) \nprobe=`, probe);
-        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -470,11 +449,11 @@ export function useStorage() {
             advice: '',
             // action: {type: loadItemByUniqueFields.name, entityName, probe},
         });
-        readAndStoreItemByUniqueFields(entityName, probe, requestState, store, setResult)
-            .then(onSuccess);
+        readAndStoreItemByUniqueFields(entityName, probe, requestState, store, onSuccess, onFail)
+            .then();
     }
 
-    function saveItem(entityName, item, onSuccess) {
+    async function saveItem(entityName, item, onSuccess, onFail) {
         // const logPath = pathMkr(logRoot, saveItem, entityName, '↓');
         // logv(logPath, {item});
         const id = item.id;
@@ -489,16 +468,13 @@ export function useStorage() {
             advice: '',
             // action: {type: saveItem.name, entityName, id},
         });
-        updateAndStoreItem(entityName, item, requestState, store, onSuccess).then();
+        await updateAndStoreItem(entityName, item, requestState, store, onSuccess, onFail);
     }
 
-
-    function newItem(entityName, item,
-                     onSuccess = doNothing, onFail = doNothing) {
+    async function newItem(entityName, item, onSuccess, onFail) {
         // const logPath = pathMkr(logRoot, newItem, entityName, '↓');
         // logv(logPath, {item});
         item.id = -1;// prevent collision in store
-        const tree = store[entityName];
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -506,14 +482,10 @@ export function useStorage() {
             advice: '',
             // action: {type: newItem.name, entityName, id: 0},
         });
-        createAndStoreItem(entityTypes[entityName], item, requestState, tree)
-            .then(
-                () => onSuccess(item),
-                () => onFail()
-            );
+        await createAndStoreItem(entityName, item, requestState, store, onSuccess, onFail);
     }
 
-    function deleteItem(entityName, id, onSuccess) {
+    function deleteItem(entityName, id, onSuccess, onFail) {
         // const logPath = pathMkr(logRoot, deleteItem, entityName, '↓');
         // logv(logPath, {id});
         if (!store[entityName]?.state[id]) {
@@ -528,8 +500,8 @@ export function useStorage() {
             advice: '',
             // action: {type: deleteItem.name, entityName, id},
         });
-        deleteAndStoreItem(entityTypes[entityName], id, requestState, tree)
-            .then(onSuccess);
+        deleteAndStoreItem(entityName, id, requestState, store, onSuccess, onFail)
+            .then();
     }
 
 
