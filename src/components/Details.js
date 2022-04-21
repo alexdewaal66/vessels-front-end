@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
-import { TTC, TT } from '../dev/Tooltips';
-import { useConditionalEffect, transform } from '../helpers';
+import React, { useContext, useState } from 'react';
+import { TT, TTC } from './Tooltips';
+import { transform, useConditionalEffect } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
 import { StorageContext } from '../contexts/StorageContext';
 import { ShowObject } from '../dev/ShowObject';
@@ -16,9 +16,8 @@ export function Details({entityType, field, value, item, children}) {
 
     function fetchItem() {
         // const logPath = pathMkr(logRoot, fetchItem);
-        const probe = item;
-        // logv(logPath, {target, probe});
-        storage.loadItemByUniqueFields(target, probe, setDetailsId);
+        // logv(logPath, {target, item});
+        storage.loadItemByUniqueFields(target, item, setDetailsId);
     }
 
     useConditionalEffect(fetchItem, (target && value && target !== 'transform'), [target]);

@@ -1,28 +1,29 @@
 import React from 'react';
-import { FieldEl, FieldRow, formStyles } from '../formLayouts';
-import { ButtonRow } from '../formLayouts/ButtonRow';
+import { FieldEl, formStyles, ButtonRow } from '../formLayouts';
 
-export function EditButtons({requestState, setRequestMethod, readOnly, isEligible, children}) {
+export function EditButtons({requestState, setRequestMethod, readOnly, isEligible, form}) {
     // const logRoot = rootMkr(EditButtons);
-    // const { isDirty, isValid} = EditEntityFormFunctions;
+    const {isValid} = form.formState;
     const {isPending} = requestState;
-    const pendingStyle = isPending ? formStyles.disabled : formStyles.enabled;
-    const isDisabled = isPending || !isEligible;// || !isDirty || !isValid;
-    const changeStyle = isDisabled ? formStyles.disabled : formStyles.enabled;
-    /*
-    D:{isDirty ? 1 : 0} V:{isValid ? 1 : 0}
-     */
+    const isDisabled = isPending || !isValid;
+
+    function style(condition) {
+        return condition ? formStyles.disabled : formStyles.enabled;
+    }
+
     return (
         <ButtonRow>
             <FieldEl>
-                {/*P:{+isPending} , E:{+isEligible} , D:{+isDisabled}*/}
+                {/*P:{+isPending} , E:{+isEligible} , V:{+isValid}*/}
+                {/*<br/>*/}
+                {/*DA:{+isDisabled}*/}
             </FieldEl>
             <FieldEl>
                 {!readOnly && (
                     <>
                         <button type="submit"
-                                className={changeStyle}
-                                disabled={isDisabled}
+                                className={style(isDisabled || !isEligible)}
+                                disabled={isDisabled || !isEligible}
                                 onClick={setRequestMethod('put')}
                                 id="submit_put"
                                 key="submit_put"
@@ -31,8 +32,8 @@ export function EditButtons({requestState, setRequestMethod, readOnly, isEligibl
                             Wijzig
                         </button>
                         <button type="submit"
-                                className={pendingStyle}
-                                disabled={isPending}
+                                className={style(isDisabled)}
+                                disabled={isDisabled}
                                 onClick={setRequestMethod('post')}
                                 id="submit_post"
                                 key="submit_post"
@@ -41,8 +42,8 @@ export function EditButtons({requestState, setRequestMethod, readOnly, isEligibl
                             Maak nieuw
                         </button>
                         <button type="submit"
-                                className={changeStyle}
-                                disabled={isDisabled}
+                                className={style(isDisabled || !isEligible)}
+                                disabled={isDisabled || !isEligible}
                                 onClick={setRequestMethod('delete')}
                                 id="submit_del"
                                 key="submit_del"
@@ -52,7 +53,6 @@ export function EditButtons({requestState, setRequestMethod, readOnly, isEligibl
                         </button>
                     </>
                 )}
-                {children}
             </FieldEl>
         </ButtonRow>
     );

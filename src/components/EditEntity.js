@@ -1,9 +1,12 @@
 import React, { useContext, Fragment } from 'react';
 import { CommandContext, operationNames, StorageContext, AuthContext } from '../contexts';
-import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, formStyles } from '../formLayouts';
+import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
 import { Input, ShowRequestState, Details, EditButtons } from './';
-import { now, useRequestState } from '../helpers';
+import { useRequestState } from '../helpers';
 import { useForm } from 'react-hook-form';
+// import { logv, rootMkr, pathMkr } from '../dev/log';
+// import { Value } from '../dev/Value';
+// import { Stringify } from '../dev';
 
 export function EditEntity(
     {
@@ -13,39 +16,14 @@ export function EditEntity(
     const entityName = entityType.name;
     // const logRoot = rootMkr(EditEntity, entityType.name, '↓↓');
     // logv(logRoot, {item, receiver: receiver.name});
-    const {
-        /**
-         * @param {string} entityName
-         * @param {number} id
-         */
-        getItem,
-        /**
-         * @param {string} entityName
-         * @param {Object} item
-         * @param {function} onSuccess
-         * @param {function} onFail
-         */
-        saveItem,
-        /**
-         * @param {string} entityName
-         * @param {Object} item
-         * @param {function} onSuccess
-         * @param {function} onFail
-         */
-        newItem,
-        /**
-         * @param {string} entityName
-         * @param {number} id
-         * @param {function} onSuccess
-         * @param {function} onFail
-         */
-        deleteItem
-    } = useContext(StorageContext);
+    const {getItem, saveItem, newItem, deleteItem} = useContext(StorageContext);
     const auth = useContext(AuthContext);
 
     const {useCommand, setCommand} = useContext(CommandContext);
-    const EditEntityFormFunctions = useForm();
-    const {handleSubmit, setValue} = EditEntityFormFunctions;
+    const entityForm = useForm({
+        mode: 'onChange'
+    });
+    const {handleSubmit, setValue} = entityForm;
     const requestState = useRequestState();
     const readOnly = (entityType.methods === 'R') || !auth.user;
     const isEligible = auth.isEligibleToChange(item);
@@ -56,7 +34,7 @@ export function EditEntity(
         operations: {
             edit: (item) => {
                 setItem(item);
-                EditEntityFormFunctions.reset();
+                entityForm.reset();
             },
         },
     }
@@ -135,9 +113,7 @@ export function EditEntity(
         );
     }
 
-    function onSearch(formData) {
-
-    }
+    // function onSearch(formData) {}
 
     function onSubmit({requestMethod, ...formData}) {
         // const logPath = pathMkr(logRoot, onSubmit);
@@ -216,7 +192,7 @@ export function EditEntity(
                                                         <Input entityType={entityType}
                                                                field={itemPropName}
                                                                defaultValue={value || ''}
-                                                               EditEntityFormFunctions={EditEntityFormFunctions}
+                                                               entityForm={entityForm}
                                                                readOnly={readOnly}
                                                                key={elKey + ` / Input(${itemPropName}=${value})`}
                                                         />
@@ -232,6 +208,7 @@ export function EditEntity(
                                          setRequestMethod={setRequestMethod}
                                          readOnly={readOnly}
                                          isEligible={isEligible}
+                                         form={entityForm}
                             />
                         </Fieldset>
                     </Form>

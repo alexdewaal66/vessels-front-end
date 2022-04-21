@@ -1,6 +1,6 @@
 import { useRef } from 'react';
-// import { logv, pathMkr, rootMkr } from '../dev';
-// const logRoot = 'useStatic.js';
+// import { logv, pathMkr, rootMkr } from '../dev/log';
+// const logRoot = 'useStaticObject.js';
 
 const dummyTarget = {};
 
@@ -24,7 +24,7 @@ function handler(container) {
     };
 }
 
-export function useStatic(initialValue = {}) {
+export function useStaticObject(initialValue = {}) {
     const container = useRef(initialValue);
     return new Proxy(dummyTarget, handler(container));
 }

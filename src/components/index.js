@@ -9,3 +9,4 @@ export * from './Patience';
 export * from './Search';
 export * from './ShowRequestState';
 export * from './Welcome';
+export { ValidationMessage } from './ValidationMessage';

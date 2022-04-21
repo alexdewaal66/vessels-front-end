@@ -3,11 +3,16 @@
     border: 1px solid var(--color-de-normal);
     /*margin: 0.5em;*/
     /*width: fit-content;*/
-    width: 33vw;
+    width: 100%;
+    min-width: 35vw;
 
     overflow-y: auto;
     overflow-x: hidden;
     height: 85vh;
+}
+
+.waiting {
+    cursor: wait;
 }
 
 .tall {
@@ -47,7 +52,7 @@
 }
 
 .table tr:first-child {
-    border-top: transparent solid 0px;
+    border-top: transparent solid 0;
 }
 
 .table tr:last-child {
@@ -143,7 +148,7 @@ th .sort {
 th .filter {
     display: inline;
     height: 1em;
-    padding: 0;
+    padding: 0 2px;
     /*font-size: smaller;*/
     /*font-weight: normal;*/
 }

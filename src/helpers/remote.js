@@ -75,7 +75,7 @@ export async function makeRequest({method, url, payload, headers, requestState =
     } catch (error) {
         if (error?.response)
             error.response.statusText = statusCodes[error.response.status];
-        logv(logPath, {error});
+        logv(logPath, {error, method, url, payload});
         requestState?.setAtError();
         requestState?.setErrorMsg(error.toString());
         if (onFail) onFail(error);

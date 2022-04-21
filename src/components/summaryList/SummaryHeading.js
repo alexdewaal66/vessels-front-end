@@ -4,7 +4,7 @@ import { SummaryFilter } from './SummaryFilter';
 
 export function SummaryHeading({
                                    entityType, elKey,
-                                   setSorting, mergeConstraints
+                                   sorting, mergeConstraints
                                }) {
     // const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
     // logv(logRoot, {elKey});
@@ -17,13 +17,13 @@ export function SummaryHeading({
     const up = (propertyName) => () => {
         // const logPath = pathMkr(logRoot, up.name);
         // logv(logPath, {propertyName});
-        setSorting({propertyName, order: 'up'})
+        sorting.setOrder({propertyName, order: 'up'})
     };
 
     const down = (propertyName) => () => {
         // const logPath = pathMkr(logRoot, down.name);
         // logv(logPath, {propertyName});
-        setSorting({propertyName, order: 'down'})
+        sorting.setOrder({propertyName, order: 'down'})
     };
 
 
@@ -35,8 +35,11 @@ export function SummaryHeading({
                         {/*{entityType.properties[propertyName].label || propertyName}*/}
                         {label(entityType.properties, propertyName) || propertyName}
                         <span>
-                            <button type={'button'} onClick={up(propertyName)} className={summaryStyle.sort}>▲</button>
-                            <button type={'button'} onClick={down(propertyName)} className={summaryStyle.sort}>▼
+                            <button type={'button'} onClick={up(propertyName)} className={summaryStyle.sort}>
+                                {sorting.isOrderUp(propertyName) ? '△' : '▲'}
+                            </button>
+                            <button type={'button'} onClick={down(propertyName)} className={summaryStyle.sort}>
+                                {sorting.isOrderUp(propertyName) ? '▼' : '▽'}
                             </button>
                         </span>
                     </th>

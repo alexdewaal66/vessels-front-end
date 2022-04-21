@@ -8,9 +8,9 @@ import { StatusContextProvider } from './contexts/StatusContext';
 import { StorageContextProvider } from './contexts/StorageContext';
 import { AuthContextProvider } from './contexts/AuthContext';
 import { ChoiceContextProvider } from './contexts/ChoiceContext';
-import { initializeEntityTypes } from './helpers';
+import { initializeAndCheckEntityTypes } from './helpers';
 
-initializeEntityTypes();
+initializeAndCheckEntityTypes();
 
 ReactDOM.render(
     <React.StrictMode>

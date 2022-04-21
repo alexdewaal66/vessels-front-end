@@ -1,7 +1,7 @@
 import React from 'react';
 import { logv, rootMkr } from '../log';
 import { useIntersectionObserver } from './useIntersectionObserver';
-import { TestIsoChild } from '../index';
+import { TestIsoChild } from './TestIsoChild';
 
 const length = 10_000
 const ids = [...Array(length).keys()];

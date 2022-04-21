@@ -5,9 +5,7 @@ import { useFilters } from './useFilters';
 
 export function SummaryTable({
                                  list, entityType, selectedIds, chooseItem, small,
-                                 UICues, elKey, setSorting, setFiltering,
-                                 lastSavedItemId
-                             }) {
+                                 UICues, elKey, sorting, setFiltering }) {
     const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
     elKey += '/STable';
 
@@ -103,7 +101,7 @@ export function SummaryTable({
                     <thead>
                     <SummaryHeading entityType={entityType}
                                     elKey={entityName}
-                                    setSorting={setSorting}
+                                    sorting={sorting}
                                     setFiltering={setFiltering}
                                     mergeConstraints={mergeConstraints}
                     />

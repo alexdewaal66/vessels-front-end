@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { summaryStyle } from './index';
 import filterSymbol from '../../assets/filter.svg';
 import { createEmptySummary, getSummaryProp } from '../../helpers';
+// import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 const enterKey = 13;
 
@@ -49,15 +50,18 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
     }
 
     function inputSize(key) {
+        // const logPath = pathMkr(logRoot, inputSize, key);
         const property = getSummaryProp(entityType, key);
-        const maxLength = property?.validation?.maxLength || 4;
-        // if (!property)  logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
-        return Math.min(18, maxLength / 2);
+        const maxLength = property?.validation?.maxLength?.value ?? 4;
+        // logv(logPath, {property, maxLength}, '❌');
+        const size = Math.min(18, maxLength / 2);
+        // logv(logPath, {property, maxLength, size});
+        return size;
     }
 
     function inputLength(key) {
         const property = getSummaryProp(entityType, key);
-        const maxLength = property?.validation?.maxLength || 4;
+        const maxLength = property?.validation?.maxLength?.value || 4;
         // if (!property)  logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
         return 2 * maxLength + 1;
     }

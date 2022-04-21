@@ -3,10 +3,18 @@ import { formStyles } from './';
 
 export function ButtonRow({children, elkey}) {
     return (
-        <span className={formStyles.row}
-              key={elkey + 'buttons'}
-        >
-            {children}
-        </span>
+        <>
+            {/*todo: use css, not a spacer*/}
+            <span className={formStyles.row}
+                  key={elkey + 'spacer'}
+            >
+                &nbsp;
+            </span>
+            <span className={formStyles.row}
+                  key={elkey + 'buttons'}
+            >
+                {children}
+            </span>
+        </>
     );
 }

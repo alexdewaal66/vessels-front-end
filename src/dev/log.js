@@ -1,4 +1,4 @@
-import { now } from '../helpers';
+import { now } from '../helpers/utils';
 
 // const loggedPaths = [
 //     // makeRequest.name,
@@ -40,24 +40,21 @@ export function pathMkr(logRoot, currentFunction, ...args) {
 }
 
 export function logv(path, vars, prompt) {
-    out(console.log, path, vars, prompt);
-}
-
-export function errv(path, vars, prompt) {
-    out(console.error, path, vars, prompt);
-}
-
-function out(consoleMethod, path, vars, prompt) {
     prompt = prompt || '';
     if (path) {
-        consoleMethod(now(), '\n' + path);
+        console.log(now(), '\n' + path);
         prompt = '\t' + prompt + ' ';
     } else {
         prompt = '^\t' + prompt + ' ';
     }
     if (vars) {
         for (const [key, value] of Object.entries(vars)) {
-            consoleMethod(prompt + key + '=', value);
+            console.log(prompt + key + '=', value);
         }
     }
+}
+
+export function errv(path, vars, prompt) {
+    logv(path, vars, prompt);
+    console.error(prompt);
 }

@@ -6,15 +6,15 @@ import {
     useConditionalEffect,
     useRequestState,
 } from '../../helpers';
-import { SummaryTable } from './';
+import { SummaryTable, useSorting } from './';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts';
 import { useImmutableSet } from '../../helpers';
-import { useSorting } from './useSorting';
-import { logv, pathMkr, rootMkr } from '../../dev';
-import { Stringify } from '../../dev';
+// import { logv, pathMkr, rootMkr } from '../../dev/log';
+import { Stringify } from '../../dev/Stringify';
 import { Patience } from '../Patience';
 
+export const optionalIdValue = -Infinity;
 
 export function SummaryListSmall({
                                      entityType, initialIdList, UICues,
@@ -22,11 +22,11 @@ export function SummaryListSmall({
                                  }) {
     elKey += '/SListSmall';
     const entityName = entityType.name;
-    const logRoot = rootMkr(SummaryListSmall, entityName, '↓↓');
+    // const logRoot = rootMkr(SummaryListSmall, entityName, '↓↓');
     const storage = useContext(StorageContext);
-    const {allIdsLoaded, store, getItem} = storage;
+    const {isAllLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
-    const {isMulti, hasNull} = UICues;
+    const {isMulti, hasNull, readOnly} = UICues;
 
     if (!initialIdList)
         initialIdList = [0];
@@ -37,20 +37,29 @@ export function SummaryListSmall({
 
     const {isControlDown, handleOnControlUp, handleOnControlDown} = useKeyPressed(keys.control);
 
-    const {sort, setSorting} = useSorting(updateListSmall, list);
+    const sorting = useSorting(updateListSmall, list, entityType);
 
     // logv(logRoot + ` states:`, {
-    //     initialId, allIdsLoaded,
+    //     initialId, isAllLoaded,
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
     useLoading(storage, entityType);
+
     // useLoading(storage, entityType);
 
-    function chooseItemSmall(item) {
-        const logPath = pathMkr(logRoot, chooseItemSmall);
+    async function chooseItemSmall(item) {
+        // const logPath = pathMkr(logRoot, chooseItemSmall);
         let newSelectedIds;
         // logv(logPath, {item, isKeyDown: isControlDown});
+        if (item?.id === optionalIdValue) {
+            const blankItem = createEmptyItem(entityType);
+            await storage.newItem(entityType.name, blankItem,
+                (savedItem) => {
+                    item = savedItem;
+                    // logv(logPath, {item});
+                });
+        }
         if (isMulti && isControlDown) {
             newSelectedIds = selectedIds.toggle(item.id);
             // if (selectedIds.has(item.id)) {
@@ -63,7 +72,7 @@ export function SummaryListSmall({
             // selectedIds.new(newSelectedIds);
             newSelectedIds = selectedIds.new([item?.id || 0]);
         }
-        logv(logPath, {newSelectedIds});
+        // logv(logPath, {newSelectedIds});
         setHiddenField([...newSelectedIds].toString());
     }
 
@@ -75,7 +84,7 @@ export function SummaryListSmall({
             selectedIds.new();
             selectedItem = null;
         } else {
-            sort(newList);
+            sorting.sort(newList);
             const firstId = initialIdList?.[0]
             const shouldAnIdBeSelected = !!firstId;
             // logv(null, {initialId, shouldAnIdBeSelected});
@@ -106,6 +115,11 @@ export function SummaryListSmall({
             nullItem.id = 0;
             list.push(nullItem);
         }
+        if (!readOnly){
+            const optionalItem = createEmptyItem(entityType);
+            optionalItem.id = optionalIdValue;
+            list.push(optionalItem);
+        }
         // logv(logPath, {list});
         updateListSmall(list);
     }
@@ -113,8 +127,8 @@ export function SummaryListSmall({
 
     useConditionalEffect(
         makeList,
-        allIdsLoaded,
-        [store[entityName].state, allIdsLoaded]
+        isAllLoaded,
+        [store[entityName].state, isAllLoaded]
     );
 
 
@@ -134,7 +148,7 @@ export function SummaryListSmall({
                                   UICues={UICues}
                                   elKey={elKey}
                                   key={elKey}
-                                  setSorting={setSorting}
+                                  sorting={sorting}
                     />
                 </div>
             )}

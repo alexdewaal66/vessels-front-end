@@ -1,12 +1,13 @@
 import React, { Fragment, useContext, useState } from 'react';
-import { logv, pathMkr, rootMkr, Stringify } from '../dev';
+import { logv, pathMkr, rootMkr } from '../dev/log';
+// import { Stringify } from '../dev/Stringify';
 import { endpoints, entityTypes } from '../helpers';
 import { StorageContext } from '../contexts';
 import {formStyles} from '../formLayouts';
 
 export function InputImageFile({
                                    entityType, field, readOnly,
-                                   defaultValue, EditEntityFormFunctions, elKey
+                                   defaultValue, entityForm, elKey
                                }) {
     const logRoot = rootMkr(InputImageFile, entityType.name, '↓↓');
     // logv(logRoot, {field, defaultValue});
@@ -23,7 +24,7 @@ export function InputImageFile({
             : defaultValue
     );
     const hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
-    EditEntityFormFunctions.setValue(hiddenFieldName, imageId);
+    entityForm.setValue(hiddenFieldName, imageId);
 
     const isFileSelected = '0' in selectedFiles;
     const buttonStyle = isFileSelected ? formStyles.enabled : formStyles.disabled;
@@ -71,7 +72,7 @@ export function InputImageFile({
         // logv(logPath, {imageItem});
         setImageId(imageItem.id);
         setFullSizeImageId(imageItem.fullSizeId);
-        EditEntityFormFunctions.setValue(hiddenFieldName, imageItem.id);
+        entityForm.setValue(hiddenFieldName, imageItem.id);
         // setImageFeedback(current => current + ', I:✔ id=' + imageItem.id);
         loadItem(entityTypes.image.name, imageItem.id, onReloadSuccess, onReloadFail);
     }

@@ -1,10 +1,9 @@
 import React, { useContext, useState } from 'react';
 import {
     createEmptyItem,
-    keys,
+    keys, useKeyPressed,
     useLoading,
     useConditionalEffect,
-    useKeyPressed,
     useRequestState
 } from '../../helpers';
 import { SummaryTable, useSorting } from './';
@@ -12,7 +11,7 @@ import { CommandContext, operationNames } from '../../contexts';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts';
 import { useImmutableSet } from '../../helpers';
-import { logv, pathMkr, rootMkr } from '../../dev';
+import { logv, pathMkr, rootMkr } from '../../dev/log';
 import { Patience } from '../Patience';
 
 
@@ -26,10 +25,10 @@ export function SummaryListTall({
     const idName = entityType.id;
     const logRoot = rootMkr(SummaryListTall, entityName);
     const storage = useContext(StorageContext);
-    const {allIdsLoaded, store, getItem} = storage;
+    const {isAllLoaded, store, getItem} = storage;
     // logv(logRoot, {tree: store[entityName].state});
     // logv(logRoot + ` ▶▶▶ props:`,
-    //     {entityType, initialId, receiver, UICues, EditEntityFormFunctions, inputHelpFields, elKey});
+    //     {entityType, initialId, receiver, UICues, form, inputHelpFields, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     const selectedIds = useImmutableSet();
@@ -39,10 +38,10 @@ export function SummaryListTall({
 
     const {useCommand, setCommand} = useContext(CommandContext);
 
-    const {sort, setSorting} = useSorting(updateListTall, list);
+    const sorting = useSorting(updateListTall, list, entityType);
 
     // logv(logRoot + ` states:`, {
-    //     initialId, allIdsLoaded,
+    //     initialId, isAllLoaded,
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
@@ -69,10 +68,10 @@ export function SummaryListTall({
             // logv(logPath, {newList});
             selectedIds.new([selectedItem[idName]]);
         } else {
-            sort(newList);
+            sorting.sort(newList);
             if (singleSelectedId) {
                 // if (singleSelectedId < 0) logv(null, {singleSelectedId}, '< 0');
-                if (!allIdsLoaded) logv('❌❌❌❌' + logPath, {allIdsLoaded, newList});
+                if (!isAllLoaded) logv('❌❌❌❌' + logPath, {isAllLoaded, newList});
                 selectedItem = getItem(entityName, singleSelectedId);
                 // logv(null, {singleSelectedId, selectedItem}, '!!');
                 selectedIds.new([singleSelectedId]);//todo: obsolete line??
@@ -104,10 +103,10 @@ export function SummaryListTall({
 
     useConditionalEffect(
         makeList,
-        allIdsLoaded,
+        isAllLoaded,
         [
             store[entityName].state,
-            allIdsLoaded, lastSavedItemId
+            isAllLoaded, lastSavedItemId
         ]
     );
 
@@ -145,7 +144,7 @@ export function SummaryListTall({
                                   UICues={UICues}
                                   elKey={elKey}
                                   key={elKey}
-                                  setSorting={setSorting}
+                                  sorting={sorting}
                                   lastSavedItemId={lastSavedItemId}
                     />
                 </div>

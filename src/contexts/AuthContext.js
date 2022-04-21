@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState } from 'react';
-import { getRequest, now, persistentVars, useRequestState, useMountEffect, endpoints } from '../helpers';
-import jwt_decode from 'jwt-decode';
-import { pages } from '../pages';
 import { useHistory } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
+import { getRequest, persistentVars, useRequestState, useMountEffect, endpoints } from '../helpers';
+import { pages } from '../pages';
 import { Statusbar } from '../pageLayouts';
-import { logv } from '../dev';
+// import { logv, pathMkr, rootMkr } from '../dev/log';
 import { StorageContext } from './StorageContext';
 import { entityNames } from '../helpers';
 
@@ -18,6 +18,7 @@ const levels = {
 
 
 export function AuthContextProvider({children}) {
+    // const logRoot = rootMkr(AuthContextProvider);
     const store = useContext(StorageContext);
     const authStates = {PENDING: 'pending', DONE: 'done'};
     const [authState, setAuthState] = useState({});
@@ -35,12 +36,13 @@ export function AuthContextProvider({children}) {
     };
 
     function fetchUserData() {
+        // const logPath = pathMkr(logRoot, fetchUserData);
         const userID = getUserID(localStorage.getItem(persistentVars.JWT));
         getRequest({
             url: `${endpoints.users}${userID}`,
             requestState: requestState,
             onSuccess: (response) => {
-                logv('AuthContextProvider » fetchUserData()', {response});
+                // logv(logPath, {response});
                 setAuthState({
                     user: response.data,
                     status: authStates.DONE,
@@ -58,7 +60,8 @@ export function AuthContextProvider({children}) {
 
 
     function logout() {
-        console.log(now() + ' logout()');
+        // const logPath = pathMkr(logRoot, logout);
+        // logv(logPath);
         localStorage.removeItem(persistentVars.JWT);
         setAuthState({
             user: null, status: authStates.DONE
@@ -92,11 +95,11 @@ export function AuthContextProvider({children}) {
         }
     });
 
-    function isEligibleToChange(item) {
-        return !(item?.owner && authState?.user)
-            || authState.user.username === item.owner
-            || hasUserHigherRoleThan(item.owner);
-    }
+    // function isEligibleToChange(item) {
+    //     return !(item?.owner && authState?.user)
+    //         || authState.user.username === item.owner
+    //         || hasUserHigherRoleThan(item.owner);
+    // }
 
 /*
     owner       user        U == O      higherRole      ||      eligible
@@ -107,8 +110,8 @@ export function AuthContextProvider({children}) {
       Y           X            *             1          ||         1
       Y           Y            1             *          ||         1
 */
-    function isEligibleToChange2(item) {//todo - better version??
-        return  authState?.user && (
+    function isEligibleToChange(item) {
+        return  !!authState.user && (
             !item?.owner
             || authState.user.username === item.owner
             || hasUserHigherRoleThan(item.owner)
@@ -123,6 +126,7 @@ export function AuthContextProvider({children}) {
 
     function getHighestLevel(username) {
         let highest = levels.ROLE_MEMBER;
+        // if (!username) return highest;
         getRoles(username).forEach(role => {
             if (levels[role] > highest) highest = levels[role];
         });

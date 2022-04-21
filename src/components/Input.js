@@ -2,7 +2,9 @@ import React from 'react';
 
 import { subtypes, types } from '../helpers';
 import { Stringify } from '../dev/Stringify';
-import { InputObject, InputImageFile } from './';
+import { InputObject, InputImageFile, ValidationMessage } from './';
+// import { Value } from '../dev/Value';
+// import { rootMkr, pathMkr, logv } from '../dev/log';
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
@@ -35,17 +37,17 @@ const referenceSize = 80;
 
 export function Input({
                           entityType, field, defaultValue,
-                          EditEntityFormFunctions, readOnly, isEligible, ...rest
+                          entityForm, readOnly, isEligible, ...rest
                       }) {
     // const logRoot = rootMkr(Input, entityType.name);
     const property = entityType.properties[field];
     const elKey = `Input(${entityType.name},${field},${defaultValue})`;
 
-    readOnly = readOnly || entityType.methods === 'R' || property?.readOnly;
+    readOnly = !!(readOnly || entityType.methods === 'R' || property?.readOnly);
     // logv(logRoot, {field, property, readOnly});
     // const [command, setCommand] = useContext(CommandContext);
     let inputType = {};
-    let maxLength = property?.validation?.maxLength;
+    let maxLength = property?.validation?.maxLength?.value;
     let inputSize = null;
     let rows = null;
     let cols = null;
@@ -80,13 +82,13 @@ export function Input({
             break;
         case types.obj:
             return (
-                <InputObject entityType={entityType}
-                             field={field}
-                             defaultValue={defaultValue}
-                             EditEntityFormFunctions={EditEntityFormFunctions}
-                             readOnly={readOnly}
-                             isEligible={isEligible}
-                             elKey={elKey}
+                    <InputObject entityType={entityType}
+                                field={field}
+                                defaultValue={defaultValue}
+                                entityForm={entityForm}
+                                readOnly={readOnly}
+                                isEligible={isEligible}
+                                elKey={elKey}
                 />
             );
         case types.bool:
@@ -102,7 +104,7 @@ export function Input({
                 <InputImageFile entityType={entityType}
                                 field={field}
                                 defaultValue={defaultValue}
-                                EditEntityFormFunctions={EditEntityFormFunctions}
+                                entityForm={entityForm}
                                 readOnly={readOnly}
                                 isEligible={isEligible}
                                 elKey={elKey}
@@ -117,19 +119,23 @@ export function Input({
     }
 
     return (
-        <inputType.element
-            type={inputType.type}
-            maxLength={maxLength}
-            step={step}
-            size={inputSize}
-            name={field}
-            rows={rows}
-            cols={cols}
-            defaultValue={fieldValue}
-            // defaultChecked={defaultValue}
-            readOnly={readOnly}
-            {...EditEntityFormFunctions.register(field, property?.validation)}
-            {...rest}
-        />
+        <>
+            <inputType.element
+                type={inputType.type}
+                maxLength={maxLength}
+                step={step}
+                size={inputSize}
+                name={field}
+                rows={rows}
+                cols={cols}
+                defaultValue={fieldValue}
+                // defaultChecked={defaultValue}
+                readOnly={readOnly}
+                {...entityForm.register(field, property?.validation)}
+                {...rest}
+            />
+            &nbsp;
+            <ValidationMessage form={entityForm} fieldName={field}/>
+        </>
     );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
-import { useMountEffect, useDict, useRequestState, remote, entityTypes, cx} from '../helpers';
-import { Stringify } from './Stringify';
+import { useMountEffect, useDict, useRequestState, remote, entityTypes, cx} from '../../helpers';
+import { Stringify } from '../Stringify';
 
 const entityNamesWithReadIds = ['xyz', 'zyx', 'vesselType', 'country', 'unLocode', 'subdivision'];
 

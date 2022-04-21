@@ -10,7 +10,7 @@ import { ShowObject } from './ShowObject';
 
 export function Test({children, className, ...rest}) {
     const logRoot  = Test.name;
-    const {allIdsLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
+    const {isAllLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
         = useContext(StorageContext);
     const {createEntry, entries} = useSuperDict();
     const primesSet = useImmutableSet([1,2,3,5,7,11,13,15]);
@@ -121,8 +121,8 @@ export function Test({children, className, ...rest}) {
                     []
                 )
             }/>
-            <Stringify data={allIdsLoaded}>
-                allIdsLoaded
+            <Stringify data={isAllLoaded}>
+                isAllLoaded
             </Stringify>
             <Stringify data={rsStatus}>
                 status

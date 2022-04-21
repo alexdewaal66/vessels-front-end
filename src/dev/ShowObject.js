@@ -1,11 +1,11 @@
 import React, { Fragment, useMemo } from 'react';
-import { TTC, TT } from './Tooltips';
+import { TTC, TT } from '../components/Tooltips';
 import { entityTypes } from '../helpers';
-import { logv, pathMkr, rootMkr } from './log';
+// import { logv, pathMkr, rootMkr } from './log';
 
 function property(key, entityName) {
-    const logPath = pathMkr(rootMkr(ShowObject), property);
-    logv(logPath, {entityName, key, entityTypes});
+    // const logPath = pathMkr(rootMkr(ShowObject), property);
+    // logv(logPath, {entityName, key, entityTypes});
     return entityName
         ? entityTypes[entityName].properties[key]?.label
         : key;

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { validities } from './useStorage';
-import { useConditionalEffect } from './customHooks';
+import { validities } from '../../helpers/useStorage';
+import { useConditionalEffect } from '../../helpers/customHooks';
 // import { logv, pathMkr, rootMkr } from '../dev/log';
 
 const blockSize = 10000;
@@ -36,7 +36,7 @@ export function useBGLoading(storage, entityType) {
             const blockNr = Math.floor(index / blockSize);
             const isBlockPending = pendingBlocks[blockNr];
             return hasOnlyId && !isBlockPending;
-        };
+        }
 
         const keys = Object.keys(tree.state);
         // logv(null, {entries, pendingBlocks});

@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { summaryStyle } from './index';
-import { errv, pathMkr, rootMkr } from '../../dev';
+import { optionalIdValue, summaryStyle } from './index';
+import { errv } from '../../dev/log';
+import { pathMkr } from '../../dev/log';
+import { rootMkr } from '../../dev/log';
 import { cx, endpoints, getSummaryProp, types } from '../../helpers';
 import { ChoiceContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
@@ -25,6 +27,9 @@ export function SummaryRow({
     const row = useRef(null);
 
     const isNullRow = (small && item.id === 0);
+    const isEntityTypeReadOnly = entityType.methods === 'R';
+    const isRowOptional = (small && item.id === optionalIdValue);
+    const isRowVisible = !isRowOptional || (isRowOptional && !isEntityTypeReadOnly);
     const selectedStyle = cx(
         isSelected ? summaryStyle.selected : null,
         isNullRow ? summaryStyle.nullRow : null
@@ -33,7 +38,7 @@ export function SummaryRow({
     elKey += `/SRow`;
 
     useEffect(function scrollAndFocusIfNecessary() {
-        if (hasVisualPriority)
+        if (hasVisualPriority && isRowVisible)
             row.current.scrollIntoView({block: "center"});
         if (hasFocus) setFocus();
     });
@@ -120,7 +125,7 @@ export function SummaryRow({
         return property;
     }
 
-    return (
+    return (isRowVisible &&
         <tr onClick={choose}
             onKeyDown={handleOnKeyDown}
             ref={row}
@@ -132,10 +137,13 @@ export function SummaryRow({
                 <td key={elKey + propertyName}>
                     {(isNullRow)
                         ? '➖➖'
-                        : renderProperty(item, propertyName)}
+                        : (isRowOptional)
+                            ? 'nieuw'
+                            : renderProperty(item, propertyName)
+                    }
                 </td>
             )}
-            {small && item.id ? (
+            {(small && item.id && item.id !== optionalIdValue) ? (
                 <td>
                     <span onClick={makeChoice({component: EntityN(entityType, item.id)})}>
                         ➡

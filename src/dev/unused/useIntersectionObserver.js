@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { logv, pathMkr, rootMkr } from '../index';
 import { useConditionalEffect } from '../../helpers/customHooks';
-import { useStatic } from '../../helpers/useStatic';
+import { useStaticObject } from './useStaticObject';
 
 const RANGE = 20;
 
@@ -12,7 +12,7 @@ export function useIntersectionObserver(length, centeredIndex = 0) {
 
     const rootRef = useRef(null);
 
-    const iso = useStatic({
+    const iso = useStaticObject({
         observer: null,
         indexes: new Map(),
         elements: new Map(),

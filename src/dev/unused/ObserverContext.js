@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { logv } from '../log';
+// import { logv } from '../log';
 
 export const ObserverContext = createContext({});
 
@@ -16,7 +16,7 @@ const commandListExample = [
         conditions: {operation: 'edit', entityName: entityName},
         handler: () => {
             setItem(item);
-            EditEntityFormFunctions.reset();
+            form.reset();
         }
     },
 ];
@@ -39,7 +39,7 @@ export function ObserverContextProvider({children}) {
     const [subscriptions, setSubscriptions] = useState(new Set());
 
     function changeSubscriptions(commandList, methodName) {
-        const logPath = `${logRoot} » ${changeSubscriptions.name}(⬇, ${methodName}`;
+        // const logPath = `${logRoot} » ${changeSubscriptions.name}(⬇, ${methodName}`;
         // logv(logPath, {commandList});
         setSubscriptions(currentSubscriptions => {
             const newSubscriptions = {...currentSubscriptions};
@@ -72,7 +72,7 @@ export function ObserverContextProvider({children}) {
     }
 
     function raise(conditions, ...args) {
-        const logPath = `${logRoot} » ${raise.name}(⬇, ⬇)`;
+        // const logPath = `${logRoot} » ${raise.name}(⬇, ⬇)`;
         // logv(logPath, {conditions, args});
         const relevantHandlers = getHandlers(conditions);
         // logv(null, {subscriptions, relevantHandlers});

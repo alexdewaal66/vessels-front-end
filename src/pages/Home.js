@@ -3,13 +3,14 @@ import { Main, Menu, Aside, Content } from '../pageLayouts';
 import { homeMenuItems } from './homeMenuItems';
 import { ChoiceContext } from '../contexts';
 import { Welcome } from '../components';
-import { Stringify } from '../dev';
-import { StorageContext } from '../contexts';
+// import { Stringify } from '../dev/Stringify';
+// import { entityTypes } from '../helpers';
+// import { StorageContext } from '../contexts';
 
 export default function Home() {
     const {choice, makeChoice} = useContext(ChoiceContext);
-    const {store} = useContext(StorageContext);
-    console.log('choice = ',choice);
+    // const {store} = useContext(StorageContext);
+    // console.log('choice = ',choice);
     const ChosenComponent = choice.component || Welcome;
 
     return (
@@ -34,5 +35,6 @@ export default function Home() {
                 }
                 <Stringify data={store.timestamps.state}>timestamps</Stringify>
                 <Stringify data={store.user.state}>users</Stringify>
+                <Stringify data={entityTypes}>users</Stringify>
 
  */

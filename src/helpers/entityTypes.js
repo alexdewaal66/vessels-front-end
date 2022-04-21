@@ -1,3 +1,8 @@
+// import { errv } from '../dev/log';
+// import { logv, pathMkr } from '../dev/log';
+
+// const logRoot = 'entityTypes.js';
+
 export const types = {
     str: 'string',
     num: 'number',
@@ -26,14 +31,16 @@ export const subtypes = {
 export const entityTypes = {};
 // const logRoot = 'entityTypes';
 
+
 entityTypes.xyz = {
     label: 'Xyz',
     endpoint: '/xyzs',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
         name: {
-            type: types.str, label: 'naam', validation: {maxLength: 20},
+            type: types.str, label: 'naam', validation: {required: true, maxLength: 20},
         },
         description: {
             type: types.str, label: 'beschrijving', validation: {maxLength: 1000}
@@ -48,7 +55,6 @@ entityTypes.xyz = {
         },
         zyx: {
             type: types.obj, hasNull: true, isMulti: false,
-            // multiple: true,
         },
         image: {
             type: types.img, label: 'afbeelding', target: 'image'
@@ -66,6 +72,7 @@ entityTypes.zyx = {
     label: 'Zyx',
     endpoint: '/zyxs',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {
             type: types.num, label: 'id', readOnly: true,
@@ -89,6 +96,7 @@ entityTypes.user = {
     label: 'Gebruiker',
     endpoint: '/users',
     id: ['username'],
+    hasBulkLoading: true,
     properties: {
         username: {
             label: 'username', type: types.str, readOnly: true, validation: {maxLength: 256},
@@ -132,6 +140,7 @@ entityTypes.authority = {
     label: 'Machtiging',
     endpoint: '/users/{username}/authorities',
     id: ['username', 'role'],
+    hasBulkLoading: false,
     properties: {
         username: {
             type: types.str, label: 'username', validation: {maxLength: 100},
@@ -152,6 +161,7 @@ entityTypes.country = {
     label: 'Land',
     endpoint: '/countries',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {
             type: types.num, label: 'id'
@@ -190,6 +200,7 @@ entityTypes.subdivision = {
     label: 'Deelsector',
     endpoint: '/subdivisions',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {
             type: types.num, label: 'id',
@@ -224,6 +235,7 @@ entityTypes.unLocode = {
     label: 'Locatiecode',
     endpoint: '/un_locode',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {
             type: types.num, label: 'id',
@@ -278,6 +290,7 @@ entityTypes.address = {
     label: 'Adres',
     endpoint: '/addresses',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {
             type: types.num, label: 'id',
@@ -311,6 +324,7 @@ entityTypes.vesselType = {
     label: 'Scheepstype',
     endpoint: '/vesseltypes',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {
             type: types.num, label: 'id', readOnly: true,
@@ -376,6 +390,7 @@ entityTypes.hull = {
     label: 'Romp',
     endpoint: '/hulls',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
         hullNumber: {
@@ -398,6 +413,7 @@ entityTypes.vessel = {
     label: 'Vaartuig',
     endpoint: '/vessels',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
         hull: {type: types.obj, hasNull: true, isMulti: false,},
@@ -456,6 +472,7 @@ entityTypes.organisation = {
     label: 'Organisatie',
     endpoint: '/organisations',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
         shortName: {type: types.str, label: 'naam', validation: {maxLength: 50},},
@@ -477,6 +494,7 @@ entityTypes.relation = {
     label: 'Relatie',
     endpoint: '/relations',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
         organisation1: {
@@ -503,6 +521,7 @@ entityTypes.relationType = {
     label: 'soort relatie',
     endpoint: '/relationtypes',
     id: ['id'],
+    hasBulkLoading: true,
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
         nameNL: {type: types.str, label: 'naam (nl)', validation: {maxLength: 100},},
@@ -542,11 +561,47 @@ entityTypes.image = {
     needsReload: true,
     properties: {
         id: {type: types.num, label: 'id', readOnly: true,},
-        fullSizeId: {type: types.file, label: 'volledig', target: 'file',},
+        fullSizeId: {type: types.file, label: 'volledig', target: 'file', },
         thumbnailId: {type: types.file, label: 'miniatuur', target: 'file', noEdit: true,},
     },
     summary: ['id', 'thumbnailId'],
     methods: 'CRUD',
+    findItem: {
+        endpoint: '/find',
+        params: {},
+    },
+};
+
+entityTypes.propulsionType = {
+    label: 'voortstuwing',
+    endpoint: '/propulsiontypes',
+    id: ['id'],
+    hasBulkLoading: true,
+    properties: {
+        id: {
+            type: types.num, label: 'id', readOnly: true,
+        },
+        nameNL: {
+            type: types.str, label: 'naam (NL)', validation: {maxLength: 100},
+        },
+        nameEN: {
+            type: types.str, label: 'naam (EN)', validation: {maxLength: 100},
+        },
+        descNL: {
+            type: types.str, label: 'beschrijving (NL)', validation: {maxLength: 1000},
+        },
+        descEN: {
+            type: types.str, label: 'beschrijving (EN)', validation: {maxLength: 1000},
+        },
+        superType: {
+            type: types.obj, label: 'supertype', target: 'propulsionType',
+            hasNull: false, isMulti: false, validation: {
+                required: true, min: {value: 1, message: 'Supertype verplicht.'},
+            },
+        },
+    },
+    methods: 'CRUD',
+    summary: ['id', 'nameNL', 'nameEN'],
     findItem: {
         endpoint: '/find',
         params: {},
@@ -562,13 +617,13 @@ export function getSummaryProp(entityType, element) {
     return prop;
 }
 
-export function initializeEntityTypes() {
+export function initializeAndCheckEntityTypes() {
     let typos = '';
     for (const entitiesKey in entityTypes) {
         const entity = entityTypes[entitiesKey];
         entity.name = entitiesKey;
-        typos = checkProperties(entity, typos);
-        typos = checkSummaries(entity, typos);
+        typos += initializeAndCheckProperties(entity);
+        typos += checkSummaries(entity);
     }
     if (typos === '') {
         console.log('✔ entityTypes appears to have no typos.');
@@ -577,28 +632,27 @@ export function initializeEntityTypes() {
     }
 }
 
-function checkProperties(entity, typos) {
-    for (const propName in entity.properties) {
-        if (entity.properties.hasOwnProperty(propName)) {
-            const prop = entity.properties[propName];
-            switch (prop.type) {
-                case types.obj:
-                    // case types.img:
-                    typos = checkAndSetInternalReference(entity.name, propName, prop, typos);
-                    break;
-                case types.str:
-                    typos = checkStringValidation(entity.name, propName, prop, typos);
-                    break;
-                default:
-            }
-        } else {
-            typos += `\t❌ in ${entity.name}.properties : '${propName}'\n`;
+function initializeAndCheckProperties(entity) {
+    let typos = '';
+    for (const [propName, property] of Object.entries(entity.properties)) {
+        switch (property.type) {
+            case types.obj:
+            case types.file:
+                typos += checkAndSetInternalReference(entity.name, propName, property);
+                break;
+            case types.str:
+                typos += checkStringValidation(entity.name, propName, property);
+                expandAllValidations(property);
+                break;
+            default:
+                // expandAllValidations(property);
         }
     }
     return typos;
 }
 
-function checkAndSetInternalReference(entityName, propName, prop, typos) {
+function checkAndSetInternalReference(entityName, propName, prop) {
+    let typos = '';
     if (!prop.target) {
         if (entityTypes.hasOwnProperty(propName)) {
             prop.target = propName;
@@ -607,7 +661,7 @@ function checkAndSetInternalReference(entityName, propName, prop, typos) {
                 prop.label = entityTypes[propName].label.toLowerCase();
             }
         } else {
-            typos += `\t❌ in ${entityName}.properties : '${propName}'\n`;
+            typos += `\t❌ #1 in ${entityName}.properties : '${propName}'\n`;
         }
     } else {
         if (entityTypes.hasOwnProperty(prop.target)) {
@@ -615,13 +669,14 @@ function checkAndSetInternalReference(entityName, propName, prop, typos) {
                 prop.label = entityTypes[prop.target].label.toLowerCase();
             }
         } else {
-            typos += `\t❌ in ${entityName}.properties.${propName}.target : '${prop.target}'\n`;
+            typos += `\t❌ #2 in ${entityName}.properties.${propName}.target : '${prop.target}'\n`;
         }
     }
     return typos;
 }
 
-function checkStringValidation(entitiesKey, propName, prop, typos) {
+function checkStringValidation(entitiesKey, propName, prop) {
+    let typos = '';
     if (!prop.validation) {
         typos += `\t❌ missing validation in ${entitiesKey}.properties.${propName}\n`;
     } else if (!prop.validation.maxLength) {
@@ -630,7 +685,8 @@ function checkStringValidation(entitiesKey, propName, prop, typos) {
     return typos;
 }
 
-function checkSummaries(entity, typos) {
+function checkSummaries(entity) {
+    let typos = '';
     for (const summaryElement of entity.summary) {
         const parts = summaryElement.split('.');
         const singlePartTypo = (parts.length === 1 && !entity.properties[summaryElement]);
@@ -641,12 +697,35 @@ function checkSummaries(entity, typos) {
             // logv('❗ entityTypes.js » checkSummaries', {entity, parts});
         }
         if (singlePartTypo || dualPartsTypo || parts.length > 2) {
-            typos += `\t❌ in ${entity.name}.summary : '${summaryElement}'\n`;
+            typos += `\t❌ #3 in ${entity.name}.summary : '${summaryElement}'\n`;
         }
     }
     return typos;
 }
 
+function expandAllValidations(property) {
+    if (!property?.validation) return;
+    property.validation = transformEntries(property.validation, expandValidation);
+}
+
+function expandValidation([criterium, value]) {
+    // const logPath = pathMkr(logRoot, expandValidation);
+    if (typeof value === 'object') return value;
+    // logv(logPath, {criterium, value});
+    return [criterium, expansions[criterium](value)];
+}
+
+const expansions = {
+    required: (value) => ({value, message: 'verplicht veld'}),
+    maxLength: (value) => ({value, message: `maximaal ${value} karakters`}),
+    minLength: (value) => ({value, message: `minimaal ${value} karakters`}),
+    max: (value) => ({value, message: `niet groter dan ${value}`}),
+    min: (value) => ({value, message: `niet kleiner dan ${value}`}),
+};
+
+function transformEntries(obj, callback) {
+    return Object.fromEntries(Object.entries(obj).map(callback));
+}
 
 export function createEmptyItem(entityType) {
     // const logPath = pathMkr(logRoot, createEmptyItem, '(↓)');
@@ -683,3 +762,5 @@ function createEmptyObject(entityType, propNames) {
     return item;
 }
 
+export const entityNameList = Object.keys(entityTypes);
+export const entityNames = Object.fromEntries(entityNameList.map(name => [name, name]));
