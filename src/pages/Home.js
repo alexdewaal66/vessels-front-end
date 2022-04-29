@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Main, Menu, Aside, Content } from '../pageLayouts';
+import { Main, Menu, Content } from '../pageLayouts';
 import { homeMenuItems } from './homeMenuItems';
 import { ChoiceContext } from '../contexts';
 import { Welcome } from '../components';
@@ -21,8 +21,8 @@ export default function Home() {
                 {/*{(logv('-----HOME-----', {choice_label: choice.label}), '')}*/}
                 <ChosenComponent/>
             </Main>
-            <Aside>
-            </Aside>
+            {/*<Aside>*/}
+            {/*</Aside>*/}
         </Content>
     );
 }

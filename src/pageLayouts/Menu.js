@@ -8,7 +8,7 @@ export function Menu({menuItems, choice, makeChoice, children, className, ...res
         <nav className={pageLayout.menu} {...rest}>
             {children}
             <div className={menuStyles.nav}>
-                <h4>Gegevens:</h4>
+                {/*<h4>Gegevens:</h4>*/}
 
                 <ul className={menuStyles.ul}>
                     {menuItems?.map(menuItem =>

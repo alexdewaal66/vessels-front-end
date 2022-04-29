@@ -4,14 +4,14 @@ export function now() {
     return `(${time}.${date.getMilliseconds().toString().padStart(3, "0")})`;
 }
 
-export function range(size) {
-    return [...Array(size).keys()];
-}
+// export function range(size) {
+//     return [...Array(size).keys()];
+// }
 
-export function formatDate(timestamp) {
-    const day = (new Date(timestamp * 1_000));
-    return day.toLocaleDateString('nl-NL', {weekday: 'long'});
-}
+// export function formatDay(timestamp) {
+//     const day = (new Date(timestamp * 1_000));
+//     return day.toLocaleDateString('nl-NL', {weekday: 'long'});
+// }
 
 export function formatTime(timestamp) {
     const day = new Date(timestamp * 1000);
@@ -19,9 +19,9 @@ export function formatTime(timestamp) {
 }
 
 
-export function makeId() {
-    return now() + '_' + (Math.random() * 0x10_0000_0000_0000).toString(36);
-}
+// export function makeId() {
+//     return now() + '_' + (Math.random() * 0x10_0000_0000_0000).toString(36);
+// }
 
 export function loCaseCompare(p, q) {
     if (typeof p === 'string' && typeof q === 'string') {
@@ -33,10 +33,10 @@ export function loCaseCompare(p, q) {
     return 0;
 }
 
-export function emptyFields(fieldNames) {
-    const fields = {};
-    fieldNames.forEach(fieldName => {
-        fields[fieldName] = null;
-    });
-    return fields;
-}
+// export function emptyFields(fieldNames) {
+//     const fields = {};
+//     fieldNames.forEach(fieldName => {
+//         fields[fieldName] = null;
+//     });
+//     return fields;
+// }
