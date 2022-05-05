@@ -5,7 +5,7 @@ import { StorageContext } from '../contexts';
 import { ShowRequestState } from '../components';
 import { useImmutableSet } from '../helpers';
 import { logv } from './log';
-import { ShowObject } from './ShowObject';
+import { ShowObject } from '../components/ShowObject';
 // import { TestMountDismountContext } from './TestMountDismountContext';
 
 export function Test({children, className, ...rest}) {

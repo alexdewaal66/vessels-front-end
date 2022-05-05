@@ -6,7 +6,9 @@ import { entityTypes } from './entityTypes';
 
 const logRoot = 'remote.js';
 
+// enumeration of state names of a request
 export const requestStates = {IDLE: 'idle', PENDING: 'pending', SUCCESS: 'success', ERROR: 'error'};
+
 // enumeration of variable names saved in local storage
 export const persistentVars = {JWT: 'JsonWebToken'};
 

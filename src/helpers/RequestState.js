@@ -11,12 +11,15 @@ export class RequestState {
     get isIdle() {
         return (this.value === requestStates.IDLE);
     };
+
     get isPending() {
         return (this.value === requestStates.PENDING);
     };
+
     get isSuccess() {
         return (this.value === requestStates.SUCCESS);
     };
+
     get isError() {
         return (this.value === requestStates.ERROR);
     };

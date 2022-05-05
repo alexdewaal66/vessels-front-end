@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStaticObject } from './useStaticObject';
-import { ShowObject } from '../ShowObject';
+import { ShowObject } from '../../components/ShowObject';
 import { useState } from 'react';
 import { logv, pathMkr, rootMkr } from '../log';
 

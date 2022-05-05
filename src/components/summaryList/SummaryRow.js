@@ -145,7 +145,8 @@ export function SummaryRow({
             )}
             {(small && item.id && item.id !== optionalIdValue) ? (
                 <td>
-                    <span onClick={makeChoice({component: EntityN(entityType, item.id)})}>
+                    {/*<span onClick={makeChoice({component: EntityN(entityType, item.id)})}>*/}
+                    <span onClick={makeChoice(EntityN(entityType, item.id))}>
                         ➡
                     </span>
                 </td>

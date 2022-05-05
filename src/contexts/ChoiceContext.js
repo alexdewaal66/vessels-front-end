@@ -1,16 +1,22 @@
 import React, { createContext, useState } from 'react';
-import { homeMenuItems } from '../pages/homeMenuItems';
+import { Splash } from '../components/Splash';
 
-export const ChoiceContext = createContext({});
+const defaultItem = {label: Splash.name, component: Splash}
+
+export const ChoiceContext = createContext(defaultItem);
 
 export function ChoiceContextProvider({children}) {
-    const [choice, setChoice] = useState(homeMenuItems.default);
+    const [choice, setChoice] = useState(defaultItem);//homeMenuItems.default);
 
-    const makeChoice = c => () => setChoice(c);
+    const makeChoice = item => () => setChoice(item);
+
+    const initChoice = initItem => () => {
+        if (choice === defaultItem) setChoice(initItem);
+    };
 
 
     return (
-        <ChoiceContext.Provider value={{choice, makeChoice}}>
+        <ChoiceContext.Provider value={{choice, makeChoice, initChoice}}>
                 {children}
         </ChoiceContext.Provider>
     )

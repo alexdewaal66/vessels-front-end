@@ -3,15 +3,18 @@ import { Main, Menu, Content } from '../pageLayouts';
 import { homeMenuItems } from './homeMenuItems';
 import { ChoiceContext } from '../contexts';
 import { Welcome } from '../components';
+import { useMountEffect } from '../helpers';
 // import { Stringify } from '../dev/Stringify';
 // import { entityTypes } from '../helpers';
 // import { StorageContext } from '../contexts';
 
 export default function Home() {
-    const {choice, makeChoice} = useContext(ChoiceContext);
+    const {choice, makeChoice, initChoice} = useContext(ChoiceContext);
     // const {store} = useContext(StorageContext);
     // console.log('choice = ',choice);
     const ChosenComponent = choice.component || Welcome;
+
+    useMountEffect(initChoice(homeMenuItems.default));
 
     return (
         <Content>

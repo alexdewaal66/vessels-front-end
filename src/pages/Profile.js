@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts';
 import { Aside, Menu, Main, Content } from '../pageLayouts';
 import { pages } from './index';
 import { logv, rootMkr } from '../dev/log';
-import { ShowObject } from '../dev/ShowObject';
+import { ShowObject } from '../components/ShowObject';
 
 function Profile() {
     const logRoot = rootMkr(Profile);

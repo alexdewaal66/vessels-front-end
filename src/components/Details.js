@@ -2,8 +2,8 @@ import React, { useContext, useState } from 'react';
 import { TT, TTC } from './Tooltips';
 import { transform, useConditionalEffect } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
-import { StorageContext } from '../contexts/StorageContext';
-import { ShowObject } from '../dev/ShowObject';
+import { StorageContext } from '../contexts';
+import { ShowObject } from './ShowObject';
 
 export function Details({entityType, field, value, item, children}) {
     // const logRoot = rootMkr(Details, entityType.name, '↓↓');

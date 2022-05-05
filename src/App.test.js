@@ -1,10 +1,10 @@
 // import { render, screen } from '@testing-library/react';
 // import App from './App';
 
-// test('renders learn react link', () => {
+// test('<App /> renders Vessels title', () => {
 //   render(<App />);
-//   const linkElement = screen.getByText(/Vessels/i);
-//   expect(linkElement).toBeInTheDocument();
+//   const element = screen.getByText(/Vessels/i);
+//   expect(element).toBeInTheDocument();
 // });
 
 test('tests are running', () => {
