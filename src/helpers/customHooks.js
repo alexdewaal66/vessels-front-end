@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { requestStates } from './remote';
 
-export function useConditionalEffect(operation, condition, deps) {
+export function useConditionalEffect(callback, condition, deps) {
     useEffect(() => {
             if (condition)
-                operation();
+                callback();
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps
         deps
@@ -40,9 +40,9 @@ export function useRequestState(initialValue = requestStates.IDLE) {
 }
 
 export const keys = {
-    shift: {code: 16, name: 'Shift'},
-    control: {code: 17, name: 'Control'},
-    alt: {code: 18, name: 'Alt'}
+    shift: {code: 'ShiftLeft', name: 'Shift'},
+    control: {code: 'ControlLeft', name: 'Control'},
+    alt: {code: 'AltLeft', name: 'Alt'}
 };
 
 export function useKeyPressed(key) {
@@ -50,12 +50,12 @@ export function useKeyPressed(key) {
     const [isKeyDown, setIsKeyDown] = useState(false);
 
     function handleOnKeyDown(e) {
-        if (e.keyCode === key.code)
+        if (e.code === key.code)
             setIsKeyDown(true);
     }
 
     function handleOnKeyUp(e) {
-        if (e.keyCode === key.code)
+        if (e.code === key.code)
             setIsKeyDown(false);
     }
 

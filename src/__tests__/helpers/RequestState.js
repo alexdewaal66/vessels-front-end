@@ -3,7 +3,7 @@ import { RequestState } from '../../helpers';
 describe('class RequestState', () => {
     describe('set Error Message', () => {
         test.each([
-            undefined, null, 'damn'
+            undefined, null, 'oops'
         ])('msg=%s', (msg) => {
             const requestState = new RequestState();
             requestState.setErrorMsg(msg);

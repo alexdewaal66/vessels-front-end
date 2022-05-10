@@ -73,14 +73,14 @@ export async function makeRequest({method, url, payload, headers, requestState =
         });
         if (doLog) logv(null, {response});
         requestState?.setAtSuccess();
-        if (onSuccess) onSuccess(response);
+        onSuccess?.(response);
     } catch (error) {
         if (error?.response)
             error.response.statusText = statusCodes[error.response.status];
         logv(logPath, {error, method, url, payload});
         requestState?.setAtError();
         requestState?.setErrorMsg(error.toString());
-        if (onFail) onFail(error);
+        onFail?.(error);
     }
 }
 

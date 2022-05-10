@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
-import { Main, Menu, Content } from '../pageLayouts';
+import { Main, Menu, Content, Aside } from '../pageLayouts';
 import { homeMenuItems } from './homeMenuItems';
 import { ChoiceContext } from '../contexts';
 import { Welcome } from '../components';
 import { useMountEffect } from '../helpers';
-// import { Stringify } from '../dev/Stringify';
-// import { entityTypes } from '../helpers';
+import { Stringify } from '../dev/Stringify';
+import { entityTypes } from '../helpers';
 // import { StorageContext } from '../contexts';
 
 export default function Home() {
@@ -25,6 +25,7 @@ export default function Home() {
                 <ChosenComponent/>
             </Main>
             {/*<Aside>*/}
+            {/*    <Stringify data={entityTypes}>entityTypes</Stringify>*/}
             {/*</Aside>*/}
         </Content>
     );
@@ -38,6 +39,5 @@ export default function Home() {
                 }
                 <Stringify data={store.timestamps.state}>timestamps</Stringify>
                 <Stringify data={store.user.state}>users</Stringify>
-                <Stringify data={entityTypes}>users</Stringify>
 
  */

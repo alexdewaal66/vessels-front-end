@@ -1,7 +1,7 @@
 // import { errv } from '../dev/log';
-// import { logv, pathMkr } from '../dev/log';
+import { logv, pathMkr } from '../dev/log';
 
-// const logRoot = 'entityTypes.js';
+const logRoot = 'entityTypes.js';
 
 export const types = {
     str: 'string',
@@ -51,6 +51,7 @@ entityTypes.xyz = {
         ratio: {
             type: types.num, validation: {
                 min: {value: 0, message: 'Negatief ratio niet toegestaan.'},
+                // min: 0,
             },
         },
         zyx: {
@@ -619,11 +620,11 @@ export function getSummaryProp(entityType, element) {
 
 export function initializeAndCheckEntityTypes() {
     let typos = '';
-    for (const entitiesKey in entityTypes) {
-        const entity = entityTypes[entitiesKey];
-        entity.name = entitiesKey;
-        typos += initializeAndCheckProperties(entity);
-        typos += checkSummaries(entity);
+    for (const entityName in entityTypes) {
+        const entityType = entityTypes[entityName];
+        entityType.name = entityName;
+        typos += initializeAndCheckProperties(entityType, entityName);
+        typos += checkSummaries(entityType);
     }
     if (typos === '') {
         console.log('✔ entityTypes appears to have no typos.');
@@ -632,16 +633,36 @@ export function initializeAndCheckEntityTypes() {
     }
 }
 
-function initializeAndCheckProperties(entity) {
+function checkProperties(entityType, entityName) {
     let typos = '';
-    for (const [propName, property] of Object.entries(entity.properties)) {
+    for (const [propName, property] of Object.entries(entityType.properties)) {
         switch (property.type) {
             case types.obj:
             case types.file:
-                typos += checkAndSetInternalReference(entity.name, propName, property);
+                typos += checkInternalReference(entityName, propName, property);
                 break;
             case types.str:
-                typos += checkStringValidation(entity.name, propName, property);
+                typos += checkStringValidation(entityName, propName, property);
+                break;
+            default:
+        }
+    }
+    return typos;
+}
+
+function initializeAndCheckProperties(entityType, entityName) {
+    let typos = '';
+    for (const [propName, property] of Object.entries(entityType.properties)) {
+        switch (property.type) {
+            case types.obj:
+            case types.file:
+                typos += checkAndSetInternalReference(entityName, propName, property);
+                break;
+            case types.str:
+                typos += checkStringValidation(entityName, propName, property);
+                expandAllValidations(property);
+                break;
+            case types.num:
                 expandAllValidations(property);
                 break;
             default:
@@ -651,20 +672,33 @@ function initializeAndCheckProperties(entity) {
     return typos;
 }
 
+function checkInternalReference(entityName, propName, prop) {
+    let typos = '';
+    if (!prop.target) {
+        if (!(propName in entityTypes)) {
+            typos += `\t❌ #1 in ${entityName}.properties : '${propName}'\n`;
+        }
+    } else {
+        if (!(prop.target in entityTypes)) {
+            typos += `\t❌ #2 in ${entityName}.properties.${propName}.target : '${prop.target}'\n`;
+        }
+    }
+    return typos;
+}
+
 function checkAndSetInternalReference(entityName, propName, prop) {
     let typos = '';
     if (!prop.target) {
-        if (entityTypes.hasOwnProperty(propName)) {
+        if (propName in entityTypes) {
             prop.target = propName;
             if (!prop.label) {
-                // logical or assignment '||=' results in 'Error: Module parse failed: Unexpected token'
                 prop.label = entityTypes[propName].label.toLowerCase();
             }
         } else {
             typos += `\t❌ #1 in ${entityName}.properties : '${propName}'\n`;
         }
     } else {
-        if (entityTypes.hasOwnProperty(prop.target)) {
+        if (prop.target in entityTypes) {
             if (!prop.label) {
                 prop.label = entityTypes[prop.target].label.toLowerCase();
             }
@@ -685,19 +719,19 @@ function checkStringValidation(entitiesKey, propName, prop) {
     return typos;
 }
 
-function checkSummaries(entity) {
+function checkSummaries(entityType) {
     let typos = '';
-    for (const summaryElement of entity.summary) {
+    for (const summaryElement of entityType.summary) {
         const parts = summaryElement.split('.');
-        const singlePartTypo = (parts.length === 1 && !entity.properties[summaryElement]);
+        const singlePartTypo = (parts.length === 1 && !entityType.properties[summaryElement]);
         let dualPartsTypo = false;
         if (parts.length === 2) {
-            const targetEntityName = entity.properties[parts[0]].target;
+            const targetEntityName = entityType.properties[parts[0]].target;
             dualPartsTypo = !entityTypes[targetEntityName]?.properties[parts[1]];
-            // logv('❗ entityTypes.js » checkSummaries', {entity, parts});
+            // logv('❗ entityTypes.js » checkSummaries', {entityType, parts});
         }
         if (singlePartTypo || dualPartsTypo || parts.length > 2) {
-            typos += `\t❌ #3 in ${entity.name}.summary : '${summaryElement}'\n`;
+            typos += `\t❌ #3 in ${entityType.name}.summary : '${summaryElement}'\n`;
         }
     }
     return typos;
@@ -708,11 +742,11 @@ function expandAllValidations(property) {
     property.validation = transformEntries(property.validation, expandValidation);
 }
 
-function expandValidation([criterium, value]) {
+function expandValidation([criterion, value]) {
     // const logPath = pathMkr(logRoot, expandValidation);
-    if (typeof value === 'object') return value;
-    // logv(logPath, {criterium, value});
-    return [criterium, expansions[criterium](value)];
+    // logv(logPath, {criterion, value});
+    if (value !== null && typeof value === 'object') return [criterion, value];
+    return [criterion, expansions[criterion](value)];
 }
 
 const expansions = {
@@ -749,9 +783,6 @@ function createEmptyObject(entityType, propNames) {
         const prop = getSummaryProp(entityType, key);
         // logv(null, {key, prop});
         switch (prop?.type) {
-            // case types.num:
-            //     item[key] = 0;
-            //     break;
             case types.str:
                 item[key] = '';
                 break;
@@ -764,3 +795,15 @@ function createEmptyObject(entityType, propNames) {
 
 export const entityNameList = Object.keys(entityTypes);
 export const entityNames = Object.fromEntries(entityNameList.map(name => [name, name]));
+
+export const exportedForTesting = {
+    initializeAndCheckEntityTypes,
+    checkAndSetInternalReference,
+    checkStringValidation,
+    checkSummaries,
+    expandAllValidations,
+    expandValidation, // ✔
+    expansions, // ✔
+    transformEntries, // ✔
+    createEmptyObject
+}
