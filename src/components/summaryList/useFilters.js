@@ -22,7 +22,7 @@ export function useFilters(entityType) {
         Object.entries(constraints).forEach(([fieldName, filterValue]) => {
             if (filterValue) {
                 let newFilter = {};
-                switch (entityType.properties[fieldName].type) {
+                switch (entityType.fields[fieldName].type) {
                     case types.str:
                         newFilter.matcher = matchers.str;
                         newFilter.value = filterValue.toLowerCase();

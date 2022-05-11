@@ -3,7 +3,7 @@ import { optionalIdValue, summaryStyle } from './index';
 import { errv } from '../../dev/log';
 import { pathMkr } from '../../dev/log';
 import { rootMkr } from '../../dev/log';
-import { cx, endpoints, getSummaryProp, types } from '../../helpers';
+import { cx, endpoints, getFieldFromPath, types } from '../../helpers';
 import { ChoiceContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
 
@@ -92,9 +92,9 @@ export function SummaryRow({
         e.preventDefault();// suppress default scrolling
     }
 
-    function getProperty(object, propertyName) {
+    function getProperty(object, propertyPath) {
         const logPath = pathMkr(logRoot, getProperty);
-        const parts = propertyName.split('.');
+        const parts = propertyPath.split('.');
         switch (parts.length) {
             case 1:
                 return object?.[parts[0]];
@@ -103,26 +103,26 @@ export function SummaryRow({
             case 3:
                 return object?.[parts[0]]?.[parts[1]]?.[parts[2]];
             default:
-                errv(logPath, {object, propertyName, parts}, 'Too many parts.');
+                errv(logPath, {object, propertyPath, parts}, 'Too many parts.');
         }
     }
 
-    function renderProperty(object, propertyName) {
+    function renderProperty(object, fieldPath) {
         // const logPath = pathMkr(logRoot, renderProperty);
-        // const doLog = propertyName.includes('image');
-        const property = getProperty(object, propertyName);
-        // if (doLog) logv(logPath, {object, propertyName, property});
-        let propType = getSummaryProp(entityType, propertyName).type;
-        // if (doLog) logv(null, {propType});
-        if (propType === types.img || propType === types.file) {
-            // logv(null, {object, propertyName, property});
-            return (property
-                    ? <img src={endpoints.baseURL + 'files/' + property}
+        // const doLog = fieldPath.includes('image');
+        const field = getProperty(object, fieldPath);
+        // if (doLog) logv(logPath, {object, fieldPath, field});
+        let fieldType = getFieldFromPath(entityType, fieldPath).type;
+        // if (doLog) logv(null, {fieldType});
+        if (fieldType === types.img || fieldType === types.file) {
+            // logv(null, {object, fieldPath, field});
+            return (field
+                    ? <img src={endpoints.baseURL + 'files/' + field}
                            alt="thumbnail"/>
                     : <>--</>
             );
         }
-        return property;
+        return field;
     }
 
     return (isRowVisible &&
@@ -133,20 +133,19 @@ export function SummaryRow({
             key={elKey}
             className={selectedStyle}
         >
-            {entityType.summary.map((propertyName) =>
-                <td key={elKey + propertyName}>
+            {entityType.summary.map((fieldPath) =>
+                <td key={elKey + fieldPath}>
                     {(isNullRow)
                         ? '➖➖'
                         : (isRowOptional)
                             ? 'nieuw'
-                            : renderProperty(item, propertyName)
+                            : renderProperty(item, fieldPath)
                     }
                 </td>
             )}
             {(small && item.id && item.id !== optionalIdValue) ? (
                 <td>
-                    {/*<span onClick={makeChoice({component: EntityN(entityType, item.id)})}>*/}
-                    <span onClick={makeChoice(EntityN(entityType, item.id))}>
+                    <span onClick={makeChoice({component: EntityN(entityType, item.id)})}>
                         ➡
                     </span>
                 </td>

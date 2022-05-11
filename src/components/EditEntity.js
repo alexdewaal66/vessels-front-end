@@ -167,34 +167,34 @@ export function EditEntity(
                             {/*       key="requestMethod"*/}
                             {/*/>*/}
                             {/*{Object.entries(item).map(([itemPropName, v]) => (*/}
-                            {Object.keys(entityType.properties).map(itemPropName => {
-                                    const value = item[itemPropName];
-                                    return <Fragment key={elKey + ' / FieldRow() ' + itemPropName}>
+                            {Object.keys(entityType.fields).map(fieldName => {
+                                    const value = item[fieldName];
+                                    return <Fragment key={elKey + ' / FieldRow() ' + fieldName}>
                                         {/*{console.log('item, k,v:', item, k, v)}*/}
-                                        {!entityType.properties[itemPropName].noEdit && (
-                                            <FieldRow elKey={elKey + ' edit_row ' + itemPropName}
-                                                      key={elKey + ' edit_row ' + itemPropName}
-                                                      field={itemPropName}
+                                        {!entityType.fields[fieldName].noEdit && (
+                                            <FieldRow elKey={elKey + ' edit_row ' + fieldName}
+                                                      key={elKey + ' edit_row ' + fieldName}
+                                                      field={fieldName}
                                             >
                                                 <FieldDesc
-                                                    key={elKey + ' edit_desc ' + itemPropName}
+                                                    key={elKey + ' edit_desc ' + fieldName}
                                                 >
                                                     {/*{logv('❌❌❌ EditEntity » render()',*/}
-                                                    {/*    {entityType, itemPropName, prop: entityType.properties[itemPropName]}*/}
+                                                    {/*    {entityType, fieldName, prop: entityType.fields[fieldName]}*/}
                                                     {/*), ''}*/}
-                                                    {entityType.properties[itemPropName]?.label || itemPropName}
+                                                    {entityType.fields[fieldName]?.label || fieldName}
                                                 </FieldDesc>
                                                 <FieldEl>
-                                                    <Details entityType={entityType} field={itemPropName} value={value}
+                                                    <Details entityType={entityType} fieldName={fieldName} value={value}
                                                              item={item}
-                                                             key={elKey + ' edit_details ' + itemPropName}
+                                                             key={elKey + ' edit_details ' + fieldName}
                                                     >
                                                         <Input entityType={entityType}
-                                                               field={itemPropName}
+                                                               fieldName={fieldName}
                                                                defaultValue={value || ''}
                                                                entityForm={entityForm}
                                                                readOnly={readOnly}
-                                                               key={elKey + ` / Input(${itemPropName}=${value})`}
+                                                               key={elKey + ` / Input(${fieldName}=${value})`}
                                                         />
                                                     </Details>
                                                 </FieldEl>

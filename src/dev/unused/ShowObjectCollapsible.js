@@ -3,10 +3,10 @@ import { entityTypes } from '../../helpers';
 import { logv } from '../log';
 import { StorageContext } from '../../contexts/StorageContext';
 
-function property(key, entityName) {
+function property(fieldName, entityName) {
     return entityName
-        ? entityTypes[entityName].properties[key].label
-        : key;
+        ? entityTypes[entityName].fields[fieldName].label
+        : fieldName;
 }
 
 function initCollapsedKeys(data) {

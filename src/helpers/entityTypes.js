@@ -1,7 +1,7 @@
 // import { errv } from '../dev/log';
-import { logv, pathMkr } from '../dev/log';
+// import { logv, pathMkr } from '../dev/log';
 
-const logRoot = 'entityTypes.js';
+// const logRoot = 'entityTypes.js';
 
 export const types = {
     str: 'string',
@@ -37,7 +37,7 @@ entityTypes.xyz = {
     endpoint: '/xyzs',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {type: types.num, label: 'id', readOnly: true,},
         name: {
             type: types.str, label: 'naam', validation: {required: true, maxLength: 20},
@@ -74,7 +74,7 @@ entityTypes.zyx = {
     endpoint: '/zyxs',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {
             type: types.num, label: 'id', readOnly: true,
         },
@@ -98,7 +98,7 @@ entityTypes.user = {
     endpoint: '/users',
     id: ['username'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         username: {
             label: 'username', type: types.str, readOnly: true, validation: {maxLength: 256},
         },
@@ -130,7 +130,7 @@ entityTypes.user = {
         params: {},
     },
 };
-Object.defineProperty(entityTypes.user.properties, 'id', {
+Object.defineProperty(entityTypes.user.fields, 'id', {
     enumerable: true,
     get() {
         return this.username;
@@ -142,7 +142,7 @@ entityTypes.authority = {
     endpoint: '/users/{username}/authorities',
     id: ['username', 'role'],
     hasBulkLoading: false,
-    properties: {
+    fields: {
         username: {
             type: types.str, label: 'username', validation: {maxLength: 100},
         },
@@ -163,7 +163,7 @@ entityTypes.country = {
     endpoint: '/countries',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {
             type: types.num, label: 'id'
         },
@@ -202,7 +202,7 @@ entityTypes.subdivision = {
     endpoint: '/subdivisions',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {
             type: types.num, label: 'id',
         },
@@ -237,7 +237,7 @@ entityTypes.unLocode = {
     endpoint: '/un_locode',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {
             type: types.num, label: 'id',
         },
@@ -292,7 +292,7 @@ entityTypes.address = {
     endpoint: '/addresses',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {
             type: types.num, label: 'id',
         },
@@ -326,7 +326,7 @@ entityTypes.vesselType = {
     endpoint: '/vesseltypes',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {
             type: types.num, label: 'id', readOnly: true,
         },
@@ -392,7 +392,7 @@ entityTypes.hull = {
     endpoint: '/hulls',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {type: types.num, label: 'id', readOnly: true,},
         hullNumber: {
             type: types.str, label: 'rompnummer', validation: {maxLength: 20},
@@ -415,7 +415,7 @@ entityTypes.vessel = {
     endpoint: '/vessels',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {type: types.num, label: 'id', readOnly: true,},
         hull: {type: types.obj, hasNull: true, isMulti: false,},
         name: {type: types.str, label: 'naam', validation: {maxLength: 100},},
@@ -474,7 +474,7 @@ entityTypes.organisation = {
     endpoint: '/organisations',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {type: types.num, label: 'id', readOnly: true,},
         shortName: {type: types.str, label: 'naam', validation: {maxLength: 50},},
         longName: {type: types.str, label: 'volledige naam', validation: {maxLength: 200},},
@@ -496,7 +496,7 @@ entityTypes.relation = {
     endpoint: '/relations',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {type: types.num, label: 'id', readOnly: true,},
         organisation1: {
             type: types.obj, label: 'organisatie 1', target: 'organisation',
@@ -523,7 +523,7 @@ entityTypes.relationType = {
     endpoint: '/relationtypes',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {type: types.num, label: 'id', readOnly: true,},
         nameNL: {type: types.str, label: 'naam (nl)', validation: {maxLength: 100},},
         nameEN: {type: types.str, label: 'naam (en)', validation: {maxLength: 100},},
@@ -542,7 +542,7 @@ entityTypes.file = {
     label: 'bestand',
     endpoint: '/files',
     id: ['id'],
-    properties: {
+    fields: {
         id: {type: types.num, label: 'id', readOnly: true,},
         fileName: {type: types.str, label: 'bestandsnaam', validation: {maxLength: 259},},
         fileType: {type: types.str, label: 'bestandstype', validation: {maxLength: 20},},
@@ -560,9 +560,9 @@ entityTypes.image = {
     endpoint: '/images',
     id: ['id'],
     needsReload: true,
-    properties: {
+    fields: {
         id: {type: types.num, label: 'id', readOnly: true,},
-        fullSizeId: {type: types.file, label: 'volledig', target: 'file', },
+        fullSizeId: {type: types.file, label: 'volledig', target: 'file',},
         thumbnailId: {type: types.file, label: 'miniatuur', target: 'file', noEdit: true,},
     },
     summary: ['id', 'thumbnailId'],
@@ -578,7 +578,7 @@ entityTypes.propulsionType = {
     endpoint: '/propulsiontypes',
     id: ['id'],
     hasBulkLoading: true,
-    properties: {
+    fields: {
         id: {
             type: types.num, label: 'id', readOnly: true,
         },
@@ -609,13 +609,13 @@ entityTypes.propulsionType = {
     },
 };
 
-export function getSummaryProp(entityType, element) {
-    const parts = element.split('.');
-    const prop = entityType.properties[parts[0]];
-    if (prop.type === types.obj) {
-        return entityTypes[prop.target].properties[parts[1]];
+export function getFieldFromPath(entityType, fieldPath) {
+    const parts = fieldPath.split('.');
+    const directField = entityType.fields[parts[0]];
+    if (directField.type === types.obj) {
+        return entityTypes[directField.target].fields[parts[1]];
     }
-    return prop;
+    return directField;
 }
 
 export function initializeAndCheckEntityTypes() {
@@ -623,7 +623,7 @@ export function initializeAndCheckEntityTypes() {
     for (const entityName in entityTypes) {
         const entityType = entityTypes[entityName];
         entityType.name = entityName;
-        typos += initializeAndCheckProperties(entityType, entityName);
+        typos += initializeAndCheckFields(entityType, entityName);
         typos += checkSummaries(entityType);
     }
     if (typos === '') {
@@ -633,16 +633,16 @@ export function initializeAndCheckEntityTypes() {
     }
 }
 
-function checkProperties(entityType, entityName) {
+function checkFields(entityType, entityName) {
     let typos = '';
-    for (const [propName, property] of Object.entries(entityType.properties)) {
-        switch (property.type) {
+    for (const [fieldName, field] of Object.entries(entityType.fields)) {
+        switch (field.type) {
             case types.obj:
             case types.file:
-                typos += checkInternalReference(entityName, propName, property);
+                typos += checkInternalReference(entityTypes, entityName, fieldName);
                 break;
             case types.str:
-                typos += checkStringValidation(entityName, propName, property);
+                typos += checkStringValidation(entityTypes, entityName, fieldName);
                 break;
             default:
         }
@@ -650,88 +650,90 @@ function checkProperties(entityType, entityName) {
     return typos;
 }
 
-function initializeAndCheckProperties(entityType, entityName) {
+function initializeAndCheckFields(entityType, entityName) {
     let typos = '';
-    for (const [propName, property] of Object.entries(entityType.properties)) {
-        switch (property.type) {
+    for (const [fieldName, field] of Object.entries(entityType.fields)) {
+        switch (field.type) {
             case types.obj:
             case types.file:
-                typos += checkAndSetInternalReference(entityName, propName, property);
+                typos += checkAndSetInternalReference(entityName, fieldName, field);
                 break;
             case types.str:
-                typos += checkStringValidation(entityName, propName, property);
-                expandAllValidations(property);
+                typos += checkStringValidation(entityTypes, entityName, fieldName);
+                expandAllValidations(field);
                 break;
             case types.num:
-                expandAllValidations(property);
+                expandAllValidations(field);
                 break;
             default:
-                // expandAllValidations(property);
+            // expandAllValidations(field);
         }
     }
     return typos;
 }
 
-function checkInternalReference(entityName, propName, prop) {
+function checkInternalReference(entityTypes, entityName, fieldName) {
     let typos = '';
-    if (!prop.target) {
-        if (!(propName in entityTypes)) {
-            typos += `\t❌ #1 in ${entityName}.properties : '${propName}'\n`;
+    const field = entityTypes[entityName].fields[fieldName];
+    if (!field.target) {
+        if (!(fieldName in entityTypes)) {
+            typos += `\t❌ #1 in ${entityName}.fields : '${fieldName}'\n`;
         }
     } else {
-        if (!(prop.target in entityTypes)) {
-            typos += `\t❌ #2 in ${entityName}.properties.${propName}.target : '${prop.target}'\n`;
+        if (!(field.target in entityTypes)) {
+            typos += `\t❌ #2 in ${entityName}.fields.${fieldName}.target : '${field.target}'\n`;
         }
     }
     return typos;
 }
 
-function checkAndSetInternalReference(entityName, propName, prop) {
+function checkAndSetInternalReference(entityName, fieldName, field) {
     let typos = '';
-    if (!prop.target) {
-        if (propName in entityTypes) {
-            prop.target = propName;
-            if (!prop.label) {
-                prop.label = entityTypes[propName].label.toLowerCase();
+    if (!field.target) {
+        if (fieldName in entityTypes) {
+            field.target = fieldName;
+            if (!field.label) {
+                field.label = entityTypes[fieldName].label.toLowerCase();
             }
         } else {
-            typos += `\t❌ #1 in ${entityName}.properties : '${propName}'\n`;
+            typos += `\t❌ #1 in ${entityName}.fields : '${fieldName}'\n`;
         }
     } else {
-        if (prop.target in entityTypes) {
-            if (!prop.label) {
-                prop.label = entityTypes[prop.target].label.toLowerCase();
+        if (field.target in entityTypes) {
+            if (!field.label) {
+                field.label = entityTypes[field.target].label.toLowerCase();
             }
         } else {
-            typos += `\t❌ #2 in ${entityName}.properties.${propName}.target : '${prop.target}'\n`;
+            typos += `\t❌ #2 in ${entityName}.fields.${fieldName}.target : '${field.target}'\n`;
         }
     }
     return typos;
 }
 
-function checkStringValidation(entitiesKey, propName, prop) {
+function checkStringValidation(entityTypes, entityName, fieldName) {
     let typos = '';
-    if (!prop.validation) {
-        typos += `\t❌ missing validation in ${entitiesKey}.properties.${propName}\n`;
-    } else if (!prop.validation.maxLength) {
-        typos += `\t❌ missing maxLength in ${entitiesKey}.properties.${propName}.validation\n`;
+    const field = entityTypes[entityName].fields[fieldName];
+    if (!field.validation) {
+        typos += `\t❌ missing validation in ${entityName}.fields.${fieldName}\n`;
+    } else if (!field.validation.maxLength) {
+        typos += `\t❌ missing maxLength in ${entityName}.fields.${fieldName}.validation\n`;
     }
     return typos;
 }
 
 function checkSummaries(entityType) {
     let typos = '';
-    for (const summaryElement of entityType.summary) {
-        const parts = summaryElement.split('.');
-        const singlePartTypo = (parts.length === 1 && !entityType.properties[summaryElement]);
+    for (const fieldPath of entityType.summary) {
+        const parts = fieldPath.split('.');
+        const singlePartTypo = (parts.length === 1 && !entityType.fields[fieldPath]);
         let dualPartsTypo = false;
         if (parts.length === 2) {
-            const targetEntityName = entityType.properties[parts[0]].target;
-            dualPartsTypo = !entityTypes[targetEntityName]?.properties[parts[1]];
+            const targetEntityName = entityType.fields[parts[0]].target;
+            dualPartsTypo = !entityTypes[targetEntityName]?.fields[parts[1]];
             // logv('❗ entityTypes.js » checkSummaries', {entityType, parts});
         }
         if (singlePartTypo || dualPartsTypo || parts.length > 2) {
-            typos += `\t❌ #3 in ${entityType.name}.summary : '${summaryElement}'\n`;
+            typos += `\t❌ #3 in ${entityType.name}.summary : '${fieldPath}'\n`;
         }
     }
     return typos;
@@ -765,7 +767,7 @@ export function createEmptyItem(entityType) {
     // const logPath = pathMkr(logRoot, createEmptyItem, '(↓)');
     // logv(logPath, {entityName: entityType.name});
     // logv(null, {emptyObject});
-    return createEmptyObject(entityType, Object.keys(entityType.properties));
+    return createEmptyObject(entityType, Object.keys(entityType.fields));
 }
 
 export function createEmptySummary(entityType) {
@@ -780,7 +782,7 @@ function createEmptyObject(entityType, propNames) {
     // logv(logPath, {entityName: entityType.name, propNames});
     const item = {};
     propNames.forEach(key => {
-        const prop = getSummaryProp(entityType, key);
+        const prop = getFieldFromPath(entityType, key);
         // logv(null, {key, prop});
         switch (prop?.type) {
             case types.str:
@@ -801,7 +803,7 @@ export const exportedForTesting = {
     checkAndSetInternalReference,
     checkStringValidation,
     checkSummaries,
-    expandAllValidations,
+    expandAllValidations, // ✔
     expandValidation, // ✔
     expansions, // ✔
     transformEntries, // ✔

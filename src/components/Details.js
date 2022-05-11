@@ -5,14 +5,14 @@ import { ShowRequestState } from './ShowRequestState';
 import { StorageContext } from '../contexts';
 import { ShowObject } from './ShowObject';
 
-export function Details({entityType, field, value, item, children}) {
+export function Details({entityType, fieldName, value, item, children}) {
     // const logRoot = rootMkr(Details, entityType.name, '↓↓');
     // logv(logRoot, {field, value, item});
     const storage = useContext(StorageContext);
     const {rsStatus} = storage;
     const [detailsId, setDetailsId] = useState();
-    const property = entityType.properties[field];
-    const target = property?.details;
+    const field = entityType.fields[fieldName];
+    const target = field?.details;
 
     function fetchItem() {
         // const logPath = pathMkr(logRoot, fetchItem);
@@ -28,7 +28,7 @@ export function Details({entityType, field, value, item, children}) {
             <ShowRequestState {...rsStatus} description={rsStatus.description}/>
             {children}
             {target && value && (
-                <React.Fragment key={field + target}>
+                <React.Fragment key={fieldName + target}>
                     &nbsp;»
                     <TT style={{textAlign: "left", marginLeft: "100%", top: "0"}}>
                         <ShowObject
@@ -37,7 +37,7 @@ export function Details({entityType, field, value, item, children}) {
                                 : target
                             }
                             data={target === 'transform'
-                                ? transform(entityType.name, field, value)
+                                ? transform(entityType.name, fieldName, value)
                                 : storage.getItem(target, detailsId)
                             }
                         />

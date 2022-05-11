@@ -36,27 +36,27 @@ const aspectRatio = 15;
 const referenceSize = 80;
 
 export function Input({
-                          entityType, field, defaultValue,
+                          entityType, fieldName, defaultValue,
                           entityForm, readOnly, isEligible, ...rest
                       }) {
     // const logRoot = rootMkr(Input, entityType.name);
-    const property = entityType.properties[field];
-    const elKey = `Input(${entityType.name},${field},${defaultValue})`;
+    const field = entityType.fields[fieldName];
+    const elKey = `Input(${entityType.name},${fieldName},${defaultValue})`;
 
-    readOnly = !!(readOnly || entityType.methods === 'R' || property?.readOnly);
-    // logv(logRoot, {field, property, readOnly});
+    readOnly = !!(readOnly || entityType.methods === 'R' || field?.readOnly);
+    // logv(logRoot, {field, field, readOnly});
     // const [command, setCommand] = useContext(CommandContext);
     let inputType = {};
-    let maxLength = property?.validation?.maxLength?.value;
+    let maxLength = field?.validation?.maxLength?.value;
     let inputSize = null;
     let rows = null;
     let cols = null;
     let step = null;
     let fieldValue = defaultValue;
 
-    switch (property?.type) {
+    switch (field?.type) {
         case types.str:
-            switch (property?.subtype) {
+            switch (field?.subtype) {
                 case subtypes.email:
                     inputType = inputTypes.email;
                     inputSize = Math.min(referenceSize, maxLength);
@@ -83,7 +83,7 @@ export function Input({
         case types.obj:
             return (
                     <InputObject entityType={entityType}
-                                field={field}
+                                fieldName={fieldName}
                                 defaultValue={defaultValue}
                                 entityForm={entityForm}
                                 readOnly={readOnly}
@@ -102,7 +102,7 @@ export function Input({
         case types.file:
             return (
                 <InputImageFile entityType={entityType}
-                                field={field}
+                                fieldName={fieldName}
                                 defaultValue={defaultValue}
                                 entityForm={entityForm}
                                 readOnly={readOnly}
@@ -114,7 +114,7 @@ export function Input({
             return (<>
                 entityType: <Stringify data={entityType}/>
                 <br/>
-                field: <Stringify data={field}/>
+                field: <Stringify data={fieldName}/>
             </>);
     }
 
@@ -125,17 +125,17 @@ export function Input({
                 maxLength={maxLength}
                 step={step}
                 size={inputSize}
-                name={field}
+                name={fieldName}
                 rows={rows}
                 cols={cols}
                 defaultValue={fieldValue}
                 // defaultChecked={defaultValue}
                 readOnly={readOnly}
-                {...entityForm.register(field, property?.validation)}
+                {...entityForm.register(fieldName, field?.validation)}
                 {...rest}
             />
             &nbsp;
-            <ValidationMessage form={entityForm} fieldName={field}/>
+            <ValidationMessage form={entityForm} fieldName={fieldName}/>
         </>
     );
 }

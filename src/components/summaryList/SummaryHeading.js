@@ -9,37 +9,37 @@ export function SummaryHeading({
     // const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
     // logv(logRoot, {elKey});
 
-    function label(object, propertyName) {
-        const parts = propertyName.split('.');
-        return object[parts[0]].label;
+    function label(fields, fieldPath) {
+        const parts = fieldPath.split('.');
+        return fields[parts[0]].label;
     }
 
-    const up = (propertyName) => () => {
+    const up = (fieldPath) => () => {
         // const logPath = pathMkr(logRoot, up.name);
         // logv(logPath, {propertyName});
-        sorting.setOrder({propertyName, order: 'up'})
+        sorting.setOrder({propertyName: fieldPath, order: 'up'})
     };
 
-    const down = (propertyName) => () => {
+    const down = (fieldPath) => () => {
         // const logPath = pathMkr(logRoot, down.name);
         // logv(logPath, {propertyName});
-        sorting.setOrder({propertyName, order: 'down'})
+        sorting.setOrder({propertyName: fieldPath, order: 'down'})
     };
 
 
     return (
         <>
             <tr>
-                {entityType.summary.map(propertyName =>
-                    <th key={elKey + propertyName + '_h'}>
-                        {/*{entityType.properties[propertyName].label || propertyName}*/}
-                        {label(entityType.properties, propertyName) || propertyName}
+                {entityType.summary.map(fieldPath =>
+                    <th key={elKey + fieldPath + '_h'}>
+                        {/*{entityType.fields[fieldPath].label || fieldPath}*/}
+                        {label(entityType.fields, fieldPath) || fieldPath}
                         <span>
-                            <button type={'button'} onClick={up(propertyName)} className={summaryStyle.sort}>
-                                {sorting.isOrderUp(propertyName) ? '△' : '▲'}
+                            <button type={'button'} onClick={up(fieldPath)} className={summaryStyle.sort}>
+                                {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
                             </button>
-                            <button type={'button'} onClick={down(propertyName)} className={summaryStyle.sort}>
-                                {sorting.isOrderUp(propertyName) ? '▼' : '▽'}
+                            <button type={'button'} onClick={down(fieldPath)} className={summaryStyle.sort}>
+                                {sorting.isOrderUp(fieldPath) ? '▼' : '▽'}
                             </button>
                         </span>
                     </th>

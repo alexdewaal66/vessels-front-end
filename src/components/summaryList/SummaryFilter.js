@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { summaryStyle } from './index';
 import filterSymbol from '../../assets/filter.svg';
-import { createEmptySummary, getSummaryProp } from '../../helpers';
+import { createEmptySummary, getFieldFromPath } from '../../helpers';
 // import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 const enterKey = 13;
@@ -49,37 +49,37 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
         }
     }
 
-    function inputSize(key) {
-        // const logPath = pathMkr(logRoot, inputSize, key);
-        const property = getSummaryProp(entityType, key);
-        const maxLength = property?.validation?.maxLength?.value ?? 4;
-        // logv(logPath, {property, maxLength}, '❌');
+    function inputSize(fieldPath) {
+        // const logPath = pathMkr(logRoot, inputSize, fieldPath);
+        const field = getFieldFromPath(entityType, fieldPath);
+        const maxLength = field?.validation?.maxLength?.value ?? 4;
+        // logv(logPath, {field, maxLength}, '❌');
         const size = Math.min(18, maxLength / 2);
-        // logv(logPath, {property, maxLength, size});
+        // logv(logPath, {field, maxLength, size});
         return size;
     }
 
-    function inputLength(key) {
-        const property = getSummaryProp(entityType, key);
-        const maxLength = property?.validation?.maxLength?.value || 4;
-        // if (!property)  logv(`❌ ${logRoot} ${inputSize.name}(${key})`, {property, maxLength});
+    function inputLength(fieldPath) {
+        const field = getFieldFromPath(entityType, fieldPath);
+        const maxLength = field?.validation?.maxLength?.value || 4;
+        // if (!field)  logv(`❌ ${logRoot} ${inputSize.name}(${fieldPath})`, {field, maxLength});
         return 2 * maxLength + 1;
     }
 
     return (
         <tr onKeyDown={enterKeyHandler} >
-            {entityType.summary.map(propertyName =>
-                <th key={elKey + propertyName + '_sort'}>
-                    {/*{(label(entityType.properties, propertyName) || propertyName).split('').reverse().join('')}*/}
+            {entityType.summary.map(fieldPath =>
+                <th key={elKey + fieldPath + '_sort'}>
+                    {/*{(label(entityType.fields, fieldPath) || fieldPath).split('').reverse().join('')}*/}
                     <input type={'text'}
-                           onChange={setInputFieldsHandler(propertyName)}
-                           size={inputSize(propertyName)}
-                           maxLength={inputLength(propertyName)}
+                           onChange={setInputFieldsHandler(fieldPath)}
+                           size={inputSize(fieldPath)}
+                           maxLength={inputLength(fieldPath)}
                            className={summaryStyle.filter}
-                           value={inputFields[propertyName] || ''}
+                           value={inputFields[fieldPath] || ''}
                     />
                     <button type={'button'}
-                            onClick={clearFieldHandler(propertyName)}
+                            onClick={clearFieldHandler(fieldPath)}
                             className={summaryStyle.filterButton}
                     >
                         ␡

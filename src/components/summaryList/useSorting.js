@@ -3,7 +3,7 @@ import { loCaseCompare, useConditionalEffect } from '../../helpers';
 import { useSpinner } from '../../helpers/useSpinner';
 
 function initialOrder(entityType) {
-    return Object.fromEntries(entityType.summary.map(propertyName => [propertyName, 'up']));
+    return Object.fromEntries(entityType.summary.map(fieldPath => [fieldPath, 'up']));
 }
 
 export function useSorting(operation, list, entityType) {

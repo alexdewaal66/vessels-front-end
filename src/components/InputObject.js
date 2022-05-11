@@ -6,11 +6,11 @@ import { ValidationMessage } from './ValidationMessage';
 
 // import { Value } from '../dev/Value';
 
-export function InputObject({entityType, field, defaultValue, entityForm, readOnly, elKey}) {
+export function InputObject({entityType, fieldName, defaultValue, entityForm, readOnly, elKey}) {
     // const logRoot = rootMkr(InputObject, entityType.name);
     // logv(logRoot, {field, defaultValue, '!defaultValue': !defaultValue});
-    const property = entityType.properties[field];
-    const {hasNull, isMulti} = property;
+    const field = entityType.fields[fieldName];
+    const {hasNull, isMulti} = field;
     const initialIdList = Array.isArray(defaultValue)
         ? defaultValue.map(item => item.id)
         : [defaultValue.id];
@@ -19,7 +19,7 @@ export function InputObject({entityType, field, defaultValue, entityForm, readOn
 
     // logv(null, {initialId});
 
-    const hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
+    const hiddenFieldName = 'hidden_' + fieldName + '_' + field.target + '_id';
 
     async function setHiddenField(value) {
         // const logPath = pathMkr(logRoot, setHiddenField, value);
@@ -34,9 +34,9 @@ export function InputObject({entityType, field, defaultValue, entityForm, readOn
                    readOnly={readOnly}
                    style={{opacity: '0', position: 'absolute'}}
                 // style={{opacity: '50%'}}
-                   {...entityForm.register(hiddenFieldName, property.validation)}
+                   {...entityForm.register(hiddenFieldName, field.validation)}
             />
-            <SummaryListSmall entityType={entityTypes[property.target]}
+            <SummaryListSmall entityType={entityTypes[field.target]}
                               initialIdList={initialIdList}
                               receiver={'Input'}
                               key={elKey + hiddenFieldName + '_obj'}

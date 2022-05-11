@@ -1,4 +1,4 @@
-import { exportedForTesting } from '../../helpers/entityTypes';
+import { exportedForTesting, getFieldFromPath, entityTypes } from '../../helpers/entityTypes';
 
 const {expansions, expandValidation, transformEntries, expandAllValidations} = exportedForTesting
 
@@ -60,4 +60,20 @@ describe('validation support functions', () => {
             expect(testcase).toEqual(expected);
         });
     });
+
+    describe('getSummaryProp', () => {
+
+        test('return simple prop', () => {
+            const actual = getFieldFromPath(entityTypes.hull, entityTypes.hull.summary[1]);
+            const expected = {type: 'string', label: 'rompnummer', validation: {maxLength: 20}};
+            expect(actual).toEqual(expected);
+        });
+
+        test('find target of prop referring to entity', () => {
+            const actual = getFieldFromPath(entityTypes.relation, entityTypes.relation.summary[2]);
+            const expected = {type: 'string', label: 'naam', validation: {maxLength: 50}};
+            expect(actual).toEqual(expected);
+        });
+    });
 });
+

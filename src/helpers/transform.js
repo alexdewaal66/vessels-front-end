@@ -57,7 +57,7 @@ const transformations = {
     },
 };
 
-export function transform(entityName, propertyName, value) {
+export function transform(entityName, fieldName, value) {
     // console.log('transform()');
-    return transformations[entityName][propertyName](value);
+    return transformations[entityName][fieldName](value);
 }

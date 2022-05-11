@@ -4,11 +4,11 @@ import { entityTypes } from '../helpers';
 
 // import { logv, pathMkr, rootMkr } from './log';
 
-function property(key, entityName) {
-    // const logPath = pathMkr(rootMkr(ShowObject), property);
+function propertyLabel(key, entityName) {
+    // const logPath = pathMkr(rootMkr(ShowObject), propertyLabel);
     // logv(logPath, {entityName, key, entityTypes});
     return entityName
-        ? entityTypes[entityName].properties[key]?.label
+        ? entityTypes[entityName].fields[key]?.label
         : key;
 }
 
@@ -34,7 +34,7 @@ export function ShowObject({entityName, data, tooltip}) {
                                             {key} : <TT>{typeof value}</TT>
                                         </TTC>
                                         : <span style={{whiteSpace: 'pre'}}>
-                                            {property(key, entityName)}:&nbsp;
+                                            {propertyLabel(key, entityName)}:&nbsp;
                                         </span>
                                     }
                                     {typeof value === 'object'

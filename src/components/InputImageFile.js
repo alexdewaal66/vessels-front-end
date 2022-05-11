@@ -6,12 +6,12 @@ import { StorageContext } from '../contexts';
 import {formStyles} from '../formLayouts';
 
 export function InputImageFile({
-                                   entityType, field, readOnly,
+                                   entityType, fieldName, readOnly,
                                    defaultValue, entityForm, elKey
                                }) {
     const logRoot = rootMkr(InputImageFile, entityType.name, '↓↓');
     // logv(logRoot, {field, defaultValue});
-    const property = entityType.properties[field];
+    const field = entityType.fields[fieldName];
 
     const {newItem, loadItem} = useContext(StorageContext);
 
@@ -23,7 +23,7 @@ export function InputImageFile({
             ? defaultValue.fullSizeId
             : defaultValue
     );
-    const hiddenFieldName = 'hidden_' + field + '_' + property.target + '_id';
+    const hiddenFieldName = 'hidden_' + fieldName + '_' + field.target + '_id';
     entityForm.setValue(hiddenFieldName, imageId);
 
     const isFileSelected = '0' in selectedFiles;
