@@ -4,7 +4,7 @@ import {
     keys, useKeyPressed,
     useLoading,
     useConditionalEffect,
-    useRequestState
+    useRequestState, entityTypes
 } from '../../helpers';
 import { SummaryTable, useSorting } from './';
 import { CommandContext, operationNames } from '../../contexts';
@@ -62,7 +62,7 @@ export function SummaryListTall({
         // logv(logPath, {newList, singleSelectedId});
         let selectedItem;
         if (newList.length === 0) {
-            selectedItem = createEmptyItem(entityType);
+            selectedItem = createEmptyItem(entityTypes, entityType);
             // logv(logPath + '|newList|≡0', {selectedItem});
             newList.push(selectedItem);
             // logv(logPath, {newList});

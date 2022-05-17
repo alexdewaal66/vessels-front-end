@@ -3,7 +3,7 @@ import { optionalIdValue, summaryStyle } from './index';
 import { errv } from '../../dev/log';
 import { pathMkr } from '../../dev/log';
 import { rootMkr } from '../../dev/log';
-import { cx, endpoints, getFieldFromPath, types } from '../../helpers';
+import { cx, endpoints, entityTypes, getFieldFromPath, types } from '../../helpers';
 import { ChoiceContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
 
@@ -112,7 +112,7 @@ export function SummaryRow({
         // const doLog = fieldPath.includes('image');
         const field = getProperty(object, fieldPath);
         // if (doLog) logv(logPath, {object, fieldPath, field});
-        let fieldType = getFieldFromPath(entityType, fieldPath).type;
+        let fieldType = getFieldFromPath(entityTypes, entityType, fieldPath).type;
         // if (doLog) logv(null, {fieldType});
         if (fieldType === types.img || fieldType === types.file) {
             // logv(null, {object, fieldPath, field});

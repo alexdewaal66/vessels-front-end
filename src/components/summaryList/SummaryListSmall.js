@@ -4,7 +4,7 @@ import {
     keys, useKeyPressed,
     useLoading,
     useConditionalEffect,
-    useRequestState,
+    useRequestState, entityTypes,
 } from '../../helpers';
 import { SummaryTable, useSorting } from './';
 import { ShowRequestState } from '../ShowRequestState';
@@ -53,7 +53,7 @@ export function SummaryListSmall({
         let newSelectedIds;
         // logv(logPath, {item, isKeyDown: isControlDown});
         if (item?.id === optionalIdValue) {
-            const blankItem = createEmptyItem(entityType);
+            const blankItem = createEmptyItem(entityTypes, entityType);
             await storage.newItem(entityType.name, blankItem,
                 (savedItem) => {
                     item = savedItem;
@@ -111,12 +111,12 @@ export function SummaryListSmall({
         // logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
         if (hasNull) {
-            const nullItem = createEmptyItem(entityType);
+            const nullItem = createEmptyItem(entityTypes, entityType);
             nullItem.id = 0;
             list.push(nullItem);
         }
         if (!readOnly){
-            const optionalItem = createEmptyItem(entityType);
+            const optionalItem = createEmptyItem(entityTypes, entityType);
             optionalItem.id = optionalIdValue;
             list.push(optionalItem);
         }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { summaryStyle } from './index';
 import filterSymbol from '../../assets/filter.svg';
-import { createEmptySummary, getFieldFromPath } from '../../helpers';
+import { createEmptySummary, entityTypes, getFieldFromPath } from '../../helpers';
 // import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 const enterKey = 13;
@@ -9,7 +9,7 @@ const enterKey = 13;
 export function SummaryFilter({entityType, mergeConstraints, elKey}) {
     // const logRoot = rootMkr(SummaryFilter, entityType.name);
 
-    const [inputFields, setInputFields] = useState(createEmptySummary(entityType));
+    const [inputFields, setInputFields] = useState(createEmptySummary(entityTypes, entityType));
     // logv(logRoot, {inputFields});
 
     const mergeInputFields = (key, changedValue) => {
@@ -51,7 +51,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
 
     function inputSize(fieldPath) {
         // const logPath = pathMkr(logRoot, inputSize, fieldPath);
-        const field = getFieldFromPath(entityType, fieldPath);
+        const field = getFieldFromPath(entityTypes, entityType, fieldPath);
         const maxLength = field?.validation?.maxLength?.value ?? 4;
         // logv(logPath, {field, maxLength}, '❌');
         const size = Math.min(18, maxLength / 2);
@@ -60,7 +60,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
     }
 
     function inputLength(fieldPath) {
-        const field = getFieldFromPath(entityType, fieldPath);
+        const field = getFieldFromPath(entityTypes, entityType, fieldPath);
         const maxLength = field?.validation?.maxLength?.value || 4;
         // if (!field)  logv(`❌ ${logRoot} ${inputSize.name}(${fieldPath})`, {field, maxLength});
         return 2 * maxLength + 1;

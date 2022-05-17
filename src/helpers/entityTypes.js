@@ -309,7 +309,8 @@ entityTypes.address = {
             type: types.str, label: 'postcode', validation: {maxLength: 20},
         },
         country: {
-            type: types.obj, label: 'land', target: 'country', hasNull: true, isMulti: false,
+            type: types.obj, hasNull: true, isMulti: false,
+            //     label: 'land', target: 'country',
         },
     },
     methods: 'CRUD',
@@ -419,7 +420,9 @@ entityTypes.vessel = {
         id: {type: types.num, label: 'id', readOnly: true,},
         hull: {type: types.obj, hasNull: true, isMulti: false,},
         name: {type: types.str, label: 'naam', validation: {maxLength: 100},},
-        image: {type: types.img, label: 'afbeelding', target: 'image'},
+        image: {type: types.img,
+            // label: 'afbeelding',
+            target: 'image'},
         mmsi: {type: types.str, label: 'mmsi', validation: {maxLength: 10},},
         callSign: {type: types.str, label: 'roepletters', validation: {maxLength: 10},},
         vesselType: {
@@ -452,11 +455,11 @@ entityTypes.vessel = {
         startDate: {type: types.date, label: "startdatum", validation: {},},
         endDate: {
             type: types.date, label: "einddatum", validation: {},
-            crossField: {
-                field: "startDate",
-                validate: (thisField, thatField) => +thisField > +thatField,
-                message: 'De einddatum mag niet voor de startdatum liggen',
-            },
+            // crossField: {
+            //     field: "startDate",
+            //     validate: (thisField, thatField) => +thisField > +thatField,
+            //     message: 'De einddatum mag niet voor de startdatum liggen',
+            // },
         },
         // https://www.carlrippon.com/react-hook-form-cross-field-validation/
         // validate: () => crossField.validate(getValues(endDateFieldName), getValues(startDateFieldName))
@@ -609,7 +612,8 @@ entityTypes.propulsionType = {
     },
 };
 
-export function getFieldFromPath(entityType, fieldPath) {
+export function getFieldFromPath(entityTypes, entityType, fieldPath) { // ✔✔
+    // depends on presence of internal reference
     const parts = fieldPath.split('.');
     const directField = entityType.fields[parts[0]];
     if (directField.type === types.obj) {
@@ -618,140 +622,62 @@ export function getFieldFromPath(entityType, fieldPath) {
     return directField;
 }
 
-export function initializeAndCheckEntityTypes() {
-    let typos = '';
+export function initializeEntityTypes(entityTypes) { // ✔✔
     for (const entityName in entityTypes) {
         const entityType = entityTypes[entityName];
         entityType.name = entityName;
-        typos += initializeAndCheckFields(entityType, entityName);
-        typos += checkSummaries(entityType);
-    }
-    if (typos === '') {
-        console.log('✔ entityTypes appears to have no typos.');
-    } else {
-        console.error('❌ entityTypes has typos:\n' + typos);
+        setEveryFieldsInternalReferences(entityTypes, entityName);
+        expandEveryFieldsValidations(entityTypes, entityName);
     }
 }
 
-function checkFields(entityType, entityName) {
-    let typos = '';
-    for (const [fieldName, field] of Object.entries(entityType.fields)) {
-        switch (field.type) {
-            case types.obj:
-            case types.file:
-                typos += checkInternalReference(entityTypes, entityName, fieldName);
-                break;
-            case types.str:
-                typos += checkStringValidation(entityTypes, entityName, fieldName);
-                break;
-            default:
-        }
+
+function setEveryFieldsInternalReferences(entityTypes, entityName) { // ✔✔
+    for (const [fieldName, field] of Object.entries(entityTypes[entityName].fields)) {
+        if (field.type === types.obj || field.type === types.file)
+            setInternalReference(entityTypes, entityName, fieldName); // ✔✔
     }
-    return typos;
 }
 
-function initializeAndCheckFields(entityType, entityName) {
-    let typos = '';
-    for (const [fieldName, field] of Object.entries(entityType.fields)) {
-        switch (field.type) {
-            case types.obj:
-            case types.file:
-                typos += checkAndSetInternalReference(entityName, fieldName, field);
-                break;
-            case types.str:
-                typos += checkStringValidation(entityTypes, entityName, fieldName);
-                expandAllValidations(field);
-                break;
-            case types.num:
-                expandAllValidations(field);
-                break;
-            default:
-            // expandAllValidations(field);
-        }
+function expandEveryFieldsValidations(entityTypes, entityName) { // ✔✔
+    for (const field of Object.values(entityTypes[entityName].fields)) {
+        if (field.type === types.str || field.type === types.num)
+            expandFieldValidation(field); // ✔✔
     }
-    return typos;
 }
 
-function checkInternalReference(entityTypes, entityName, fieldName) {
-    let typos = '';
+
+function setInternalReference(entityTypes, entityName, fieldName) { // ✔✔
     const field = entityTypes[entityName].fields[fieldName];
-    if (!field.target) {
-        if (!(fieldName in entityTypes)) {
-            typos += `\t❌ #1 in ${entityName}.fields : '${fieldName}'\n`;
+    if (field.target) {
+        if (field.target in entityTypes) {
+            if (!field.label) {
+                field.label = entityTypes[field.target].label.toLowerCase();
+            }
         }
     } else {
-        if (!(field.target in entityTypes)) {
-            typos += `\t❌ #2 in ${entityName}.fields.${fieldName}.target : '${field.target}'\n`;
-        }
-    }
-    return typos;
-}
-
-function checkAndSetInternalReference(entityName, fieldName, field) {
-    let typos = '';
-    if (!field.target) {
         if (fieldName in entityTypes) {
             field.target = fieldName;
             if (!field.label) {
                 field.label = entityTypes[fieldName].label.toLowerCase();
             }
-        } else {
-            typos += `\t❌ #1 in ${entityName}.fields : '${fieldName}'\n`;
-        }
-    } else {
-        if (field.target in entityTypes) {
-            if (!field.label) {
-                field.label = entityTypes[field.target].label.toLowerCase();
-            }
-        } else {
-            typos += `\t❌ #2 in ${entityName}.fields.${fieldName}.target : '${field.target}'\n`;
         }
     }
-    return typos;
 }
 
-function checkStringValidation(entityTypes, entityName, fieldName) {
-    let typos = '';
-    const field = entityTypes[entityName].fields[fieldName];
-    if (!field.validation) {
-        typos += `\t❌ missing validation in ${entityName}.fields.${fieldName}\n`;
-    } else if (!field.validation.maxLength) {
-        typos += `\t❌ missing maxLength in ${entityName}.fields.${fieldName}.validation\n`;
-    }
-    return typos;
+function expandFieldValidation(field) { // ✔✔
+    if (!field?.validation) return;
+    field.validation = transformEntries(field.validation, expandValidation);
 }
 
-function checkSummaries(entityType) {
-    let typos = '';
-    for (const fieldPath of entityType.summary) {
-        const parts = fieldPath.split('.');
-        const singlePartTypo = (parts.length === 1 && !entityType.fields[fieldPath]);
-        let dualPartsTypo = false;
-        if (parts.length === 2) {
-            const targetEntityName = entityType.fields[parts[0]].target;
-            dualPartsTypo = !entityTypes[targetEntityName]?.fields[parts[1]];
-            // logv('❗ entityTypes.js » checkSummaries', {entityType, parts});
-        }
-        if (singlePartTypo || dualPartsTypo || parts.length > 2) {
-            typos += `\t❌ #3 in ${entityType.name}.summary : '${fieldPath}'\n`;
-        }
-    }
-    return typos;
-}
-
-function expandAllValidations(property) {
-    if (!property?.validation) return;
-    property.validation = transformEntries(property.validation, expandValidation);
-}
-
-function expandValidation([criterion, value]) {
+function expandValidation([criterion, value]) { // ✔✔
     // const logPath = pathMkr(logRoot, expandValidation);
     // logv(logPath, {criterion, value});
     if (value !== null && typeof value === 'object') return [criterion, value];
     return [criterion, expansions[criterion](value)];
 }
 
-const expansions = {
+const expansions = { // ✔✔
     required: (value) => ({value, message: 'verplicht veld'}),
     maxLength: (value) => ({value, message: `maximaal ${value} karakters`}),
     minLength: (value) => ({value, message: `minimaal ${value} karakters`}),
@@ -759,37 +685,40 @@ const expansions = {
     min: (value) => ({value, message: `niet kleiner dan ${value}`}),
 };
 
-function transformEntries(obj, callback) {
+function transformEntries(obj, callback) { // ✔✔
     return Object.fromEntries(Object.entries(obj).map(callback));
 }
 
-export function createEmptyItem(entityType) {
+export function createEmptyItem(entityTypes, entityType) { // ✔✔
+    // depends on presence of internal references
     // const logPath = pathMkr(logRoot, createEmptyItem, '(↓)');
     // logv(logPath, {entityName: entityType.name});
     // logv(null, {emptyObject});
-    return createEmptyObject(entityType, Object.keys(entityType.fields));
+    return createEmptyObject(entityTypes, entityType, Object.keys(entityType.fields));
 }
 
-export function createEmptySummary(entityType) {
+export function createEmptySummary(entityTypes, entityType) { // ✔✔
+    // depends on presence of internal references
     // const logPath = pathMkr(logRoot, createEmptySummary, '(↓)');
     // logv(logPath, {entityName: entityType.name});
     // logv(null, {emptyObject});
-    return createEmptyObject(entityType, entityType.summary);
+    return createEmptyObject(entityTypes, entityType, entityType.summary);
 }
 
-function createEmptyObject(entityType, propNames) {
+function createEmptyObject(entityTypes, entityType, fieldPaths) { // ✔✔
+    // depends on presence of internal references
     // const logPath = pathMkr(logRoot, createEmptyObject, '(↓, ↓)');
-    // logv(logPath, {entityName: entityType.name, propNames});
+    // logv(logPath, {entityName: entityType.name, fieldPaths});
     const item = {};
-    propNames.forEach(key => {
-        const prop = getFieldFromPath(entityType, key);
-        // logv(null, {key, prop});
-        switch (prop?.type) {
+    fieldPaths.forEach(fieldPath => {
+        const field = getFieldFromPath(entityTypes, entityType, fieldPath);
+        // logv(null, {fieldPath, field});
+        switch (field?.type) {
             case types.str:
-                item[key] = '';
+                item[fieldPath] = '';
                 break;
             default:
-                item[key] = null;
+                item[fieldPath] = null;
         }
     })
     return item;
@@ -799,11 +728,13 @@ export const entityNameList = Object.keys(entityTypes);
 export const entityNames = Object.fromEntries(entityNameList.map(name => [name, name]));
 
 export const exportedForTesting = {
-    initializeAndCheckEntityTypes,
-    checkAndSetInternalReference,
-    checkStringValidation,
-    checkSummaries,
-    expandAllValidations, // ✔
+    initializeEntityTypes,
+    setEveryFieldsInternalReferences,
+    expandEveryFieldsValidations,
+    setInternalReference,
+    // checkStringValidation, // obsolete by test
+    // checkSummaries, // obsolete by test
+    expandFieldValidation, // ✔
     expandValidation, // ✔
     expansions, // ✔
     transformEntries, // ✔
