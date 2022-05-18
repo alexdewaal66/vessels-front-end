@@ -420,9 +420,11 @@ entityTypes.vessel = {
         id: {type: types.num, label: 'id', readOnly: true,},
         hull: {type: types.obj, hasNull: true, isMulti: false,},
         name: {type: types.str, label: 'naam', validation: {maxLength: 100},},
-        image: {type: types.img,
+        image: {
+            type: types.img,
             // label: 'afbeelding',
-            target: 'image'},
+            target: 'image'
+        },
         mmsi: {type: types.str, label: 'mmsi', validation: {maxLength: 10},},
         callSign: {type: types.str, label: 'roepletters', validation: {maxLength: 10},},
         vesselType: {
@@ -639,14 +641,6 @@ function setEveryFieldsInternalReferences(entityTypes, entityName) { // ✔✔
     }
 }
 
-function expandEveryFieldsValidations(entityTypes, entityName) { // ✔✔
-    for (const field of Object.values(entityTypes[entityName].fields)) {
-        if (field.type === types.str || field.type === types.num)
-            expandFieldValidation(field); // ✔✔
-    }
-}
-
-
 function setInternalReference(entityTypes, entityName, fieldName) { // ✔✔
     const field = entityTypes[entityName].fields[fieldName];
     if (field.target) {
@@ -662,6 +656,13 @@ function setInternalReference(entityTypes, entityName, fieldName) { // ✔✔
                 field.label = entityTypes[fieldName].label.toLowerCase();
             }
         }
+    }
+}
+
+function expandEveryFieldsValidations(entityTypes, entityName) { // ✔✔
+    for (const field of Object.values(entityTypes[entityName].fields)) {
+        // if (field.type === types.str || field.type === types.num)
+        expandFieldValidation(field); // ✔✔
     }
 }
 
