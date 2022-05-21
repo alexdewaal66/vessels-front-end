@@ -23,7 +23,7 @@ function SignIn() {
         // const logPath =  pathMkr(logRoot, onSubmit, '↓')
         // logv(logPath, {formData});
         postRequest({
-            url: endpoints.signIn,
+            endpoint: endpoints.signIn,
             payload: formData,
             requestState: requestState,
             onSuccess: (response) => {

@@ -19,9 +19,9 @@ export function formatTime(timestamp) {
 }
 
 
-// export function makeId() {
-//     return now() + '_' + (Math.random() * 0x10_0000_0000_0000).toString(36);
-// }
+export function makeId() {
+    return now() + '_' + (Math.random() * 0x10_0000_0000_0000).toString(36);
+}
 
 export function loCaseCompare(p, q) {
     if (typeof p === 'string' && typeof q === 'string') {

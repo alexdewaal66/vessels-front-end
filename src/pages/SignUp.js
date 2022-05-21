@@ -20,7 +20,7 @@ function SignUp() {
         const logPath =  pathMkr(logRoot, onSubmit, '↓')
         logv(logPath, {formData});
         postRequest({
-            url: endpoints.signUp,
+            endpoint: endpoints.signUp,
             payload: formData,
             requestState: requestState,
             onSuccess: () => {

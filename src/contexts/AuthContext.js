@@ -39,7 +39,7 @@ export function AuthContextProvider({children}) {
         // const logPath = pathMkr(logRoot, fetchUserData);
         const userID = getUserID(localStorage.getItem(persistentVars.JWT));
         getRequest({
-            url: `${endpoints.users}${userID}`,
+            endpoint: `${endpoints.users}${userID}`,
             requestState: requestState,
             onSuccess: (response) => {
                 // logv(logPath, {response});
