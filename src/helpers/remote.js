@@ -3,7 +3,6 @@ import { endpoints } from './endpoints';
 import { statusCodes } from './statusCodes';
 import { logv, pathMkr } from '../dev/log';
 import { entityTypes } from './entityTypes';
-import { now } from './utils';
 
 const logRoot = 'remote.js';
 
@@ -78,7 +77,7 @@ export async function makeRequest({method, endpoint, payload, headers, requestSt
     } catch (error) {
         if (error?.response)
             error.response.statusText = statusCodes[error.response.status];
-        console.log(now(), logPath, {error, method, endpoint, payload});
+        // console.log(now(), logPath, {error, method, endpoint, payload});
         requestState?.setAtError();
         requestState?.setErrorMsg(error.toString());
         onFail?.(error);
@@ -151,7 +150,7 @@ export const remote = {
     },
 
     findByUniqueField: async function (entityType, probe, requestState, onSuccess, onFail) {
-        const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [entityType.name, '↓']);
+        // const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [entityType.name, '↓']);
         // logv(logPath, {probe});
         const entries = Object.entries(probe);
         // logv(logPath, {entries});

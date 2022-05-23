@@ -121,7 +121,7 @@ export const vesselsError = {
     "code": "ECONNABORTED"
 };
 
-export const remoteResponses = {
+export const remoteTestcases = {
     ids: [{"id": 1}, {"id": 2}, {"id": 3}, {"id": 4}],
     summaries: [
         {"id": 1, "timestamp": 1640995200000, "hullNumber": "IMO8516990"},
@@ -167,4 +167,25 @@ export const remoteResponses = {
             "builder": null
         }
     ],
+
+    vessel1: {
+        "id": 1,
+        "timestamp": 1640991600000,
+        "owner": null,
+        "updater": null,
+        "hull": {},
+        "name": "Sc Nordic",
+        "image": null,
+        "mmsi": null,
+        "callSign": null,
+        "vesselType": {},
+        "homePort": {},
+        "length": 110.0,
+        "beam": 18.0,
+        "draft": 5.6,
+        "displacement": 4876.0,
+        "startDate": 504918000000,
+        "endDate": null
+    },
+
 }

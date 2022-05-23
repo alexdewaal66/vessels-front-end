@@ -1,14 +1,14 @@
 import {
     addJwtToHeaders, deleteRequest,
     endpoints, entityTypes,
-    getRequest, makeId,
+    getRequest,
     makeRequest,
     persistentVars, postRequest, putRequest, remote,
     RequestState,
     requestStates
 } from '../../helpers';
 import axios from 'axios';
-import { errorSchema, remoteResponses, responseSchema } from '../__resources__/testData';
+import { errorSchema, remoteTestcases, responseSchema } from '../__resources__/testData';
 import imageFile00 from '../__resources__/imageFile00.jpg'
 
 jest.mock('axios', () => jest.fn());
@@ -292,7 +292,7 @@ describe('remote.* functions', () => {
                 const extend = 'ids';
                 let response = undefined, error = undefined;
                 if (concludePromise === resolve)
-                    response = remoteResponses[extend];
+                    response = remoteTestcases[extend];
                 else
                     error = errorSchema;
                 const entityType = entityTypes[entityName];
@@ -326,7 +326,7 @@ describe('remote.* functions', () => {
                 const extend = 'summaries';
                 let response = undefined, error = undefined;
                 if (concludePromise === resolve)
-                    response = remoteResponses[extend];
+                    response = remoteTestcases[extend];
                 else
                     error = errorSchema;
                 const entityType = entityTypes[entityName];
@@ -360,7 +360,7 @@ describe('remote.* functions', () => {
                 const extend = 'items';
                 let response = undefined, error = undefined;
                 if (concludePromise === resolve)
-                    response = remoteResponses[extend];
+                    response = remoteTestcases[extend];
                 else
                     error = errorSchema;
                 const entityType = entityTypes[entityName];
@@ -394,7 +394,7 @@ describe('remote.* functions', () => {
                 const extend = 'items';
                 let response = undefined, error = undefined;
                 if (concludePromise === resolve)
-                    response = remoteResponses[extend];
+                    response = remoteTestcases[extend];
                 else
                     error = errorSchema;
                 const entityType = entityTypes[entityName];
@@ -429,7 +429,7 @@ describe('remote.* functions', () => {
                 const extend = 'items';
                 let response = undefined, error = undefined;
                 if (concludePromise === resolve)
-                    response = remoteResponses[extend];
+                    response = remoteTestcases[extend];
                 else
                     error = errorSchema;
                 const entityType = entityTypes[entityName];
@@ -530,32 +530,13 @@ describe('remote.* functions', () => {
 
     describe('remote.read()', () => {
 
-        const vessel1 = {
-            "id": 1,
-            "timestamp": 1640991600000,
-            "owner": null,
-            "updater": null,
-            "hull": {},
-            "name": "Sc Nordic",
-            "image": null,
-            "mmsi": null,
-            "callSign": null,
-            "vesselType": {},
-            "homePort": {},
-            "length": 110.0,
-            "beam": 18.0,
-            "draft": 5.6,
-            "displacement": 4876.0,
-            "startDate": 504918000000,
-            "endDate": null
-        };
 
         test.each([
             [
                 'vessel', 1,
                 new RequestState(), requestStates.SUCCESS,
                 new SaveArgCallback(), new SaveArgCallback(),
-                vessel1, undefined,
+                remoteTestcases.vessel1, undefined,
                 resolve,
             ]
         ])('entityName=%s , id=%n',
@@ -583,7 +564,7 @@ describe('remote.* functions', () => {
             });
     });
 
-    describe('fileUpload()', () => {
+    describe('remote.fileUpload()', () => {
 
 
         test.each([
@@ -593,7 +574,14 @@ describe('remote.* functions', () => {
                 new SaveArgCallback(), new SaveArgCallback(),
                 {}, undefined,
                 resolve,
-            ]
+            ],
+            [
+                imageFile00,
+                new RequestState(), requestStates.ERROR,
+                new SaveArgCallback(), new SaveArgCallback(),
+                undefined, errorSchema,
+                reject,
+            ],
         ])('file=%o',
             async (
                 file,
@@ -620,7 +608,142 @@ describe('remote.* functions', () => {
                 expect(requestState.value).toBe(resultingState);
                 expect(onSuccess.arg).toEqual(result);
                 expect(onFail.arg).toEqual(error);
-        });
+            });
+    });
+
+    describe('remote.create()', () => {
+
+
+        test.each([
+            [
+                'vessel', remoteTestcases.vessel1,
+                new RequestState(), requestStates.SUCCESS,
+                new SaveArgCallback(), new SaveArgCallback(),
+                {}, undefined,
+                resolve,
+            ],
+            [
+                'vessel', remoteTestcases.vessel1,
+                new RequestState(), requestStates.ERROR,
+                new SaveArgCallback(), new SaveArgCallback(),
+                undefined, errorSchema,
+                reject,
+            ],
+        ])('file=%o',
+            async (
+                entityName, item,
+                requestState, resultingState,
+                onSuccess, onFail,
+                result, error,
+                concludePromise,
+            ) => {
+                const entityType = entityTypes[entityName];
+
+                const expectedConfig = {
+                    method: 'post',
+                    baseURL: endpoints.baseURL,
+                    url: entityType.endpoint,
+                    headers: addJwtToHeaders(),
+                    data: item,
+                    timeout: 15_000,
+                };
+                axios.mockImplementationOnce(concludePromise(result || error));
+                await remote.create(entityType, item, requestState, onSuccess.saveArg, onFail.saveArg);
+                expect(axios).toHaveBeenCalledWith(expectedConfig);
+                expect(requestState.value).toBe(resultingState);
+                expect(onSuccess.arg).toEqual(result);
+                expect(onFail.arg).toEqual(error);
+            });
+    });
+
+    describe('remote.update()', () => {
+
+
+        test.each([
+            [
+                'vessel', remoteTestcases.vessel1,
+                new RequestState(), requestStates.SUCCESS,
+                new SaveArgCallback(), new SaveArgCallback(),
+                {}, undefined,
+                resolve,
+            ],
+            [
+                'vessel', remoteTestcases.vessel1,
+                new RequestState(), requestStates.ERROR,
+                new SaveArgCallback(), new SaveArgCallback(),
+                undefined, errorSchema,
+                reject,
+            ],
+        ])('entityName=%o , item=%o',
+            async (
+                entityName, item,
+                requestState, resultingState,
+                onSuccess, onFail,
+                result, error,
+                concludePromise,
+            ) => {
+                const entityType = entityTypes[entityName];
+
+                const expectedConfig = {
+                    method: 'put',
+                    baseURL: endpoints.baseURL,
+                    url: entityType.endpoint + '/' + item.id,
+                    headers: addJwtToHeaders(),
+                    data: item,
+                    timeout: 15_000,
+                };
+                axios.mockImplementationOnce(concludePromise(result || error));
+                await remote.update(entityType, item, requestState, onSuccess.saveArg, onFail.saveArg);
+                expect(axios).toHaveBeenCalledWith(expectedConfig);
+                expect(requestState.value).toBe(resultingState);
+                expect(onSuccess.arg).toEqual(result);
+                expect(onFail.arg).toEqual(error);
+            });
+    });
+
+    describe('remote.delete()', () => {
+
+
+        test.each([
+            [
+                'vessel', remoteTestcases.vessel1,
+                new RequestState(), requestStates.SUCCESS,
+                new SaveArgCallback(), new SaveArgCallback(),
+                {}, undefined,
+                resolve,
+            ],
+            [
+                'vessel', remoteTestcases.vessel1,
+                new RequestState(), requestStates.ERROR,
+                new SaveArgCallback(), new SaveArgCallback(),
+                undefined, errorSchema,
+                reject,
+            ],
+        ])('entityName=%s , item=%o',
+            async (
+                entityName, item,
+                requestState, resultingState,
+                onSuccess, onFail,
+                result, error,
+                concludePromise,
+            ) => {
+                const entityType = entityTypes[entityName];
+
+                const expectedConfig = {
+                    method: 'delete',
+                    baseURL: endpoints.baseURL,
+                    url: entityType.endpoint + '/' + item.id,
+                    headers: addJwtToHeaders(),
+                    // data: item,
+                    timeout: 15_000,
+                };
+                axios.mockImplementationOnce(concludePromise(result || error));
+                await remote.delete(entityType, item.id, requestState, onSuccess.saveArg, onFail.saveArg);
+                expect(axios).toHaveBeenCalledWith(expectedConfig);
+                expect(requestState.value).toBe(resultingState);
+                expect(onSuccess.arg).toEqual(result);
+                expect(onFail.arg).toEqual(error);
+            });
     });
 
 });
