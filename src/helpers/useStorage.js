@@ -127,7 +127,7 @@ async function readAndStoreAllItems(entityName, requestState, store, onSuccess, 
 async function readAndStoreNewItems(entityName, requestState, store, onSuccess, onFail) {
     // const logPath = pathMkr(logRoot, readAndStoreNewItems, entityName);
     const timestamp1 = store.timestamps.state[entityName];
-    const timestamp2 = timestamp1 || 1640991600000; // 2022-01-01 00:00:00.000
+    const timestamp2 = timestamp1 || 1640995200000; // 2022-01-01 00:00:00.000
     // logv(logPath, {entityName, timestamp1, timestamp2,});
     await remote.readNewItems(
         entityTypes[entityName], timestamp2, requestState,
@@ -175,7 +175,7 @@ async function readAndStoreItemByUniqueFields(entityName, probe, requestState, s
                 validity: validities.full,
             });
             foundId = item.id;
-            // logv(pathMkr(logRoot, readAndStoreItemByUniqueFields, entityType.name), {probe, item});
+            logv(pathMkr(logRoot, readAndStoreItemByUniqueFields, entityName), {probe, item});
             onSuccess?.(foundId);
         },
         onFail

@@ -118,7 +118,7 @@ export const remote = {
     },
 
     readByExample: async function (entityType, probe, requestState, onSuccess, onFail) {
-        const endpoint = entityType.endpoint + '/qbe';
+        const endpoint = entityType.endpoint + '/findall';
         await postRequest({
             endpoint, payload: probe, requestState, onSuccess, onFail
         });
@@ -151,7 +151,7 @@ export const remote = {
     },
 
     findByUniqueField: async function (entityType, probe, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [entityType.name, '↓']);
+        const logPath = pathMkr(logRoot, ['remote', remote.findByUniqueField], null, [entityType.name, '↓']);
         // logv(logPath, {probe});
         const entries = Object.entries(probe);
         // logv(logPath, {entries});
@@ -164,7 +164,7 @@ export const remote = {
                 const param = entityType.findItem.params[key];
                 endpoint += (i === 0 ? '?' : '&') + param + '=' + value;
             });
-            // logv(logPath, {url});
+            // logv(logPath, {endpoint});
             await getRequest({endpoint, requestState, onSuccess, onFail});
         }
     },

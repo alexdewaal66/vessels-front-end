@@ -1,3 +1,6 @@
+test('no test', () => {
+});
+
 export const responseSchema = {
     data: {},
     status: 200,
@@ -11,19 +14,7 @@ export const errorSchema = {
     "message": "",
     "name": "",
     "stack": "",
-    "config": {
-        "url": "",
-        "method": "",
-        "headers": {},
-        "baseURL": "",
-        "transformRequest": [null],
-        "transformResponse": [null],
-        "timeout": 0,
-        "xsrfCookieName": "XSRF-TOKEN",
-        "xsrfHeaderName": "X-XSRF-TOKEN",
-        "maxContentLength": -1,
-        "maxBodyLength": -1
-    },
+    "config": {},
     "code": "ECONNABORTED"
 };
 
@@ -32,7 +23,7 @@ export const vesselsResponse = {
         [
             {
                 "id": 1,
-                "timestamp": 1640991600000,
+                "timestamp": 1640995200000,
                 "owner": null,
                 "updater": null,
                 "shortNameNL": "Afghanistan",
@@ -43,7 +34,7 @@ export const vesselsResponse = {
             },
             {
                 "id": 2,
-                "timestamp": 1640991600000,
+                "timestamp": 1640995200000,
                 "owner": null,
                 "updater": null,
                 "shortNameNL": "Albania",
@@ -54,7 +45,7 @@ export const vesselsResponse = {
             },
             {
                 "id": 3,
-                "timestamp": 1640991600000,
+                "timestamp": 1640995200000,
                 "owner": null,
                 "updater": null,
                 "shortNameNL": "Ãland Islands",
@@ -65,7 +56,7 @@ export const vesselsResponse = {
             },
             {
                 "id": 249,
-                "timestamp": 1640991600000,
+                "timestamp": 1640995200000,
                 "owner": null,
                 "updater": null,
                 "shortNameNL": "Zimbabwe",
@@ -130,5 +121,50 @@ export const vesselsError = {
     "code": "ECONNABORTED"
 };
 
-test('no test', () => {
-});
+export const remoteResponses = {
+    ids: [{"id": 1}, {"id": 2}, {"id": 3}, {"id": 4}],
+    summaries: [
+        {"id": 1, "timestamp": 1640995200000, "hullNumber": "IMO8516990"},
+        {"id": 2, "timestamp": 1640995200000, "hullNumber": "IMO9464883"},
+        {"id": 3, "timestamp": 1640995200000, "hullNumber": "IMO9775749"},
+        {"id": 4, "timestamp": 1640995200000, "hullNumber": "IMO9797735"}
+    ],
+    items: [
+        {
+            "id": 1,
+            "timestamp": 1640995200000,
+            "owner": null,
+            "updater": null,
+            "hullNumber": "IMO8516990",
+            "constructionDate": null,
+            "builder": null
+        },
+        {
+            "id": 2,
+            "timestamp": 1640995200000,
+            "owner": null,
+            "updater": null,
+            "hullNumber": "IMO9464883",
+            "constructionDate": null,
+            "builder": null
+        },
+        {
+            "id": 3,
+            "timestamp": 1640995200000,
+            "owner": null,
+            "updater": null,
+            "hullNumber": "IMO9775749",
+            "constructionDate": null,
+            "builder": null
+        },
+        {
+            "id": 4,
+            "timestamp": 1640995200000,
+            "owner": null,
+            "updater": null,
+            "hullNumber": "IMO9797735",
+            "constructionDate": null,
+            "builder": null
+        }
+    ],
+}

@@ -1,6 +1,6 @@
 import { keys, requestStates, useKeyPressed, useMountEffect, useRequestState } from '../../helpers';
 import { createEvent, fireEvent, render, screen } from '@testing-library/react';
-import { actual, setActual, TestHook } from '../testHook';
+import { actual, setActual, TestHook } from '../__resources__/testHook';
 import userEvent from '@testing-library/user-event';
 
 describe('customHooks.js', () => {

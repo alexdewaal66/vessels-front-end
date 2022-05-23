@@ -1,9 +1,9 @@
 import { formatTime, loCaseCompare, now } from '../../helpers';
 
 test('timestamp to UU:MM:SS format', () => {
-    const timestamp = 1640991600000
+    const timestamp = 1640995200000
     const actual = formatTime(timestamp);
-    expect(actual).toBe('09:00:00');
+    expect(actual).toBe('01:00:00');
 });
 
 
