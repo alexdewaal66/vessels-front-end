@@ -106,7 +106,6 @@ export function Test({children, className, ...rest}) {
 
     return (
         <>
-
             <Stringify data={[...primesSet.all]}>
                 priemgetallen
             </Stringify>

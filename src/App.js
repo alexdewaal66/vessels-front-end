@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import './assets/fonts/stylesheet.css'
@@ -9,6 +9,8 @@ import { Footer, Header } from './pageLayouts';
 
 //TODO README.md
 function App() {
+    const [trigger, setTrigger] = useState(false);
+
     return (
             <div className={"App " + pageLayout.app}>
                 <Header/>
@@ -22,7 +24,7 @@ function App() {
                         </Route>
                     )}
                 </Switch>
-                <Footer>FOOTER</Footer>
+                <Footer setTrigger={setTrigger}/>
             </div>
     );
 }

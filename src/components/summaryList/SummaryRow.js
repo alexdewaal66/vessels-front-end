@@ -3,7 +3,7 @@ import { optionalIdValue, summaryStyle } from './index';
 import { errv } from '../../dev/log';
 import { pathMkr } from '../../dev/log';
 import { rootMkr } from '../../dev/log';
-import { cx, endpoints, entityTypes, getFieldFromPath, types } from '../../helpers';
+import { cx, endpoints, entityTypes, getFieldFromPath, hints, types } from '../../helpers';
 import { ChoiceContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
 
@@ -117,7 +117,7 @@ export function SummaryRow({
         if (fieldType === types.img || fieldType === types.file) {
             // logv(null, {object, fieldPath, field});
             return (field
-                    ? <img src={endpoints.baseURL + 'files/' + field}
+                    ? <img src={endpoints.baseURL + entityTypes.file.endpoint + '/' + field}
                            alt="thumbnail"/>
                     : <>--</>
             );
@@ -145,7 +145,9 @@ export function SummaryRow({
             )}
             {(small && item.id && item.id !== optionalIdValue) ? (
                 <td>
-                    <span onClick={makeChoice({component: EntityN(entityType, item.id)})}>
+                    <span onClick={makeChoice({component: EntityN(entityType, item.id)})}
+                          title={hints(`ga naar ${entityType.label}(${item.id})`)}
+                    >
                         ➡
                     </span>
                 </td>

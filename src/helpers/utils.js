@@ -33,6 +33,16 @@ export function loCaseCompare(p, q) {
     return 0;
 }
 
+export const config = {
+    showUsageHints: {value: false, label: 'gebruikstips'},
+    devComponents: {value: false, label: 'probeersels'}
+};
+
+
+export function hints(...args) {
+    return config.showUsageHints.value ? args.filter(Boolean).join('\u000D') : null;
+}
+
 // export function emptyFields(fieldNames) {
 //     const fields = {};
 //     fieldNames.forEach(fieldName => {

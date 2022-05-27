@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { summaryStyle } from './index';
 import filterSymbol from '../../assets/filter.svg';
 import { createEmptySummary, entityTypes, getFieldFromPath } from '../../helpers';
+import { hints } from '../../helpers';
 // import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 const enterKey = 13;
@@ -77,10 +78,12 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
                            maxLength={inputLength(fieldPath)}
                            className={summaryStyle.filter}
                            value={inputFields[fieldPath] || ''}
+                           title={hints('filter op waarde, activeer met filtersymbool', 'numerieke bereiken met koppelteken', 'bijv. 3-7 of 20-')}
                     />
                     <button type={'button'}
                             onClick={clearFieldHandler(fieldPath)}
                             className={summaryStyle.filterButton}
+                            title={hints('wis filter')}
                     >
                         ␡
                     </button>
@@ -90,6 +93,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
                 <button type={'button'}
                         onClick={filterHandler}
                         className={summaryStyle.sort}
+                        title={hints('activeer filter')}
                 >
                     <img src={filterSymbol} alt={'Filter symbol'}
                          className={summaryStyle.filterButton}

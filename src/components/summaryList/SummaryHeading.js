@@ -1,6 +1,7 @@
 import React from 'react';
 import { summaryStyle } from './index';
 import { SummaryFilter } from './SummaryFilter';
+import { hints } from '../../helpers';
 
 export function SummaryHeading({
                                    entityType, elKey,
@@ -35,10 +36,18 @@ export function SummaryHeading({
                         {/*{entityType.fields[fieldPath].label || fieldPath}*/}
                         {label(entityType.fields, fieldPath) || fieldPath}
                         <span>
-                            <button type={'button'} onClick={up(fieldPath)} className={summaryStyle.sort}>
+                            <button type={'button'}
+                                    onClick={up(fieldPath)}
+                                    className={summaryStyle.sort}
+                                    title={hints('▲ = sorteer van laag naar hoog, standaard')}
+                            >
                                 {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
                             </button>
-                            <button type={'button'} onClick={down(fieldPath)} className={summaryStyle.sort}>
+                            <button type={'button'}
+                                    onClick={down(fieldPath)}
+                                    className={summaryStyle.sort}
+                                    title={hints('▼ = sorteer van hoog naar laag')}
+                            >
                                 {sorting.isOrderUp(fieldPath) ? '▼' : '▽'}
                             </button>
                         </span>

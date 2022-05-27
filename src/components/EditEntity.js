@@ -1,4 +1,4 @@
-import React, { useContext, Fragment } from 'react';
+import React, { useContext, Fragment, useRef, useEffect } from 'react';
 import { CommandContext, operationNames, StorageContext, AuthContext } from '../contexts';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
 import { Input, ShowRequestState, Details, EditButtons } from './';
@@ -13,6 +13,7 @@ export function EditEntity(
         entityType, item, setItem, receiver, elKey,
         // submitTime, setSubmitTime
     }) {
+    // const containerTop = useRef(null);
     const entityName = entityType.name;
     // const logRoot = rootMkr(EditEntity, entityType.name, '↓↓');
     // logv(logRoot, {item, receiver: receiver.name});
@@ -38,6 +39,10 @@ export function EditEntity(
             },
         },
     }
+
+    // function topIsRendered(element) {
+    //     element.current.scrollTop = 0;
+    // }
 
     useCommand(conditions);
 
@@ -113,7 +118,7 @@ export function EditEntity(
         );
     }
 
-    // function onSearch(formData) {}
+// function onSearch(formData) {}
 
     function onSubmit({requestMethod, ...formData}) {
         // const logPath = pathMkr(logRoot, onSubmit);
@@ -158,7 +163,9 @@ export function EditEntity(
     return (
         <>
             {item && (
-                <div key={elKey + '1'}>
+                <div
+                    // ref={topIsRendered}
+                    key={elKey + '1'}>
                     <ShowRequestState requestState={requestState}/>
                     <Form onSubmit={handleSubmit(onSubmit)}>
                         <Fieldset border={false}>

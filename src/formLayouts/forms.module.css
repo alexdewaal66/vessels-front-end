@@ -30,7 +30,7 @@
     display: table-cell;
     vertical-align: top;
 }
-
+.button + .button,
 button + button {
     margin-left: 2em;
 }

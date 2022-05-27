@@ -91,11 +91,10 @@ function SignUp() {
                     <p>Heb je al een account? Je kunt je <Link to={pages.signIn.path}>hier</Link> inloggen.</p>
                 </Main>
                 <Menu>
-                    COMMAND
                 </Menu>
-                <Aside>
-                    ASIDE
-                </Aside>
+                {/*<Aside>*/}
+                {/*    ASIDE*/}
+                {/*</Aside>*/}
             </Content>
     );
 }

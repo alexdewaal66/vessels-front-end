@@ -133,7 +133,7 @@ export function SummaryListSmall({
 
 
     return (
-        <div onKeyDown={handleOnControlDown} onKeyUp={handleOnControlUp}>
+        <div onKeyDown={handleOnControlDown} onKeyUp={handleOnControlUp} style={{minHeight: '12em'}} >
             <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
             {list && (
                 <div>

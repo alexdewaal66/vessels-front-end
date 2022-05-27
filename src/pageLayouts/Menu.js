@@ -1,6 +1,7 @@
 import React from 'react';
 import menuStyles from './menu.module.css';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
+import { config } from '../helpers';
 
 export function Menu({menuItems, choice, makeChoice, children, className, ...rest}) {
 
@@ -12,6 +13,7 @@ export function Menu({menuItems, choice, makeChoice, children, className, ...res
 
                 <ul className={menuStyles.ul}>
                     {menuItems?.map(menuItem =>
+                        (!menuItem.dev || (menuItem.dev && config.devComponents.value)) &&
                         <li key={menuItem.label}
                             onClick={makeChoice(menuItem)}
                             className={choice === menuItem
@@ -27,3 +29,5 @@ export function Menu({menuItems, choice, makeChoice, children, className, ...res
         </nav>
     );
 }
+
+// (!dev || dev && value) && <li></li>

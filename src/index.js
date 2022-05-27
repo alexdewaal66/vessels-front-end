@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { StatusContextProvider } from './contexts/StatusContext';
+import { MessageContextProvider } from './contexts/MessageContext';
 import { StorageContextProvider } from './contexts/StorageContext';
 import { AuthContextProvider } from './contexts/AuthContext';
 import { ChoiceContextProvider } from './contexts/ChoiceContext';
@@ -15,7 +15,7 @@ initializeEntityTypes(entityTypes);
 ReactDOM.render(
     <React.StrictMode>
         <Router>
-            <StatusContextProvider>
+            <MessageContextProvider>
                 <StorageContextProvider>
                     <AuthContextProvider>
                         <ChoiceContextProvider>
@@ -23,7 +23,7 @@ ReactDOM.render(
                         </ChoiceContextProvider>
                     </AuthContextProvider>
                 </StorageContextProvider>
-            </StatusContextProvider>
+            </MessageContextProvider>
         </Router>
     </React.StrictMode>,
     document.getElementById('root')

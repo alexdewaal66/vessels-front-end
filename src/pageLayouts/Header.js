@@ -5,7 +5,7 @@ import headerStyles from './header.module.css'
 import { pageLayout } from './';
 import { AuthContext } from '../contexts/AuthContext';
 import { withCondition } from '../enhancers/withCondition';
-import { cx } from '../helpers';
+import { cx, hints } from '../helpers';
 
 
 const CondLi = withCondition('li');
@@ -23,7 +23,7 @@ export function Header({className}) {
                         <CondLi condition={page.isVisible(user)}
                                 key={page.name}
                         >
-                            <NavLink to={page.path} exact={page.exact} activeClassName={headerStyles.selected}>
+                            <NavLink to={page.path} exact={page.exact} activeClassName={headerStyles.selected} title={hints(page.hints)}>
                                 {page.name}
                             </NavLink>
                         </CondLi>
