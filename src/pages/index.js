@@ -3,7 +3,6 @@ import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Profile from './Profile';
 import SignOut from './SignOut';
-import { hints } from '../helpers';
 
 const pages = {
     home: {name: 'Home', path: '/', component: Home, exact: true, isVisible: () => true, },

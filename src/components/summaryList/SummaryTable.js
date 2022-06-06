@@ -81,7 +81,7 @@ export function SummaryTable({
             ...UICues,
             hasFocus: (index === focusIndex && hasTableFocus),
             // isSelected: (index === selectedIndex),
-            isSelected: selectedIds?.has(displayList[index][idName]),
+            isSelected: selectedIds?.has(displayList[index]?.[idName]),
             hasVisualPriority: hasTableFocus ? (index === focusIndex) : (index === selectedIndex),
             small
         }

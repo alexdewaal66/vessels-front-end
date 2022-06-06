@@ -113,7 +113,7 @@ export function InputImageFile({
             {fullSizeImageId && (
                 <>
                     <img
-                        src={endpoints.baseURL + entityTypes.file.endpoint + '/' + fullSizeImageId}
+                        src={endpoints.baseURL + entityTypes.file.downloadEndpoint(fullSizeImageId)}
                         alt="fullSize" height={400}
                     />
                 </>

@@ -9,7 +9,7 @@ import { Footer, Header } from './pageLayouts';
 
 //TODO README.md
 function App() {
-    const [trigger, setTrigger] = useState(false);
+    const [, setTrigger] = useState(false);
 
     return (
             <div className={"App " + pageLayout.app}>

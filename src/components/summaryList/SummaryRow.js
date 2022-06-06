@@ -3,7 +3,7 @@ import { optionalIdValue, summaryStyle } from './index';
 import { errv } from '../../dev/log';
 import { pathMkr } from '../../dev/log';
 import { rootMkr } from '../../dev/log';
-import { cx, endpoints, entityTypes, getFieldFromPath, hints, types } from '../../helpers';
+import { cx, endpoints, entityTypes, getFieldFromPath, hints, fieldTypes } from '../../helpers';
 import { ChoiceContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
 
@@ -22,7 +22,7 @@ export function SummaryRow({
                                rowFocus, UICues, elKey, // tableBodyRef
                            }) {
     const entityName = entityType.name;
-    const logRoot = rootMkr(SummaryRow, entityName, item.id);
+    const logRoot = rootMkr(SummaryRow, entityName, item?.id);
     const {hasFocus, isSelected, hasVisualPriority, small, readOnly} = UICues;
     const row = useRef(null);
 
@@ -114,10 +114,10 @@ export function SummaryRow({
         // if (doLog) logv(logPath, {object, fieldPath, field});
         let fieldType = getFieldFromPath(entityTypes, entityType, fieldPath).type;
         // if (doLog) logv(null, {fieldType});
-        if (fieldType === types.img || fieldType === types.file) {
+        if (fieldType === fieldTypes.img || fieldType === fieldTypes.file) {
             // logv(null, {object, fieldPath, field});
             return (field
-                    ? <img src={endpoints.baseURL + entityTypes.file.endpoint + '/' + field}
+                    ? <img src={endpoints.baseURL + entityTypes.file.downloadEndpoint(field)}
                            alt="thumbnail"/>
                     : <>--</>
             );

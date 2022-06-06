@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createEmptySummary, entityTypes, types } from '../../helpers';
+import { createEmptySummary, entityTypes, fieldTypes } from '../../helpers';
 
 export function useFilters(entityType) {
     // const logRoot = rootMkr(useFilters, entityType.name);
@@ -23,11 +23,11 @@ export function useFilters(entityType) {
             if (filterValue) {
                 let newFilter = {};
                 switch (entityType.fields[fieldName].type) {
-                    case types.str:
+                    case fieldTypes.str:
                         newFilter.matcher = matchers.str;
                         newFilter.value = filterValue.toLowerCase();
                         break;
-                    case types.num:
+                    case fieldTypes.num:
                         const [lo, hi] = filterValue.split('-');
                         newFilter.matcher = matchers.num;
                         newFilter.value = {

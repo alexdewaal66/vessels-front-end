@@ -78,6 +78,21 @@ function transformAndStoreItemArray(entityName, data, store, validity) {
     store[entityName].setMany(branches);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+function transformAndRemoveDeletionArray(entityName, deletions, store) {
+    const logPath = pathMkr(logRoot, transformAndRemoveDeletionArray);
+    // const doLog = entityName === entityTypes.xyz.name;
+    logv(logPath, {entityName, data: deletions});
+    let youngest = store.timestamps.state[entityName] || 0;
+    const idList = deletions.map(item => {
+            youngest = Math.max(youngest, item.timestamp);
+            return item['itemId'];
+        });
+    logv(null, {idList});
+    store[entityName].delMany(idList);
+}
+////////////////////////////////////////////////////////////////////////////////////
+
 // async function readAndStoreSummariesByIds(entityName, idArray, requestState, store, onSuccess, onFail) {
 //     await remote.readSummariesByIds(
 //         entityTypes[entityName], idArray, requestState,
@@ -124,15 +139,17 @@ async function readAndStoreAllItems(entityName, requestState, store, onSuccess, 
 }
 
 
-async function readAndStoreNewItems(entityName, requestState, store, onSuccess, onFail) {
-    // const logPath = pathMkr(logRoot, readAndStoreNewItems, entityName);
+async function readAndStoreChangedItems(entityName, requestState, store, onSuccess, onFail) {
+    const logPath = pathMkr(logRoot, readAndStoreChangedItems, entityName);
     const timestamp1 = store.timestamps.state[entityName];
     const timestamp2 = timestamp1 || 1640995200000; // 2022-01-01 00:00:00.000
     // logv(logPath, {entityName, timestamp1, timestamp2,});
-    await remote.readNewItems(
+    await remote.readChangedItems(
         entityTypes[entityName], timestamp2, requestState,
         (response) => {
-            transformAndStoreItemArray(entityName, response.data, store, validities.full);
+            logv(logPath, {response_data:response.data});
+            transformAndStoreItemArray(entityName, response.data.fresh, store, validities.full);
+            transformAndRemoveDeletionArray(entityName, response.data.deletions, store);
             onSuccess?.(response);
         },
         onFail
@@ -268,7 +285,7 @@ async function deleteAndStoreItem(entityName, id, requestState, store, onSuccess
                 } else {
                     tree.add('failedDeletions', [id]);
                 }
-                tree.del(id);
+                // tree.del(id);
                 onFail?.(error);
             }
         );
@@ -412,7 +429,7 @@ export function useStorage() {
             advice: '',
             // action: {type: loadChangedItems.name, entityName},
         });
-        await readAndStoreNewItems(entityName, requestState, store, onSuccess, onFail);
+        await readAndStoreChangedItems(entityName, requestState, store, onSuccess, onFail);
     }
 
     async function loadItemByUniqueFields(entityName, probe, onSuccess, onFail) {

@@ -3,6 +3,7 @@ import { endpoints } from './endpoints';
 import { statusCodes } from './statusCodes';
 import { logv, pathMkr } from '../dev/log';
 import { entityTypes } from './entityTypes';
+import { now } from './utils';
 
 const logRoot = 'remote.js';
 
@@ -77,7 +78,8 @@ export async function makeRequest({method, endpoint, payload, headers, requestSt
     } catch (error) {
         if (error?.response)
             error.response.statusText = statusCodes[error.response.status];
-        // console.log(now(), logPath, {error, method, endpoint, payload});
+        console.log(now(), logPath, {error, method, endpoint, payload, onSuccess, onFail});
+        console.error(error);
         requestState?.setAtError();
         requestState?.setErrorMsg(error.toString());
         onFail?.(error);
@@ -109,7 +111,7 @@ export const remote = {
         });
     },
 
-    readNewItems: async function (entityType, timestamp, requestState, onSuccess, onFail) {
+    readChangedItems: async function (entityType, timestamp, requestState, onSuccess, onFail) {
         const endpoint = entityType.endpoint + '/changed/' + timestamp;
         await getRequest({
             endpoint, requestState, onSuccess, onFail
@@ -176,8 +178,8 @@ export const remote = {
     },
 
     fileUpload: async function (file, requestState, onSuccess, onFail) {
-        const endpoint = entityTypes.file.endpoint;
-        const headers = {'content-type': 'multipart/form-data'};
+        const endpoint = entityTypes.file.uploadEndpoint;
+        const headers = {'Content-Type': 'multipart/form-data'};
         const payload = new FormData();
         payload.append('file', file);
         await postRequest({

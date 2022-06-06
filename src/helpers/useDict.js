@@ -1,13 +1,15 @@
 import { useReducer } from 'react';
+import { logv } from '../dev/log';
 // import { logv, pathMkr, rootMkr } from '../dev/log';
 
 // const logRoot = useDict.name + '.js';
 
 const dictActions = {
     add: 'add',
-    setMany: 'setMany',
     set: 'set',
+    setMany: 'setMany',
     del: 'del',
+    delMany: 'delMany',
     // transformEntry: 'transformEntry',
 };
 
@@ -30,13 +32,11 @@ function dictReducer(state, {type, payload: {key, value}}) {
                 return {...state, [key]: value};
             }
         case dictActions.setMany:
-            // logv(logPath, {type, state, value});
             // skip presence test
             return {...state, ...value};
         case dictActions.set:
             if (key in state) {
                 const newState = {...state, [key]: value};
-                // if (key === 'zyx') logv(logPath, {key, value, state, newState}, 'set');
                 return newState;
             } else {
                 throw new UseDictException(`can not set entry ${key}, it doesn't exist`);
@@ -49,6 +49,14 @@ function dictReducer(state, {type, payload: {key, value}}) {
             } else {
                 throw new UseDictException(`can not delete entry ${key}, it doesn't exist`);
             }
+        case dictActions.delMany:
+            const copy = {...state};
+            logv('----delMany----', {copy, value});
+            value.forEach(id => {
+                delete copy[id];
+            });
+            logv(null, {copy});
+            return copy;
         default:
             return state;
     }
@@ -64,12 +72,14 @@ export function useDict(initialState = {}, initializer) {
         dispatch({type: dictActions.setMany, payload: {value}});
     const set = (key, value) =>
         dispatch({type: dictActions.set, payload: {key, value}});
-    const del = (key, value = null) =>
+    const del = (key) =>
         dispatch({type: dictActions.del, payload: {key, value: null}});
+    const delMany = (value) =>
+        dispatch({type: dictActions.delMany, payload: {value}});
     // const transformEntry = (key, transformer) =>
     //     dispatch({type: dictActions.transformEntry, payload: {key, value: transformer}});
     return {
-        state, get, add, setMany, set, del,
+        state, get, add, setMany, set, del, delMany
         // transformEntry,
     };
 }

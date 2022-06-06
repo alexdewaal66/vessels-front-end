@@ -2,10 +2,10 @@ import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { AuthContext } from "../contexts";
-import { useRequestState, endpoints, persistentVars, postRequest, hints } from '../helpers';
+import { useRequestState, endpoints, persistentVars, postRequest } from '../helpers';
 import forms from '../formLayouts/forms.module.css';//todo: forms --> formStyles
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
-import { Aside, Menu, Main } from '../pageLayouts';
+import { Menu, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { ShowRequestState } from '../components';
 

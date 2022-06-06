@@ -1,3 +1,8 @@
+import { fieldTypes } from './entityTypes';
+// import { logv, pathMkr, rootMkr } from '../dev/log';
+
+// const logRoot = rootMkr('utils.js');
+
 export function now() {
     const date = new Date();
     const time = date.toLocaleTimeString();
@@ -23,7 +28,17 @@ export function makeId() {
     return now() + '_' + (Math.random() * 0x10_0000_0000_0000).toString(36);
 }
 
-export function loCaseCompare(p, q) {
+export function dotCount(fieldPath) {
+    return (fieldPath.match(/\./g) || []).length;
+}
+
+export function loCaseCompare(p, q, fieldType) {
+    // const logPath = pathMkr(logRoot, loCaseCompare);
+    if ([fieldTypes.file, fieldTypes.img, fieldTypes.obj].includes(fieldType)) {
+        // logv(logPath, {p, q, fieldType});
+        p = !!p ? p : 0;
+        q = !!q ? q : 0;
+    }
     if (typeof p === 'string' && typeof q === 'string') {
         p = p.toLowerCase();
         q = q.toLowerCase();
@@ -34,8 +49,9 @@ export function loCaseCompare(p, q) {
 }
 
 export const config = {
-    showUsageHints: {value: false, label: 'gebruikstips'},
-    devComponents: {value: false, label: 'probeersels'}
+    showUsageHints: {value: false, label: 'tooltips'},
+    devComponents: {value: false, label: 'probeersels'},
+    showStore: {value: false, label: 'gegevens'},
 };
 
 

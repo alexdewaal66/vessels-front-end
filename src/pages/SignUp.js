@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useRequestState, endpoints, postRequest } from '../helpers';
 import { pages } from './index';
-import { Aside, Menu, Main, Content } from '../pageLayouts';
+import { Menu, Main, Content } from '../pageLayouts';
 import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
 import { ShowRequestState } from '../components';
 import { logv, pathMkr, rootMkr } from '../dev/log';

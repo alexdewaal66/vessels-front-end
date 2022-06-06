@@ -2,11 +2,12 @@ import {
     exportedForTesting,
     getFieldFromPath,
     entityTypes,
-    types,
-    initializeEntityTypes,
+    fieldTypes,
+    // initializeEntityTypes,
     createEmptySummary,
     createEmptyItem
 } from '../../helpers/entityTypes';
+import { dotCount } from '../../helpers';
 
 
 const {
@@ -17,18 +18,18 @@ const {
     createEmptyObject,
     setInternalReference,
     setEveryFieldsInternalReferences,
-    expandEveryFieldsValidations
+    // expandEveryFieldsValidations
 } = exportedForTesting
 
 const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
-const entityTypesCopy = deepCopy(entityTypes);
+// const entityTypesCopy = deepCopy(entityTypes);
 
-const entityEntries = (entityTypesCopy = deepCopy(entityTypes)) =>
-    Object.entries(entityTypesCopy).map(
-        ([entityName, entityType]) =>
-            [entityName, entityType, entityTypesCopy]
-    );
+// const entityEntries = (entityTypesCopy = deepCopy(entityTypes)) =>
+//     Object.entries(entityTypesCopy).map(
+//         ([entityName, entityType]) =>
+//             [entityName, entityType, entityTypesCopy]
+//     );
 
 const fieldEntries = (entityTypesCopy = deepCopy(entityTypes)) =>
     Object.entries(entityTypesCopy).map(
@@ -39,11 +40,11 @@ const fieldEntries = (entityTypesCopy = deepCopy(entityTypes)) =>
             )
     ).flat();
 
-const referringFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === types.obj || field.type === types.file);
+const referringFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === fieldTypes.obj || field.type === fieldTypes.file);
 
-const textFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === types.str);
+const textFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === fieldTypes.str);
 
-const numFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === types.num);
+// const numFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === fieldTypes.num);
 
 describe('validation support functions', () => {
     describe('expansions', () => {
@@ -259,9 +260,6 @@ describe('internal reference support functions', () => {
                 )
         ).flat();
 
-    function dotCount(fieldPath) {
-        return (fieldPath.match(/\./g) || []).length;
-    }
 
     describe('validity of summary elements', () => {
         test.each(

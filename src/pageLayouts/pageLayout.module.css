@@ -1,7 +1,7 @@
 html, body {
     height: 100%;
     margin: 0;
-    --padding: 10px;
+    --padding: 5px;
 }
 
 .root {
@@ -19,8 +19,10 @@ html, body {
 }
 
 .footer {
+    display: flex;
+    align-items: center;
     border-top: 1px solid;
-    height: 1em;
+    height: 2em;
 }
 
 .header, .footer {
@@ -194,6 +196,10 @@ html, body {
 .credentials {
     font-size: x-small;
     margin-left: 2em;
+}
+
+.credentials td {
+    padding-left: 2em;
 }
 
 @media (max-width: 760px) {

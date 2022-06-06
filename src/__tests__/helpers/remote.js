@@ -380,7 +380,7 @@ describe('remote.* functions', () => {
             });
     });
 
-    describe('remote.readNewItems()', () => {
+    describe('remote.readChangedItems()', () => {
 
         test.each(
             readAllXCases()
@@ -406,7 +406,7 @@ describe('remote.* functions', () => {
                     timeout: 15_000,
                 };
                 axios.mockImplementationOnce(concludePromise(response || error));
-                await remote.readNewItems(entityType, '1640995200000', requestState, onSuccess.saveArg, onFail.saveArg);
+                await remote.readChangedItems(entityType, '1640995200000', requestState, onSuccess.saveArg, onFail.saveArg);
                 expect(axios).toHaveBeenCalledWith(expectedConfig);
                 expect(requestState.value).toBe(resultingState);
                 expect(onSuccess.arg).toEqual(response);
@@ -590,15 +590,15 @@ describe('remote.* functions', () => {
                 result, error,
                 concludePromise,
             ) => {
-                const entityType = entityTypes.file;
+                // const entityType = entityTypes.file;
                 const payload = new FormData();
                 payload.set('file', file);
 
                 const expectedConfig = {
                     method: 'post',
                     baseURL: endpoints.baseURL,
-                    url: entityType.endpoint,
-                    headers: addJwtToHeaders({'content-type': 'multipart/form-data'}),
+                    url: '/files/upload',
+                    headers: addJwtToHeaders({'Content-Type': 'multipart/form-data'}),
                     data: payload,
                     timeout: 15_000,
                 };

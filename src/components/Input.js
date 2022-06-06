@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { subtypes, types } from '../helpers';
+import { subtypes, fieldTypes } from '../helpers';
 import { Stringify } from '../dev/Stringify';
 import { InputObject, InputImageFile, ValidationMessage } from './';
+import { UnitInput } from '../dev/UnitInput';
 // import { Value } from '../dev/Value';
 // import { rootMkr, pathMkr, logv } from '../dev/log';
 
@@ -40,23 +41,23 @@ export function Input({
                           entityForm, readOnly, isEligible, ...rest
                       }) {
     // const logRoot = rootMkr(Input, entityType.name);
-    const field = entityType.fields[fieldName];
+    const typeField = entityType.fields[fieldName];
     const elKey = `Input(${entityType.name},${fieldName},${defaultValue})`;
 
-    readOnly = !!(readOnly || entityType.methods === 'R' || field?.readOnly);
-    // logv(logRoot, {field, field, readOnly});
+    readOnly = !!(readOnly || entityType.methods === 'R' || typeField?.readOnly);
+    // logv(logRoot, {typeField, typeField, readOnly});
     // const [command, setCommand] = useContext(CommandContext);
     let inputType = {};
-    let maxLength = field?.validation?.maxLength?.value;
+    let maxLength = typeField?.validation?.maxLength?.value;
     let inputSize = null;
     let rows = null;
     let cols = null;
     let step = null;
     let fieldValue = defaultValue;
 
-    switch (field?.type) {
-        case types.str:
-            switch (field?.subtype) {
+    switch (typeField?.type) {
+        case fieldTypes.str:
+            switch (typeField?.subtype) {
                 case subtypes.email:
                     inputType = inputTypes.email;
                     inputSize = Math.min(referenceSize, maxLength);
@@ -76,30 +77,42 @@ export function Input({
                     }
             }
             break;
-        case types.num:
-            inputType = inputTypes.number;
-            step = 'any';
+        case fieldTypes.num:
+            if (typeField.quantity)
+                return (
+                    <UnitInput typeField={typeField}
+                               fieldName={fieldName}
+                               defaultValue={defaultValue}
+                               entityForm={entityForm}
+                               readOnly={readOnly}
+                               elKey={elKey}
+                    />
+                );
+            else {
+                inputType = inputTypes.number;
+                step = 'any';
+            }
             break;
-        case types.obj:
+        case fieldTypes.obj:
             return (
-                    <InputObject entityType={entityType}
-                                fieldName={fieldName}
-                                defaultValue={defaultValue}
-                                entityForm={entityForm}
-                                readOnly={readOnly}
-                                isEligible={isEligible}
-                                elKey={elKey}
+                <InputObject entityType={entityType}
+                             fieldName={fieldName}
+                             defaultValue={defaultValue}
+                             entityForm={entityForm}
+                             readOnly={readOnly}
+                             isEligible={isEligible}
+                             elKey={elKey}
                 />
             );
-        case types.bool:
+        case fieldTypes.bool:
             inputType = inputTypes.checkbox;
             break;
-        case types.date:
+        case fieldTypes.date:
             inputType = inputTypes.date;
             fieldValue = defaultValue.toString().split('T')[0];
             break;
-        case types.img:
-        case types.file:
+        case fieldTypes.img:
+        case fieldTypes.file:
             return (
                 <InputImageFile entityType={entityType}
                                 fieldName={fieldName}
@@ -131,9 +144,12 @@ export function Input({
                 defaultValue={fieldValue}
                 // defaultChecked={defaultValue}
                 readOnly={readOnly}
-                {...entityForm.register(fieldName, field?.validation)}
+                {...entityForm.register(fieldName, typeField?.validation)}
                 {...rest}
             />
+            {typeField?.subtype === subtypes.url &&
+                <a href={fieldValue}>⇗</a>
+            }
             &nbsp;
             <ValidationMessage form={entityForm} fieldName={fieldName}/>
         </>

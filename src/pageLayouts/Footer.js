@@ -1,39 +1,43 @@
-import React, { useState } from 'react';
+import React from 'react';
 import layout from './pageLayout.module.css';
-import { config, cx, hints } from '../helpers';
+import { config, cx } from '../helpers';
 import { ShowStatus } from './ShowStatus';
 
 export function Footer({children, className, setTrigger, ...rest}) {
 
-    const clickHandler = (key) => () => {
+    const changeHandler = (key) => () => {
         config[key].value = !config[key].value;
         setTrigger(x => !x);
     };
 
     return (
-        <aside className={cx(layout.footer, className)} {...rest}>
+        <aside className={cx(layout.footer, className)} {...rest}
+        >
             <span>
                 {Object.keys(config).map(key =>
-                    <label>
+                    <label key={'config.' + key}>
                         <input type="checkbox"
                                checked={config[key].value}
-                               onClick={clickHandler(key)}
+                               onChange={changeHandler(key)}
                         />
                         {config[key].label}
                     </label>
                 )}
             </span>
-            <span title={hints('natuurlijk is dit onveilig! 😏')}>
-                <span className={layout.credentials}>
-                    gewoonlid — IkMagBeperkt
-                </span>
-                <span className={layout.credentials}>
-                deskundige — IkMagVeel
-                </span>
-                <span className={layout.credentials}>
-                    beheerder — IkMagAlles
-                </span>
-            </span>
+            <table className={layout.credentials}>
+                <tbody>
+                    <tr>
+                        <td>gewoonlid</td>
+                        <td>deskundige</td>
+                        <td>beheerder</td>
+                    </tr>
+                    <tr>
+                        <td>IkMagBeperkt</td>
+                        <td>IkMagVeel</td>
+                        <td>IkMagAlles</td>
+                    </tr>
+                </tbody>
+            </table>
             <ShowStatus/>
         </aside>
     );
