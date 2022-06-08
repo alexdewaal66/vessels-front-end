@@ -26,18 +26,24 @@ export function Footer({children, className, setTrigger, ...rest}) {
             </span>
             <table className={layout.credentials}>
                 <tbody>
-                    <tr>
-                        <td>gewoonlid</td>
-                        <td>deskundige</td>
-                        <td>beheerder</td>
-                    </tr>
-                    <tr>
-                        <td>IkMagBeperkt</td>
-                        <td>IkMagVeel</td>
-                        <td>IkMagAlles</td>
-                    </tr>
+                <tr>
+                    <td>gewoonlid</td>
+                    <td>deskundige</td>
+                    <td>beheerder</td>
+                </tr>
+                <tr>
+                    <td>IkMagBeperkt</td>
+                    <td>IkMagVeel</td>
+                    <td>IkMagAlles</td>
+                </tr>
                 </tbody>
             </table>
+            <a href="https://github.com/alexdewaal66/vessels-front-end" className={layout.link}>
+                GitHub - Front End
+            </a>
+            <a href="https://github.com/alexdewaal66/vessels-back-end" className={layout.link}>
+                GitHub - Back End
+            </a>
             <ShowStatus/>
         </aside>
     );

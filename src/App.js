@@ -6,10 +6,15 @@ import './App.css';
 import { pageLayout } from './pageLayouts';
 import { pages } from './pages';
 import { Footer, Header } from './pageLayouts';
+import { domain, useMountEffect } from './helpers';
 
 //TODO README.md
 function App() {
     const [, setTrigger] = useState(false);
+
+    useMountEffect(()=> {
+        window.document.title = 'Vessels @ ' + domain;
+    });
 
     return (
             <div className={"App " + pageLayout.app}>

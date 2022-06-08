@@ -466,6 +466,10 @@ entityTypes.vessel = {
         },
         // https://www.carlrippon.com/react-hook-form-cross-field-validation/
         // validate: () => crossField.validate(getValues(endDateFieldName), getValues(startDateFieldName))
+        description: {
+            type: fieldTypes.str, label: 'beschrijving', validation: {maxLength: 5000},
+        },
+
     },
     methods: 'CRUD',
     summary: ['id', 'name', 'image.thumbnailId'],

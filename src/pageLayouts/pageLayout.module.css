@@ -202,6 +202,13 @@ html, body {
     padding-left: 2em;
 }
 
+.link {
+    color: var(--color-normal);
+    font-size: smaller;
+    margin-left: 2em;
+    text-decoration: none;
+}
+
 @media (max-width: 760px) {
     .content {
         flex-direction: column;
