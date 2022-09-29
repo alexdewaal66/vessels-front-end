@@ -1,8 +1,10 @@
 import React, { Fragment, useMemo } from 'react';
 import { TTC, TT } from './Tooltips';
-import { entityTypes } from '../helpers';
+import { entityTypes, language } from '../helpers';
 
 // import { logv, pathMkr, rootMkr } from './log';
+
+// const messages = {NL: {}, EN: {}};
 
 function propertyLabel(key, entityName) {
     // const logPath = pathMkr(rootMkr(ShowObject), propertyLabel);
@@ -16,6 +18,7 @@ export function ShowObject({entityName, data, tooltip}) {
 
     // if (data) console.log(`ShowObject \n\t data=`, data);
 
+    // const TXT = messages[language()];
 
     return useMemo(() => (data)
             ? <>

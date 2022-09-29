@@ -1,5 +1,7 @@
 import React, { createContext, useState } from 'react';
 import { useConditionalEffect } from '../helpers';
+import { useLoggingState } from '../dev/useLoggingState';
+import { logConditionally, logv, pathMkr, rootMkr } from '../dev/log';
 
 export const CommandContext = createContext({});
 
@@ -14,8 +16,8 @@ const initialCommand = {operation: null, data: null, entityType: null, receiver:
 
 //todo: rewrite using useReducer ??
 export function CommandContextProvider({children}) {
-    // const logRoot = rootMkr(CommandContextProvider);
-    const [command, setCommandState] = useState(initialCommand);
+    const logRoot = rootMkr(CommandContextProvider);
+    const [command, setCommandState] = useLoggingState(initialCommand, 'command', logRoot );
 
     function setCommand(newCommand) {
         // const logPath = pathMkr(logRoot, setCommand, '↓');
@@ -30,13 +32,13 @@ export function CommandContextProvider({children}) {
 
     function useCommand(conditions) {
         function executeRelevantCommand() {
-            // const logPath = pathMkr(logRoot, `${useCommand.name}(⬇) » ${executeRelevantCommand.name}()`;
-            // const logPath = pathMkr(logRoot, [useCommand, executeRelevantCommand], ['↓']);
+            const logPath = pathMkr(logRoot, [useCommand, executeRelevantCommand], ['↓']);
+            const doLog = logConditionally(command.entityType.name);
             const match =
                 command.operation  in  conditions.operations &&
                 command.entityType === conditions.entityType &&
                 command.receiver   === conditions.receiver;
-            // logv(logPath, {conditions, command, match});
+            if (doLog) logv(logPath, {conditions, command, match});
             if (match) {
                 // logv(null, {conditions, command});
                 conditions.operations[command.operation](command.data, command.requestState);
@@ -44,9 +46,7 @@ export function CommandContextProvider({children}) {
             }
         }
 
-        useConditionalEffect(executeRelevantCommand,
-            !command.idle,
-            [command]);
+        useConditionalEffect(!command.idle, executeRelevantCommand, [command]);
     }
 
 

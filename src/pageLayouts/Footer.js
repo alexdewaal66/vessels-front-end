@@ -1,26 +1,28 @@
 import React from 'react';
 import layout from './pageLayout.module.css';
-import { config, cx } from '../helpers';
+import { sessionConfig, cx, hints } from '../helpers';
 import { ShowStatus } from './ShowStatus';
 
-export function Footer({children, className, setTrigger, ...rest}) {
+export function Footer({children, className, forceUpdate, ...rest}) {
 
     const changeHandler = (key) => () => {
-        config[key].value = !config[key].value;
-        setTrigger(x => !x);
+        sessionConfig[key].value = !sessionConfig[key].value;
+        forceUpdate();
     };
 
     return (
         <aside className={cx(layout.footer, className)} {...rest}
         >
             <span>
-                {Object.keys(config).map(key =>
-                    <label key={'config.' + key}>
+                {Object.keys(sessionConfig).map(key =>
+                    <label key={'sessionConfig.' + key}
+                           title={hints(sessionConfig[key].hint)}
+                    >
                         <input type="checkbox"
-                               checked={config[key].value}
+                               checked={sessionConfig[key].value}
                                onChange={changeHandler(key)}
                         />
-                        {config[key].label}
+                        {sessionConfig[key].label}
                     </label>
                 )}
             </span>
@@ -44,6 +46,9 @@ export function Footer({children, className, setTrigger, ...rest}) {
             <a href="https://github.com/alexdewaal66/vessels-back-end" className={layout.link}>
                 GitHub - Back End
             </a>
+            {/*<span className={layout.button}>*/}
+            {/*    <button onClick={forceUpdate}>Render</button>*/}
+            {/*</span>*/}
             <ShowStatus/>
         </aside>
     );

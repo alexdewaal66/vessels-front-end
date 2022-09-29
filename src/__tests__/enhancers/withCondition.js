@@ -9,7 +9,7 @@ function BaseComponent({children}) {
     </>
 }
 
-describe('withCondition(BaseComponent) returns component that renders conditionally', () => {
+describe('withCondition(BaseComponent) returns componentName that renders conditionally', () => {
 
     test('false condition, html element', () => {
         const ConditionalComponent = withCondition('p');

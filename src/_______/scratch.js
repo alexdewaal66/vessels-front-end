@@ -15,7 +15,7 @@ describe('<AuthProvider />', () => {
     };
 
     describe('When request user session returns data', () => {
-        test('proper data is sent to the component', async () => {
+        test('proper data is sent to the componentName', async () => {
             jest.spyOn(API, 'requestUserSession').mockImplementation(() =>
                 Promise.resolve({
                     is_logged_in: true,

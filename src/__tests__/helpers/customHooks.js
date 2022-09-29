@@ -8,9 +8,8 @@ describe('customHooks.js', () => {
 
         describe('set Error Message using <TestHook/>', () => {
 
-            test.each([
-                undefined, null, 'oops'
-            ])('testcase=%s', (testcase) => {
+            test.each([undefined, null, 'oops'])
+            ('testcase=%s', (testcase) => {
                 render(<TestHook
                     useHook={useRequestState}
                     onMount={(hook, local) => {
@@ -22,6 +21,7 @@ describe('customHooks.js', () => {
                 />);
                 expect(actual).toBe(testcase);
             });
+
         });
 
         describe('set State', () => {

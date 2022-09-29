@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
-import { Aside, Menu, Main } from '../pageLayouts';
+import { Menu, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { pages } from './index';
+import { ShowStore } from '../dev/ShowStore';
 
 function SignOut() {
     // const logRoot = rootMkr(SignOut);
@@ -36,11 +37,8 @@ function SignOut() {
                 </form>
             </Main>
             <Menu>
-                COMMAND
             </Menu>
-            <Aside>
-                ASIDE
-            </Aside>
+            <ShowStore/>
         </Content>
     );
 }

@@ -21,6 +21,7 @@
     align-items: flex-start;
     flex-shrink: 1;
     padding-inline-start: 0;
+    white-space: nowrap;
 }
 
 .ul li {
@@ -47,6 +48,11 @@
     pointer-events: none;
 }
 
+.hr {
+    width: 100%;
+    margin: 0;
+    border-top: thin solid var(--color-normal);
+}
 
 @media (max-width: 600px) {
     .ul {

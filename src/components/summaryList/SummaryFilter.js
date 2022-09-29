@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
 import { summaryStyle } from './index';
 import filterSymbol from '../../assets/filter.svg';
-import { createEmptySummary, entityTypes, getFieldFromPath } from '../../helpers';
+import { createEmptySummary, entityTypes, getFieldFromPath, language } from '../../helpers';
 import { hints } from '../../helpers';
 // import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 const enterKey = 13;
 
+const messages = {
+    NL: {
+        inputHint: ['filter op waarde, activeer met filtersymbool', 'numerieke bereiken met koppelteken', 'bijv. 3-7 of 20-'],
+        delFilter: 'wis filter',
+        activate: 'activeer filter',
+    },
+    EN: {
+        inputHint: ['filter by value, activate with filtersymbol', 'use dash for numeric ranges', 'e.g. 3-7 or 20-'],
+        delFilter: 'remove filter',
+        activate: 'activate filter',
+    }
+};
+
+
 export function SummaryFilter({entityType, mergeConstraints, elKey}) {
     // const logRoot = rootMkr(SummaryFilter, entityType.name);
+
+    // const messages = {NL: {}, EN: {}};
+    const TXT = messages[language()];
 
     const [inputFields, setInputFields] = useState(createEmptySummary(entityTypes, entityType));
     // logv(logRoot, {inputFields});
@@ -68,7 +85,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
     }
 
     return (
-        <tr onKeyDown={enterKeyHandler} >
+        <tr onKeyDown={enterKeyHandler}>
             {entityType.summary.map(fieldPath =>
                 <th key={elKey + fieldPath + '_sort'}>
                     {/*{(label(entityType.fields, fieldPath) || fieldPath).split('').reverse().join('')}*/}
@@ -78,12 +95,12 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
                            maxLength={inputLength(fieldPath)}
                            className={summaryStyle.filter}
                            value={inputFields[fieldPath] || ''}
-                           title={hints('filter op waarde, activeer met filtersymbool', 'numerieke bereiken met koppelteken', 'bijv. 3-7 of 20-')}
+                           title={hints(TXT.inputHint)}
                     />
                     <button type={'button'}
                             onClick={clearFieldHandler(fieldPath)}
                             className={summaryStyle.filterButton}
-                            title={hints('wis filter')}
+                            title={hints(TXT.delFilter)}
                     >
                         ␡
                     </button>
@@ -93,7 +110,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
                 <button type={'button'}
                         onClick={filterHandler}
                         className={summaryStyle.sort}
-                        title={hints('activeer filter')}
+                        title={hints(TXT.activate)}
                 >
                     <img src={filterSymbol} alt={'Filter symbol'}
                          className={summaryStyle.filterButton}

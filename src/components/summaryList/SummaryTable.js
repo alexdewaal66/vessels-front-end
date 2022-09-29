@@ -1,7 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
-import { cx } from '../../helpers';
+import { cx, language } from '../../helpers';
 import { useFilters } from './useFilters';
+
+// const messages = {NL: {}, EN: {}};
+
 
 export function SummaryTable({
                                  list, entityType, selectedIds, chooseItem, small,
@@ -24,6 +27,8 @@ export function SummaryTable({
     const selectedIndex = selectedIds ? Math.max(displayList.findIndex(item => selectedIds.has(item[idName])), 0) : null;
     const [focusIndex, setFocusIndexState] = useState(selectedIndex);
     const [hasTableFocus, setTableFocus] = useState(hasFocus);
+
+    // const TXT = messages[language()];
 
     function setFocusIndex(i) {
         if (!readOnly) {

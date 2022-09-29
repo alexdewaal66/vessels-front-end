@@ -278,7 +278,7 @@ describe('remote.* functions', () => {
         ];
     }
 
-    describe('remote.readAllIds()', () => {
+    describe('remote.retrieveAllIds()', () => {
 
         test.each(
             readAllXCases()
@@ -304,7 +304,7 @@ describe('remote.* functions', () => {
                     timeout: 15_000,
                 };
                 axios.mockImplementationOnce(concludePromise(response || error));
-                await remote.readAllIds(entityType, requestState, onSuccess.saveArg, onFail.saveArg);
+                await remote.retrieveAllIds(entityType, requestState, onSuccess.saveArg, onFail.saveArg);
                 expect(axios).toHaveBeenCalledWith(expectedConfig);
                 expect(requestState.value).toBe(resultingState);
                 expect(onSuccess.arg).toEqual(response);
@@ -312,7 +312,7 @@ describe('remote.* functions', () => {
             });
     });
 
-    describe('remote.readAllSummaries()', () => {
+    describe('remote.retrieveAllSummaries()', () => {
 
         test.each(
             readAllXCases()
@@ -338,7 +338,7 @@ describe('remote.* functions', () => {
                     timeout: 15_000,
                 };
                 axios.mockImplementationOnce(concludePromise(response || error));
-                await remote.readAllSummaries(entityType, requestState, onSuccess.saveArg, onFail.saveArg);
+                await remote.retrieveAllSummaries(entityType, requestState, onSuccess.saveArg, onFail.saveArg);
                 expect(axios).toHaveBeenCalledWith(expectedConfig);
                 expect(requestState.value).toBe(resultingState);
                 expect(onSuccess.arg).toEqual(response);
@@ -346,7 +346,7 @@ describe('remote.* functions', () => {
             });
     });
 
-    describe('remote.readAllItems()', () => {
+    describe('remote.retrieveAllItems()', () => {
 
         test.each(
             readAllXCases()
@@ -372,7 +372,7 @@ describe('remote.* functions', () => {
                     timeout: 15_000,
                 };
                 axios.mockImplementationOnce(concludePromise(response || error));
-                await remote.readAllItems(entityType, requestState, onSuccess.saveArg, onFail.saveArg);
+                await remote.retrieveAllItems(entityType, requestState, onSuccess.saveArg, onFail.saveArg);
                 expect(axios).toHaveBeenCalledWith(expectedConfig);
                 expect(requestState.value).toBe(resultingState);
                 expect(onSuccess.arg).toEqual(response);
@@ -380,7 +380,7 @@ describe('remote.* functions', () => {
             });
     });
 
-    describe('remote.readChangedItems()', () => {
+    describe('remote.retrieveChangedItems()', () => {
 
         test.each(
             readAllXCases()
@@ -406,7 +406,7 @@ describe('remote.* functions', () => {
                     timeout: 15_000,
                 };
                 axios.mockImplementationOnce(concludePromise(response || error));
-                await remote.readChangedItems(entityType, '1640995200000', requestState, onSuccess.saveArg, onFail.saveArg);
+                await remote.retrieveChangedItems(entityType, '1640995200000', requestState, onSuccess.saveArg, onFail.saveArg);
                 expect(axios).toHaveBeenCalledWith(expectedConfig);
                 expect(requestState.value).toBe(resultingState);
                 expect(onSuccess.arg).toEqual(response);
@@ -414,7 +414,7 @@ describe('remote.* functions', () => {
             });
     });
 
-    describe('remote.readItemsByIds()', () => {
+    describe('remote.retrieveItemsByIds()', () => {
 
         test.each(
             addCols(readAllXCases(), [1])
@@ -442,7 +442,7 @@ describe('remote.* functions', () => {
                     timeout: 15_000,
                 };
                 axios.mockImplementationOnce(concludePromise(response || error));
-                await remote.readItemsByIds(entityType, idArray, requestState, onSuccess.saveArg, onFail.saveArg);
+                await remote.retrieveItemsByIds(entityType, idArray, requestState, onSuccess.saveArg, onFail.saveArg);
                 expect(axios).toHaveBeenCalledWith(expectedConfig);
                 expect(requestState.value).toBe(resultingState);
                 expect(onSuccess.arg).toEqual(response);
@@ -528,7 +528,7 @@ describe('remote.* functions', () => {
             });
     });
 
-    describe('remote.read()', () => {
+    describe('remote.retrieve()', () => {
 
 
         test.each([
@@ -556,7 +556,7 @@ describe('remote.* functions', () => {
                     timeout: 15_000,
                 };
                 axios.mockImplementationOnce(concludePromise(result || error));
-                await remote.read(entityType, id, requestState, onSuccess.saveArg, onFail.saveArg);
+                await remote.retrieve(entityType, id, requestState, onSuccess.saveArg, onFail.saveArg);
                 expect(axios).toHaveBeenCalledWith(expectedConfig);
                 expect(requestState.value).toBe(resultingState);
                 expect(onSuccess.arg).toEqual(result);

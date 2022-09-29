@@ -2,9 +2,9 @@ import React, { useContext, useState } from 'react';
 import {
     createEmptyItem,
     keys, useKeyPressed,
-    useLoading,
+    usePollBackEndForChanges,
     useConditionalEffect,
-    useRequestState, entityTypes
+    useRequestState, entityTypes, language
 } from '../../helpers';
 import { SummaryTable, useSorting } from './';
 import { CommandContext, operationNames } from '../../contexts';
@@ -13,6 +13,17 @@ import { StorageContext } from '../../contexts';
 import { useImmutableSet } from '../../helpers';
 import { logv, pathMkr, rootMkr } from '../../dev/log';
 import { Patience } from '../Patience';
+
+const messages = {
+    NL: {
+        rsDesc: 'het ophalen van de lijst ',
+        building: 'lijst wordt opgebouwd.',
+    },
+    EN: {
+        rsDesc: 'fetching the list ',
+        building: 'building list.',
+    }
+};
 
 
 export function SummaryListTall({
@@ -40,12 +51,14 @@ export function SummaryListTall({
 
     const sorting = useSorting(updateListTall, list, entityType);
 
+    const TXT = messages[language()];
+
     // logv(logRoot + ` states:`, {
     //     initialId, isAllLoaded,
     //     'store[entityName].state': store[entityName].state,
     //     selectedIds, list
     // });
-    useLoading(storage, entityName);
+    usePollBackEndForChanges(storage, entityName);
 
 
     function chooseItemTall(item) {
@@ -94,21 +107,21 @@ export function SummaryListTall({
     function makeList() {
         // const logPath = pathMkr(logRoot, makeList);
         // logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
-        const entries = Object.entries(store[entityName].state);
+
+        // const entries = Object.entries(store[entityName].state);
+        const entries = Object.entries(storage.getEntries(entityName));
+
         // logv(null, {entries});
         const list = entries.map(e => e[1].item);
         // logv(null, {list});
         updateListTall(list, (lastSavedItemId || initialId));
     }
 
-    useConditionalEffect(
-        makeList,
-        isAllLoaded,
-        [
-            store[entityName].state,
-            isAllLoaded, lastSavedItemId
-        ]
-    );
+    useConditionalEffect(isAllLoaded, makeList, [
+        // store[entityName].state,
+        storage.getEntries(entityName),
+        isAllLoaded, lastSavedItemId
+    ]);
 
     const conditions = {
         entityType: entityType,
@@ -132,8 +145,8 @@ export function SummaryListTall({
 
     return (
         <div onKeyDown={handleOnKeyDown} onKeyUp={handleOnKeyUp}>
-            <br/>
-            <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
+            {/*<br/>*/}
+            <ShowRequestState requestState={requestListState} description={TXT.rsDesc}/>
             {list ? (
                 <div>
                     <SummaryTable entityType={entityType}
@@ -149,7 +162,7 @@ export function SummaryListTall({
                     />
                 </div>
             ) : (
-                <Patience>, lijst wordt opgebouwd.</Patience>
+                <Patience>, {TXT.building}</Patience>
             )}
         </div>
     );

@@ -1,18 +1,33 @@
-import React, { useContext, useState } from 'react';
-import {
-    createEmptyItem,
-    keys, useKeyPressed,
-    useLoading,
-    useConditionalEffect,
-    useRequestState, entityTypes,
-} from '../../helpers';
+import React, { useContext, useEffect, useState } from 'react';
+import { createEmptyItem } from '../../helpers/entityTypes';
+import { keys, useKeyPressed, useConditionalEffect, useRequestState } from '../../helpers/customHooks';
+import { usePollBackEndForChanges } from '../../helpers/usePollBackEndForChanges';
+import { entityTypes } from '../../helpers/entityTypes';
 import { SummaryTable, useSorting } from './';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts';
-import { useImmutableSet } from '../../helpers';
-// import { logv, pathMkr, rootMkr } from '../../dev/log';
+import { useImmutableSet } from '../../helpers/useImmutableSet';
+import { logConditionally, logv, pathMkr, rootMkr } from '../../dev/log';
 import { Stringify } from '../../dev/Stringify';
 import { Patience } from '../Patience';
+import { useLoggingState } from '../../dev/useLoggingState';
+import { useCounter } from '../../dev/useCounter';
+import { Sorry } from '../../dev/Sorry';
+import { useLoggingImmutableSet } from '../../dev/useLoggingImmutableSet';
+import { useLoggingConditionalEffect } from '../../dev/useLoggingEffect';
+import { language } from '../../helpers';
+
+const messages = {
+    NL: {
+        rsDesc: 'het ophalen van de lijst ',
+        building: 'lijst wordt opgebouwd.',
+    },
+    EN: {
+        rsDesc: 'fetching the list ',
+        building: 'building list.',
+    }
+};
+
 
 export const optionalIdValue = -Infinity;
 
@@ -21,37 +36,42 @@ export function SummaryListSmall({
                                      setHiddenField, elKey
                                  }) {
     elKey += '/SListSmall';
+    if (!entityType) logv(rootMkr(SummaryListSmall), {elKey}, '❌');
     const entityName = entityType.name;
-    // const logRoot = rootMkr(SummaryListSmall, entityName, '↓↓');
+    const logRoot = rootMkr(SummaryListSmall, entityName, '↓↓');
+    const doLog = logConditionally(entityName);
     const storage = useContext(StorageContext);
-    const {isAllLoaded, store, getItem} = storage;
-    // logv(logRoot, {tree: store[entityName].state});
+    const {isAllLoaded, store} = storage;
+    if (doLog) logv(logRoot, {vars: {[entityName + 's']: storage.getEntries(entityName)}});
     const {isMulti, hasNull, readOnly} = UICues;
+
+
+    // const counter = useCounter(logRoot, entityName, 100);//todo remove
+
+    const TXT = messages[language()];
 
     if (!initialIdList)
         initialIdList = [0];
 
     const requestListState = useRequestState();
-    const [list, setList] = useState(null);
-    const selectedIds = useImmutableSet();
+    const [list, setList] = useLoggingState(null, 'list', logRoot, entityName);
+    const selectedIds = useLoggingImmutableSet(null, 'selectedIds', logRoot, entityName);
 
     const {isControlDown, handleOnControlUp, handleOnControlDown} = useKeyPressed(keys.control);
 
     const sorting = useSorting(updateListSmall, list, entityType);
 
-    // logv(logRoot + ` states:`, {
-    //     initialId, isAllLoaded,
-    //     'store[entityName].state': store[entityName].state,
-    //     selectedIds, list
-    // });
-    useLoading(storage, entityType);
+    if (doLog) logv(logRoot + ` states:`, {
+        initialIdList, isAllLoaded,
+        selectedIds, list
+    });
+    usePollBackEndForChanges(storage, entityName);
 
-    // useLoading(storage, entityType);
 
     async function chooseItemSmall(item) {
-        // const logPath = pathMkr(logRoot, chooseItemSmall);
+        const logPath = pathMkr(logRoot, chooseItemSmall);
         let newSelectedIds;
-        // logv(logPath, {item, isKeyDown: isControlDown});
+        if (doLog) logv(logPath, {item, isKeyDown: isControlDown});
         if (item?.id === optionalIdValue) {
             const blankItem = createEmptyItem(entityTypes, entityType);
             await storage.newItem(entityType.name, blankItem,
@@ -77,8 +97,8 @@ export function SummaryListSmall({
     }
 
     function updateListSmall(newList) {
-        // const logPath = pathMkr(logRoot, updateListSmall);
-        // logv(logPath, {newList});
+        const logPath = pathMkr(logRoot, updateListSmall);
+        // logv(logPath, {newList, renderCount: counter.value});
         let selectedItem;
         if (newList.length === 0) {
             selectedIds.new();
@@ -89,7 +109,7 @@ export function SummaryListSmall({
             const shouldAnIdBeSelected = !!firstId;
             // logv(null, {initialId, shouldAnIdBeSelected});
             if (shouldAnIdBeSelected) {
-                selectedItem = getItem(entityName, firstId);
+                selectedItem = storage.getItem(entityName, firstId);
                 // logv( '❗❗❗' + logPath + ' » if (shouldAnIdBeSelected)',
                 //     {firstId, selectedItem});
                 selectedIds.add(firstId);
@@ -105,9 +125,9 @@ export function SummaryListSmall({
 
 
     function makeList() {
-        // const logPath = pathMkr(logRoot, makeList);
-        // logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
-        const entries = Object.entries(store[entityName].state);
+        const logPath = pathMkr(logRoot, makeList);
+        // logv(logPath, {[`store.${entityName}=`]: store[entityName], renderCount: counter.value});
+        const entries = Object.entries(storage.getEntries(entityName));
         // logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
         if (hasNull) {
@@ -115,7 +135,7 @@ export function SummaryListSmall({
             nullItem.id = 0;
             list.push(nullItem);
         }
-        if (!readOnly){
+        if (!readOnly) {
             const optionalItem = createEmptyItem(entityTypes, entityType);
             optionalItem.id = optionalIdValue;
             list.push(optionalItem);
@@ -124,17 +144,13 @@ export function SummaryListSmall({
         updateListSmall(list);
     }
 
+    useEffect(makeList, [storage.getEntries(entityName), isAllLoaded]);
 
-    useConditionalEffect(
-        makeList,
-        isAllLoaded,
-        [store[entityName].state, isAllLoaded]
-    );
-
+    // if (counter.passed) return <Sorry context={SummaryListSmall.name} count={counter.value}/>;//todo remove
 
     return (
-        <div onKeyDown={handleOnControlDown} onKeyUp={handleOnControlUp} style={{minHeight: '12em'}} >
-            <ShowRequestState requestState={requestListState} description={'het ophalen van de lijst '}/>
+        <div onKeyDown={handleOnControlDown} onKeyUp={handleOnControlUp} style={{minHeight: '12em'}}>
+            <ShowRequestState requestState={requestListState} description={TXT.rsDesc}/>
             {list && (
                 <div>
                     {isMulti && (
@@ -152,7 +168,7 @@ export function SummaryListSmall({
                     />
                 </div>
             )}
-            {!list && <Patience>, lijst wordt opgebouwd.</Patience>}
+            {!list && <Patience>, {TXT.building}</Patience>}
         </div>
     );
 }

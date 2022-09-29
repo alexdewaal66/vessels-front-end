@@ -3,7 +3,7 @@ import { optionalIdValue, summaryStyle } from './index';
 import { errv } from '../../dev/log';
 import { pathMkr } from '../../dev/log';
 import { rootMkr } from '../../dev/log';
-import { cx, endpoints, entityTypes, getFieldFromPath, hints, fieldTypes } from '../../helpers';
+import { cx, endpoints, entityTypes, getFieldFromPath, hints, fieldTypes, language } from '../../helpers';
 import { ChoiceContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
 
@@ -16,6 +16,18 @@ const keys = {
     home: 36, end: 35,
     pageUp: 33, pageDown: 34
 };
+
+const messages = {
+    NL: {
+        new: 'nieuw',
+        goto: 'ga naar'
+    },
+    EN: {
+        new: 'new',
+        goto: 'go to'
+    }
+};
+
 
 export function SummaryRow({
                                item, index, entityType, chooseItem,
@@ -36,6 +48,8 @@ export function SummaryRow({
     );
     const {makeChoice} = useContext(ChoiceContext);
     elKey += `/SRow`;
+
+    const TXT = messages[language()];
 
     useEffect(function scrollAndFocusIfNecessary() {
         if (hasVisualPriority && isRowVisible)
@@ -138,7 +152,7 @@ export function SummaryRow({
                     {(isNullRow)
                         ? '➖➖'
                         : (isRowOptional)
-                            ? 'nieuw'
+                            ? TXT.new
                             : renderProperty(item, fieldPath)
                     }
                 </td>
@@ -146,7 +160,7 @@ export function SummaryRow({
             {(small && item.id && item.id !== optionalIdValue) ? (
                 <td>
                     <span onClick={makeChoice({component: EntityN(entityType, item.id)})}
-                          title={hints(`ga naar ${entityType.label}(${item.id})`)}
+                          title={hints(`${TXT.goto} ${entityType.label}(${item.id})`)}
                     >
                         ➡
                     </span>

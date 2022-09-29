@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { loCaseCompare, useConditionalEffect } from '../../helpers';
 import { useSpinner } from '../../helpers/useSpinner';
 import { dotCount } from '../../helpers/utils';
-import { logv, pathMkr, rootMkr } from '../../dev/log';
+// import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 function initialOrder(entityType) {
     return Object.fromEntries(entityType.summary.map(fieldPath => [fieldPath, 'up']));
 }
 
 export function useSorting(operation, list, entityType) {
-    const logRoot = rootMkr(useSorting);
+    // const logRoot = rootMkr(useSorting);
     const [latest, setLatest] = useState({propertyName: 'id', order: 'up'});
     const [allOrders, setAllOrders] = useState(initialOrder(entityType));
     // const allOrders = useStaticObject(initialOrder(entityType));
@@ -27,22 +27,18 @@ export function useSorting(operation, list, entityType) {
         // return allOrders[propertyName] === 'up';
     }
 
-    useConditionalEffect(
-        () => operation([...list]),
-        !!latest && !!list,
-        [latest]
-    );
+    useConditionalEffect(!!latest && !!list, () => operation([...list]), [latest]);
 
 
     function makeGetProp() {
-        const logPath = pathMkr(logRoot, makeGetProp);
+        // const logPath = pathMkr(logRoot, makeGetProp);
         const dots = dotCount(latest.propertyName);
-        logv(logPath, {latest_propertyName: latest.propertyName, dots})
+        // logv(logPath, {latest_propertyName: latest.propertyName, dots})
         if (dots === 0) {
             return (x) => x[latest.propertyName];
         } else {
             const parts = latest.propertyName.split('.');
-            logv(null, {parts});
+            // logv(null, {parts});
             return (x) => x[parts[0]]?.[parts[1]];
         }
     }

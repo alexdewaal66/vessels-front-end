@@ -1,8 +1,5 @@
 import { useReducer } from 'react';
-import { logv } from '../dev/log';
-// import { logv, pathMkr, rootMkr } from '../dev/log';
-
-// const logRoot = useDict.name + '.js';
+// import { logConditionally, logv, rootMkr } from '../dev/log';
 
 const dictActions = {
     add: 'add',
@@ -10,7 +7,6 @@ const dictActions = {
     setMany: 'setMany',
     del: 'del',
     delMany: 'delMany',
-    // transformEntry: 'transformEntry',
 };
 
 function UseDictException(message) {
@@ -18,7 +14,8 @@ function UseDictException(message) {
     this.name = UseDictException.name;
 }
 
-function dictReducer(state, {type, payload: {key, value}}) {
+
+const dictReducer = (dictName) => (state, {type, payload: {key, value}}) => {
     // const logPath = pathMkr(logRoot, dictReducer, '↓↓');
     // logv(logPath, {state});
     switch (type) {
@@ -27,19 +24,28 @@ function dictReducer(state, {type, payload: {key, value}}) {
         //     return {...state, [key]: value(entry)};
         case dictActions.add:
             if (key in state) {
-                throw new UseDictException(`can not add new entry ${key}, it already exists`);
+                throw new UseDictException(`can not add new entry ${key} to dict ${dictName}, it already exists`);
             } else {
                 return {...state, [key]: value};
             }
         case dictActions.setMany:
-            // skip presence test
-            return {...state, ...value};
+            if (typeof value === 'function') {
+                return value(state);
+            } else {
+                return {...state, ...value};
+            }
         case dictActions.set:
             if (key in state) {
-                const newState = {...state, [key]: value};
+                let newState;
+                if (typeof value === 'function') {
+                    const entryCopy = {...state[key]};
+                    newState = {...state, [key]: value(entryCopy)};
+                } else {
+                    newState = {...state, [key]: value};
+                }
                 return newState;
             } else {
-                throw new UseDictException(`can not set entry ${key}, it doesn't exist`);
+                throw new UseDictException(`can not set entry '${key}' in dict '${dictName}', it doesn't exist`);
             }
         case dictActions.del:
             if (key in state) {
@@ -47,24 +53,43 @@ function dictReducer(state, {type, payload: {key, value}}) {
                 delete copy[key];
                 return copy;
             } else {
-                throw new UseDictException(`can not delete entry ${key}, it doesn't exist`);
+                throw new UseDictException(`can not delete entry ${key} from dict ${dictName}, it doesn't exist`);
             }
         case dictActions.delMany:
             const copy = {...state};
-            logv('----delMany----', {copy, value});
             value.forEach(id => {
                 delete copy[id];
             });
-            logv(null, {copy});
             return copy;
         default:
             return state;
     }
 }
 
-export function useDict(initialState = {}, initializer) {
+// function isEmpty(obj) {
+//     return Object.keys(obj).length === 0;
+// }
+
+export function useDict(dictName, initialState = {}, initializer) {
     // const logRoot = rootMkr(useDict);
-    const [state, dispatch] = useReducer(dictReducer, initialState, initializer);
+    // const doLog = logConditionally(dictName);
+    const [state, dispatch] = useReducer(dictReducer(dictName), initialState, initializer);
+
+    // const onStateChange = useRef();
+
+    // function setOnStateChange(callback) {
+    //     onStateChange.current = callback;
+    // }
+
+    // useEffect(() => {
+    //     if (!isEmpty(state)) {
+    //         const logPath = pathMkr(logRoot, 'useEffect');
+    //         if (doLog) logv(logPath, {dictName, state});
+    //         onStateChange.current?.(state);
+    //     }
+    // }, [state]);
+
+    const getAll = () => state;
     const get = (key) => state[key];
     const add = (key, value) =>
         dispatch({type: dictActions.add, payload: {key, value}});
@@ -76,30 +101,11 @@ export function useDict(initialState = {}, initializer) {
         dispatch({type: dictActions.del, payload: {key, value: null}});
     const delMany = (value) =>
         dispatch({type: dictActions.delMany, payload: {value}});
-    // const transformEntry = (key, transformer) =>
-    //     dispatch({type: dictActions.transformEntry, payload: {key, value: transformer}});
+
+
+
     return {
-        state, get, add, setMany, set, del, delMany
-        // transformEntry,
+        state, getAll, get, add, setMany, set, del, delMany,
+        // setOnStateChange,
     };
 }
-
-export const setEntryProp = (dict, key, propName) =>
-    (v) => dict.set(key, {...dict.state[key], [propName]: v});
-
-
-export function useSuperDict() {
-    const dict = useDict();
-
-    function createEntry(key, initialValue) {
-        dict.add(key, {
-            value: initialValue,
-            set: setEntryProp(dict, key, 'value')
-        });
-        return dict.state[key];
-    }
-
-    return {createEntry, entries: dict.state};
-}
-
-

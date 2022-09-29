@@ -1,13 +1,17 @@
-import { entityTypes } from '../helpers';
+import { entityTypes, language } from '../helpers';
 import React from 'react';
 import { SummaryListSmall } from './summaryList';
-// import { rootMkr, pathMkr, logv } from '../dev/log';
+import { rootMkr, pathMkr, logv } from '../dev/log';
 import { ValidationMessage } from './ValidationMessage';
+import { useCounter } from '../dev/useCounter';
+import { Sorry } from '../dev/Sorry';
 
 // import { Value } from '../dev/Value';
 
+// const messages = {NL: {}, EN: {}};
+
 export function InputObject({entityType, fieldName, defaultValue, entityForm, readOnly, elKey}) {
-    // const logRoot = rootMkr(InputObject, entityType.name);
+    const logRoot = rootMkr(InputObject, entityType.name, fieldName, readOnly);
     // logv(logRoot, {field, defaultValue, '!defaultValue': !defaultValue});
     const field = entityType.fields[fieldName];
     const {hasNull, isMulti} = field;
@@ -21,12 +25,19 @@ export function InputObject({entityType, fieldName, defaultValue, entityForm, re
 
     const hiddenFieldName = 'hidden_' + fieldName + '_' + field.target + '_id';
 
-    async function setHiddenField(value) {
+    // const TXT = messages[language()];
+
+    // async
+    function setHiddenField(value) {
         // const logPath = pathMkr(logRoot, setHiddenField, value);
         entityForm.setValue(hiddenFieldName, value, {shouldValidate: true});
     }
 
     const borderStyle = !!errors[hiddenFieldName] && !readOnly ? {border: '1px solid black'} : null;
+
+    const counter = useCounter(logRoot, entityType.name, 100);
+    if (counter.passed) return <Sorry context={logRoot} count={counter.value}/>;
+
 
     return (
         <>

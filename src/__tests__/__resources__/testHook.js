@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { render } from '@testing-library/react';
 import { useState } from 'react';
+import { act } from 'react-dom/test-utils';
 
 let actual;
 
@@ -21,9 +22,10 @@ function TestButton({handler, name}) {
     </>
 }
 
-function TestHook({useHook, initialValue, onMount, onRender, onDismount, buttons}) {
+function TestHook({useHook, initialValue, onMount, onRender, onDismount, buttons, getHook}) {
     const hook = useHook(initialValue);
     const local = {};
+    getHook?.(hook);
 
     useEffect(() => {
         onMount?.(hook, local);
@@ -33,7 +35,7 @@ function TestHook({useHook, initialValue, onMount, onRender, onDismount, buttons
     }, []);
 
     return <div>
-        {onRender(hook, local)}
+        {onRender?.(hook, local)}
         {/*{buttons && buttons.map((button) =>*/}
         {/*    <TestButton handler={button.handler} name={button.name}/>*/}
         {/*)}*/}
@@ -45,15 +47,20 @@ describe('useState() using <TestHook/>', () => {
         test.each([
             undefined, null, 'oops', -1, {}
         ])('testcase=%s', (testcase) => {
-            render(<TestHook
-                useHook={useState}
-                initialValue={testcase}
-                onMount={(hook, local) => {
-                }}
-                onRender={(hook, local) => {
-                    setActual(hook[0]);
-                }}
-            />);
+            act(() => {
+                act(() => {
+                    render(<TestHook
+                        useHook={useState}
+                        initialValue={testcase}
+                        // onMount={(hook, local) => {}}
+                        onRender={
+                            (hook, local) => {
+                                setActual(hook[0]);
+                            }
+                        }
+                    />);
+                });
+            });
             expect(actual).toBe(testcase);
         });
 
@@ -63,15 +70,17 @@ describe('useState() using <TestHook/>', () => {
         test.each([
             undefined, null, 'oops', -1, {}
         ])('testcase=%s', (testcase) => {
-            render(<TestHook
-                useHook={useState}
-                onMount={(hook, local) => {
-                    hook[1](testcase);
-                }}
-                onRender={(hook, local) => {
-                    setActual(hook[0]);
-                }}
-            />);
+            act(() => {
+                render(<TestHook
+                    useHook={useState}
+                    onMount={(hook, local) => {
+                        hook[1](testcase);
+                    }}
+                    onRender={(hook, local) => {
+                        setActual(hook[0]);
+                    }}
+                />);
+            });
             expect(actual).toBe(testcase);
         });
 
@@ -102,4 +111,4 @@ describe('useState() using <TestHook/>', () => {
 
 });
 
-export {actual, setActual, TestHook}
+export { actual, setActual, TestHook }

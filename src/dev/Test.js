@@ -1,19 +1,24 @@
 import React, { useContext, useMemo } from 'react';
-import { useMountEffect, useSuperDict, transform, cx, now } from '../helpers';
+import { useMountEffect, transform, cx, now } from '../helpers';
 import { Stringify } from './Stringify';
 import { StorageContext } from '../contexts';
 import { ShowRequestState } from '../components';
 import { useImmutableSet } from '../helpers';
 import { logv } from './log';
 import { ShowObject } from '../components/ShowObject';
+import { useDict2 } from './useDict2';
+import { useSuperDict } from './useSuperDict';
+
 // import { TestMountDismountContext } from './TestMountDismountContext';
 
 export function Test({children, className, ...rest}) {
-    const logRoot  = Test.name;
+    const logRoot = Test.name;
     const {isAllLoaded, rsStatus, setRsStatus, store, loadItem, loadItemsByIds, saveItem, newItem, deleteItem}
         = useContext(StorageContext);
     const {createEntry, entries} = useSuperDict();
-    const primesSet = useImmutableSet([1,2,3,5,7,11,13,15]);
+    const dict2 = useDict2('s2',{a: 1, b: 2, c: {ca: 31, cb: {cba: 321, cbb: 322}}, d: 4});
+    logv(logRoot, {s2: dict2}, '\n------------------------------\n');
+    const primesSet = useImmutableSet([1, 2, 3, 5, 7, 11, 13, 15]);
     logv(logRoot, {primes: primesSet});
 
 
@@ -54,14 +59,14 @@ export function Test({children, className, ...rest}) {
     function reversePrimesSetIf17Present() {
         if (primesSet.has(17)) {
             const primesArray = [...primesSet.all];
-            primesArray.sort((a,b) => b - a);
+            primesArray.sort((a, b) => b - a);
             primesSet.new(primesArray);
         }
     }
 
     function sortPrimesSetIf15NotPresent() {
         if (!primesSet.has(15)) {
-            primesSet.new(pr => [...pr].sort((a, b) => a-b));
+            primesSet.new(pr => [...pr].sort((a, b) => a - b));
         }
     }
 
@@ -70,12 +75,12 @@ export function Test({children, className, ...rest}) {
     }
 
     const loadFirstItem = (entityName) => () => {
-        const id = Object.keys(store[entityName].state)[0];
+        const id = Object.keys(store[entityName])[0];
         loadItem(entityName, id);
     };
 
     const loadFirst100Items = (entityName) => () => {
-        const idArray = Object.keys(store[entityName].state);
+        const idArray = Object.keys(store[entityName]);
         const firstBunch = idArray.slice(0, 100);
         loadItemsByIds(entityName, firstBunch);
     };
@@ -106,6 +111,7 @@ export function Test({children, className, ...rest}) {
 
     return (
         <>
+            <Stringify data={dict2.state}>s2</Stringify>
             <Stringify data={[...primesSet.all]}>
                 priemgetallen
             </Stringify>
@@ -144,7 +150,7 @@ export function Test({children, className, ...rest}) {
                     <React.Fragment key={entityName}>
                         <button onClick={loadFirstItem(entityName)}>Laad eerste {entityName}</button>
                         <button onClick={loadFirst100Items(entityName)}>Laad eerste 100 {entityName}s</button>
-                        <Stringify data={store[entityName].state}>
+                        <Stringify data={store[entityName]}>
                             {entityName}
                         </Stringify>
                     </React.Fragment>

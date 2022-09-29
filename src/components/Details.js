@@ -20,7 +20,7 @@ export function Details({entityType, fieldName, value, item, children}) {
         storage.loadItemByUniqueFields(target, item, setDetailsId);
     }
 
-    useConditionalEffect(fetchItem, (target && value && target !== 'transform'), [target]);
+    useConditionalEffect((target && value && target !== 'transform'), fetchItem, [target]);
 
 
     return (

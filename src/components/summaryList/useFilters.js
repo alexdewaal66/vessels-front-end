@@ -61,7 +61,7 @@ export function useFilters(entityType) {
         // logv(logPath, {item, constraint});
         const [fieldName, filter] = constraint;
         if (!filter) return true;
-        if (!item[fieldName]) return true;
+        if (!item[fieldName]) return false;
         return filter.matcher(item[fieldName], filter.value);
     }
 

@@ -1,7 +1,20 @@
 import React from 'react';
 import { summaryStyle } from './index';
 import { SummaryFilter } from './SummaryFilter';
-import { entityTypes, getFieldFromPath, hints } from '../../helpers';
+import { entityTypes, getFieldFromPath, hints, language } from '../../helpers';
+
+const messages = {
+    NL: {
+        sortUp: 'sorteer omhoog, standaard',
+        sortDn: 'sorteer omlaag',
+
+    },
+    EN: {
+        sortUp: 'sort up, default',
+        sortDn: 'sort down',
+
+    }
+};
 
 export function SummaryHeading({
                                    entityType, elKey,
@@ -9,6 +22,8 @@ export function SummaryHeading({
                                }) {
     // const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
     // logv(logRoot, {elKey});
+
+    const TXT = messages[language()];
 
 
     const up = (fieldPath, fieldType) => () => {
@@ -36,14 +51,14 @@ export function SummaryHeading({
                             <button type={'button'}
                                     onClick={up(fieldPath, field.type)}
                                     className={summaryStyle.sort}
-                                    title={hints('▲ = sorteer van laag naar hoog, standaard')}
+                                    title={hints('▲ = ' + TXT.sortUp)}
                             >
                                 {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
                             </button>
                             <button type={'button'}
                                     onClick={down(fieldPath, field.type)}
                                     className={summaryStyle.sort}
-                                    title={hints('▼ = sorteer van hoog naar laag')}
+                                    title={hints('▼ = ' + TXT.sortDn)}
                             >
                                 {sorting.isOrderUp(fieldPath) ? '▼' : '▽'}
                             </button>

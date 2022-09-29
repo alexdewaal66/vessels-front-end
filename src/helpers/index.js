@@ -8,6 +8,5 @@ export * from './transform';
 export * from './useDict';
 export * from './useImmutableSet';
 export * from './useInterval';
-export * from './useLoading';
-export * from './useStorage';
+export * from './usePollBackEndForChanges';
 export * from './utils';

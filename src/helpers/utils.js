@@ -1,4 +1,4 @@
-import { fieldTypes } from './entityTypes';
+import { referringFieldTypes } from './entityTypes';
 // import { logv, pathMkr, rootMkr } from '../dev/log';
 
 // const logRoot = rootMkr('utils.js');
@@ -34,7 +34,7 @@ export function dotCount(fieldPath) {
 
 export function loCaseCompare(p, q, fieldType) {
     // const logPath = pathMkr(logRoot, loCaseCompare);
-    if ([fieldTypes.file, fieldTypes.img, fieldTypes.obj].includes(fieldType)) {
+    if (referringFieldTypes.includes(fieldType)) {
         // logv(logPath, {p, q, fieldType});
         p = !!p ? p : 0;
         q = !!q ? q : 0;
@@ -48,15 +48,21 @@ export function loCaseCompare(p, q, fieldType) {
     return 0;
 }
 
-export const config = {
+export const sessionConfig = {
+    // englishUI: {value: false, label: 'EN', hint: 'English'},
     showUsageHints: {value: false, label: 'tooltips'},
-    devComponents: {value: false, label: 'probeersels'},
-    showStore: {value: false, label: 'gegevens'},
+    devComponents: {value: true, label: 'probeersels'},
+    showStore: {value: true, label: 'gegevens', hint: 'laat de cache zien, per entiteit'},
+    showEntityTypes: {value: true, label: 'definities', hint: 'laat entityTypes zien, na initialisatie'},
+    shortRefresh: {value: false, label: 'korte ververstijd', hint: 'tabel vraagt vaker om vernieuwde gegevens aan back end'},
 };
 
+export function language() {
+    return sessionConfig.englishUI?.value ? 'EN' : 'NL';
+}
 
 export function hints(...args) {
-    return config.showUsageHints.value ? args.filter(Boolean).join('\u000D') : null;
+    return sessionConfig.showUsageHints.value ? args.flat().join('\u000D') : null;
 }
 
 // export function emptyFields(fieldNames) {

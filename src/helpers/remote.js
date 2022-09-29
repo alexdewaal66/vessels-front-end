@@ -3,9 +3,23 @@ import { endpoints } from './endpoints';
 import { statusCodes } from './statusCodes';
 import { logv, pathMkr } from '../dev/log';
 import { entityTypes } from './entityTypes';
-import { now } from './utils';
+// import { now } from './utils';
 
 const logRoot = 'remote.js';
+
+function logConditionally() {
+    const loggedEntities = [
+        // 'xyz',
+        // endpoints.users,
+        // entityTypes.user.endpoint,
+        // entityTypes.address.endpoint,
+        // 'relation',
+        // 'relationtype',
+        // 'organisation',
+        // 'vesselType',
+    ];
+    return [...arguments]?.some(e => loggedEntities.includes(e));
+}
 
 // enumeration of state names of a request
 export const requestStates = {IDLE: 'idle', PENDING: 'pending', SUCCESS: 'success', ERROR: 'error'};
@@ -57,7 +71,7 @@ export async function deleteRequest({endpoint, requestState, onSuccess, onFail})
 }
 
 export async function makeRequest({method, endpoint, payload, headers, requestState = null, onSuccess, onFail}) {
-    const doLog = false;// || url.includes('files') || url.includes('images');
+    const doLog = logConditionally(endpoint);
     const logPath = pathMkr(logRoot, makeRequest, '↓↓');
     headers = addJwtToHeaders(headers);
 
@@ -78,8 +92,8 @@ export async function makeRequest({method, endpoint, payload, headers, requestSt
     } catch (error) {
         if (error?.response)
             error.response.statusText = statusCodes[error.response.status];
-        console.log(now(), logPath, {error, method, endpoint, payload, onSuccess, onFail});
-        console.error(error);
+        // console.log(now(), logPath, {error, method, endpoint, payload, onSuccess, onFail});
+        // console.error(error);
         requestState?.setAtError();
         requestState?.setErrorMsg(error.toString());
         onFail?.(error);
@@ -88,15 +102,15 @@ export async function makeRequest({method, endpoint, payload, headers, requestSt
 
 export const remote = {
 
-    readAllIds: async function (entityType, requestState, onSuccess, onFail) {
-        const endpoint = entityType.endpoint + '/ids';
+    retrieveAllIds: async function (entityType, requestState, onSuccess, onFail) {
+        const endpoint = entityType.endpoint + '/_ids';
         await getRequest({
             endpoint, requestState, onSuccess, onFail
         });
     },
 
-    readAllSummaries: async function (entityType, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [entityType.name, '↓']);
+    retrieveAllSummaries: async function (entityType, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.retrieveItemsByIds], null, [entityType.name, '↓']);
         // logv(logPath,{idArray});
         const endpoint = entityType.endpoint + '/summaries';
         await getRequest({
@@ -104,31 +118,31 @@ export const remote = {
         })
     },
 
-    readAllItems: async function (entityType, requestState, onSuccess, onFail) {
+    retrieveAllItems: async function (entityType, requestState, onSuccess, onFail) {
         const endpoint = entityType.endpoint;
         await getRequest({
             endpoint, requestState, onSuccess, onFail
         });
     },
 
-    readChangedItems: async function (entityType, timestamp, requestState, onSuccess, onFail) {
+    retrieveChangedItems: async function (entityType, timestamp, requestState, onSuccess, onFail) {
         const endpoint = entityType.endpoint + '/changed/' + timestamp;
         await getRequest({
             endpoint, requestState, onSuccess, onFail
         });
     },
 
-    readByExample: async function (entityType, probe, requestState, onSuccess, onFail) {
+    retrieveByExample: async function (entityType, probe, requestState, onSuccess, onFail) {
         const endpoint = entityType.endpoint + '/findall';
         await postRequest({
             endpoint, payload: probe, requestState, onSuccess, onFail
         });
     },
 
-    readSummariesByIds: async function (entityType, idArray, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [entityType.name, '↓']);
+    retrieveSummariesByIds: async function (entityType, idArray, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.retrieveItemsByIds], null, [entityType.name, '↓']);
         // logv(logPath,{idArray});
-        const endpoint = entityType.endpoint + '/ids/summaries';
+        const endpoint = entityType.endpoint + '/_ids/summaries';
         await postRequest({
             endpoint,
             payload: idArray,
@@ -138,10 +152,10 @@ export const remote = {
         })
     },
 
-    readItemsByIds: async function (entityType, idArray, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.readItemsByIds], null, [entityType.name, '↓']);
+    retrieveItemsByIds: async function (entityType, idArray, requestState, onSuccess, onFail) {
+        // const logPath = pathMkr(logRoot, ['remote', remote.retrieveItemsByIds], null, [entityType.name, '↓']);
         // logv(logPath,{idArray});
-        const endpoint = entityType.endpoint + '/ids';
+        const endpoint = entityType.endpoint + '/_ids';
         await postRequest({
             endpoint,
             payload: idArray,
@@ -170,7 +184,7 @@ export const remote = {
         }
     },
 
-    read: async function (entityType, id, requestState, onSuccess, onFail) {
+    retrieve: async function (entityType, id, requestState, onSuccess, onFail) {
         const endpoint = entityType.endpoint + '/' + id;
         await getRequest({
             endpoint, requestState, onSuccess, onFail

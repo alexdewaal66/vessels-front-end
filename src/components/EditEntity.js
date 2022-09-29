@@ -1,12 +1,17 @@
-import React, { useContext, Fragment } from 'react';
+import React, { useContext, Fragment, useMemo } from 'react';
 import { CommandContext, operationNames, StorageContext, AuthContext } from '../contexts';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
-import { Input, ShowRequestState, Details, EditButtons } from './';
+import { Input, ShowRequestState, Details, EditButtons, Welcome } from './';
 import { useRequestState } from '../helpers';
 import { useForm } from 'react-hook-form';
-// import { logv, rootMkr, pathMkr } from '../dev/log';
+import { useCounter } from '../dev/useCounter';
+import { rootMkr } from '../dev/log';
+import { Sorry } from '../dev/Sorry';
 // import { Value } from '../dev/Value';
 // import { Stringify } from '../dev';
+
+// const messages = {NL: {}, EN: {}};
+
 
 export function EditEntity(
     {
@@ -15,7 +20,7 @@ export function EditEntity(
     }) {
     // const containerTop = useRef(null);
     const entityName = entityType.name;
-    // const logRoot = rootMkr(EditEntity, entityType.name, '↓↓');
+    const logRoot = rootMkr(EditEntity, entityName, '↓↓');
     // logv(logRoot, {item, receiver: receiver.name});
     const {getItem, saveItem, newItem, deleteItem} = useContext(StorageContext);
     const auth = useContext(AuthContext);
@@ -27,7 +32,9 @@ export function EditEntity(
     const {handleSubmit, setValue} = entityForm;
     const requestState = useRequestState();
     const readOnly = (entityType.methods === 'R') || !auth.user;
-    const isEligible = auth.isEligibleToChange(item);
+    const isEligible = useMemo(() => auth.isEligibleToChange(item), [item]) ;
+
+    // const TXT = messages[language()];
 
     const conditions = {
         entityType: entityType,
@@ -40,11 +47,11 @@ export function EditEntity(
         },
     }
 
+    useCommand(conditions);
+
     // function topIsRendered(element) {
     //     element.current.scrollTop = 0;
     // }
-
-    useCommand(conditions);
 
     function extractDataFromHelpField(hiddenFieldName, formData) {
         // const logPath = pathMkr(logRoot, extractDataFromHelpField, hiddenFieldName);
@@ -58,7 +65,6 @@ export function EditEntity(
             if (field.endsWith('Id')) {
                 formData[field] = idValue;
             } else {
-                // formData[field] = !!idValue ? store[target].state[idValue].item : null;
                 formData[field] = !!idValue ? getItem(target, idValue) : null;
             }
         } else {
@@ -159,6 +165,9 @@ export function EditEntity(
         setValue('requestMethod', method);
         // logv(null, {'requestMethod': getValues('requestMethod')});
     };
+
+    const counter = useCounter(logRoot, entityName, 1000);
+    if (counter.passed) return <Sorry context={logRoot} count={counter.value}/>;
 
     return (
         <>

@@ -12,7 +12,7 @@ function simpleHash(str){
 
 export function Stringify({data, children, className = styles.default}) {
 
-    const output = JSON.stringify(data, undefined, 2);
+    const output = JSON.stringify(data, undefined, 4);
 
     return (
         <div className={className}

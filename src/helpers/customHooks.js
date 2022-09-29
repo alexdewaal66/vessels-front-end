@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { requestStates } from './remote';
 
-export function useConditionalEffect(callback, condition, deps) {
+export function useConditionalEffect(condition, callback, deps) {
     useEffect(() => {
             if (condition)
                 callback();

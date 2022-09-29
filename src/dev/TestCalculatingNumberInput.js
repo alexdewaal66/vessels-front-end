@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
-import { quantities, UnitInput } from './UnitInput';
+import { quantityNames, UnitInput } from '../components/UnitInput';
+import { FieldDesc, FieldEl, FieldRow, Form } from '../formLayouts';
 
 export function TestCalculatingNumberInput() {
     // const [result, setResult] = useState(0);
@@ -7,19 +8,33 @@ export function TestCalculatingNumberInput() {
         mode: 'onChange'
     });
 
-    const quantity = quantities.displacement;
+    const fields = [
+        {q: quantityNames.displacement, v: 200},
+        {q: quantityNames.length, v: 50},
+        {q: quantityNames.temperature, v: 300},
+        {q: quantityNames.volume, v: Math.E},
+    ];
 
-    return(
-        <>
-            <UnitInput fieldName={quantity}
-                       entityForm={entityForm}
-                       defaultValue={20}
-                       typeField={{quantity, validation: {min: 0}}}
-                       readOnly={false}
-                       isEligible={true}
-                       quantity={quantity}
-                       elKey={'UnitInput'}
-            />
-        </>
+    return (
+        <Form>
+            {fields.map(field =>
+                <FieldRow key={'UnitInput' + field.q}>
+                    <FieldDesc>
+                        {field.q}
+                    </FieldDesc>
+                    <FieldEl>
+                        <UnitInput fieldName={field.q}
+                                   entityForm={entityForm}
+                                   defaultValue={field.v}
+                                   typeField={{quantity: field.q, validation: {min: 0}}}
+                                   readOnly={false}
+                                   isEligible={true}
+                                   quantity={field.q}
+                                   elKey={'UnitInput' + field.q}
+                        />
+                    </FieldEl>
+                </FieldRow>
+            )}
+        </Form>
     );
 }

@@ -105,8 +105,8 @@ html, body {
     flex-grow: 0;
     order: -1;
     border-right: 1px solid;
-    /*resize: horizontal;*/
     min-width: 6em;
+    width: min-content;
 }
 
 .aside {
@@ -177,7 +177,8 @@ html, body {
 }
 
 .firstPart {
-    margin-right: 3em;
+    /*border: 1px solid red;*/
+    /*margin-right: 3em;*/
 }
 
 .firstPart, .secondPart {
@@ -185,27 +186,29 @@ html, body {
     /*box-sizing: border-box;*/
     /*width: calc(fit-content - 20px);*/
     height: 100%;
+    width: 100%;
     display: flex;
 }
 
 .secondPart {
+    /*border: 1px solid green;*/
     overflow-y: auto;
     padding-right: 10px;
 }
 
 .credentials {
     font-size: x-small;
-    margin-left: 2em;
+    /*margin-left: 2em;*/
 }
 
-.credentials td {
+.credentials, .credential td, .link, .button {
     padding-left: 2em;
 }
 
 .link {
     color: var(--color-normal);
     font-size: smaller;
-    margin-left: 2em;
+    /*margin-left: 2em;*/
     text-decoration: none;
 }
 

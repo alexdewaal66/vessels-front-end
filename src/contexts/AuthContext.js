@@ -4,7 +4,7 @@ import jwt_decode from 'jwt-decode';
 import { getRequest, persistentVars, useRequestState, useMountEffect, endpoints } from '../helpers';
 import { pages } from '../pages';
 import { Statusbar } from '../pageLayouts';
-// import { logv, pathMkr, rootMkr } from '../dev/log';
+import { logv, pathMkr, rootMkr } from '../dev/log';
 import { StorageContext } from './StorageContext';
 import { entityNames } from '../helpers';
 
@@ -14,12 +14,13 @@ const levels = {
     ROLE_MEMBER: 1,
     ROLE_EXPERT: 2,
     ROLE_ADMIN: 3,
+    ROLE_DEMIURG: 4,
 }
 
 
 export function AuthContextProvider({children}) {
-    // const logRoot = rootMkr(AuthContextProvider);
-    const store = useContext(StorageContext);
+    const logRoot = rootMkr(AuthContextProvider);
+    const storage = useContext(StorageContext);
     const authStates = {PENDING: 'pending', DONE: 'done'};
     const [authState, setAuthState] = useState({});
     //     user: {username: null},
@@ -36,24 +37,28 @@ export function AuthContextProvider({children}) {
     };
 
     function fetchUserData() {
-        // const logPath = pathMkr(logRoot, fetchUserData);
-        const userID = getUserID(localStorage.getItem(persistentVars.JWT));
+        const logPath = pathMkr(logRoot, fetchUserData);
+        const username = getUsername(localStorage.getItem(persistentVars.JWT));
+        // logv(logPath, {username});
         getRequest({
-            endpoint: `${endpoints.users}${userID}`,
+            endpoint: `${endpoints.users}${username}`,
             requestState: requestState,
             onSuccess: (response) => {
-                // logv(logPath, {response});
+                // logv(logPath, {response}, '✔');
                 setAuthState({
                     user: response.data,
                     status: authStates.DONE,
                 });
                 history.push(pages.home.path);
             },
+            onFail: (error) => {
+                logv(logPath, {error}, '❌');
+            }
         })
     }
 
-    // todo: move to helpers
-    function getUserID(Jwt) {
+    // todo: move to helpers?
+    function getUsername(Jwt) {
         const decodedJwt = jwt_decode(Jwt);
         return decodedJwt.sub;
     }
@@ -134,10 +139,15 @@ export function AuthContextProvider({children}) {
     }
 
     function getRoles(username) {
+        const logPath = pathMkr(logRoot, getRoles, username);
         const user = !username
-            ? authState.user
-            : store.getItem(entityNames.user, username);
-        return user.authorities.map(a => a.role);
+            ? (console.log('👀authstate'), authState.user)
+            : (console.log('👀findItems()'), storage.findItems(entityNames.user, {username})[0]);
+        logv(logPath, {user});
+        // return user.authorities.map(a => a.role);// before roles as entity
+        const roleList = user.roles.map(role => role.name);
+        logv(pathMkr(logRoot, getRoles), {username, user, roleList});
+        return roleList;
     }
 
 

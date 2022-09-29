@@ -178,12 +178,12 @@ describe('internal reference support functions', () => {
     });
 
     describe('setInternalReference', () => {
-        test('no reference, no changes', () => {
-            const entityTypesCopy = deepCopy(entityTypes);
-            const fieldCopy = deepCopy(entityTypesCopy.country.fields.shortNameNL);
-            setInternalReference(entityTypesCopy, 'country', 'shortNameNL');
-            expect(entityTypesCopy.country.fields.shortNameNL).toEqual(fieldCopy);
-        });
+        // test('no reference, no changes', () => {
+        //     const entityTypesCopy = deepCopy(entityTypes);
+        //     const fieldCopy = deepCopy(entityTypesCopy.country.fields.shortNameNL);
+        //     setInternalReference(entityTypesCopy, 'country', 'shortNameNL');
+        //     expect(entityTypesCopy.country.fields.shortNameNL).toEqual(fieldCopy);
+        // });
 
         test('reference w/o target prop, target & label should be inserted', () => {
             const entityTypesCopy = deepCopy(entityTypes);
@@ -218,7 +218,8 @@ describe('internal reference support functions', () => {
             // fieldsCopy.vesselType = {...fieldsCopy.vesselType, label: 'scheepstype', target: 'vesselType'};
             addSubProps(fieldsCopy, {
                 hull: {label: 'romp', target: 'hull'},
-                vesselType: {label: 'scheepstype', target: 'vesselType'}
+                vesselType: {label: 'scheepstype', target: 'vesselType'},
+                image: {label: 'afbeelding', target: 'image'},
             });
             setEveryFieldsInternalReferences(entityTypesCopy, entityName);
             expect(fields).toEqual(fieldsCopy);

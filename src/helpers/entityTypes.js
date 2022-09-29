@@ -1,9 +1,7 @@
-// import { errv } from '../dev/log';
-// import { logv, pathMkr } from '../dev/log';
+import { logv, pathMkr } from '../dev/log';
+import { quantityNames } from '../components/UnitInput';
 
-// const logRoot = 'entityTypes.js';
-
-import { quantities } from '../dev/UnitInput';
+const logRoot = 'entityTypes.js';
 
 export const fieldTypes = {
     str: 'string',
@@ -16,6 +14,8 @@ export const fieldTypes = {
     url: 'url',
     file: 'file',
 };
+
+export const referringFieldTypes = [fieldTypes.img, fieldTypes.arr, fieldTypes.obj, fieldTypes.file];
 
 export const subtypes = {
     password: 'password',
@@ -31,14 +31,12 @@ export const subtypes = {
 };
 
 export const entityTypes = {};
-// const logRoot = 'entityTypes';
-
 
 entityTypes.xyz = {
     label: 'Xyz',
     endpoint: '/xyzs',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         name: {type: fieldTypes.str, label: 'naam', validation: {required: true, maxLength: 20},},
@@ -64,7 +62,7 @@ entityTypes.zyx = {
     label: 'Zyx',
     endpoint: '/zyxs',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id', readOnly: true,
@@ -87,62 +85,57 @@ entityTypes.zyx = {
 entityTypes.user = {
     label: 'Gebruiker',
     endpoint: '/users',
-    id: ['username'],
-    hasBulkLoading: true,
+    id: ['id'],
+    // hasBulkLoading: true,
     fields: {
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+        },
         username: {
-            label: 'username', type: fieldTypes.str, readOnly: true, validation: {maxLength: 256},
+            label: 'username', type: fieldTypes.str, validation: {maxLength: 256},
         },
-        password: {
-            label: 'password', type: fieldTypes.str, validation: {
-                required: true, maxLength: 256,
-            }
-        },
-        enabled: {
-            label: 'enabled', type: fieldTypes.bool
-        },
-        apikey: {
-            label: 'apikey', type: fieldTypes.str, validation: {maxLength: 256},
-        }
-        ,
-        email: {
-            label: 'email', type: fieldTypes.str, subtype: subtypes.email, validation: {maxLength: 254},
-        }
-        ,
-        authorities: {
-            label: 'machtigingen', type: fieldTypes.obj, target: 'authority',
+        // password: {
+        //     label: 'password', type: fieldTypes.str, validation: {
+        //         required: true, maxLength: 256,
+        //     }
+        // },
+        // enabled: {
+        //     label: 'enabled', type: fieldTypes.bool,
+        // },
+        // apikey: {
+        //     label: 'apikey', type: fieldTypes.str, validation: {maxLength: 256},
+        // },
+        // email: {
+        //     label: 'email', type: fieldTypes.str, subtype: subtypes.email, validation: {maxLength: 254},
+        // },
+        roles: {
+            type: fieldTypes.arr, target: 'role', label: 'rollen',
             hasNull: false, isMulti: true, validation: {required: true,}
         },
     },
-    summary: ['id', 'email'],
+    summary: ['id', 'username'],
     methods: 'CRUD',
     findItem: {
         endpoint: '/find',
         params: {},
     },
 };
-Object.defineProperty(entityTypes.user.fields, 'id', {
-    enumerable: true,
-    get() {
-        return this.username;
-    }
-});
 
-entityTypes.authority = {
-    label: 'Machtiging',
-    endpoint: '/users/{username}/authorities',
-    id: ['username', 'role'],
-    hasBulkLoading: false,
+entityTypes.role = {
+    label: 'Rol',
+    endpoint: '/roles',
+    id: ['id'],
+    // hasBulkLoading: true,
     fields: {
-        username: {
-            type: fieldTypes.str, label: 'username', validation: {maxLength: 100},
+        id: {
+            type: fieldTypes.num, label: 'id'
         },
-        role: {
+        name: {
             type: fieldTypes.str, label: 'rol', validation: {maxLength: 100},
         },
     },
-    summary: ['username', 'role'],
-    methods: 'R',
+    summary: ['id', 'name'],
+    methods: 'CRUD',
     findItem: {
         endpoint: '/find',
         params: {},
@@ -153,7 +146,7 @@ entityTypes.country = {
     label: 'Land',
     endpoint: '/countries',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id'
@@ -185,14 +178,14 @@ entityTypes.country = {
             alpha3Code: 'code',
             numericCode: 'code'
         },
-    }
+    },
 };
 
 entityTypes.subdivision = {
     label: 'Deelsector',
     endpoint: '/subdivisions',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id',
@@ -227,7 +220,7 @@ entityTypes.unLocode = {
     label: 'Locatiecode',
     endpoint: '/un_locode',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id',
@@ -282,7 +275,7 @@ entityTypes.address = {
     label: 'Adres',
     endpoint: '/addresses',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id',
@@ -317,7 +310,7 @@ entityTypes.vesselType = {
     label: 'Scheepstype',
     endpoint: '/vesseltypes',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id', readOnly: true,
@@ -338,41 +331,42 @@ entityTypes.vesselType = {
             type: fieldTypes.num, label: 'tonnage (ondergrens)', validation: {
                 min: {value: 0, message: 'Negatief tonnage niet toegestaan.'},
             },
-            quantity: quantities.displacement,
+            quantity: quantityNames.displacement,
         },
         tonnageMax: {
             type: fieldTypes.num, label: 'tonnage (bovengrens)', validation: {
                 min: {value: 0, message: 'Negatief tonnage niet toegestaan.'},
             },
-            quantity: quantities.displacement,
+            quantity: quantityNames.displacement,
         },
         lengthOA: {
             type: fieldTypes.num, label: 'lengte o.a.', validation: {
                 min: {value: 0, message: 'Negatieve lengte niet toegestaan.'},
             },
-            quantity: quantities.length,
+            quantity: quantityNames.length,
         },
         beam: {
             type: fieldTypes.num, label: 'breedte', validation: {
                 min: {value: 0, message: 'Negatieve breedte niet toegestaan.'},
             },
-            quantity: quantities.length,
+            quantity: quantityNames.length,
         },
         height: {
             type: fieldTypes.num, label: 'hoogte', validation: {
                 min: {value: 0, message: 'Negatieve hoogte niet toegestaan.'},
             },
-            quantity: quantities.length,
+            quantity: quantityNames.length,
         },
         draft: {
             type: fieldTypes.num, label: 'diepgang', validation: {
                 min: {value: 0, message: 'Negatieve diepgang niet toegestaan.'},
             },
-            quantity: quantities.length,
+            quantity: quantityNames.length,
         },
         superType: {
             type: fieldTypes.obj, label: 'supertype', target: 'vesselType',
-            hasNull: false, isMulti: false, validation: {
+            hasNull: false, isMulti: false,
+            validation: {
                 required: true, min: {value: 1, message: 'Supertype verplicht.'},
             },
         },
@@ -385,11 +379,73 @@ entityTypes.vesselType = {
     },
 };
 
+
+// entityTypes.testType = {
+//     label: 'Testtype',
+//     endpoint: '/testtypes',
+//     id: ['id'],
+//     // hasBulkLoading: true,
+//     fields: {
+//         id: {
+//             type: fieldTypes.num, label: 'id', readOnly: true,
+//         },
+//         nameNL: {
+//             type: fieldTypes.str, label: 'naam (NL)', validation: {maxLength: 100},
+//         },
+//         nameEN: {
+//             type: fieldTypes.str, label: 'naam (EN)', validation: {maxLength: 100},
+//         },
+//         descNL: {
+//             type: fieldTypes.str, label: 'beschrijving (NL)', validation: {maxLength: 1000},
+//         },
+//         descEN: {
+//             type: fieldTypes.str, label: 'beschrijving (EN)', validation: {maxLength: 1000},
+//         },
+//         // lengthOA: {
+//         //     type: fieldTypes.num, label: 'lengte o.a.', validation: {
+//         //         min: {value: 0, message: 'Negatieve lengte niet toegestaan.'},
+//         //     },
+//         //     quantity: quantityNames.length,
+//         // },
+//         // beam: {
+//         //     type: fieldTypes.num, label: 'breedte', validation: {
+//         //         min: {value: 0, message: 'Negatieve breedte niet toegestaan.'},
+//         //     },
+//         //     quantity: quantityNames.length,
+//         // },
+//         // height: {
+//         //     type: fieldTypes.num, label: 'hoogte', validation: {
+//         //         min: {value: 0, message: 'Negatieve hoogte niet toegestaan.'},
+//         //     },
+//         //     quantity: quantityNames.length,
+//         // },
+//         draft: {
+//             type: fieldTypes.num, label: 'diepgang', validation: {
+//                 min: {value: 0, message: 'Negatieve diepgang niet toegestaan.'},
+//             },
+//             quantity: quantityNames.length,
+//         },
+//         superType: {
+//             type: fieldTypes.obj, label: 'supertype', target: 'testType',
+//             hasNull: false, isMulti: false,
+//             validation: {
+//                 required: true, min: {value: 1, message: 'Supertype verplicht.'},
+//             },
+//         },
+//     },
+//     methods: 'CRUD',
+//     summary: ['id', 'nameNL', 'nameEN'],
+//     findItem: {
+//         endpoint: '/find',
+//         params: {},
+//     },
+// };
+
 entityTypes.hull = {
     label: 'Romp',
     endpoint: '/hulls',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         hullNumber: {
@@ -405,29 +461,22 @@ entityTypes.hull = {
     findItem: {
         endpoint: '/find',
         params: {}
-    }
+    },
 };
 
 entityTypes.vessel = {
     label: 'Vaartuig',
     endpoint: '/vessels',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         hull: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
         name: {type: fieldTypes.str, label: 'naam', validation: {maxLength: 100},},
-        image: {
-            type: fieldTypes.img,
-            // label: 'afbeelding',
-            target: 'image'
-        },
+        image: {type: fieldTypes.img,},
         mmsi: {type: fieldTypes.str, label: 'mmsi', validation: {maxLength: 10},},
         callSign: {type: fieldTypes.str, label: 'roepletters', validation: {maxLength: 10},},
-        vesselType: {
-            // type: types.obj, label: 'romp', target: 'vesselType',
-            type: fieldTypes.obj, hasNull: true, isMulti: false,
-        },
+        vesselType: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
         homePort: {
             type: fieldTypes.obj, label: 'thuishaven', target: 'unLocode', hasNull: true, isMulti: false,
         },
@@ -435,25 +484,25 @@ entityTypes.vessel = {
             type: fieldTypes.num, label: "lengte o.a.", validation: {
                 min: {value: 0, message: 'Negatieve lengte niet toegestaan.'},
             },
-            quantity: quantities.length,
+            quantity: quantityNames.length,
         },
         beam: {
             type: fieldTypes.num, label: "breedte", validation: {
                 min: {value: 0, message: 'Negatieve breedte niet toegestaan.'},
             },
-            quantity: quantities.length,
+            quantity: quantityNames.length,
         },
         draft: {
             type: fieldTypes.num, label: "diepgang", validation: {
                 min: {value: 0, message: 'Negatieve diepgang niet toegestaan.'},
             },
-            quantity: quantities.length,
+            quantity: quantityNames.length,
         },
         displacement: {
             type: fieldTypes.num, label: "waterverplaatsing", validation: {
                 min: {value: 0, message: 'Negatieve waterverplaatsing niet toegestaan.'},
             },
-            quantity: quantities.displacement,
+            quantity: quantityNames.displacement,
         },
         startDate: {type: fieldTypes.date, label: "startdatum", validation: {},},
         endDate: {
@@ -476,14 +525,14 @@ entityTypes.vessel = {
     findItem: {
         endpoint: '/find',
         params: {}
-    }
+    },
 };
 
 entityTypes.organisation = {
     label: 'Organisatie',
     endpoint: '/organisations',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         shortName: {type: fieldTypes.str, label: 'naam', validation: {maxLength: 50},},
@@ -498,14 +547,14 @@ entityTypes.organisation = {
     findItem: {
         endpoint: '/find',
         params: {}
-    }
+    },
 };
 
 entityTypes.relation = {
     label: 'Relatie',
     endpoint: '/relations',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         organisation1: {
@@ -532,7 +581,7 @@ entityTypes.relationType = {
     label: 'relatietype',
     endpoint: '/relationtypes',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         nameNL: {type: fieldTypes.str, label: 'naam (nl)', validation: {maxLength: 100},},
@@ -554,7 +603,7 @@ entityTypes.file = {
     uploadEndpoint: '/files/upload',
     downloadEndpoint: (id) => `/files/${id}/download`,
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         fileName: {type: fieldTypes.str, label: 'bestandsnaam', validation: {maxLength: 259},},
@@ -572,6 +621,7 @@ entityTypes.image = {
     label: 'afbeelding',
     endpoint: '/images',
     id: ['id'],
+    // hasBulkLoading: true,
     needsReload: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
@@ -590,7 +640,7 @@ entityTypes.propulsionType = {
     label: 'voortstuwing',
     endpoint: '/propulsiontypes',
     id: ['id'],
-    hasBulkLoading: true,
+    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id', readOnly: true,
@@ -622,11 +672,16 @@ entityTypes.propulsionType = {
     },
 };
 
+export const entityNameList = Object.keys(entityTypes);
+// logv(null, {entityNameList});
+
 export function getFieldFromPath(entityTypes, entityType, fieldPath) { // ✔✔
+    // const logPath = pathMkr(logRoot, getFieldFromPath);
+    // logv(logPath, {entityType, fieldPath});
     // depends on presence of internal reference
     const parts = fieldPath.split('.');
     const directField = entityType.fields[parts[0]];
-    if (directField.type === fieldTypes.obj || directField.type === fieldTypes.img) {
+    if (referringFieldTypes.includes(directField.type)) {
         return entityTypes[directField.target].fields[parts[1]];
     }
     return directField;
@@ -636,34 +691,65 @@ export function initializeEntityTypes(entityTypes) { // ✔✔
     for (const entityName in entityTypes) {
         const entityType = entityTypes[entityName];
         entityType.name = entityName;
+        entityType.targets = [];
         setEveryFieldsInternalReferences(entityTypes, entityName);
         expandEveryFieldsValidations(entityTypes, entityName);
     }
+    logv(pathMkr(logRoot, initializeEntityTypes), {entityNameList});
 }
 
 
 function setEveryFieldsInternalReferences(entityTypes, entityName) { // ✔✔
     for (const [fieldName, field] of Object.entries(entityTypes[entityName].fields)) {
-        if (field.type === fieldTypes.obj || field.type === fieldTypes.file)
+        if (referringFieldTypes.includes(field.type))
             setInternalReference(entityTypes, entityName, fieldName); // ✔✔
     }
 }
 
+
 function setInternalReference(entityTypes, entityName, fieldName) { // ✔✔
-    const field = entityTypes[entityName].fields[fieldName];
-    if (field.target) {
-        if (field.target in entityTypes) {
-            if (!field.label) {
-                field.label = entityTypes[field.target].label.toLowerCase();
-            }
+    // const logPath = pathMkr(logRoot, setInternalReference);
+    const entityType = entityTypes[entityName];
+    const field = entityType.fields[fieldName];
+    if (!field.target) field.target = fieldName;
+    if (field.target in entityTypes) {
+        if (!field.label) {
+            field.label = entityTypes[field.target].label.toLowerCase();
         }
-    } else {
-        if (fieldName in entityTypes) {
-            field.target = fieldName;
-            if (!field.label) {
-                field.label = entityTypes[fieldName].label.toLowerCase();
-            }
-        }
+    }
+    addToTargets(entityType, {fieldName, targetName: field.target});
+    reorderEntityNames(entityName, field.target);
+    addToOwners(entityTypes[field.target], {fieldName, ownerName: entityName});
+}
+
+function addToTargets(entityType, targetEntityName) {
+    addNameToArraySet(entityType.targets, targetEntityName);
+}
+
+function addToOwners(targetType, ownerEntityName) {
+    // addNameToArraySet(targetType.owners, ownerEntityName);
+}
+
+function addNameToArraySet(arraySet, name) {
+    if (!arraySet.includes(name)) arraySet.push(name);
+}
+
+function wrapAround(arr, lo, hi, count = 1) {
+    const wrapped = arr.splice(hi, count);
+    arr.splice(lo, 0, ...wrapped);
+}
+
+function reorderEntityNames(ownerName, targetName) {
+    // const logPath = pathMkr(logRoot, reorderEntityNames, '↓↓')
+    // const doLog = logConditionally(ownerName, targetName);
+    const ownerPos = entityNameList.indexOf(ownerName);
+    const targetPos = entityNameList.indexOf(targetName);
+    // if (doLog) logv(logPath, {ownerName, ownerPos, targetName, targetPos});
+    if (ownerPos < targetPos) {//swap
+        // const temp = entityNameList[ownerPos];
+        // entityNameList[ownerPos] = entityNameList[targetPos];
+        // entityNameList[targetPos] = temp;
+        wrapAround(entityNameList, ownerPos, targetPos);
     }
 }
 
@@ -679,11 +765,11 @@ function expandFieldValidation(field) { // ✔✔
     field.validation = transformEntries(field.validation, expandValidation);
 }
 
-function expandValidation([criterion, value]) { // ✔✔
+function expandValidation([criterionKey, criterionValue]) { // ✔✔
     // const logPath = pathMkr(logRoot, expandValidation);
-    // logv(logPath, {criterion, value});
-    if (value !== null && typeof value === 'object') return [criterion, value];
-    return [criterion, expansions[criterion](value)];
+    // logv(logPath, {criterionKey, criterionValue});
+    if (criterionValue !== null && typeof criterionValue === 'object') return [criterionKey, criterionValue];
+    return [criterionKey, expansions[criterionKey](criterionValue)];
 }
 
 const expansions = { // ✔✔
@@ -694,7 +780,7 @@ const expansions = { // ✔✔
     min: (value) => ({value, message: `niet kleiner dan ${value}`}),
 };
 
-function transformEntries(obj, callback) { // ✔✔
+export function transformEntries(obj, callback) { // ✔✔
     return Object.fromEntries(Object.entries(obj).map(callback));
 }
 
@@ -710,8 +796,9 @@ export function createEmptySummary(entityTypes, entityType) { // ✔✔
     // depends on presence of internal references
     // const logPath = pathMkr(logRoot, createEmptySummary, '(↓)');
     // logv(logPath, {entityName: entityType.name});
+    const emptyObject = createEmptyObject(entityTypes, entityType, entityType.summary);
     // logv(null, {emptyObject});
-    return createEmptyObject(entityTypes, entityType, entityType.summary);
+    return emptyObject;
 }
 
 function createEmptyObject(entityTypes, entityType, fieldPaths) { // ✔✔
@@ -733,7 +820,6 @@ function createEmptyObject(entityTypes, entityType, fieldPaths) { // ✔✔
     return item;
 }
 
-export const entityNameList = Object.keys(entityTypes);
 export const entityNames = Object.fromEntries(entityNameList.map(name => [name, name]));
 
 export const exportedForTesting = {

@@ -1,9 +1,18 @@
 import React, { Fragment, useContext, useState } from 'react';
 import { logv, pathMkr, rootMkr } from '../dev/log';
 // import { Stringify } from '../dev/Stringify';
-import { endpoints, entityTypes } from '../helpers';
+import { endpoints, entityTypes, language } from '../helpers';
 import { StorageContext } from '../contexts';
 import {formStyles} from '../formLayouts';
+
+const messages = {
+    NL: {
+        send: 'Verstuur',
+    },
+    EN: {
+        send: 'Send',
+    }
+};
 
 export function InputImageFile({
                                    entityType, fieldName, readOnly,
@@ -28,6 +37,8 @@ export function InputImageFile({
 
     const isFileSelected = '0' in selectedFiles;
     const buttonStyle = isFileSelected ? formStyles.enabled : formStyles.disabled;
+
+    const TXT = messages[language()];
 
     function onFileSelect(event) {
         // const logPath = pathMkr(logRoot, onFileSelect);
@@ -104,7 +115,7 @@ export function InputImageFile({
                             disabled={!isFileSelected}
                             className={buttonStyle}
                     >
-                        Verstuur
+                        {TXT.send}
                     </button>
                     &nbsp;{imageFeedback}
                 </div>

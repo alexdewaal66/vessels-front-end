@@ -1,9 +1,11 @@
 import React from 'react';
 import menuStyles from './menu.module.css';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
-import { config } from '../helpers';
+import { sessionConfig } from '../helpers';
 
 export function Menu({menuItems, choice, makeChoice, children, className, ...rest}) {
+
+    let counter=1;
 
     return (
         <nav className={pageLayout.menu} {...rest}>
@@ -13,16 +15,23 @@ export function Menu({menuItems, choice, makeChoice, children, className, ...res
 
                 <ul className={menuStyles.ul}>
                     {menuItems?.map(menuItem =>
-                        (!menuItem.dev || (menuItem.dev && config.devComponents.value)) &&
-                        <li key={menuItem.label}
-                            onClick={makeChoice(menuItem)}
-                            className={choice === menuItem
-                                ? menuStyles.selected
-                                : null
-                            }
-                        >
-                            {menuItem.label}
-                        </li>
+                        (!menuItem.dev || (menuItem.dev && sessionConfig.devComponents.value)) &&
+                        (menuItem.separator
+                            ? (
+                                <React.Fragment key={menuItem.label + counter++}>
+                                    <hr className={menuStyles.hr}/>
+                                </React.Fragment>
+                            ) : (
+                                <li key={menuItem.label + counter++}
+                                    onClick={makeChoice(menuItem)}
+                                    className={choice === menuItem
+                                        ? menuStyles.selected
+                                        : null
+                                    }
+                                >
+                                    {menuItem.label}
+                                </li>
+                            ))
                     )}
                 </ul>
             </div>

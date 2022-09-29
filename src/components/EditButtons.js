@@ -1,27 +1,49 @@
 import React from 'react';
 import { FieldEl, formStyles, ButtonRow } from '../formLayouts';
-import { hints } from '../helpers';
+import { hints, language } from '../helpers';
+
+const messages = {
+    NL: {
+        invalid: 'formulier niet juist ingevuld',
+        pending: 'formulier wordt verzonden',
+        ineligible: 'geen autorisatie om te wijzigen/verwijderen',
+        update: 'Wijzig',
+        create: 'Maak nieuw',
+        delete: 'Verwijder',
+    },
+    EN: {
+        invalid: 'form has invalid inputs',
+        pending: 'sending form',
+        ineligible: 'no authorisation to update/delete',
+        update: 'Update',
+        create: 'Create',
+        delete: 'Delete',
+    }
+};
+
 
 export function EditButtons({requestState, setRequestMethod, readOnly, isEligible, form}) {
     // const logRoot = rootMkr(EditButtons);
+    const TXT = messages[language()];
+
     const {isValid} = form.formState;
-    const hintValid = !isValid && 'formulier niet juist ingevuld';
+    const hintValid = !isValid && TXT.invalid;
     const {isPending} = requestState;
-    const hintPending = isPending && 'formulier wordt verzonden';
+    const hintPending = isPending && TXT.pending;
     const isDisabled = isPending || !isValid;
-    const hintEligible = !isEligible && 'geen autorisatie om te wijzigen/verwijderen';
+    const hintEligible = !isEligible && TXT.ineligible;
 
     function style(condition) {
         return condition ? formStyles.disabled : formStyles.enabled;
     }
 
     return (
-        <ButtonRow>
-            <FieldEl>
-                {/*P:{+isPending} , E:{+isEligible} , V:{+isValid}*/}
-                {/*<br/>*/}
-                {/*DA:{+isDisabled}*/}
-            </FieldEl>
+        <ButtonRow title={hints('Pending: ' + isPending,
+            'Eligible: ' + isEligible,
+            'Valid: ' + isValid,
+            'Disabled: ' + isDisabled
+        )}>
+            <FieldEl/>
             <FieldEl>
                 {!readOnly && (
                     <>
@@ -35,7 +57,7 @@ export function EditButtons({requestState, setRequestMethod, readOnly, isEligibl
                             key="submit_put"
                             // accessKey={'w'}
                         >
-                            Wijzig
+                            {TXT.update}
                         </button>
                         <button
                             title={hints(hintPending, hintValid)}
@@ -47,7 +69,7 @@ export function EditButtons({requestState, setRequestMethod, readOnly, isEligibl
                             key="submit_post"
                             // accessKey={'n'}
                         >
-                            Maak nieuw
+                            {TXT.create}
                         </button>
                         <button
                             title={hints(hintEligible, hintPending, hintValid)}
@@ -59,7 +81,7 @@ export function EditButtons({requestState, setRequestMethod, readOnly, isEligibl
                             key="submit_del"
                             // accessKey={'v'}
                         >
-                            Verwijder
+                            {TXT.delete}
                         </button>
                     </>
                 )}
