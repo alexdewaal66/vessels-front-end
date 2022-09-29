@@ -3,9 +3,11 @@ import React from 'react';
 import { subtypes, fieldTypes } from '../helpers';
 import { Stringify } from '../dev/Stringify';
 import { InputObject, InputImageFile, ValidationMessage } from './';
-import { UnitInput } from '../dev/UnitInput';
+import { UnitInput } from './UnitInput';
 // import { Value } from '../dev/Value';
 // import { rootMkr, pathMkr, logv } from '../dev/log';
+
+// const messages = {NL: {}, EN: {}};
 
 const inputTypes = {
     button: {element: 'input', type: 'button'},
@@ -43,6 +45,8 @@ export function Input({
     // const logRoot = rootMkr(Input, entityType.name);
     const typeField = entityType.fields[fieldName];
     const elKey = `Input(${entityType.name},${fieldName},${defaultValue})`;
+
+    // const TXT = messages[language()];
 
     readOnly = !!(readOnly || entityType.methods === 'R' || typeField?.readOnly);
     // logv(logRoot, {typeField, typeField, readOnly});
@@ -94,6 +98,7 @@ export function Input({
             }
             break;
         case fieldTypes.obj:
+        case fieldTypes.arr:
             return (
                 <InputObject entityType={entityType}
                              fieldName={fieldName}
