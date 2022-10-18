@@ -1,23 +1,51 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useRequestState, endpoints, postRequest } from '../helpers';
+import {
+    capitalizeLabel,
+    endpoints,
+    entityTypes,
+    languageSelector,
+    postRequest,
+    text,
+    useRequestState
+} from '../helpers';
 import { pages } from './index';
-import { Menu, Main, Content } from '../pageLayouts';
-import { Form, Fieldset, FieldRow, FieldDesc, FieldEl } from '../formLayouts';
+import { Content, Main, Menu } from '../pageLayouts';
+import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
 import { ShowRequestState } from '../components';
 import { logv, pathMkr, rootMkr } from '../dev/log';
+
+const messages = {
+    NL: {
+        signUp: 'Registreren',
+        purpose: 'Registreer en log in om gegevens & foto\'s te kunnen toevoegen.',
+        preLink: 'Heb je al een account? Je kunt ',
+        linkText: 'hier',
+        postLink: ' inloggen.',
+        make: 'Maak account aan',
+    },
+    EN: {
+        signUp: 'Register',
+        purpose: 'Register and log in to add data and photos.',
+        preLink: 'Already an account? Log in ',
+        linkText: 'here',
+        postLink: '.',
+        make: 'Make account',
+    },
+};
 
 function SignUp() {
     const logRoot = rootMkr(SignUp);
     const {handleSubmit, register} = useForm();
     const requestState = useRequestState();
     const history = useHistory();
+    const userFields = {...entityTypes.user.fields, ...entityTypes.user.restrictedFields};
 
-    logv(logRoot,{requestState}, 'registration');
+    logv(logRoot, {requestState}, 'registration');
 
     function onSubmit(formData) {
-        const logPath =  pathMkr(logRoot, onSubmit, '↓')
+        const logPath = pathMkr(logRoot, onSubmit, '↓')
         logv(logPath, {formData});
         postRequest({
             endpoint: endpoints.signUp,
@@ -29,73 +57,75 @@ function SignUp() {
         }).then();
     }
 
+    const TXT = messages[languageSelector()];
+
     return (
-            <Content>
-                <Main>
-                    <h1>Registreren</h1>
-                    <p>Registreer en log in om gegevens, foto's & commentaar te kunnen toevoegen.</p>
-                    <ShowRequestState requestState={requestState}
-                                      description={'het registreren '}
-                                      advice="Probeer het opnieuw. "
-                    />
-                    {!requestState.isSuccess && (
-                        <Form onSubmit={handleSubmit(onSubmit)}><Fieldset>
-                            <FieldRow>
-                                <FieldDesc>Email:</FieldDesc>
-                                <FieldEl>
-                                    <input
-                                        type="email"
-                                        id="email-field"
-                                        name="email"
-                                        {...register("email")}
-                                    />
-                                </FieldEl>
-                            </FieldRow>
-                            <FieldRow>
-                                <FieldDesc>Gebruikersnaam:</FieldDesc>
-                                <FieldEl>
-                                    <input
-                                        type="text"
-                                        id="username-field"
-                                        name="username"
-                                        {...register("username")}
-                                    />
-                                </FieldEl>
-                            </FieldRow>
+        <Content>
+            <Main>
+                <h1>{TXT.signUp}</h1>
+                <p>{TXT.purpose}</p>
+                <ShowRequestState requestState={requestState}
+                                  description={text({NL: 'het registreren ', EN: 'registration '})}
+                                  advice={text({NL: 'Probeer het opnieuw. ', EN: 'try again '})}
+                />
+                {!requestState.isSuccess && (
+                    <Form onSubmit={handleSubmit(onSubmit)}><Fieldset>
+                        <FieldRow>
+                            <FieldDesc>{capitalizeLabel(userFields.email)}:</FieldDesc>
+                            <FieldEl>
+                                <input
+                                    type="email"
+                                    id="email-field"
+                                    name="email"
+                                    {...register("email", userFields.email.validation)}
+                                />
+                            </FieldEl>
+                        </FieldRow>
+                        <FieldRow>
+                            <FieldDesc>{capitalizeLabel(userFields.username)}:</FieldDesc>
+                            <FieldEl>
+                                <input
+                                    type="text"
+                                    id="username-field"
+                                    name="username"
+                                    {...register("username", userFields.username.validation)}
+                                />
+                            </FieldEl>
+                        </FieldRow>
 
-                            <FieldRow>
-                                <FieldDesc>Wachtwoord:</FieldDesc>
-                                <FieldEl>
-                                    <input
-                                        type="password"
-                                        id="password-field"
-                                        name="password"
-                                        {...register("password")}
-                                    />
-                                </FieldEl>
-                            </FieldRow>
-                            <FieldRow>
-                                <FieldEl>
-                                    <button
-                                        type="submit"
-                                        className="form-button"
-                                        disabled={requestState.isPending || requestState.isSuccess}
-                                    >
-                                        Maak account aan
-                                    </button>
-                                </FieldEl>
-                            </FieldRow>
-                        </Fieldset></Form>
-                    )}
+                        <FieldRow>
+                            <FieldDesc>{capitalizeLabel(userFields.password)}:</FieldDesc>
+                            <FieldEl>
+                                <input
+                                    type="password"
+                                    id="password-field"
+                                    name="password"
+                                    {...register("password", userFields.password.validation)}
+                                />
+                            </FieldEl>
+                        </FieldRow>
+                        <FieldRow>
+                            <FieldEl>
+                                <button
+                                    type="submit"
+                                    className="form-button"
+                                    disabled={requestState.isPending || requestState.isSuccess}
+                                >
+                                    {TXT.make}
+                                </button>
+                            </FieldEl>
+                        </FieldRow>
+                    </Fieldset></Form>
+                )}
 
-                    <p>Heb je al een account? Je kunt je <Link to={pages.signIn.path}>hier</Link> inloggen.</p>
-                </Main>
-                <Menu>
-                </Menu>
-                {/*<Aside>*/}
-                {/*    ASIDE*/}
-                {/*</Aside>*/}
-            </Content>
+                <p>{TXT.preLink}<Link to={pages.signIn.path}>{TXT.linkText}</Link>{TXT.postLink}</p>
+            </Main>
+            <Menu>
+            </Menu>
+            {/*<Aside>*/}
+            {/*    ASIDE*/}
+            {/*</Aside>*/}
+        </Content>
     );
 }
 

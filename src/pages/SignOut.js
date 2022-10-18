@@ -6,6 +6,18 @@ import { Menu, Main } from '../pageLayouts';
 import { Content } from '../pageLayouts';
 import { pages } from './index';
 import { ShowStore } from '../dev/ShowStore';
+import { languageSelector } from '../helpers';
+
+const messages = {
+    NL: {
+        signOut: 'Uitloggen',
+        signOutCmd: 'Log uit',
+    },
+    EN: {
+        signOut: 'Log out',
+        signOutCmd: 'Log out',
+    },
+};
 
 function SignOut() {
     // const logRoot = rootMkr(SignOut);
@@ -23,16 +35,18 @@ function SignOut() {
         history.push(pages.home.path);
     }
 
+    const TXT = messages[languageSelector()];
+
     return (
         <Content>
             <Main>
-                <h1>Uitloggen</h1>
+                <h1>{TXT.signOut}</h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <button
                         type="submit"
                         className="form-button"
                     >
-                        Log uit
+                        {TXT.signOutCmd}
                     </button>
                 </form>
             </Main>

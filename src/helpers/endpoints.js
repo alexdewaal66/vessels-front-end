@@ -6,6 +6,7 @@ const local = 'http://localhost:8080';
 export const endpoints = {
     baseURL: domain.includes('heroku') ? heroku : local,
     signIn: '/authenticate',
+    signUp: '/signup',
     users: '/users/username/',
     profile: '/profile',
     files: '/files'

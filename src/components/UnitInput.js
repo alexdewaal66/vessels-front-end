@@ -1,8 +1,10 @@
 import { CalculatingNumberInput } from './CalculatingNumberInput';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCounter } from '../dev/useCounter';
 import { rootMkr } from '../dev/log';
 import { Sorry } from '../dev/Sorry';
+import { ValidationMessage } from './ValidationMessage';
+import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
 
 export const conversions = {
     length: [
@@ -52,30 +54,39 @@ export function UnitInput({
     const [valueInBaseUnits, setValueInBaseUnits] = useState(defaultValue);
     const baseUnitName = conversions[typeField.quantity][0].name;
 
+    const {register, trigger, setValue, formState: {errors}, getValues} = entityForm;
+    useEffect(() => {
+        trigger(fieldName).then();
+    }, []);
+
+    const borderStyle = !!errors[fieldName] && !readOnly ? {border: '1px solid black'} : null;
+
     function setResult(result) {
-        entityForm.setValue(fieldName, result, {shouldValidate: true});
-        setValueInBaseUnits(+entityForm.getValues(fieldName));
+        setValueInBaseUnits(result);
+        setValue(fieldName, result, {shouldValidate: true});
+        // setValueInBaseUnits(+entityForm.getValues(fieldName));
+        // trigger(fieldName).then();
     }
 
     function twoDecimals(x) {
         return Number(x).toFixed(2);
     }
 
-    const counter = useCounter(logRoot, fieldName, 100);
-    if (counter.passed) return <Sorry context={logRoot} count={counter.value}/>;
+    const counter = useCounter(logRoot, fieldName, 1000);
+    if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
 
 
     return (
         <>
-            {/*{fieldName}=*/}
-            <input type={'text'}
-                   name={fieldName}
-                   defaultValue={defaultValue}
-                   readOnly={readOnly}
-                   {...entityForm.register(fieldName, typeField?.validation)}
-                   key={elKey + fieldName + 'hidden'}
-                   style={{display: 'none'}}
+            <input
+                type={'hidden'}
+                // type={'number'}
                 // style={{opacity: '50%', border: '1px solid green'}}
+                name={fieldName}
+                defaultValue={defaultValue}
+                readOnly={readOnly}
+                {...register(fieldName, crossFieldExpansion(typeField, getValues))}
+                key={elKey + fieldName + 'hidden'}
             />
             <CalculatingNumberInput quantityName={typeField.quantity}
                                     defaultValue={defaultValue}
@@ -85,9 +96,11 @@ export function UnitInput({
                                     setResult={setResult}
                                     readOnly={readOnly}
                                     fieldName={fieldName}
+                                    style={borderStyle}
             />
             &nbsp;
             <span style={{opacity: '50%'}}>({twoDecimals(valueInBaseUnits) + ' ' + baseUnitName})</span>
+            <ValidationMessage fieldName={fieldName} form={entityForm}/>
         </>
     );
 }

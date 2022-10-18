@@ -1,7 +1,7 @@
 import React from 'react';
 import menuStyles from './menu.module.css';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
-import { sessionConfig } from '../helpers';
+import { text, sessionConfig } from '../helpers';
 
 export function Menu({menuItems, choice, makeChoice, children, className, ...rest}) {
 
@@ -29,7 +29,7 @@ export function Menu({menuItems, choice, makeChoice, children, className, ...res
                                         : null
                                     }
                                 >
-                                    {menuItem.label}
+                                    {text(menuItem.label)}
                                 </li>
                             ))
                     )}

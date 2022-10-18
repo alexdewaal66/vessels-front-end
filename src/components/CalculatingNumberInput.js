@@ -3,12 +3,23 @@ import { conversions } from './UnitInput';
 import { useCounter } from '../dev/useCounter';
 import { Sorry } from '../dev/Sorry';
 import { rootMkr } from '../dev/log';
-import { hints } from '../helpers';
+import { hints, languageSelector } from '../helpers';
+
+const messages = {
+    NL: {
+        toInput: 'herbereken invoer naar gekozen eenheid',
+        toResult: 'herbereken resultaat naar gekozen eenheid',
+    },
+    EN: {
+        toInput: 'recalculate input to chosen unit',
+        toResult: 'recalculate result to chosen unit',
+    }
+};
 
 export function CalculatingNumberInput({
                                            setResult, quantityName,
                                            defaultValue, valueInBaseUnits,
-                                           elKey, readOnly, fieldName
+                                           elKey, readOnly, fieldName, style
                                        }) {
     const logRoot = rootMkr(CalculatingNumberInput);
     const units = conversions[quantityName];
@@ -16,6 +27,8 @@ export function CalculatingNumberInput({
     const [inputValue, setInputValue] = useState(defaultValue);
     const [isInputChanged, setInputChanged] = useState(false);
 
+
+    const TXT = messages[languageSelector()];
 
     // useEffect(() => {
     //         if (!readOnly) setResult(units[unitIndex].calc(+inputValue));
@@ -25,8 +38,9 @@ export function CalculatingNumberInput({
 
     function handleInput(e) {
         if (!readOnly) {
-            setInputValue(e.target.value);
+            setInputValue(+e.target.value);
             setInputChanged(true);
+            setResult(units[unitIndex].calc(+e.target.value));
         }
     }
 
@@ -51,8 +65,8 @@ export function CalculatingNumberInput({
         if (!readOnly) setResult(units[newIndex].calc(+inputValue));
     }
 
-    const counter = useCounter(logRoot, fieldName, 100);
-    if (counter.passed) return <Sorry context={logRoot} count={counter.value}/>;
+    const counter = useCounter(logRoot, fieldName, 1000);
+    if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
 
     return (
         <>
@@ -63,6 +77,7 @@ export function CalculatingNumberInput({
                    value={inputValue}
                    onChange={handleInput}
                    readOnly={readOnly}
+                   style={style}
             />
             &nbsp;
             {/*<select onChange={handleSelect} defaultValue={0}>*/}
@@ -74,7 +89,7 @@ export function CalculatingNumberInput({
             {/*        </Fragment>*/}
             {/*    )}*/}
             {/*</select>*/}
-            <span title={hints('herbereken invoer naar gekozen eenheid')}>
+            <span title={hints(TXT.toInput)}>
                 ↢
                 <select onChange={handleSelectLeft} value={unitIndex}>
                     {units.map((unit, index) =>
@@ -87,7 +102,7 @@ export function CalculatingNumberInput({
                     )}
                 </select>
             </span>
-            <span title={hints('herbereken resultaat naar gekozen eenheid')}>
+            <span title={hints(TXT.toResult)}>
                 <select onChange={handleSelectRight} value={unitIndex}>
                     {units.map((unit, index) =>
                         <Fragment key={elKey + unit.name + index}>

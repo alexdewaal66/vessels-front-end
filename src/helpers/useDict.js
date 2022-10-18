@@ -1,5 +1,5 @@
 import { useReducer } from 'react';
-// import { logConditionally, logv, rootMkr } from '../dev/log';
+// import { logCondition, logv, rootMkr } from '../dev/log';
 
 const dictActions = {
     add: 'add',
@@ -72,7 +72,7 @@ const dictReducer = (dictName) => (state, {type, payload: {key, value}}) => {
 
 export function useDict(dictName, initialState = {}, initializer) {
     // const logRoot = rootMkr(useDict);
-    // const doLog = logConditionally(dictName);
+    // const doLog = logCondition(useDict, dictName);
     const [state, dispatch] = useReducer(dictReducer(dictName), initialState, initializer);
 
     // const onStateChange = useRef();

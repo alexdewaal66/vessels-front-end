@@ -4,7 +4,7 @@ import {
     keys, useKeyPressed,
     usePollBackEndForChanges,
     useConditionalEffect,
-    useRequestState, entityTypes, language
+    useRequestState, entityTypes, languageSelector
 } from '../../helpers';
 import { SummaryTable, useSorting } from './';
 import { CommandContext, operationNames } from '../../contexts';
@@ -51,7 +51,7 @@ export function SummaryListTall({
 
     const sorting = useSorting(updateListTall, list, entityType);
 
-    const TXT = messages[language()];
+    const TXT = messages[languageSelector()];
 
     // logv(logRoot + ` states:`, {
     //     initialId, isAllLoaded,

@@ -198,10 +198,9 @@ html, body {
 
 .credentials {
     font-size: x-small;
-    /*margin-left: 2em;*/
 }
 
-.credentials, .credential td, .link, .button {
+.credentials, .link, .button {
     padding-left: 2em;
 }
 

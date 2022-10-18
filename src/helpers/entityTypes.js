@@ -1,4 +1,4 @@
-import { logv, pathMkr } from '../dev/log';
+import { logCondition, logv, pathMkr } from '../dev/log';
 import { quantityNames } from '../components/UnitInput';
 
 const logRoot = 'entityTypes.js';
@@ -15,7 +15,7 @@ export const fieldTypes = {
     file: 'file',
 };
 
-export const referringFieldTypes = [fieldTypes.img, fieldTypes.arr, fieldTypes.obj, fieldTypes.file];
+export const referringFieldTypes = [fieldTypes.img, fieldTypes.arr, fieldTypes.obj];//, fieldTypes.file];
 
 export const subtypes = {
     password: 'password',
@@ -39,16 +39,23 @@ entityTypes.xyz = {
     // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
-        name: {type: fieldTypes.str, label: 'naam', validation: {required: true, maxLength: 20},},
-        description: {type: fieldTypes.str, label: 'beschrijving', validation: {maxLength: 1000}},
+        name: {type: fieldTypes.str, label: {NL: 'naam', EN: 'name'}, validation: {required: true, maxLength: 20},},
+        description: {
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving', EN: 'description'},
+            validation: {maxLength: 1000}
+        },
         xyzString: {type: fieldTypes.str, validation: {maxLength: 200},},
         ratio: {
             type: fieldTypes.num, validation: {
-                min: {value: 0, message: 'Negatief ratio niet toegestaan.'},
+                min: {
+                    value: 0,
+                    message: {NL: 'negatief ratio niet toegestaan', EN: 'negative ratio forbidden'}
+                },
             },
         },
         zyx: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
-        image: {type: fieldTypes.img, label: 'afbeelding', target: 'image'},
+        image: {type: fieldTypes.img, label: {NL: 'afbeelding', EN: 'image'}, target: 'image'},
     },
     summary: ['id', 'name', 'xyzString', 'image.thumbnailId'],
     methods: 'CRUD',
@@ -68,10 +75,10 @@ entityTypes.zyx = {
             type: fieldTypes.num, label: 'id', readOnly: true,
         },
         name: {
-            type: fieldTypes.str, label: 'naam', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'naam', EN: 'name'}, validation: {maxLength: 100},
         },
         description: {
-            type: fieldTypes.str, label: 'beschrijving', validation: {maxLength: 1000}
+            type: fieldTypes.str, label: {NL: 'beschrijving', EN: 'description'}, validation: {maxLength: 1000}
         },
     },
     summary: ['id', 'name'],
@@ -83,7 +90,7 @@ entityTypes.zyx = {
 };
 
 entityTypes.user = {
-    label: 'Gebruiker',
+    label: {NL: 'Gebruiker', EN: 'User'},
     endpoint: '/users',
     id: ['id'],
     // hasBulkLoading: true,
@@ -92,25 +99,43 @@ entityTypes.user = {
             type: fieldTypes.num, label: 'id', readOnly: true,
         },
         username: {
-            label: 'username', type: fieldTypes.str, validation: {maxLength: 256},
+            label: {NL: 'gebruikersnaam', EN: 'username'}, type: fieldTypes.str,
+            validation: {required: true, maxLength: 256},
+            // crossFieldChecks: [{
+            //     name: 'usernameOrEmail',
+            //     otherFieldName: 'email',
+            //     validate: (thisField, otherField) => !!thisField || !!otherField,
+            //     message: 'TEXT:user:username:0',
+            //     text: {NL: 'gebruikersnaam of email is nodig', EN: 'username or email required'},
+            // }],
         },
-        // password: {
-        //     label: 'password', type: fieldTypes.str, validation: {
-        //         required: true, maxLength: 256,
-        //     }
-        // },
-        // enabled: {
-        //     label: 'enabled', type: fieldTypes.bool,
-        // },
-        // apikey: {
-        //     label: 'apikey', type: fieldTypes.str, validation: {maxLength: 256},
-        // },
-        // email: {
-        //     label: 'email', type: fieldTypes.str, subtype: subtypes.email, validation: {maxLength: 254},
-        // },
+        email: {
+            label: 'email', type: fieldTypes.str, subtype: subtypes.email,
+            validation: {required: true, maxLength: 254},
+            // crossFieldChecks: [{
+            //     name: 'emailOrUsername',
+            //     otherFieldName: 'username',
+            //     validate: (thisField, otherField) => !!thisField || !!otherField,
+            //     message: 'TEXT:user:email:0',
+            //     text: {NL: 'gebruikersnaam of email is nodig', EN: 'username or email required'},
+            // }],
+        },
         roles: {
-            type: fieldTypes.arr, target: 'role', label: 'rollen',
+            type: fieldTypes.arr, target: 'role', label: {NL: 'rollen', EN: 'roles'},
             hasNull: false, isMulti: true, validation: {required: true,}
+        },
+    },
+    restrictedFields: {
+        password: {
+            label: {NL: 'wachtwoord', EN: 'password'}, type: fieldTypes.str, validation: {
+                required: true, maxLength: 256,
+            }
+        },
+        enabled: {
+            label: {NL: 'ingeschakeld', EN: 'enabled'}, type: fieldTypes.bool,
+        },
+        apikey: {
+            label: 'apikey', type: fieldTypes.str, validation: {maxLength: 256},
         },
     },
     summary: ['id', 'username'],
@@ -122,7 +147,7 @@ entityTypes.user = {
 };
 
 entityTypes.role = {
-    label: 'Rol',
+    label: {NL: 'Rol', EN: 'Role'},
     endpoint: '/roles',
     id: ['id'],
     // hasBulkLoading: true,
@@ -131,7 +156,7 @@ entityTypes.role = {
             type: fieldTypes.num, label: 'id'
         },
         name: {
-            type: fieldTypes.str, label: 'rol', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'rol', EN: 'role'}, validation: {required: true, maxLength: 100},
         },
     },
     summary: ['id', 'name'],
@@ -143,7 +168,7 @@ entityTypes.role = {
 };
 
 entityTypes.country = {
-    label: 'Land',
+    label: {NL: 'Land', EN: 'Country'},
     endpoint: '/countries',
     id: ['id'],
     // hasBulkLoading: true,
@@ -152,19 +177,19 @@ entityTypes.country = {
             type: fieldTypes.num, label: 'id'
         },
         shortNameNL: {
-            type: fieldTypes.str, label: 'naam (NL)', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},
         },
         shortNameEN: {
-            type: fieldTypes.str, label: 'naam (EN)', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'naam (EN)', EN: 'name (EN)'}, validation: {maxLength: 100},
         },
         alpha2Code: {
-            type: fieldTypes.str, label: 'alfa 2 code', validation: {maxLength: 2},
+            type: fieldTypes.str, label: {NL: 'alfa 2 code', EN: 'alpha 2 code'}, validation: {maxLength: 2},
         },
         alpha3Code: {
-            type: fieldTypes.str, label: 'alfa 3 code', validation: {maxLength: 3},
+            type: fieldTypes.str, label: {NL: 'alfa 3 code', EN: 'alpha 3 code'}, validation: {maxLength: 3},
         },
         numericCode: {
-            type: fieldTypes.str, label: 'numerieke code', validation: {maxLength: 3},
+            type: fieldTypes.str, label: {NL: 'numerieke code', EN: 'numeric code'}, validation: {maxLength: 3},
         },
     },
     summary: ['id', 'shortNameNL', 'alpha2Code', 'alpha3Code'],
@@ -182,7 +207,7 @@ entityTypes.country = {
 };
 
 entityTypes.subdivision = {
-    label: 'Deelsector',
+    label: {NL: 'Deelsector', EN: 'Subdivision'},
     endpoint: '/subdivisions',
     id: ['id'],
     // hasBulkLoading: true,
@@ -191,14 +216,14 @@ entityTypes.subdivision = {
             type: fieldTypes.num, label: 'id',
         },
         alpha2Code: {
-            type: fieldTypes.str, label: 'Alfa 2 code', validation: {maxLength: 2},
+            type: fieldTypes.str, label: {NL: 'Alfa 2 code', EN: 'Alpha 2 code'}, validation: {maxLength: 2},
             details: 'country',
         },
         subdivisionCode: {
             type: fieldTypes.str, label: 'Code', validation: {maxLength: 3},
         },
         name: {
-            type: fieldTypes.str, label: 'Naam', validation: {maxLength: 150},
+            type: fieldTypes.str, label: {NL: 'Naam', EN: 'name'}, validation: {maxLength: 150},
         },
         type: {
             type: fieldTypes.str, label: 'Type', validation: {maxLength: 100},
@@ -217,7 +242,7 @@ entityTypes.subdivision = {
 };
 
 entityTypes.unLocode = {
-    label: 'Locatiecode',
+    label: {NL: 'Locatiecode', EN: 'Location code'},
     endpoint: '/un_locode',
     id: ['id'],
     // hasBulkLoading: true,
@@ -226,41 +251,51 @@ entityTypes.unLocode = {
             type: fieldTypes.num, label: 'id',
         },
         change: {
-            type: fieldTypes.str, label: 'change', validation: {maxLength: 3},
+            type: fieldTypes.str, label: {NL: 'wijziging', EN: 'change'}, validation: {maxLength: 3},
         },
         alpha2Code: {
-            type: fieldTypes.str, label: 'alfa 2 code', validation: {maxLength: 2}, details: 'country',
+            type: fieldTypes.str,
+            label: {NL: 'alfa 2 code', EN: 'alpha 2 code'},
+            validation: {maxLength: 2},
+            details: 'country',
         },
         locationCode: {
-            type: fieldTypes.str, label: 'locatie code', validation: {maxLength: 3},
+            type: fieldTypes.str, label: {NL: 'locatie code', EN: 'location code'}, validation: {maxLength: 3},
         },
         nameDiacritics: {
-            type: fieldTypes.str, label: 'naam (met accenttekens)', validation: {maxLength: 80},
+            type: fieldTypes.str,
+            label: {NL: 'naam (met accenttekens)', EN: 'name (with diacritics)'},
+            validation: {maxLength: 80},
         },
         nameWoDiacritics: {
-            type: fieldTypes.str, label: 'naam (zonder accenttekens)', validation: {maxLength: 80},
+            type: fieldTypes.str,
+            label: {NL: 'naam (zonder accenttekens)', EN: 'name (no diacritics)'},
+            validation: {maxLength: 80},
         },
         subdivisionCode: {
-            type: fieldTypes.str, label: 'deelsectorcode', validation: {maxLength: 3},
+            type: fieldTypes.str, label: {NL: 'deelsectorcode', EN: 'subdivision code'}, validation: {maxLength: 3},
             details: 'subdivision', requires: ['alpha2Code'],
         },
         functionClassifier: {
-            type: fieldTypes.str, label: 'functie classificatie', validation: {maxLength: 8}, details: 'transform',
+            type: fieldTypes.str,
+            label: {NL: 'functie classificatie', EN: 'function classification'},
+            validation: {maxLength: 8},
+            details: 'transform',
         },
         status: {
             type: fieldTypes.str, label: 'status', validation: {maxLength: 2}, details: 'transform',
         },
         updateYear: {
-            type: fieldTypes.str, label: 'Jaartal update', validation: {maxLength: 4},
+            type: fieldTypes.str, label: {NL: 'Jaartal update', EN: 'Update year'}, validation: {maxLength: 4},
         },
         iata: {
             type: fieldTypes.str, label: 'IATA', validation: {maxLength: 10},
         },
         coordinates: {
-            type: fieldTypes.str, label: 'coördinaten', validation: {maxLength: 15},
+            type: fieldTypes.str, label: {NL: 'coördinaten', EN: 'coordinates'}, validation: {maxLength: 15},
         },
         remarks: {
-            type: fieldTypes.str, label: 'opmerkingen', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'opmerkingen', EN: 'remarks'}, validation: {maxLength: 100},
         },
     },
     summary: ['id', 'alpha2Code', 'locationCode', 'nameWoDiacritics'],
@@ -272,7 +307,7 @@ entityTypes.unLocode = {
 };
 
 entityTypes.address = {
-    label: 'Adres',
+    label: {NL: 'Adres', EN: 'Address'},
     endpoint: '/addresses',
     id: ['id'],
     // hasBulkLoading: true,
@@ -281,20 +316,20 @@ entityTypes.address = {
             type: fieldTypes.num, label: 'id',
         },
         address1: {
-            type: fieldTypes.str, label: 'adres1', validation: {maxLength: 200},
+            type: fieldTypes.str, label: {NL: 'adres1', EN: 'address1'}, validation: {maxLength: 200},
         },
         address2: {
-            type: fieldTypes.str, label: 'adres2', validation: {maxLength: 200},
+            type: fieldTypes.str, label: {NL: 'adres2', EN: 'address2'}, validation: {maxLength: 200},
         },
         city: {
-            type: fieldTypes.str, label: 'plaats', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'plaats', EN: 'city'}, validation: {maxLength: 100},
         },
         postalCode: {
-            type: fieldTypes.str, label: 'postcode', validation: {maxLength: 20},
+            type: fieldTypes.str, label: {NL: 'postcode', EN: 'postal code'}, validation: {maxLength: 20},
         },
         country: {
             type: fieldTypes.obj, hasNull: true, isMulti: false,
-            //     label: 'land', target: 'country',
+            //     label: {NL: 'land', EN: 'land'}, target: 'country',
         },
     },
     methods: 'CRUD',
@@ -307,7 +342,7 @@ entityTypes.address = {
 
 
 entityTypes.vesselType = {
-    label: 'Scheepstype',
+    label: {NL: 'Scheepstype', EN: 'Ship type'},
     endpoint: '/vesseltypes',
     id: ['id'],
     // hasBulkLoading: true,
@@ -316,50 +351,89 @@ entityTypes.vesselType = {
             type: fieldTypes.num, label: 'id', readOnly: true,
         },
         nameNL: {
-            type: fieldTypes.str, label: 'naam (NL)', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},
         },
         nameEN: {
-            type: fieldTypes.str, label: 'naam (EN)', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'naam (EN)', EN: 'name (EN)'}, validation: {maxLength: 100},
         },
         descNL: {
-            type: fieldTypes.str, label: 'beschrijving (NL)', validation: {maxLength: 1000},
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving (NL)', EN: 'description (NL)'},
+            validation: {maxLength: 1000},
         },
         descEN: {
-            type: fieldTypes.str, label: 'beschrijving (EN)', validation: {maxLength: 1000},
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving (EN)', EN: 'description (EN)'},
+            validation: {maxLength: 1000},
         },
         tonnageMin: {
-            type: fieldTypes.num, label: 'tonnage (ondergrens)', validation: {
-                min: {value: 0, message: 'Negatief tonnage niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'tonnage (ondergrens)', EN: 'tonnage (lower boundary)'},
+            validation: {
+                // required: true,
+                min: {
+                    value: 0,
+                    message: {NL: 'negatief tonnage niet toegestaan', EN: 'negative tonnage forbidden'}
+                },
             },
+            crossFieldChecks: [{
+                name: 'min>max',
+                otherFieldName: 'tonnageMax',
+                validate: (thisField, otherField) => +thisField <= +otherField,
+                message: 'TEXT:vesselType:tonnageMin:0',
+                text: {NL: 'minimum is groter dan maximum', EN: 'minimum is larger than maximum'},
+            }],
             quantity: quantityNames.displacement,
         },
         tonnageMax: {
-            type: fieldTypes.num, label: 'tonnage (bovengrens)', validation: {
-                min: {value: 0, message: 'Negatief tonnage niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'tonnage (bovengrens)', EN: 'tonnage (upper boundary)'},
+            validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatief tonnage niet toegestaan', EN: 'negative tonnage forbidden'}
+                },
             },
+            crossFieldChecks: [{
+                name: 'max<min',
+                otherFieldName: 'tonnageMin',
+                validate: (thisField, otherField) => +thisField >= +otherField,
+                message: 'TEXT:vesselType:tonnageMax:0',
+                text: {NL: 'maximum is kleiner dan minimum', EN: 'maximum is smaller than minimum'},
+            }],
             quantity: quantityNames.displacement,
         },
         lengthOA: {
-            type: fieldTypes.num, label: 'lengte o.a.', validation: {
-                min: {value: 0, message: 'Negatieve lengte niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'lengte o.a.', EN: 'length o.a.'}, validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatieve lengte niet toegestaan', EN: 'negative length forbidden'}
+                },
             },
             quantity: quantityNames.length,
         },
         beam: {
-            type: fieldTypes.num, label: 'breedte', validation: {
-                min: {value: 0, message: 'Negatieve breedte niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'breedte', EN: 'beam'}, validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatieve breedte niet toegestaan', EN: 'negative beam forbidden'}
+                },
             },
             quantity: quantityNames.length,
         },
         height: {
-            type: fieldTypes.num, label: 'hoogte', validation: {
-                min: {value: 0, message: 'Negatieve hoogte niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'hoogte', EN: 'height'}, validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatieve hoogte niet toegestaan', EN: 'negative height forbidden'}
+                },
             },
             quantity: quantityNames.length,
         },
         draft: {
-            type: fieldTypes.num, label: 'diepgang', validation: {
-                min: {value: 0, message: 'Negatieve diepgang niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'diepgang', EN: 'draft'}, validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatieve diepgang niet toegestaan', EN: 'negative draft forbidden'}
+                },
             },
             quantity: quantityNames.length,
         },
@@ -367,7 +441,11 @@ entityTypes.vesselType = {
             type: fieldTypes.obj, label: 'supertype', target: 'vesselType',
             hasNull: false, isMulti: false,
             validation: {
-                required: true, min: {value: 1, message: 'Supertype verplicht.'},
+                required: true,
+                min: {
+                    value: 1,
+                    message: {NL: 'supertype verplicht', EN: 'supertype required'}
+                },
             },
         },
     },
@@ -380,80 +458,20 @@ entityTypes.vesselType = {
 };
 
 
-// entityTypes.testType = {
-//     label: 'Testtype',
-//     endpoint: '/testtypes',
-//     id: ['id'],
-//     // hasBulkLoading: true,
-//     fields: {
-//         id: {
-//             type: fieldTypes.num, label: 'id', readOnly: true,
-//         },
-//         nameNL: {
-//             type: fieldTypes.str, label: 'naam (NL)', validation: {maxLength: 100},
-//         },
-//         nameEN: {
-//             type: fieldTypes.str, label: 'naam (EN)', validation: {maxLength: 100},
-//         },
-//         descNL: {
-//             type: fieldTypes.str, label: 'beschrijving (NL)', validation: {maxLength: 1000},
-//         },
-//         descEN: {
-//             type: fieldTypes.str, label: 'beschrijving (EN)', validation: {maxLength: 1000},
-//         },
-//         // lengthOA: {
-//         //     type: fieldTypes.num, label: 'lengte o.a.', validation: {
-//         //         min: {value: 0, message: 'Negatieve lengte niet toegestaan.'},
-//         //     },
-//         //     quantity: quantityNames.length,
-//         // },
-//         // beam: {
-//         //     type: fieldTypes.num, label: 'breedte', validation: {
-//         //         min: {value: 0, message: 'Negatieve breedte niet toegestaan.'},
-//         //     },
-//         //     quantity: quantityNames.length,
-//         // },
-//         // height: {
-//         //     type: fieldTypes.num, label: 'hoogte', validation: {
-//         //         min: {value: 0, message: 'Negatieve hoogte niet toegestaan.'},
-//         //     },
-//         //     quantity: quantityNames.length,
-//         // },
-//         draft: {
-//             type: fieldTypes.num, label: 'diepgang', validation: {
-//                 min: {value: 0, message: 'Negatieve diepgang niet toegestaan.'},
-//             },
-//             quantity: quantityNames.length,
-//         },
-//         superType: {
-//             type: fieldTypes.obj, label: 'supertype', target: 'testType',
-//             hasNull: false, isMulti: false,
-//             validation: {
-//                 required: true, min: {value: 1, message: 'Supertype verplicht.'},
-//             },
-//         },
-//     },
-//     methods: 'CRUD',
-//     summary: ['id', 'nameNL', 'nameEN'],
-//     findItem: {
-//         endpoint: '/find',
-//         params: {},
-//     },
-// };
-
 entityTypes.hull = {
-    label: 'Romp',
+    label: {NL: 'Romp', EN: 'Hull'},
     endpoint: '/hulls',
     id: ['id'],
     // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         hullNumber: {
-            type: fieldTypes.str, label: 'rompnummer', validation: {maxLength: 20},
+            // type: fieldTypes.str, label: 'rompnummer', validation: {maxLength: 20},
+            type: fieldTypes.str, label: {NL: 'rompnummer', EN: 'hull number'}, validation: {maxLength: 20},
         },
-        constructionDate: {type: fieldTypes.date, label: 'bouwdatum',},
+        constructionDate: {type: fieldTypes.date, label: {NL: 'bouwdatum', EN: 'build date'},},
         builder: {
-            type: fieldTypes.str, label: 'scheepswerf', validation: {maxLength: 255},
+            type: fieldTypes.str, label: {NL: 'scheepswerf', EN: 'construction yard'}, validation: {maxLength: 255},
         },
     },
     methods: 'CRUD',
@@ -465,58 +483,82 @@ entityTypes.hull = {
 };
 
 entityTypes.vessel = {
-    label: 'Vaartuig',
+    label: {NL: 'Vaartuig', EN: 'Vessel'},
     endpoint: '/vessels',
     id: ['id'],
     // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         hull: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
-        name: {type: fieldTypes.str, label: 'naam', validation: {maxLength: 100},},
+        name: {type: fieldTypes.str, label: {NL: 'naam', EN: 'name'}, validation: {maxLength: 100},},
         image: {type: fieldTypes.img,},
         mmsi: {type: fieldTypes.str, label: 'mmsi', validation: {maxLength: 10},},
-        callSign: {type: fieldTypes.str, label: 'roepletters', validation: {maxLength: 10},},
+        callSign: {type: fieldTypes.str, label: {NL: 'roepletters', EN: 'call sign'}, validation: {maxLength: 10},},
         vesselType: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
         homePort: {
-            type: fieldTypes.obj, label: 'thuishaven', target: 'unLocode', hasNull: true, isMulti: false,
+            type: fieldTypes.obj,
+            label: {NL: 'thuishaven', EN: 'home port'},
+            target: 'unLocode',
+            hasNull: true,
+            isMulti: false,
         },
         lengthOA: {
-            type: fieldTypes.num, label: "lengte o.a.", validation: {
-                min: {value: 0, message: 'Negatieve lengte niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'lengte o.a.', EN: 'length o.a.'}, validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatieve lengte niet toegestaan', EN: 'negative length forbidden'}
+                },
             },
             quantity: quantityNames.length,
         },
         beam: {
-            type: fieldTypes.num, label: "breedte", validation: {
-                min: {value: 0, message: 'Negatieve breedte niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'breedte', EN: 'beam'}, validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatieve breedte niet toegestaan', EN: 'negative beam forbidden'}
+                },
+                crossFieldChecks: [{
+                    name: 'shape',
+                    otherFieldName: 'lengthOA',
+                    validate: (thisField, otherField) => +thisField < +otherField,
+                    message: 'meer breedte dan lengte is waarschijnlijk fout',
+                }],
             },
             quantity: quantityNames.length,
         },
         draft: {
-            type: fieldTypes.num, label: "diepgang", validation: {
-                min: {value: 0, message: 'Negatieve diepgang niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'diepgang', EN: 'draft'}, validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatieve diepgang niet toegestaan', EN: 'negative draft forbidden'}
+                },
             },
             quantity: quantityNames.length,
         },
         displacement: {
-            type: fieldTypes.num, label: "waterverplaatsing", validation: {
-                min: {value: 0, message: 'Negatieve waterverplaatsing niet toegestaan.'},
+            type: fieldTypes.num, label: {NL: 'waterverplaatsing', EN: 'displacement'}, validation: {
+                min: {
+                    value: 0,
+                    message: {NL: 'negatieve waterverplaatsing niet toegestaan', EN: 'negative displacement forbidden'}
+                },
             },
             quantity: quantityNames.displacement,
         },
-        startDate: {type: fieldTypes.date, label: "startdatum", validation: {},},
+        startDate: {type: fieldTypes.date, label: {NL: 'startdatum', EN: 'start date'}, validation: {},},
         endDate: {
-            type: fieldTypes.date, label: "einddatum", validation: {},
-            // crossField: {
-            //     field: "startDate",
-            //     validate: (thisField, thatField) => +thisField > +thatField,
-            //     message: 'De einddatum mag niet voor de startdatum liggen',
-            // },
+            type: fieldTypes.date, label: {NL: 'einddatum', EN: 'end date'}, validation: {},
+            crossFieldChecks: [{
+                name: 'sequence',
+                otherFieldName: 'startDate',
+                validate: (thisField, otherField) => +thisField > +otherField,
+                message: 'De einddatum mag niet voor de startdatum liggen',
+            }],
         },
         // https://www.carlrippon.com/react-hook-form-cross-field-validation/
-        // validate: () => crossField.validate(getValues(endDateFieldName), getValues(startDateFieldName))
+        // validate: value => typeField.crossField.validate(value, getValues(startDateFieldName))
         description: {
-            type: fieldTypes.str, label: 'beschrijving', validation: {maxLength: 5000},
+            type: fieldTypes.str, label: {NL: 'beschrijving', EN: 'description'},
+            validation: {maxLength: 5000},
         },
 
     },
@@ -529,15 +571,23 @@ entityTypes.vessel = {
 };
 
 entityTypes.organisation = {
-    label: 'Organisatie',
+    label: {NL: 'Organisatie', EN: 'Organisation'},
     endpoint: '/organisations',
     id: ['id'],
     // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
-        shortName: {type: fieldTypes.str, label: 'naam', validation: {maxLength: 50},},
-        longName: {type: fieldTypes.str, label: 'volledige naam', validation: {maxLength: 200},},
-        description: {type: fieldTypes.str, label: 'beschrijving', validation: {maxLength: 1000},},
+        shortName: {type: fieldTypes.str, label: {NL: 'naam', EN: 'name'}, validation: {maxLength: 50},},
+        longName: {
+            type: fieldTypes.str,
+            label: {NL: 'volledige naam', EN: 'long name'},
+            validation: {maxLength: 200},
+        },
+        description: {
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving', EN: 'description'},
+            validation: {maxLength: 1000},
+        },
         url: {type: fieldTypes.str, subtype: subtypes.url, label: 'url', validation: {maxLength: 2000},},
         email: {type: fieldTypes.str, subtype: subtypes.email, label: 'email', validation: {maxLength: 320},},
         address: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
@@ -551,19 +601,19 @@ entityTypes.organisation = {
 };
 
 entityTypes.relation = {
-    label: 'Relatie',
+    label: {NL: 'Relatie', EN: 'Relation'},
     endpoint: '/relations',
     id: ['id'],
     // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
         organisation1: {
-            type: fieldTypes.obj, label: 'organisatie 1', target: 'organisation',
+            type: fieldTypes.obj, label: {NL: 'organisatie 1', EN: 'organisation 1'}, target: 'organisation',
             hasNull: false, isMulti: false, validation: {required: true,}
         },
         relationType: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
         organisation2: {
-            type: fieldTypes.obj, label: 'organisatie 2', target: 'organisation',
+            type: fieldTypes.obj, label: {NL: 'organisatie 2', EN: 'organisation 2'}, target: 'organisation',
             hasNull: false, isMulti: false, validation: {required: true,}
         },
     },
@@ -578,16 +628,24 @@ entityTypes.relation = {
 };
 
 entityTypes.relationType = {
-    label: 'relatietype',
+    label: {NL: 'relatietype', EN: 'relation type'},
     endpoint: '/relationtypes',
     id: ['id'],
     // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
-        nameNL: {type: fieldTypes.str, label: 'naam (nl)', validation: {maxLength: 100},},
-        nameEN: {type: fieldTypes.str, label: 'naam (en)', validation: {maxLength: 100},},
-        descNL: {type: fieldTypes.str, label: 'beschrijving (nl)', validation: {maxLength: 1000},},
-        descEN: {type: fieldTypes.str, label: 'beschrijving (en)', validation: {maxLength: 1000},},
+        nameNL: {type: fieldTypes.str, label: {NL: 'naam (nl)', EN: 'name (NL)'}, validation: {maxLength: 100},},
+        nameEN: {type: fieldTypes.str, label: {NL: 'naam (en)', EN: 'name (EN)'}, validation: {maxLength: 100},},
+        descNL: {
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving (nl)', EN: 'description (NL)'},
+            validation: {maxLength: 1000},
+        },
+        descEN: {
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving (en)', EN: 'description (en)'},
+            validation: {maxLength: 1000},
+        },
     },
     summary: ['id', 'nameNL', 'nameEN'],
     methods: 'CRUD',
@@ -598,7 +656,7 @@ entityTypes.relationType = {
 };
 
 entityTypes.file = {
-    label: 'bestand',
+    label: {NL: 'Bestand', EN: 'File'},
     endpoint: '/files',
     uploadEndpoint: '/files/upload',
     downloadEndpoint: (id) => `/files/${id}/download`,
@@ -606,8 +664,12 @@ entityTypes.file = {
     // hasBulkLoading: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
-        fileName: {type: fieldTypes.str, label: 'bestandsnaam', validation: {maxLength: 259},},
-        fileType: {type: fieldTypes.str, label: 'bestandstype', validation: {maxLength: 20},},
+        fileName: {
+            type: fieldTypes.str,
+            label: {NL: 'bestandsnaam', EN: 'file name'},
+            validation: {maxLength: 259},
+        },
+        fileType: {type: fieldTypes.str, label: {NL: 'bestandstype', EN: 'file type'}, validation: {maxLength: 20},},
     },
     summary: ['id', 'fileName', 'fileType'],
     methods: 'CRUD',
@@ -618,15 +680,20 @@ entityTypes.file = {
 };
 
 entityTypes.image = {
-    label: 'afbeelding',
+    label: {NL: 'afbeelding', EN: 'image'},
     endpoint: '/images',
     id: ['id'],
     // hasBulkLoading: true,
     needsReload: true,
     fields: {
         id: {type: fieldTypes.num, label: 'id', readOnly: true,},
-        fullSizeId: {type: fieldTypes.file, label: 'volledig', target: 'file',},
-        thumbnailId: {type: fieldTypes.file, label: 'afbeelding', target: 'file', noEdit: true,},
+        fullSizeId: {type: fieldTypes.file, label: {NL: 'volledig', EN: 'full size'}, target: 'file',},
+        thumbnailId: {
+            type: fieldTypes.file,
+            label: {NL: 'afbeelding', EN: 'image'},
+            target: 'file',
+            noEdit: true,
+        },
     },
     summary: ['id', 'thumbnailId'],
     methods: 'CRUD',
@@ -637,7 +704,7 @@ entityTypes.image = {
 };
 
 entityTypes.propulsionType = {
-    label: 'voortstuwing',
+    label: {NL: 'voortstuwing', EN: 'propulsion'},
     endpoint: '/propulsiontypes',
     id: ['id'],
     // hasBulkLoading: true,
@@ -646,21 +713,30 @@ entityTypes.propulsionType = {
             type: fieldTypes.num, label: 'id', readOnly: true,
         },
         nameNL: {
-            type: fieldTypes.str, label: 'naam (NL)', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},
         },
         nameEN: {
-            type: fieldTypes.str, label: 'naam (EN)', validation: {maxLength: 100},
+            type: fieldTypes.str, label: {NL: 'naam (EN)', EN: 'name (EN)'}, validation: {maxLength: 100},
         },
         descNL: {
-            type: fieldTypes.str, label: 'beschrijving (NL)', validation: {maxLength: 1000},
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving (NL)', EN: 'description (NL)'},
+            validation: {maxLength: 1000},
         },
         descEN: {
-            type: fieldTypes.str, label: 'beschrijving (EN)', validation: {maxLength: 1000},
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving (EN)', EN: 'description (EN)'},
+            validation: {maxLength: 1000},
         },
         superType: {
             type: fieldTypes.obj, label: 'supertype', target: 'propulsionType',
-            hasNull: false, isMulti: false, validation: {
-                required: true, min: {value: 1, message: 'Supertype verplicht.'},
+            hasNull: false, isMulti: false,
+            validation: {
+                required: true,
+                min: {
+                    value: 1,
+                    message: {NL: 'supertype verplicht', EN: 'supertype required'}
+                },
             },
         },
     },
@@ -673,16 +749,20 @@ entityTypes.propulsionType = {
 };
 
 export const entityNameList = Object.keys(entityTypes);
+
 // logv(null, {entityNameList});
 
 export function getFieldFromPath(entityTypes, entityType, fieldPath) { // ✔✔
-    // const logPath = pathMkr(logRoot, getFieldFromPath);
-    // logv(logPath, {entityType, fieldPath});
+    const logPath = pathMkr(logRoot, getFieldFromPath);
+    const doLog = logCondition(getFieldFromPath, entityType.name, fieldPath)
     // depends on presence of internal reference
     const parts = fieldPath.split('.');
     const directField = entityType.fields[parts[0]];
+    if (doLog) logv(logPath, {entityType, fieldPath, parts, directField});
     if (referringFieldTypes.includes(directField.type)) {
-        return entityTypes[directField.target].fields[parts[1]];
+        const targetField = entityTypes[directField.target].fields[parts[1]]
+        if (doLog) logv(null, {targetField});
+        return targetField;
     }
     return directField;
 }
@@ -714,7 +794,15 @@ function setInternalReference(entityTypes, entityName, fieldName) { // ✔✔
     if (!field.target) field.target = fieldName;
     if (field.target in entityTypes) {
         if (!field.label) {
-            field.label = entityTypes[field.target].label.toLowerCase();
+            const targetLabel = entityTypes[field.target].label;
+            if (typeof targetLabel === 'string')
+                field.label = targetLabel.toLowerCase();
+            else {
+                field.label = {};
+                for (const targetLabelKey in targetLabel) {
+                    field.label[targetLabelKey] = targetLabel[targetLabelKey].toLowerCase();
+                }
+            }
         }
     }
     addToTargets(entityType, {fieldName, targetName: field.target});
@@ -741,7 +829,7 @@ function wrapAround(arr, lo, hi, count = 1) {
 
 function reorderEntityNames(ownerName, targetName) {
     // const logPath = pathMkr(logRoot, reorderEntityNames, '↓↓')
-    // const doLog = logConditionally(ownerName, targetName);
+    // const doLog = logCondition('entityTypes', ownerName, targetName);
     const ownerPos = entityNameList.indexOf(ownerName);
     const targetPos = entityNameList.indexOf(targetName);
     // if (doLog) logv(logPath, {ownerName, ownerPos, targetName, targetPos});
@@ -758,6 +846,11 @@ function expandEveryFieldsValidations(entityTypes, entityName) { // ✔✔
         // if (field.type === types.str || field.type === types.num)
         expandFieldValidation(field); // ✔✔
     }
+    if (entityTypes[entityName].restrictedFields)
+        for (const field of Object.values(entityTypes[entityName].restrictedFields)) {
+            // if (field.type === types.str || field.type === types.num)
+            expandFieldValidation(field); // ✔✔
+        }
 }
 
 function expandFieldValidation(field) { // ✔✔
@@ -773,11 +866,23 @@ function expandValidation([criterionKey, criterionValue]) { // ✔✔
 }
 
 const expansions = { // ✔✔
-    required: (value) => ({value, message: 'verplicht veld'}),
-    maxLength: (value) => ({value, message: `maximaal ${value} karakters`}),
-    minLength: (value) => ({value, message: `minimaal ${value} karakters`}),
-    max: (value) => ({value, message: `niet groter dan ${value}`}),
-    min: (value) => ({value, message: `niet kleiner dan ${value}`}),
+    required: (value) => ({value, message: {NL: 'verplicht veld', EN: 'required field'}}),
+    maxLength: (value) => ({
+        value,
+        message: {NL: `maximaal ${value} karakters`, EN: `${value} characters maximum`}
+    }),
+    minLength: (value) => ({
+        value,
+        message: {NL: `minimaal ${value} karakters`, EN: `${value} characters minimum`}
+    }),
+    max: (value) => ({
+        value,
+        message: {NL: `niet groter dan ${value}`, EN: `not larger than ${value}`}
+    }),
+    min: (value) => ({
+        value,
+        message: {NL: `niet kleiner dan ${value}`, EN: `not smaller than ${value}`}
+    }),
 };
 
 export function transformEntries(obj, callback) { // ✔✔

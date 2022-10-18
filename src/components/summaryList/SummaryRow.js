@@ -1,9 +1,18 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { optionalIdValue, summaryStyle } from './index';
-import { errv } from '../../dev/log';
+import { errv, logCondition, logv } from '../../dev/log';
 import { pathMkr } from '../../dev/log';
 import { rootMkr } from '../../dev/log';
-import { cx, endpoints, entityTypes, getFieldFromPath, hints, fieldTypes, language } from '../../helpers';
+import {
+    cx,
+    endpoints,
+    entityTypes,
+    getFieldFromPath,
+    hints,
+    fieldTypes,
+    languageSelector,
+    text
+} from '../../helpers';
 import { ChoiceContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
 
@@ -35,6 +44,7 @@ export function SummaryRow({
                            }) {
     const entityName = entityType.name;
     const logRoot = rootMkr(SummaryRow, entityName, item?.id);
+    const doLog = logCondition(SummaryRow, entityName);
     const {hasFocus, isSelected, hasVisualPriority, small, readOnly} = UICues;
     const row = useRef(null);
 
@@ -49,7 +59,7 @@ export function SummaryRow({
     const {makeChoice} = useContext(ChoiceContext);
     elKey += `/SRow`;
 
-    const TXT = messages[language()];
+    const TXT = messages[languageSelector()];
 
     useEffect(function scrollAndFocusIfNecessary() {
         if (hasVisualPriority && isRowVisible)
@@ -122,10 +132,13 @@ export function SummaryRow({
     }
 
     function renderProperty(object, fieldPath) {
-        // const logPath = pathMkr(logRoot, renderProperty);
-        // const doLog = fieldPath.includes('image');
+        const logPath = pathMkr(logRoot, renderProperty);
+        const doLog = fieldPath.includes('image');
         const field = getProperty(object, fieldPath);
-        // if (doLog) logv(logPath, {object, fieldPath, field});
+        if (!field && doLog) {
+            logv(logPath, {object, fieldPath, field});
+            return null;
+        }
         let fieldType = getFieldFromPath(entityTypes, entityType, fieldPath).type;
         // if (doLog) logv(null, {fieldType});
         if (fieldType === fieldTypes.img || fieldType === fieldTypes.file) {
@@ -160,7 +173,7 @@ export function SummaryRow({
             {(small && item.id && item.id !== optionalIdValue) ? (
                 <td>
                     <span onClick={makeChoice({component: EntityN(entityType, item.id)})}
-                          title={hints(`${TXT.goto} ${entityType.label}(${item.id})`)}
+                          title={hints(`${TXT.goto} ${text(entityType.label)}(${item.id})`)}
                     >
                         ➡
                     </span>

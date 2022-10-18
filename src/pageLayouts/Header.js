@@ -5,7 +5,7 @@ import headerStyles from './header.module.css'
 import { pageLayout } from './';
 import { AuthContext } from '../contexts/AuthContext';
 import { withCondition } from '../enhancers/withCondition';
-import { cx, hints } from '../helpers';
+import { cx, hints, text } from '../helpers';
 
 
 const CondLi = withCondition('li');
@@ -21,10 +21,10 @@ export function Header({className}) {
                 <ul className={headerStyles.ul}>
                     {pages.displayOrder.map(page =>
                         <CondLi condition={page.isVisible(user)}
-                                key={page.name}
+                                key={text(page.label)}
                         >
                             <NavLink to={page.path} exact={page.exact} activeClassName={headerStyles.selected} title={hints(page.hints)}>
-                                {page.name}
+                                {text(page.label)}
                             </NavLink>
                         </CondLi>
                     )}

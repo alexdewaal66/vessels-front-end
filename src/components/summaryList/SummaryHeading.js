@@ -1,7 +1,8 @@
 import React from 'react';
 import { summaryStyle } from './index';
 import { SummaryFilter } from './SummaryFilter';
-import { entityTypes, getFieldFromPath, hints, language } from '../../helpers';
+import { entityTypes, getFieldFromPath, hints, text, languageSelector } from '../../helpers';
+import { logCondition, logv, rootMkr } from '../../dev/log';
 
 const messages = {
     NL: {
@@ -20,10 +21,11 @@ export function SummaryHeading({
                                    entityType, elKey,
                                    sorting, mergeConstraints
                                }) {
-    // const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
+    const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
+    const doLog = logCondition(SummaryHeading, entityType.name);
     // logv(logRoot, {elKey});
 
-    const TXT = messages[language()];
+    const TXT = messages[languageSelector()];
 
 
     const up = (fieldPath, fieldType) => () => {
@@ -45,23 +47,32 @@ export function SummaryHeading({
                 {entityType.summary.map(fieldPath => {
                     const field =  getFieldFromPath(entityTypes, entityType, fieldPath);
                         return (<th key={elKey + fieldPath + '_h'}>
-                            {/*{entityType.fields[fieldPath].label || fieldPath}*/}
-                            {field.label || fieldPath}
+                            {text(field.label, doLog, logRoot) || fieldPath}
                             <span>
-                            <button type={'button'}
-                                    onClick={up(fieldPath, field.type)}
-                                    className={summaryStyle.sort}
-                                    title={hints('▲ = ' + TXT.sortUp)}
-                            >
-                                {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
-                            </button>
-                            <button type={'button'}
-                                    onClick={down(fieldPath, field.type)}
-                                    className={summaryStyle.sort}
-                                    title={hints('▼ = ' + TXT.sortDn)}
-                            >
-                                {sorting.isOrderUp(fieldPath) ? '▼' : '▽'}
-                            </button>
+                                {!!field ? (
+                                    <>
+                                        <button type={'button'}
+                                                onClick={up(fieldPath, field.type)}
+                                                className={summaryStyle.sort}
+                                                title={hints('▲ = ' + TXT.sortUp)}
+                                        >
+                                            {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
+                                        </button>
+                                        <button type={'button'}
+                                                onClick={down(fieldPath, field.type)}
+                                                className={summaryStyle.sort}
+                                                title={hints('▼ = ' + TXT.sortDn)}
+                                        >
+                                            {sorting.isOrderUp(fieldPath) ? '▼' : '▽'}
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        entityType.name:{entityType.name}
+                                        <br/>
+                                        fieldPath:{fieldPath}
+                                    </>
+                                )}
                         </span>
                         </th>);
                     }

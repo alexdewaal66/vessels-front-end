@@ -1,11 +1,11 @@
 import { useReducer, useState } from 'react';
 import { useStaticObject } from '../helpers/useStaticObject';
 import { useMountEffect } from '../helpers/customHooks';
-// import { logConditionally, logv, rootMkr } from '../dev/log';
+// import { logCondition, logv, rootMkr } from '../dev/log';
 
 export function useDict2(dictName, initialState = {}) {
     // const logRoot = rootMkr(useDict2);
-    // const doLog = logConditionally(dictName);
+    // const doLog = logCondition(useDict2, dictName);
 
     const container = useStaticObject(initialState);
 

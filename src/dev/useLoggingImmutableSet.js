@@ -1,10 +1,10 @@
 import { useImmutableSet } from '../helpers';
-import { logConditionally, logv } from './log';
+import { logCondition, logv } from './log';
 
 export function useLoggingImmutableSet(initialState, setName, logRoot, entityName) {
     const immutableSet = useImmutableSet(initialState);
     const logPath = `${logRoot} » ImmutableSet: ${setName}`;
-    const doLog = logConditionally(entityName);
+    const doLog = logCondition(useLoggingImmutableSet, entityName);
 
     const handler = {
         get(target, propName) {

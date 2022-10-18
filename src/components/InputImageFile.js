@@ -1,9 +1,10 @@
 import React, { Fragment, useContext, useState } from 'react';
 import { logv, pathMkr, rootMkr } from '../dev/log';
 // import { Stringify } from '../dev/Stringify';
-import { endpoints, entityTypes, language } from '../helpers';
+import { endpoints, entityTypes, languageSelector } from '../helpers';
 import { StorageContext } from '../contexts';
 import {formStyles} from '../formLayouts';
+import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
 
 const messages = {
     NL: {
@@ -19,10 +20,12 @@ export function InputImageFile({
                                    defaultValue, entityForm, elKey
                                }) {
     const logRoot = rootMkr(InputImageFile, entityType.name, '↓↓');
-    // logv(logRoot, {field, defaultValue});
-    const field = entityType.fields[fieldName];
+    // logv(logRoot, {typeField, defaultValue});
+    const typeField = entityType.fields[fieldName];
 
     const {newItem, loadItem} = useContext(StorageContext);
+
+    const {register, setValue, getValues} = entityForm;
 
     const [selectedFiles, setSelectedFiles] = useState({});
     const [imageId, setImageId] = useState(defaultValue.id);
@@ -32,13 +35,14 @@ export function InputImageFile({
             ? defaultValue.fullSizeId
             : defaultValue
     );
-    const hiddenFieldName = 'hidden_' + fieldName + '_' + field.target + '_id';
-    entityForm.setValue(hiddenFieldName, imageId);
+    // const hiddenFieldName = 'hidden_' + fieldName + '_' + typeField.target + '_id';
+    const hiddenFieldName = fieldName;
+    setValue(hiddenFieldName, imageId);
 
     const isFileSelected = '0' in selectedFiles;
     const buttonStyle = isFileSelected ? formStyles.enabled : formStyles.disabled;
 
-    const TXT = messages[language()];
+    const TXT = messages[languageSelector()];
 
     function onFileSelect(event) {
         // const logPath = pathMkr(logRoot, onFileSelect);
@@ -83,7 +87,7 @@ export function InputImageFile({
         // logv(logPath, {imageItem});
         setImageId(imageItem.id);
         setFullSizeImageId(imageItem.fullSizeId);
-        entityForm.setValue(hiddenFieldName, imageItem.id);
+        setValue(hiddenFieldName, imageItem.id);
         // setImageFeedback(current => current + ', I:✔ id=' + imageItem.id);
         loadItem(entityTypes.image.name, imageItem.id, onReloadSuccess, onReloadFail);
     }
@@ -107,6 +111,16 @@ export function InputImageFile({
         <Fragment key={elKey + 'inputImage'}>
             {!readOnly && (
                 <div>
+                    <input
+                        type={'number'}
+                        // style={{opacity: '0', position: 'absolute'}}
+                        style={{opacity: '50%'}}
+                        name={fieldName}
+                        defaultValue={defaultValue}
+                        readOnly={readOnly}
+                        {...register(fieldName, crossFieldExpansion(typeField, getValues))}
+                        key={elKey + fieldName + 'hidden'}
+                    />
                     <input type="file" accept="image/jpeg"
                            onChange={onFileSelect}
                     />

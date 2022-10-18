@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { summaryStyle } from './index';
 import filterSymbol from '../../assets/filter.svg';
-import { createEmptySummary, entityTypes, getFieldFromPath, language } from '../../helpers';
+import { createEmptySummary, entityTypes, getFieldFromPath, languageSelector } from '../../helpers';
 import { hints } from '../../helpers';
 // import { logv, pathMkr, rootMkr } from '../../dev/log';
 
@@ -25,7 +25,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
     // const logRoot = rootMkr(SummaryFilter, entityType.name);
 
     // const messages = {NL: {}, EN: {}};
-    const TXT = messages[language()];
+    const TXT = messages[languageSelector()];
 
     const [inputFields, setInputFields] = useState(createEmptySummary(entityTypes, entityType));
     // logv(logRoot, {inputFields});
@@ -88,7 +88,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
         <tr onKeyDown={enterKeyHandler}>
             {entityType.summary.map(fieldPath =>
                 <th key={elKey + fieldPath + '_sort'}>
-                    {/*{(label(entityType.fields, fieldPath) || fieldPath).split('').reverse().join('')}*/}
+                    {/*{(text(entityType.fields, fieldPath) || fieldPath).split('').reverse().join('')}*/}
                     <input type={'text'}
                            onChange={setInputFieldsHandler(fieldPath)}
                            size={inputSize(fieldPath)}

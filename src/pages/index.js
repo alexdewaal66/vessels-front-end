@@ -5,11 +5,11 @@ import Profile from './Profile';
 import SignOut from './SignOut';
 
 const pages = {
-    home: {name: 'Home', path: '/', component: Home, exact: true, isVisible: () => true, },
-    profile: {name: 'Profiel', path: '/profile', component: Profile, isVisible: user => !!user, },
-    signUp: {name: 'Registreren', path: '/signup', component: SignUp, isVisible: user => !user, },
-    signIn: {name: 'Inloggen', path: '/signin', component: SignIn, isVisible: user => !user, hints: ['wachtwoorden beschikbaar']},
-    signOut: {name: 'Uitloggen', path: '/signout', component: SignOut, isVisible: user => !!user, },
+    home: {label: 'Home', path: '/', component: Home, exact: true, isVisible: () => true, },
+    profile: {label: {NL:'Profiel', EN:'Profile'}, path: '/profile', component: Profile, isVisible: user => !!user, },
+    signUp: {label: {NL: 'Registreren', EN: 'Register'}, path: '/signup', component: SignUp, isVisible: user => !user, },
+    signIn: {label: {NL: 'Inloggen', EN: 'Log in'}, path: '/signin', component: SignIn, isVisible: user => !user, hints: ['wachtwoorden beschikbaar']},
+    signOut: {label: {NL: 'Uitloggen', EN: 'Log out'}, path: '/signout', component: SignOut, isVisible: user => !!user, },
 };
 
 pages.displayOrder = [

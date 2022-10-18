@@ -25,9 +25,3 @@ export default function Home() {
         </Content>
     );
 }
-
-/*
-                <Stringify data={entityTypes}>entityTypes</Stringify>
-                <Stringify data={store.timestamps.state}>timestamps</Stringify>
-                <Stringify data={store.user.state}>users</Stringify>
- */

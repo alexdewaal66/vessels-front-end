@@ -1,6 +1,6 @@
 import React from 'react';
 import { FieldEl, formStyles, ButtonRow } from '../formLayouts';
-import { hints, language } from '../helpers';
+import { hints, languageSelector } from '../helpers';
 
 const messages = {
     NL: {
@@ -24,7 +24,7 @@ const messages = {
 
 export function EditButtons({requestState, setRequestMethod, readOnly, isEligible, form}) {
     // const logRoot = rootMkr(EditButtons);
-    const TXT = messages[language()];
+    const TXT = messages[languageSelector()];
 
     const {isValid} = form.formState;
     const hintValid = !isValid && TXT.invalid;

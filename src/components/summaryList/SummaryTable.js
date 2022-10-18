@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
-import { cx, language } from '../../helpers';
+import { cx, languageSelector } from '../../helpers';
 import { useFilters } from './useFilters';
 
 // const messages = {NL: {}, EN: {}};
@@ -28,7 +28,7 @@ export function SummaryTable({
     const [focusIndex, setFocusIndexState] = useState(selectedIndex);
     const [hasTableFocus, setTableFocus] = useState(hasFocus);
 
-    // const TXT = messages[language()];
+    // const TXT = messages[languageSelector()];
 
     function setFocusIndex(i) {
         if (!readOnly) {

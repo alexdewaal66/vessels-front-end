@@ -1,6 +1,6 @@
 import React, { Fragment, useMemo } from 'react';
 import { TTC, TT } from './Tooltips';
-import { entityTypes, language } from '../helpers';
+import { entityTypes, text, languageSelector } from '../helpers';
 
 // import { logv, pathMkr, rootMkr } from './log';
 
@@ -10,7 +10,7 @@ function propertyLabel(key, entityName) {
     // const logPath = pathMkr(rootMkr(ShowObject), propertyLabel);
     // logv(logPath, {entityName, key, entityTypes});
     return entityName
-        ? entityTypes[entityName].fields[key]?.label
+        ? text(entityTypes[entityName].fields[key].label)
         : key;
 }
 
@@ -18,13 +18,13 @@ export function ShowObject({entityName, data, tooltip}) {
 
     // if (data) console.log(`ShowObject \n\t data=`, data);
 
-    // const TXT = messages[language()];
+    // const TXT = messages[languageSelector()];
 
     return useMemo(() => (data)
             ? <>
                 {entityName && (
                     <>
-                        {entityTypes[entityName].label}
+                        {text(entityTypes[entityName].label)}
                     </>
                 )}
                 <ul>

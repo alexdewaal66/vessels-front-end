@@ -7,7 +7,7 @@ import { SummaryTable, useSorting } from './';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts';
 import { useImmutableSet } from '../../helpers/useImmutableSet';
-import { logConditionally, logv, pathMkr, rootMkr } from '../../dev/log';
+import { logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
 import { Stringify } from '../../dev/Stringify';
 import { Patience } from '../Patience';
 import { useLoggingState } from '../../dev/useLoggingState';
@@ -15,7 +15,7 @@ import { useCounter } from '../../dev/useCounter';
 import { Sorry } from '../../dev/Sorry';
 import { useLoggingImmutableSet } from '../../dev/useLoggingImmutableSet';
 import { useLoggingConditionalEffect } from '../../dev/useLoggingEffect';
-import { language } from '../../helpers';
+import { languageSelector } from '../../helpers';
 
 const messages = {
     NL: {
@@ -39,37 +39,37 @@ export function SummaryListSmall({
     if (!entityType) logv(rootMkr(SummaryListSmall), {elKey}, '❌');
     const entityName = entityType.name;
     const logRoot = rootMkr(SummaryListSmall, entityName, '↓↓');
-    const doLog = logConditionally(entityName);
     const storage = useContext(StorageContext);
     const {isAllLoaded, store} = storage;
-    if (doLog) logv(logRoot, {vars: {[entityName + 's']: storage.getEntries(entityName)}});
     const {isMulti, hasNull, readOnly} = UICues;
+    const doLog = logCondition(SummaryListSmall, entityName);
+    if (doLog) logv(logRoot, {[entityName + 's']: storage.getEntries(entityName), initialIdList});
 
+    const counter = useCounter(logRoot, entityName, 1000);//todo remove
 
-    // const counter = useCounter(logRoot, entityName, 100);//todo remove
-
-    const TXT = messages[language()];
+    const TXT = messages[languageSelector()];
 
     if (!initialIdList)
         initialIdList = [0];
 
     const requestListState = useRequestState();
     const [list, setList] = useLoggingState(null, 'list', logRoot, entityName);
-    const selectedIds = useLoggingImmutableSet(null, 'selectedIds', logRoot, entityName);
+    // const selectedIds = useLoggingImmutableSet(initialIdList, 'selectedIds', logRoot, entityName);
+    const selectedIds = useImmutableSet(initialIdList, 'selectedIds', logRoot, entityName);
 
     const {isControlDown, handleOnControlUp, handleOnControlDown} = useKeyPressed(keys.control);
 
-    const sorting = useSorting(updateListSmall, list, entityType);
+    const sorting = useSorting((x) => chooseItemSmall(updateListSmall(x)), list, entityType);
 
-    if (doLog) logv(logRoot + ` states:`, {
+    if (doLog) logv(logRoot, {
         initialIdList, isAllLoaded,
-        selectedIds, list
-    });
+        selectedIds_all: selectedIds.all, list
+    }, initialIdList.length !== selectedIds.size ? '❌' : '✔');
     usePollBackEndForChanges(storage, entityName);
 
 
     async function chooseItemSmall(item) {
-        const logPath = pathMkr(logRoot, chooseItemSmall);
+        const logPath = pathMkr(logRoot, chooseItemSmall) + counter.log;
         let newSelectedIds;
         if (doLog) logv(logPath, {item, isKeyDown: isControlDown});
         if (item?.id === optionalIdValue) {
@@ -81,15 +81,9 @@ export function SummaryListSmall({
                 });
         }
         if (isMulti && isControlDown) {
+            logv(logPath, {item, selectedIds})
             newSelectedIds = selectedIds.toggle(item.id);
-            // if (selectedIds.has(item.id)) {
-            //     selectedIds.del(item.id);
-            // } else {
-            //     selectedIds.add(item.id);
-            // }
         } else {
-            // newSelectedIds = new Set([item?.id || 0]);
-            // selectedIds.new(newSelectedIds);
             newSelectedIds = selectedIds.new([item?.id || 0]);
         }
         // logv(logPath, {newSelectedIds});
@@ -97,17 +91,18 @@ export function SummaryListSmall({
     }
 
     function updateListSmall(newList) {
-        const logPath = pathMkr(logRoot, updateListSmall);
+        const logPath = pathMkr(logRoot, updateListSmall) + counter.log;
         // logv(logPath, {newList, renderCount: counter.value});
         let selectedItem;
         if (newList.length === 0) {
+            logv(logPath, {newList}, '❗❗❗ newList.length === 0');
             selectedIds.new();
             selectedItem = null;
         } else {
             sorting.sort(newList);
             const firstId = initialIdList?.[0]
             const shouldAnIdBeSelected = !!firstId;
-            // logv(null, {initialId, shouldAnIdBeSelected});
+            if (doLog) logv(null, {initialIdList, shouldAnIdBeSelected});
             if (shouldAnIdBeSelected) {
                 selectedItem = storage.getItem(entityName, firstId);
                 // logv( '❗❗❗' + logPath + ' » if (shouldAnIdBeSelected)',
@@ -120,15 +115,16 @@ export function SummaryListSmall({
         }
         setList(newList);
         // logv(logPath, {selectedIds, selectedItem});
-        chooseItemSmall(selectedItem);
+        // chooseItemSmall(selectedItem);
+        return selectedItem;
     }
 
 
     function makeList() {
-        const logPath = pathMkr(logRoot, makeList);
-        // logv(logPath, {[`store.${entityName}=`]: store[entityName], renderCount: counter.value});
+        const logPath = pathMkr(logRoot, makeList) + counter.log;
+        if (doLog) logv(logPath, {[`store.${entityName}=`]: store[entityName]});
         const entries = Object.entries(storage.getEntries(entityName));
-        // logv(logPath, {entries});
+        if (doLog) logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
         if (hasNull) {
             const nullItem = createEmptyItem(entityTypes, entityType);
@@ -140,7 +136,7 @@ export function SummaryListSmall({
             optionalItem.id = optionalIdValue;
             list.push(optionalItem);
         }
-        // logv(logPath, {list});
+        if (doLog) logv(logPath, {list});
         updateListSmall(list);
     }
 
@@ -153,9 +149,9 @@ export function SummaryListSmall({
             <ShowRequestState requestState={requestListState} description={TXT.rsDesc}/>
             {list && (
                 <div>
-                    {isMulti && (
-                        <Stringify data={[...selectedIds.all]}>selectedIds</Stringify>
-                    )}
+                    {/*{isMulti && (*/}
+                    {/*    <Stringify data={[...selectedIds.all]}>selectedIds</Stringify>*/}
+                    {/*)}*/}
                     <SummaryTable entityType={entityType}
                                   list={list}
                                   selectedIds={selectedIds}

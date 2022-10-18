@@ -4,6 +4,7 @@ import { subtypes, fieldTypes } from '../helpers';
 import { Stringify } from '../dev/Stringify';
 import { InputObject, InputImageFile, ValidationMessage } from './';
 import { UnitInput } from './UnitInput';
+import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
 // import { Value } from '../dev/Value';
 // import { rootMkr, pathMkr, logv } from '../dev/log';
 
@@ -45,8 +46,8 @@ export function Input({
     // const logRoot = rootMkr(Input, entityType.name);
     const typeField = entityType.fields[fieldName];
     const elKey = `Input(${entityType.name},${fieldName},${defaultValue})`;
-
-    // const TXT = messages[language()];
+    const {register, getValues} = entityForm;
+    // const TXT = messages[languageSelector()];
 
     readOnly = !!(readOnly || entityType.methods === 'R' || typeField?.readOnly);
     // logv(logRoot, {typeField, typeField, readOnly});
@@ -149,7 +150,7 @@ export function Input({
                 defaultValue={fieldValue}
                 // defaultChecked={defaultValue}
                 readOnly={readOnly}
-                {...entityForm.register(fieldName, typeField?.validation)}
+                {...register(fieldName, crossFieldExpansion(typeField, getValues))}
                 {...rest}
             />
             {typeField?.subtype === subtypes.url &&

@@ -1,7 +1,7 @@
-import { referringFieldTypes } from './entityTypes';
-// import { logv, pathMkr, rootMkr } from '../dev/log';
+import { entityTypes, referringFieldTypes } from './entityTypes';
+import { pathMkr, rootMkr } from '../dev/log';
 
-// const logRoot = rootMkr('utils.js');
+const logRoot = rootMkr('utils.js');
 
 export function now() {
     const date = new Date();
@@ -49,19 +49,66 @@ export function loCaseCompare(p, q, fieldType) {
 }
 
 export const sessionConfig = {
-    // englishUI: {value: false, label: 'EN', hint: 'English'},
+    englishUI: {value: false, label: 'EN', hint: {NL: 'Select for English', EN: 'Deselecteer voor Nederlands'}},
     showUsageHints: {value: false, label: 'tooltips'},
-    devComponents: {value: true, label: 'probeersels'},
-    showStore: {value: true, label: 'gegevens', hint: 'laat de cache zien, per entiteit'},
-    showEntityTypes: {value: true, label: 'definities', hint: 'laat entityTypes zien, na initialisatie'},
-    shortRefresh: {value: false, label: 'korte ververstijd', hint: 'tabel vraagt vaker om vernieuwde gegevens aan back end'},
+    devComponents: {
+        value: true,
+        label: {NL: 'extra\'s', EN: 'extras'},
+        hint: {
+            NL: 'dev/admin componenten',
+            EN: 'dev/admin components'
+        },
+    },
+    showStore: {
+        value: true,
+        label: {NL: 'gegevens', EN: 'data'},
+        hint: {NL: 'laat de cache zien, per entiteit', EN: 'show cache, by entity'}
+    },
+    showEntityTypes: {
+        value: true,
+        label: {NL: 'definities', EN: 'definitions'},
+        hint: {NL: 'laat entityTypes zien, na initialisatie', EN: 'show entityTypes, after initialisation'}
+    },
+    shortRefresh: {
+        value: false,
+        label: {NL: 'korte ververstijd', EN: 'fast refresh'},
+        hint: {
+            NL: 'tabel vraagt vaker om vernieuwde gegevens aan back end',
+            EN: 'table asks more often for renewed data from back end'
+        }
+    },
 };
 
-export function language() {
+export function languageSelector() {
     return sessionConfig.englishUI?.value ? 'EN' : 'NL';
 }
 
+export function text(obj, doLog, callPath = '') {
+    const logPath = callPath + ' »» ' + pathMkr(logRoot, text);
+    const isObject = typeof obj === 'object';
+    const isString = typeof obj === 'string';
+    const isNothing = !obj;
+
+    if (isNothing || !isObject && !isString) {
+        // logv(logPath, {obj}, '❌ type mismatch');
+        return;
+    }
+    let output = obj;
+    if (isString && obj.substring(0,4) === 'TEXT') {
+        const [,entityName, fieldName, nr] = obj.split(':');
+        output = entityTypes[entityName].fields[fieldName]
+            .crossFieldChecks[+nr].text[languageSelector()];
+    }
+    if (isObject) output = obj[languageSelector()];
+    return output;
+}
+
 export function hints(...args) {
+    const isString = typeof args[0] === 'string';
+    const isNothing = !args[0];
+    if (!isNothing && !isString && ('NL' in args[0])) {
+        args = args.map(arg => arg[languageSelector()]);
+    }
     return sessionConfig.showUsageHints.value ? args.flat().join('\u000D') : null;
 }
 
@@ -72,3 +119,17 @@ export function hints(...args) {
 //     });
 //     return fields;
 // }
+/*
+
+A   B       A || B    A && B    !A || !B    !A && !B
+
+0   0           0       0           1           1
+0   1           1       0           1           0
+1   0           1       0           1           0
+1   1           1       1           0           0
+
+ */
+export function capitalizeLabel(field) {
+    const lbl = text(field.label);
+    return lbl.charAt(0) + lbl.slice(1);
+}

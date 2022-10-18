@@ -1,5 +1,5 @@
 import React from 'react';
-import { language } from '../helpers';
+import { languageSelector } from '../helpers';
 
 const messages = {
     NL: {
@@ -12,7 +12,7 @@ const messages = {
 
 export function Patience({children}) {
 
-    const TXT = messages[language()];
+    const TXT = messages[languageSelector()];
 
     return (
         <span style={{color: "darkred"}}>{TXT.patience}{children}</span>

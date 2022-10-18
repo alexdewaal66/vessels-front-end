@@ -1,7 +1,7 @@
 import React, { createContext, useState } from 'react';
 import { useConditionalEffect } from '../helpers';
 import { useLoggingState } from '../dev/useLoggingState';
-import { logConditionally, logv, pathMkr, rootMkr } from '../dev/log';
+import { logCondition, logv, pathMkr, rootMkr } from '../dev/log';
 
 export const CommandContext = createContext({});
 
@@ -33,7 +33,7 @@ export function CommandContextProvider({children}) {
     function useCommand(conditions) {
         function executeRelevantCommand() {
             const logPath = pathMkr(logRoot, [useCommand, executeRelevantCommand], ['↓']);
-            const doLog = logConditionally(command.entityType.name);
+            const doLog = logCondition(CommandContextProvider, command.entityType.name);
             const match =
                 command.operation  in  conditions.operations &&
                 command.entityType === conditions.entityType &&

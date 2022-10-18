@@ -1,4 +1,9 @@
 import { now } from '../helpers/utils';
+import { EditEntity, Input, InputObject, ValidationMessage } from '../components';
+import { SummaryHeading, SummaryListSmall, SummaryRow } from '../components/summaryList';
+import { useStorage } from '../helpers/useStorage';
+import { getFieldFromPath, remote } from '../helpers';
+import { useCounter } from './useCounter';
 
 // const loggedPaths = [
 //     // makeRequest.name,
@@ -52,19 +57,48 @@ export function errv(path, vars, prompt) {
     console.error(prompt);
 }
 
-export function logConditionally() {
+export function logCondition(context, ...candidates) {
+    const contexts = [
+        // Input,
+        // InputObject,
+        // SummaryListSmall,
+        // 'Item constructor',
+        // useStorage,
+        // EditEntity,
+        // remote,
+        // SummaryHeading,
+        // SummaryRow,
+        // getFieldFromPath,
+        // ValidationMessage,
+        // useCounter,
+    ];
+
     const matches = [
+        //// ENTITIES:
         // 'xyz','/xyzs',
         // 'zyx','/zyxs',
         // 'user','/users',
+        // 'role','/roles',
+        // 'country', '/countries',
+        // 'subdivision','/subdivisions',
+        // 'unLocode', 'unLocode',
         // 'address','/addresses',
+        // 'vesselType','/vesselTypes',
+        // 'hull', '/hulls',
+        // 'vessel', '/vessels',
+        // 'organisation','/organisations',
         // 'relation','/relations',
         // 'relationType','/relationTypes',
-        // 'organisation','/organisations',
-        // 'vesselType','/vesselTypes',
-        // 'role','/roles',
+        // 'file', '/files',
         // 'image', '/images',
-        // 'country', '/countries',
+        // 'propulsionType', '/propulsiontypes',
+        //// FIELDS:
+        // 'thumbnailId',
+        //// OTHER:
+        // 'hidden_superType_propulsionType_id'
     ];
-    return [...arguments]?.some(e => matches.includes(e));
+
+    const isInContext = contexts.includes(context);
+    const hasMatchingCandidate = [...candidates]?.some(candidate => matches.includes(candidate));
+    return isInContext && hasMatchingCandidate;
 }

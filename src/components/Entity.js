@@ -21,10 +21,10 @@ export function Entity({entityType = entityTypes.vessel, initialId}) {
 
     // const [submitTime, setSubmitTime] = useState('');
 
-    // const TXT = messages[language()];
+    // const TXT = messages[languageSelector()];
 
-    const counter = useCounter(logRoot, entityType.name, 100);
-    if (counter.passed) return <Sorry context={Entity.name} count={counter.value}/>;
+    const counter = useCounter(logRoot, entityType.name, 1000);
+    if (counter.passed) return <Sorry context={Entity.name} counter={counter}/>;
 
     return (
         <CommandContextProvider>

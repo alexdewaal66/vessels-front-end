@@ -71,12 +71,12 @@ export async function deleteRequest({endpoint, requestState, onSuccess, onFail})
 }
 
 export async function makeRequest({method, endpoint, payload, headers, requestState = null, onSuccess, onFail}) {
-    const doLog = logConditionally(endpoint);
+    const doLog = logConditionally(makeRequest, endpoint.split('/')[1]);
     const logPath = pathMkr(logRoot, makeRequest, '↓↓');
     headers = addJwtToHeaders(headers);
 
     requestState?.setAtPending();
-    if (doLog) logv(logPath, {method, endpoint, payload, requestState, onSuccess});
+    if (doLog) logv(logPath, {method, endpoint, payload, requestState, onSuccess}, '👀');
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,
@@ -213,6 +213,10 @@ export const remote = {
     },
 
     update: async function (entityType, item, requestState, onSuccess, onFail) {
+        const logPath = pathMkr(logRoot, remote.update);
+        const doLog = logConditionally(remote, entityType.name);
+        const json = JSON.stringify(item);
+        if (true) logv(logPath, {entityName: entityType.name, item, json});
         const endpoint = entityType.endpoint + '/' + item.id;
         await putRequest({
             endpoint, payload: item, requestState, onSuccess, onFail

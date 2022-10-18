@@ -1,7 +1,7 @@
 import { entityNameList, entityNames, entityTypes, fieldTypes, referringFieldTypes, } from './entityTypes';
-import { now, remote, RequestState, useMountEffect } from './';
+import { text, now, remote, RequestState, useMountEffect } from './';
 import { useState } from 'react';
-import { errv, logConditionally, logv, pathMkr, rootMkr } from '../dev/log';
+import { errv, logCondition, logv, pathMkr, rootMkr } from '../dev/log';
 
 
 const initialTimestamps = Object.fromEntries(entityNameList.map(name => [name, 0]));
@@ -24,7 +24,7 @@ export function useStorage() {
     });
 
     function updateState(callback, callerName) {
-        const doLog = false;// || logConditionally(entityName);
+        const doLog = false;// || logCondition(useStorage, entityName);
         const logPath = pathMkr(logRoot, updateState, callerName);
         if (doLog) logv(logPath, {callback}, '‼‼');
         setStore(currentState => {
@@ -39,13 +39,13 @@ export function useStorage() {
     class Item {
         #ids = {};
 
-        constructor(entityName, itemValues) {
+        constructor(entityName, itemValues = []) {
             const typeFields = entityTypes[entityName].fields
             for (const fieldName in itemValues) {
                 if (referringFieldTypes.includes(typeFields[fieldName]?.type)) {
                     const targetName = typeFields[fieldName].target;
                     const logPathGet = pathMkr(rootMkr('Item', entityName, itemValues.id), 'get');
-                    const doLog = logConditionally(entityName, fieldName, targetName);
+                    const doLog = logCondition('Item constructor', entityName, fieldName, targetName);
                     if (typeFields[fieldName].type === fieldTypes.arr) {
                         const idList = itemValues[fieldName].map(targetItem => targetItem.id);
                         this.#ids[fieldName] = idList;
@@ -97,7 +97,7 @@ export function useStorage() {
         // logv(logPath, requestState);
         setRsStatus({
             requestState,
-            description: `het ophalen van alle gegevens `,
+            description: text({NL: 'het ophalen van alle gegevens ', EN: 'reading all data '}),
             advice: ''
         });
         await retrieveAndStoreAllEntities(store, onSuccess, onFail);
@@ -222,7 +222,7 @@ export function useStorage() {
 
     function transformAndStoreItemArray(entityName, data, currentState) {// ✔✔
         const logPath = pathMkr(logRoot, transformAndStoreItemArray);
-        const doLog = logConditionally(entityName);
+        const doLog = logCondition(useStorage, entityName);
         if (doLog) logv(logPath, {entityName, data});
         let youngest = readEntry(collectionNames.timestamps, entityName, currentState) || 0;
         const entries = Object.fromEntries(data.map(retrievedItem => {
@@ -239,7 +239,7 @@ export function useStorage() {
 
     function transformAndRemoveDeletionArray(entityName, deletions, currentState) {// ✔✔
         const logPath = pathMkr(logRoot, transformAndRemoveDeletionArray);
-        const doLog = false;// logConditionally(entityName);
+        const doLog = false;// logCondition(useStorage, entityName);
         if (doLog) logv(logPath, {entityName, data: deletions});
         let youngest = readEntry(collectionNames.timestamps, entityName, currentState) || 0;
         const idList = deletions.map(item => {
@@ -254,7 +254,7 @@ export function useStorage() {
 
     async function retrieveAndStoreChangedItems(entityName, requestState, dummyStore, onSuccess, onFail) {// ✔✔
         const logPath = pathMkr(logRoot, retrieveAndStoreChangedItems, entityName);
-        const doLog = logConditionally(entityName);
+        const doLog = logCondition(useStorage, entityName);
         const timestamp1 = readEntry(collectionNames.timestamps, entityName);
         const timestamp2 = timestamp1 || 1640995200000; // 2022-01-01 00:00:00.000
         if (doLog) logv(logPath, {timestamp1, timestamp2}, '‼')
@@ -262,10 +262,14 @@ export function useStorage() {
             entityTypes[entityName], timestamp2, requestState,
             (response) => {
                 // logv(logPath, {response_data: response.data}, '‼‼‼');
-                updateState(currentState => {
-                    transformAndStoreItemArray(entityName, response.data.fresh, currentState);
-                    transformAndRemoveDeletionArray(entityName, response.data.deleted, currentState);
-                }, retrieveAndStoreChangedItems.name);
+                const {fresh, deleted} = response.data;
+                // only update if any changes:
+                if (fresh.length > 0 || deleted.length > 0) {
+                    updateState(currentState => {
+                        transformAndStoreItemArray(entityName, fresh, currentState);
+                        transformAndRemoveDeletionArray(entityName, deleted, currentState);
+                    }, retrieveAndStoreChangedItems.name);
+                }
                 onSuccess?.(response);
             },
             onFail
@@ -313,13 +317,14 @@ export function useStorage() {
 
     async function updateAndStoreItem(entityName, item, requestState, dummyStore, onSuccess, onFail) {// ✔✔
         const logPath = pathMkr(logRoot, updateAndStoreItem, entityName, '↓↓');
-        logv(logPath, {item});
+        const doLog = logCondition(useStorage, entityName);
+        if (doLog) logv(logPath, {item});
         if (hasEntry(entityName, item.id, store)) {
-            logv(logPath, null, 'about to update remote');
+            if (doLog) logv(logPath, null, 'about to update remote');
             await remote.update(
                 entityTypes[entityName], item, requestState,
                 (response) => {
-                    logv(logPath, {response}, 'in onSuccess()');
+                    if (doLog) logv(logPath, {response}, 'in onSuccess()');
                     // updateItem(entityName, item, store);
                     updateState(currentState => {
                         writeItem(entityName, item.id, item, currentState);
@@ -345,7 +350,7 @@ export function useStorage() {
     }
 
     async function createAndStoreItem(entityName, item, requestState, dummyStore, onSuccess, onFail) {// ✔✔
-        const doLog = false;// || logConditionally(entityName);
+        const doLog = false;// || logCondition(useStorage, entityName);
         const logPath = pathMkr(logRoot, createAndStoreItem, entityName, '↓↓');
         // logv(logPath, {item, tree});
         if (!hasEntry(entityName, item.id, store)) {
@@ -370,7 +375,7 @@ export function useStorage() {
     }
 
     async function deleteAndStoreItem(entityName, id, requestState, dummyStore, onSuccess, onFail) {// ✔✔
-        const doLog = false || logConditionally(entityName);
+        const doLog = logCondition(useStorage, entityName);
         const logPath = pathMkr(logRoot, deleteAndStoreItem, entityName, '↓↓');
         logv(logPath, {id});
         if (hasEntry(entityName, id, store)) {
@@ -434,7 +439,10 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het ophalen van ${entityTypes[entityName].label} (id=${id}) `,
+            description: text({
+                NL: 'het ophalen van ',
+                EN: 'retrieving '
+            }) + text(entityTypes[entityName].label) + ` (id=${id}) `,
             advice: '',
             // action: {type: loadItem.name, entityName},
         });
@@ -447,7 +455,10 @@ export function useStorage() {
         // console.log(`useStorage() » loadItem() » requestState=`, requestState);
         setRsStatus({
             requestState,
-            description: `het ophalen van alle ${entityTypes[entityName].label} items `,
+            description: text({
+                NL: 'het ophalen van alle ',
+                EN: 'retrieving all '
+            }) + text(entityTypes[entityName].label) + ' items ',
             advice: '',
             // action: {type: loadAllItems.name, entityName},
         });
@@ -465,7 +476,10 @@ export function useStorage() {
         // logv(pathMkr(logRoot, loadChangedItems), {requestState});
         setRsStatus({
             requestState,
-            description: `het ophalen van nieuwe ${entityTypes[entityName].label} items `,
+            description: text({
+                NL: 'het ophalen van nieuwe ',
+                EN: 'retrieving new '
+            }) + text(entityTypes[entityName].label) + ' items ',
             advice: '',
             // action: {type: loadChangedItems.name, entityName},
         });
@@ -477,7 +491,10 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het ophalen van de ${entityTypes[entityName].label} match `,
+            description: text({
+                NL: 'het ophalen van de ',
+                EN: 'retrieving the '
+            }) + text(entityTypes[entityName].label) + ' match ',
             advice: '',
             // action: {type: loadItemByUniqueFields.name, entityName, probe},
         });
@@ -495,7 +512,10 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het bewaren van ${entityTypes[entityName].label} (id=${id}) `,
+            description: text({
+                NL: 'het bewaren van ',
+                EN: 'saving '
+            }) + text(entityTypes[entityName].label) + ` (id=${id}) `,
             advice: '',
             // action: {type: saveItem.name, entityName, id},
         });
@@ -509,7 +529,10 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het maken van een nieuwe ${entityTypes[entityName].label} `,
+            description: text({
+                NL: 'het maken van een nieuwe ',
+                EN: 'creating a new '
+            }) + text(entityTypes[entityName].label) + ' ',
             advice: '',
             // action: {type: newItem.name, entityName, id: 0},
         });
@@ -526,7 +549,10 @@ export function useStorage() {
         const requestState = new RequestState();
         setRsStatus({
             requestState,
-            description: `het verwijderen van ${entityTypes[entityName].label} (id=${id}) `,
+            description: text({
+                NL: 'het verwijderen van ',
+                EN: 'removing '
+            }) + text(entityTypes[entityName].label) + ` (id=${id}) `,
             advice: '',
             // action: {type: deleteItem.name, entityName, id},
         });
@@ -565,6 +591,7 @@ export function useStorage() {
         getItem: readItem,
         getEntry: readEntry,
         getEntries: readCollection,
+        writeItem,
         isAllLoaded,
         rsStatus, setRsStatus,
         store,

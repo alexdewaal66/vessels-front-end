@@ -1,6 +1,6 @@
 import React from 'react';
 import layout from './pageLayout.module.css';
-import { sessionConfig, cx, hints } from '../helpers';
+import { sessionConfig, cx, hints, text } from '../helpers';
 import { ShowStatus } from './ShowStatus';
 
 export function Footer({children, className, forceUpdate, ...rest}) {
@@ -22,21 +22,21 @@ export function Footer({children, className, forceUpdate, ...rest}) {
                                checked={sessionConfig[key].value}
                                onChange={changeHandler(key)}
                         />
-                        {sessionConfig[key].label}
+                        {text(sessionConfig[key].label)}
                     </label>
                 )}
             </span>
-            <table className={layout.credentials}>
+            <table>
                 <tbody>
                 <tr>
-                    <td>gewoonlid</td>
-                    <td>deskundige</td>
-                    <td>beheerder</td>
+                    <td className={layout.credentials}>gewoonlid</td>
+                    <td className={layout.credentials}>deskundige</td>
+                    <td className={layout.credentials}>beheerder</td>
                 </tr>
                 <tr>
-                    <td>IkMagBeperkt</td>
-                    <td>IkMagVeel</td>
-                    <td>IkMagAlles</td>
+                    <td className={layout.credentials}>IkMagBeperkt</td>
+                    <td className={layout.credentials}>IkMagVeel</td>
+                    <td className={layout.credentials}>IkMagAlles</td>
                 </tr>
                 </tbody>
             </table>

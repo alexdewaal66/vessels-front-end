@@ -116,6 +116,7 @@ export function AuthContextProvider({children}) {
       Y           Y            1             *          ||         1
 */
     function isEligibleToChange(item) {
+        // logv(pathMkr(logRoot, isEligibleToChange), {item, authState}, '🔎🔎🔎');
         return  !!authState.user && (
             !item?.owner
             || authState.user.username === item.owner
