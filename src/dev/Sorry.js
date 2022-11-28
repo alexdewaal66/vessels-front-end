@@ -8,11 +8,11 @@ export function Sorry({context, counter}) {
         alignItems: 'center',
     }}>
         <div>
-            <img src={apology} alt="WE APOLOGIZE FOR THE INCONVENIENCE" useMap="#apologymap"/>
-            <map name="apologymap">
-                <area shape="rect" coords="220,170,570,210"
+            <map name="apology">
+                <area shape="rect" coords="220,170,570,210" alt="H2G2"
                       href="https://www.google.com/search?q=h2g2+we+apologize+for+the+inconvenience"/>
             </map>
+            <img src={apology} alt="WE APOLOGIZE FOR THE INCONVENIENCE" useMap="#apology"/>
             <br/>
             @{context} #{counter.value} <button onClick={counter.reset}>reset</button>
         </div>

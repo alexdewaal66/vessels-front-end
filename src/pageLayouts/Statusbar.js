@@ -2,11 +2,12 @@ import { useContext, useEffect } from 'react';
 import { MessageContext } from '../contexts/MessageContext';
 
 export function Statusbar({children}) {
-    const {updateStatusMessage} = useContext(MessageContext);
+    const {setStatusMessage} = useContext(MessageContext);
+    // const counter = useCounter(Statusbar.name, '', 1000, 50)
 
     useEffect(() => {
-        updateStatusMessage(children);
-    }, [children]);
+        setStatusMessage(children);
+    }, [children, setStatusMessage]);
 
     return null;
 }

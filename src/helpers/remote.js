@@ -1,25 +1,10 @@
 import axios from 'axios';
-import { endpoints } from './endpoints';
-import { statusCodes } from './statusCodes';
-import { logv, pathMkr } from '../dev/log';
-import { entityTypes } from './entityTypes';
-// import { now } from './utils';
+import { endpoints } from './globals/endpoints';
+import { statusCodes } from './globals/statusCodes';
+import { logCondition, logv, pathMkr } from '../dev/log';
+import { entityTypes } from './globals/entityTypes';
 
 const logRoot = 'remote.js';
-
-function logConditionally() {
-    const loggedEntities = [
-        // 'xyz',
-        // endpoints.users,
-        // entityTypes.user.endpoint,
-        // entityTypes.address.endpoint,
-        // 'relation',
-        // 'relationtype',
-        // 'organisation',
-        // 'vesselType',
-    ];
-    return [...arguments]?.some(e => loggedEntities.includes(e));
-}
 
 // enumeration of state names of a request
 export const requestStates = {IDLE: 'idle', PENDING: 'pending', SUCCESS: 'success', ERROR: 'error'};
@@ -71,7 +56,7 @@ export async function deleteRequest({endpoint, requestState, onSuccess, onFail})
 }
 
 export async function makeRequest({method, endpoint, payload, headers, requestState = null, onSuccess, onFail}) {
-    const doLog = logConditionally(makeRequest, endpoint.split('/')[1]);
+    const doLog = logCondition(makeRequest, endpoint.split('/').map(s => !!s ? '/' + s : undefined));
     const logPath = pathMkr(logRoot, makeRequest, '↓↓');
     headers = addJwtToHeaders(headers);
 
@@ -103,20 +88,20 @@ export async function makeRequest({method, endpoint, payload, headers, requestSt
 export const remote = {
 
     retrieveAllIds: async function (entityType, requestState, onSuccess, onFail) {
-        const endpoint = entityType.endpoint + '/_ids';
+        const endpoint = entityType.endpoint + '/ids';
         await getRequest({
             endpoint, requestState, onSuccess, onFail
         });
     },
 
-    retrieveAllSummaries: async function (entityType, requestState, onSuccess, onFail) {
-        // const logPath = pathMkr(logRoot, ['remote', remote.retrieveItemsByIds], null, [entityType.name, '↓']);
-        // logv(logPath,{idArray});
-        const endpoint = entityType.endpoint + '/summaries';
-        await getRequest({
-            endpoint, requestState, onSuccess, onFail
-        })
-    },
+    // retrieveAllSummaries: async function (entityType, requestState, onSuccess, onFail) {
+    //     // const logPath = pathMkr(logRoot, ['remote', remote.retrieveItemsByIds], null, [entityType.name, '↓']);
+    //     // logv(logPath,{idArray});
+    //     const endpoint = entityType.endpoint + '/summaries';
+    //     await getRequest({
+    //         endpoint, requestState, onSuccess, onFail
+    //     })
+    // },
 
     retrieveAllItems: async function (entityType, requestState, onSuccess, onFail) {
         const endpoint = entityType.endpoint;
@@ -155,7 +140,7 @@ export const remote = {
     retrieveItemsByIds: async function (entityType, idArray, requestState, onSuccess, onFail) {
         // const logPath = pathMkr(logRoot, ['remote', remote.retrieveItemsByIds], null, [entityType.name, '↓']);
         // logv(logPath,{idArray});
-        const endpoint = entityType.endpoint + '/_ids';
+        const endpoint = entityType.endpoint + '/ids';
         await postRequest({
             endpoint,
             payload: idArray,
@@ -214,9 +199,9 @@ export const remote = {
 
     update: async function (entityType, item, requestState, onSuccess, onFail) {
         const logPath = pathMkr(logRoot, remote.update);
-        const doLog = logConditionally(remote, entityType.name);
+        const doLog = logCondition(remote, entityType.name);
         const json = JSON.stringify(item);
-        if (true) logv(logPath, {entityName: entityType.name, item, json});
+        if (doLog) logv(logPath, {entityName: entityType.name, item, json});
         const endpoint = entityType.endpoint + '/' + item.id;
         await putRequest({
             endpoint, payload: item, requestState, onSuccess, onFail

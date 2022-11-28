@@ -1,29 +1,30 @@
 import React from 'react';
 import { summaryStyle } from './index';
 import { SummaryFilter } from './SummaryFilter';
-import { entityTypes, getFieldFromPath, hints, text, languageSelector } from '../../helpers';
+import { entityTypes, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
+import { hints, text, languageSelector } from '../../helpers';
 import { logCondition, logv, rootMkr } from '../../dev/log';
+import { CollapseButton } from './CollapseButton';
 
 const messages = {
     NL: {
         sortUp: 'sorteer omhoog, standaard',
         sortDn: 'sorteer omlaag',
-
     },
     EN: {
         sortUp: 'sort up, default',
         sortDn: 'sort down',
-
     }
 };
 
 export function SummaryHeading({
                                    entityType, elKey,
-                                   sorting, mergeConstraints
+                                   sorting, mergeConstraints,
+                                   small, toggleCollapsed, parentName
                                }) {
     const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
     const doLog = logCondition(SummaryHeading, entityType.name);
-    // logv(logRoot, {elKey});
+    if (doLog) logv(logRoot, {elKey});
 
     const TXT = messages[languageSelector()];
 
@@ -40,48 +41,58 @@ export function SummaryHeading({
         sorting.setOrder({propertyName: fieldPath, order: 'down', fieldType})
     };
 
+    function fieldLabel(fieldPath, field) {
+        return entityType.summaryLabel?.[fieldPath] || field.label;
+    }
 
     return (
         <>
             <tr>
                 {entityType.summary.map(fieldPath => {
-                    const field =  getFieldFromPath(entityTypes, entityType, fieldPath);
-                        return (<th key={elKey + fieldPath + '_h'}>
-                            {text(field.label, doLog, logRoot) || fieldPath}
-                            <span>
-                                {!!field ? (
-                                    <>
-                                        <button type={'button'}
-                                                onClick={up(fieldPath, field.type)}
-                                                className={summaryStyle.sort}
-                                                title={hints('▲ = ' + TXT.sortUp)}
-                                        >
-                                            {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
-                                        </button>
-                                        <button type={'button'}
-                                                onClick={down(fieldPath, field.type)}
-                                                className={summaryStyle.sort}
-                                                title={hints('▼ = ' + TXT.sortDn)}
-                                        >
-                                            {sorting.isOrderUp(fieldPath) ? '▼' : '▽'}
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        entityType.name:{entityType.name}
-                                        <br/>
-                                        fieldPath:{fieldPath}
-                                    </>
-                                )}
-                        </span>
-                        </th>);
+                        const field = getTypeFieldFromPath(entityTypes, entityType, fieldPath);
+                        if (fieldPath.split('.')[0] !== parentName)
+                        return (
+                            <th key={elKey + fieldPath + '_h'}>
+                                {text(fieldLabel(fieldPath, field)) || fieldPath}
+                                <span>
+                                    {!!field ? (
+                                        <>
+                                            <button type={'button'}
+                                                    onClick={up(fieldPath, field.type)}
+                                                    className={summaryStyle.sort}
+                                                    title={hints('▲ = ' + TXT.sortUp)}
+                                            >
+                                                {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
+                                            </button>
+                                            <button type={'button'}
+                                                    onClick={down(fieldPath, field.type)}
+                                                    className={summaryStyle.sort}
+                                                    title={hints('▼ = ' + TXT.sortDn)}
+                                            >
+                                                {sorting.isOrderUp(fieldPath) ? '▼' : '▽'}
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            entityType.name:{entityType.name}
+                                            <br/>
+                                            fieldPath:{fieldPath}
+                                        </>
+                                    )}
+                                </span>
+                            </th>
+                        );
+                        else return null;
                     }
                 )}
-                <th/>
+                <th style={{textAlign: 'right'}}>
+                    <CollapseButton small={small} toggleCollapsed={toggleCollapsed}/>
+                </th>
             </tr>
             <SummaryFilter entityType={entityType}
                            mergeConstraints={mergeConstraints}
                            elKey={elKey}
+                           parentName={parentName}
             />
         </>
     );

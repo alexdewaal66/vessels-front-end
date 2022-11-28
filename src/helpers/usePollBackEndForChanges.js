@@ -1,6 +1,5 @@
 import { useInterval } from './useInterval';
-import { sessionConfig } from './utils';
-import { logv } from '../dev/log';
+import { sessionConfig } from './globals/sessionConfig';
 
 export function usePollBackEndForChanges(storage, entityName) {
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import tooltip from './tooltip.module.css'
 
-export function TTC({children, ...rest}) {
+export function TooltipContainer({children, ...rest}) {
     return (
         <span className={tooltip.container} {...rest}>
             {children}
@@ -9,7 +9,7 @@ export function TTC({children, ...rest}) {
     );
 }
 
-export function TT({children, ...rest}) {
+export function Tooltip({children, ...rest}) {
     return (
         <span className={tooltip.text} {...rest}>
             {children}

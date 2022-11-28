@@ -1,17 +1,17 @@
 import React, { useContext, useState } from 'react';
 import {
-    createEmptyItem,
     keys, useKeyPressed,
     usePollBackEndForChanges,
     useConditionalEffect,
-    useRequestState, entityTypes, languageSelector
+    useRequestState,  languageSelector
 } from '../../helpers';
+import { entityTypes, createEmptyItem } from '../../helpers/globals/entityTypes';
 import { SummaryTable, useSorting } from './';
 import { CommandContext, operationNames } from '../../contexts';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts';
 import { useImmutableSet } from '../../helpers';
-import { logv, pathMkr, rootMkr } from '../../dev/log';
+import { logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
 import { Patience } from '../Patience';
 
 const messages = {
@@ -35,11 +35,12 @@ export function SummaryListTall({
     const entityName = entityType.name;
     const idName = entityType.id;
     const logRoot = rootMkr(SummaryListTall, entityName);
+    const doLog = logCondition(SummaryListTall, entityName);
     const storage = useContext(StorageContext);
-    const {isAllLoaded, store, getItem} = storage;
-    // logv(logRoot, {tree: store[entityName].state});
-    // logv(logRoot + ` ▶▶▶ props:`,
-    //     {entityType, initialId, receiver, UICues, form, inputHelpFields, elKey});
+    const entityEntries = storage.getEntries(entityName)
+    const {isAllLoaded, getItem} = storage;
+    if (doLog) logv(logRoot + ' props:',
+        {entityType, initialId, receiver, UICues, elKey});
     const requestListState = useRequestState();
     const [list, setList] = useState(null);
     const selectedIds = useImmutableSet();
@@ -53,11 +54,7 @@ export function SummaryListTall({
 
     const TXT = messages[languageSelector()];
 
-    // logv(logRoot + ` states:`, {
-    //     initialId, isAllLoaded,
-    //     'store[entityName].state': store[entityName].state,
-    //     selectedIds, list
-    // });
+    if (doLog) logv(logRoot + ` states:`, {initialId, isAllLoaded, selectedIds, list});
     usePollBackEndForChanges(storage, entityName);
 
 
@@ -106,22 +103,15 @@ export function SummaryListTall({
 
     function makeList() {
         // const logPath = pathMkr(logRoot, makeList);
-        // logv(logPath, {[`store.${entityName}.state=`]: store[entityName].state});
-
-        // const entries = Object.entries(store[entityName].state);
-        const entries = Object.entries(storage.getEntries(entityName));
-
+        // logv(logPath, {[`${entityName}s=`]: entityEntries});
+        const entries = Object.entries(entityEntries);
         // logv(null, {entries});
         const list = entries.map(e => e[1].item);
         // logv(null, {list});
         updateListTall(list, (lastSavedItemId || initialId));
     }
 
-    useConditionalEffect(isAllLoaded, makeList, [
-        // store[entityName].state,
-        storage.getEntries(entityName),
-        isAllLoaded, lastSavedItemId
-    ]);
+    useConditionalEffect(isAllLoaded, makeList, [entityEntries, isAllLoaded, lastSavedItemId]);
 
     const conditions = {
         entityType: entityType,

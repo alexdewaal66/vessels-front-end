@@ -21,7 +21,7 @@ describe('ChoiceContext', () => {
         const {choice, makeChoice} = useContext(ChoiceContext);
         const ChosenComponent = choice.component;
         return <>
-            <div role="choice_role"><ChosenComponent/></div>
+            <div data-testid="chosen_component_container"><ChosenComponent/></div>
             <button onClick={makeChoice(item)}>{item.label}</button>
         </>
     }
@@ -36,7 +36,7 @@ describe('ChoiceContext', () => {
                 </ChoiceContextProvider>
             );
 
-            expect(screen.getByRole('choice_role')).toBeInTheDocument();
+            expect(screen.getByTestId('chosen_component_container')).toBeInTheDocument();
             fireEvent.click(screen.getByRole('button', {name: item.label}));
             expect(screen.getByText('Candidate-1')).toBeInTheDocument();
         });
@@ -49,7 +49,7 @@ describe('ChoiceContext', () => {
                 </ChoiceContextProvider>
             );
 
-            expect(screen.getByRole('choice_role')).toBeInTheDocument();
+            expect(screen.getByTestId('chosen_component_container')).toBeInTheDocument();
             fireEvent.click(screen.getByRole('button', {name: item.label}));
             expect(screen.getByRole('button', {name: 'Candidate-2'})).toBeInTheDocument();
         });

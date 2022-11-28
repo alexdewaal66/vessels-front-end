@@ -1,12 +1,11 @@
 import React from 'react';
 
-import { subtypes, fieldTypes } from '../helpers';
+import { subtypes, fieldTypes } from '../helpers/globals/entityTypes';
 import { Stringify } from '../dev/Stringify';
 import { InputObject, InputImageFile, ValidationMessage } from './';
 import { UnitInput } from './UnitInput';
 import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
-// import { Value } from '../dev/Value';
-// import { rootMkr, pathMkr, logv } from '../dev/log';
+import { logCondition, logv, rootMkr } from '../dev/log';
 
 // const messages = {NL: {}, EN: {}};
 
@@ -43,7 +42,8 @@ export function Input({
                           entityType, fieldName, defaultValue,
                           entityForm, readOnly, isEligible, ...rest
                       }) {
-    // const logRoot = rootMkr(Input, entityType.name);
+    const logRoot = rootMkr(Input, entityType.name);
+    const doLog = logCondition(Input, entityType, fieldName);
     const typeField = entityType.fields[fieldName];
     const elKey = `Input(${entityType.name},${fieldName},${defaultValue})`;
     const {register, getValues} = entityForm;
@@ -59,6 +59,10 @@ export function Input({
     let cols = null;
     let step = null;
     let fieldValue = defaultValue;
+
+    // const counter = useCounter(logRoot, entityType.name, 1000, 50);
+    // if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
+
 
     switch (typeField?.type) {
         case fieldTypes.str:
@@ -108,6 +112,7 @@ export function Input({
                              readOnly={readOnly}
                              isEligible={isEligible}
                              elKey={elKey}
+                             {...rest}
                 />
             );
         case fieldTypes.bool:
@@ -115,7 +120,13 @@ export function Input({
             break;
         case fieldTypes.date:
             inputType = inputTypes.date;
-            fieldValue = defaultValue.toString().split('T')[0];
+            // fieldValue = defaultValue.toString().split('T')[0];
+            // if (doLog) logv(logRoot, {fieldName, fieldType: typeField.type, defaultValue, jstype: typeof defaultValue});
+            if (defaultValue === '')
+                defaultValue = null;
+            else
+                fieldValue = (new Date(defaultValue)).toISOString().split('T')[0];
+            // if (doLog) logv(logRoot, {fieldValue});
             break;
         case fieldTypes.img:
         case fieldTypes.file:
@@ -136,6 +147,7 @@ export function Input({
                 field: <Stringify data={fieldName}/>
             </>);
     }
+
 
     return (
         <>

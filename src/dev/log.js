@@ -1,14 +1,19 @@
 import { now } from '../helpers/utils';
+// eslint-disable-next-line no-unused-vars
 import { EditEntity, Input, InputObject, ValidationMessage } from '../components';
+// eslint-disable-next-line no-unused-vars
 import { SummaryHeading, SummaryListSmall, SummaryRow } from '../components/summaryList';
+// eslint-disable-next-line no-unused-vars
 import { useStorage } from '../helpers/useStorage';
-import { getFieldFromPath, remote } from '../helpers';
+// eslint-disable-next-line no-unused-vars
+import { getTypeFieldFromPath } from '../helpers/globals/entityTypes';
+// eslint-disable-next-line no-unused-vars
+import { remote } from '../helpers';
+// eslint-disable-next-line no-unused-vars
 import { useCounter } from './useCounter';
+// eslint-disable-next-line no-unused-vars
+import { ShowObject } from '../components/ShowObject';
 
-// const loggedPaths = [
-//     // makeRequest.name,
-//     // SummaryListSmall.name,
-// ];
 
 let logCounter = 0;
 
@@ -59,6 +64,7 @@ export function errv(path, vars, prompt) {
 
 export function logCondition(context, ...candidates) {
     const contexts = [
+        'dummy context', // just there to prevent WebStrom from whining about "Contents of collection 'contexts' are queried, but never written"
         // Input,
         // InputObject,
         // SummaryListSmall,
@@ -68,12 +74,14 @@ export function logCondition(context, ...candidates) {
         // remote,
         // SummaryHeading,
         // SummaryRow,
-        // getFieldFromPath,
+        // getTypeFieldFromPath,
         // ValidationMessage,
         // useCounter,
+        // ShowObject,
     ];
 
     const matches = [
+        'dummy match', // just there to prevent WebStrom from whining about "Contents of collection 'matches' are queried, but never written"
         //// ENTITIES:
         // 'xyz','/xyzs',
         // 'zyx','/zyxs',
@@ -94,11 +102,15 @@ export function logCondition(context, ...candidates) {
         // 'propulsionType', '/propulsiontypes',
         //// FIELDS:
         // 'thumbnailId',
+        // 'username',
+        // 'password',
+        // 'startDate',
+        // 'endDate',
         //// OTHER:
         // 'hidden_superType_propulsionType_id'
     ];
 
     const isInContext = contexts.includes(context);
-    const hasMatchingCandidate = [...candidates]?.some(candidate => matches.includes(candidate));
+    const hasMatchingCandidate = (matches.length > 1) && [...candidates.flat()]?.some(candidate => matches.includes(candidate));
     return isInContext && hasMatchingCandidate;
 }

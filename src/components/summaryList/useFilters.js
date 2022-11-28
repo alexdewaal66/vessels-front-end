@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { createEmptySummary, entityTypes, fieldTypes } from '../../helpers';
+import { createEmptySummary, entityTypes, fieldTypes } from '../../helpers/globals/entityTypes';
 
-export function useFilters(entityType) {
+export function useFilters(entityType, initialConstraint) {
     // const logRoot = rootMkr(useFilters, entityType.name);
     const [constraints, setConstraints] = useState(createEmptySummary(entityTypes, entityType));
-    const [noConstraints, setNoConstraints] = useState(true);
+    // const [noConstraints, setNoConstraints] = useState(true);
+    const [noConstraints, setNoConstraints] = useState(!initialConstraint);
 
     const matchers = {
         str: (itemValue, filterValue) => {

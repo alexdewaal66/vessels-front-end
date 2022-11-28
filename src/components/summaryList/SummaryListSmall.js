@@ -1,20 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { createEmptyItem } from '../../helpers/entityTypes';
-import { keys, useKeyPressed, useConditionalEffect, useRequestState } from '../../helpers/customHooks';
+import React, { useContext, useEffect} from 'react';
+import { createEmptyItem } from '../../helpers/globals/entityTypes';
+import { keys, useKeyPressed, useRequestState } from '../../helpers/customHooks';
 import { usePollBackEndForChanges } from '../../helpers/usePollBackEndForChanges';
-import { entityTypes } from '../../helpers/entityTypes';
+import { entityTypes } from '../../helpers/globals/entityTypes';
 import { SummaryTable, useSorting } from './';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts';
 import { useImmutableSet } from '../../helpers/useImmutableSet';
 import { logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
-import { Stringify } from '../../dev/Stringify';
 import { Patience } from '../Patience';
 import { useLoggingState } from '../../dev/useLoggingState';
-import { useCounter } from '../../dev/useCounter';
-import { Sorry } from '../../dev/Sorry';
-import { useLoggingImmutableSet } from '../../dev/useLoggingImmutableSet';
-import { useLoggingConditionalEffect } from '../../dev/useLoggingEffect';
 import { languageSelector } from '../../helpers';
 
 const messages = {
@@ -33,7 +28,7 @@ export const optionalIdValue = -Infinity;
 
 export function SummaryListSmall({
                                      entityType, initialIdList, UICues,
-                                     setHiddenField, elKey
+                                     setHiddenField, elKey, toggleCollapsed, parentName
                                  }) {
     elKey += '/SListSmall';
     if (!entityType) logv(rootMkr(SummaryListSmall), {elKey}, '❌');
@@ -43,9 +38,10 @@ export function SummaryListSmall({
     const {isAllLoaded, store} = storage;
     const {isMulti, hasNull, readOnly} = UICues;
     const doLog = logCondition(SummaryListSmall, entityName);
-    if (doLog) logv(logRoot, {[entityName + 's']: storage.getEntries(entityName), initialIdList});
+    const entityEntries = storage.getEntries(entityName)
+    if (doLog) logv(logRoot, {entityEntries, initialIdList});
 
-    const counter = useCounter(logRoot, entityName, 1000);//todo remove
+    // const counter = useCounter(logRoot, entityName, 1000);//todo remove
 
     const TXT = messages[languageSelector()];
 
@@ -59,7 +55,9 @@ export function SummaryListSmall({
 
     const {isControlDown, handleOnControlUp, handleOnControlDown} = useKeyPressed(keys.control);
 
-    const sorting = useSorting((x) => chooseItemSmall(updateListSmall(x)), list, entityType);
+    const sorting = useSorting(
+        (x) => chooseItemSmall(updateListSmall(x)),
+        list, entityType);
 
     if (doLog) logv(logRoot, {
         initialIdList, isAllLoaded,
@@ -69,11 +67,12 @@ export function SummaryListSmall({
 
 
     async function chooseItemSmall(item) {
-        const logPath = pathMkr(logRoot, chooseItemSmall) + counter.log;
-        let newSelectedIds;
+        const logPath = pathMkr(logRoot, chooseItemSmall);// + counter.log;
         if (doLog) logv(logPath, {item, isKeyDown: isControlDown});
+        let newSelectedIds;
         if (item?.id === optionalIdValue) {
             const blankItem = createEmptyItem(entityTypes, entityType);
+            blankItem.id = optionalIdValue;
             await storage.newItem(entityType.name, blankItem,
                 (savedItem) => {
                     item = savedItem;
@@ -86,12 +85,12 @@ export function SummaryListSmall({
         } else {
             newSelectedIds = selectedIds.new([item?.id || 0]);
         }
+        setHiddenField([...newSelectedIds].join(','));
         // logv(logPath, {newSelectedIds});
-        setHiddenField([...newSelectedIds].toString());
     }
 
     function updateListSmall(newList) {
-        const logPath = pathMkr(logRoot, updateListSmall) + counter.log;
+        const logPath = pathMkr(logRoot, updateListSmall);// + counter.log;
         // logv(logPath, {newList, renderCount: counter.value});
         let selectedItem;
         if (newList.length === 0) {
@@ -101,13 +100,17 @@ export function SummaryListSmall({
         } else {
             sorting.sort(newList);
             const firstId = initialIdList?.[0]
-            const shouldAnIdBeSelected = !!firstId;
-            if (doLog) logv(null, {initialIdList, shouldAnIdBeSelected});
-            if (shouldAnIdBeSelected) {
+            const shouldASingleIdBeSelected = !!firstId;
+            const shouldMore = initialIdList.length > 1;
+            if (doLog) logv(null, {initialIdList, shouldASingleIdBeSelected});
+            if (shouldASingleIdBeSelected) {
                 selectedItem = storage.getItem(entityName, firstId);
-                // logv( '❗❗❗' + logPath + ' » if (shouldAnIdBeSelected)',
+                // logv( '❗❗❗' + logPath + ' » if (shouldASingleIdBeSelected)',
                 //     {firstId, selectedItem});
                 selectedIds.add(firstId);
+            } else if (shouldMore) {
+                selectedIds.new(initialIdList);
+                selectedItem = initialIdList.map(id => storage.getItem(entityName, id));
             } else {
                 selectedItem = null;
                 selectedIds.new();
@@ -121,9 +124,9 @@ export function SummaryListSmall({
 
 
     function makeList() {
-        const logPath = pathMkr(logRoot, makeList) + counter.log;
+        const logPath = pathMkr(logRoot, makeList);// + counter.log;
         if (doLog) logv(logPath, {[`store.${entityName}=`]: store[entityName]});
-        const entries = Object.entries(storage.getEntries(entityName));
+        const entries = Object.entries(entityEntries);
         if (doLog) logv(logPath, {entries});
         const list = entries.map(e => e[1].item);
         if (hasNull) {
@@ -138,11 +141,13 @@ export function SummaryListSmall({
         }
         if (doLog) logv(logPath, {list});
         updateListSmall(list);
+        setHiddenField(initialIdList.join(','));
     }
 
-    useEffect(makeList, [storage.getEntries(entityName), isAllLoaded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(makeList, [entityEntries, isAllLoaded]);
 
-    // if (counter.passed) return <Sorry context={SummaryListSmall.name} count={counter.value}/>;//todo remove
+    // if (counter.passed) return <Sorry context={SummaryListSmall.name} count={counter.value}/>;
 
     return (
         <div onKeyDown={handleOnControlDown} onKeyUp={handleOnControlUp} style={{minHeight: '12em'}}>
@@ -161,6 +166,8 @@ export function SummaryListSmall({
                                   elKey={elKey}
                                   key={elKey}
                                   sorting={sorting}
+                                  toggleCollapsed={toggleCollapsed}
+                                  parentName={parentName}
                     />
                 </div>
             )}

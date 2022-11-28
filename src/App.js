@@ -4,7 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import './assets/fonts/stylesheet.css'
 import './App.css';
 import { pageLayout } from './pageLayouts';
-import { pages } from './pages';
+import { pages, Project } from './pages';
 import { Footer, Header } from './pageLayouts';
 import { domain, useMountEffect } from './helpers';
 
@@ -24,6 +24,9 @@ function App() {
         <div className={"App " + pageLayout.app}>
             <Header/>
             <Switch>
+                <Route exact={true} path="/project" key="/project">
+                    <Project/>
+                </Route>
                 {pages.displayOrder.map(page =>
                     <Route exact={page.exact}
                            path={page.path}

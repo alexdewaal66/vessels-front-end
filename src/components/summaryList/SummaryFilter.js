@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { summaryStyle } from './index';
 import filterSymbol from '../../assets/filter.svg';
-import { createEmptySummary, entityTypes, getFieldFromPath, languageSelector } from '../../helpers';
+import { entityTypes, createEmptySummary, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
+import { languageSelector } from '../../helpers';
 import { hints } from '../../helpers';
-// import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 const enterKey = 13;
 
@@ -21,10 +21,9 @@ const messages = {
 };
 
 
-export function SummaryFilter({entityType, mergeConstraints, elKey}) {
+export function SummaryFilter({entityType, mergeConstraints, elKey, parentName}) {
     // const logRoot = rootMkr(SummaryFilter, entityType.name);
 
-    // const messages = {NL: {}, EN: {}};
     const TXT = messages[languageSelector()];
 
     const [inputFields, setInputFields] = useState(createEmptySummary(entityTypes, entityType));
@@ -69,7 +68,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
 
     function inputSize(fieldPath) {
         // const logPath = pathMkr(logRoot, inputSize, fieldPath);
-        const field = getFieldFromPath(entityTypes, entityType, fieldPath);
+        const field = getTypeFieldFromPath(entityTypes, entityType, fieldPath);
         const maxLength = field?.validation?.maxLength?.value ?? 4;
         // logv(logPath, {field, maxLength}, '❌');
         const size = Math.min(18, maxLength / 2);
@@ -78,7 +77,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
     }
 
     function inputLength(fieldPath) {
-        const field = getFieldFromPath(entityTypes, entityType, fieldPath);
+        const field = getTypeFieldFromPath(entityTypes, entityType, fieldPath);
         const maxLength = field?.validation?.maxLength?.value || 4;
         // if (!field)  logv(`❌ ${logRoot} ${inputSize.name}(${fieldPath})`, {field, maxLength});
         return 2 * maxLength + 1;
@@ -86,25 +85,30 @@ export function SummaryFilter({entityType, mergeConstraints, elKey}) {
 
     return (
         <tr onKeyDown={enterKeyHandler}>
-            {entityType.summary.map(fieldPath =>
-                <th key={elKey + fieldPath + '_sort'}>
-                    {/*{(text(entityType.fields, fieldPath) || fieldPath).split('').reverse().join('')}*/}
-                    <input type={'text'}
-                           onChange={setInputFieldsHandler(fieldPath)}
-                           size={inputSize(fieldPath)}
-                           maxLength={inputLength(fieldPath)}
-                           className={summaryStyle.filter}
-                           value={inputFields[fieldPath] || ''}
-                           title={hints(TXT.inputHint)}
-                    />
-                    <button type={'button'}
-                            onClick={clearFieldHandler(fieldPath)}
-                            className={summaryStyle.filterButton}
-                            title={hints(TXT.delFilter)}
-                    >
-                        ␡
-                    </button>
-                </th>
+            {entityType.summary.map(fieldPath => {
+                    if (fieldPath.split('.')[0] !== parentName)
+                        return (
+                            <th key={elKey + fieldPath + '_sort'}>
+                                {/*{(text(entityType.fields, fieldPath) || fieldPath).split('').reverse().join('')}*/}
+                                <input type={'text'}
+                                       onChange={setInputFieldsHandler(fieldPath)}
+                                       size={inputSize(fieldPath)}
+                                       maxLength={inputLength(fieldPath)}
+                                       className={summaryStyle.filter}
+                                       value={inputFields[fieldPath] || ''}
+                                       title={hints(TXT.inputHint)}
+                                />
+                                <button type={'button'}
+                                        onClick={clearFieldHandler(fieldPath)}
+                                        className={summaryStyle.filterButton}
+                                        title={hints(TXT.delFilter)}
+                                >
+                                    ␡
+                                </button>
+                            </th>
+                        );
+                    else return null;
+                }
             )}
             <th>
                 <button type={'button'}

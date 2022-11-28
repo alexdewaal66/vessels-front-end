@@ -1,4 +1,5 @@
-import { entityNameList, entityTypes, sessionConfig } from '../helpers';
+import { entityNameList, entityTypes } from '../helpers/globals/entityTypes';
+import { sessionConfig } from '../helpers/globals/sessionConfig';
 import { Aside } from '../pageLayouts';
 import { Stringify } from './Stringify';
 import React, { useContext, useState } from 'react';
@@ -44,21 +45,17 @@ function StringifyOnSelect({keyList, placeholder, dataObject, defaultProperty = 
 export function ShowStore() {
     const {store} = useContext(StorageContext);
 
-    return  ((sessionConfig.showStore.value || sessionConfig.showEntityTypes.value) &&
+    return  ((sessionConfig.showEntities.value) &&
         <Aside>
-            {sessionConfig.showStore.value && (
                 <StringifyOnSelect keyList={Object.keys(store)}
                                    placeholder={'store'}
                                    dataObject={store}
                                    // defaultProperty={'state'}
                 />
-            )}
-            {sessionConfig.showEntityTypes.value && (
                 <StringifyOnSelect keyList={entityNameList}
                                    placeholder={'types'}
                                    dataObject={entityTypes}
                 />
-            )}
         </Aside>
     );
 }

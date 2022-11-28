@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
-import { Main, Menu, Content } from '../pageLayouts';
 import { homeMenuItems } from './homeMenuItems';
 import { ChoiceContext } from '../contexts';
 import { Welcome } from '../components';
 import { useMountEffect } from '../helpers';
-import { ShowStore } from '../dev/ShowStore';
+import { Page } from './Page';
 
 export default function Home() {
     const {choice, makeChoice, initChoice} = useContext(ChoiceContext);
@@ -14,14 +13,9 @@ export default function Home() {
     useMountEffect(initChoice(homeMenuItems.default));
 
     return (
-        <Content>
-            <Menu menuItems={homeMenuItems.displayOrder} choice={choice} makeChoice={makeChoice}>
-            </Menu>
-            <Main>
+        <Page menuItems={homeMenuItems.displayOrder} choice={choice} makeChoice={makeChoice}>
                 {/*{(logv('-----HOME-----', {choice_label: choice.label}), '')}*/}
                 <ChosenComponent/>
-            </Main>
-            <ShowStore/>
-        </Content>
+        </Page>
     );
 }

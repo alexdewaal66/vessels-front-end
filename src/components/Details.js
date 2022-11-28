@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { TT, TTC } from './Tooltips';
+import { Tooltip, TooltipContainer } from './Tooltips';
 import { transform, useConditionalEffect } from '../helpers';
 import { ShowRequestState } from './ShowRequestState';
 import { StorageContext } from '../contexts';
@@ -11,8 +11,8 @@ export function Details({entityType, fieldName, value, item, children}) {
     const storage = useContext(StorageContext);
     const {rsStatus} = storage;
     const [detailsId, setDetailsId] = useState();
-    const field = entityType.fields[fieldName];
-    const target = field?.details;
+    const typeField = entityType.fields[fieldName];
+    const target = typeField?.details;
 
     function fetchItem() {
         // const logPath = pathMkr(logRoot, fetchItem);
@@ -24,13 +24,13 @@ export function Details({entityType, fieldName, value, item, children}) {
 
 
     return (
-        <TTC>
+        <TooltipContainer>
             <ShowRequestState {...rsStatus} description={rsStatus.description}/>
             {children}
             {target && value && (
                 <React.Fragment key={fieldName + target}>
                     &nbsp;»
-                    <TT style={{textAlign: "left", marginLeft: "100%", top: "0"}}>
+                    <Tooltip style={{textAlign: "left", marginLeft: "100%", top: "0"}}>
                         <ShowObject
                             entityName={target === 'transform'
                                 ? null
@@ -41,9 +41,9 @@ export function Details({entityType, fieldName, value, item, children}) {
                                 : storage.getItem(target, detailsId)
                             }
                         />
-                    </TT>
+                    </Tooltip>
                 </React.Fragment>
             )}
-        </TTC>
+        </TooltipContainer>
     );
 }

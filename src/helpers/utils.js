@@ -1,7 +1,7 @@
-import { entityTypes, referringFieldTypes } from './entityTypes';
-import { pathMkr, rootMkr } from '../dev/log';
+import { entityTypes, referringFieldTypes } from './globals/entityTypes';
+import { sessionConfig } from './globals/sessionConfig';
 
-const logRoot = rootMkr('utils.js');
+// const logRoot = rootMkr('utils.js');
 
 export function now() {
     const date = new Date();
@@ -48,48 +48,17 @@ export function loCaseCompare(p, q, fieldType) {
     return 0;
 }
 
-export const sessionConfig = {
-    englishUI: {value: false, label: 'EN', hint: {NL: 'Select for English', EN: 'Deselecteer voor Nederlands'}},
-    showUsageHints: {value: false, label: 'tooltips'},
-    devComponents: {
-        value: true,
-        label: {NL: 'extra\'s', EN: 'extras'},
-        hint: {
-            NL: 'dev/admin componenten',
-            EN: 'dev/admin components'
-        },
-    },
-    showStore: {
-        value: true,
-        label: {NL: 'gegevens', EN: 'data'},
-        hint: {NL: 'laat de cache zien, per entiteit', EN: 'show cache, by entity'}
-    },
-    showEntityTypes: {
-        value: true,
-        label: {NL: 'definities', EN: 'definitions'},
-        hint: {NL: 'laat entityTypes zien, na initialisatie', EN: 'show entityTypes, after initialisation'}
-    },
-    shortRefresh: {
-        value: false,
-        label: {NL: 'korte ververstijd', EN: 'fast refresh'},
-        hint: {
-            NL: 'tabel vraagt vaker om vernieuwde gegevens aan back end',
-            EN: 'table asks more often for renewed data from back end'
-        }
-    },
-};
-
 export function languageSelector() {
     return sessionConfig.englishUI?.value ? 'EN' : 'NL';
 }
 
 export function text(obj, doLog, callPath = '') {
-    const logPath = callPath + ' »» ' + pathMkr(logRoot, text);
+    // const logPath = callPath + ' »» ' + pathMkr(logRoot, text);
     const isObject = typeof obj === 'object';
     const isString = typeof obj === 'string';
     const isNothing = !obj;
 
-    if (isNothing || !isObject && !isString) {
+    if (isNothing || (!isObject && !isString)) {
         // logv(logPath, {obj}, '❌ type mismatch');
         return;
     }
@@ -104,12 +73,19 @@ export function text(obj, doLog, callPath = '') {
 }
 
 export function hints(...args) {
-    const isString = typeof args[0] === 'string';
-    const isNothing = !args[0];
-    if (!isNothing && !isString && ('NL' in args[0])) {
-        args = args.map(arg => arg[languageSelector()]);
-    }
-    return sessionConfig.showUsageHints.value ? args.flat().join('\u000D') : null;
+    if (sessionConfig.showUsageHints.value) {
+        const isString = typeof args[0] === 'string';
+        const isNothing = !args[0];
+        if (!isNothing && !isString && ('NL' in args[0])) {
+            args = args.map(arg => arg[languageSelector()]);
+        }
+        return args.flat().join('\u000D');
+    } else
+        return null;
+}
+
+export function devHints(...args) {
+    return sessionConfig.devComponents.value ? hints(args) : null;
 }
 
 // export function emptyFields(fieldNames) {

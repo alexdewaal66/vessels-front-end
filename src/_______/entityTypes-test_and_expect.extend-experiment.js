@@ -52,38 +52,3 @@
 
  *********************************************************/
 
-// const ternaryLogic = {T: true, F: false, d: "don't care"};
-
-function createTruthTable(tableDefinition) {
-    const entries = Object.entries(tableDefinition);
-    const rows = entries.length;
-    const inputs = entries[0][0].length;
-    const outputs = entries[0][1].length;
-
-    return function (...args) {
-        if (args.length !== inputs) throw 'wrong number of arguments, expected ' + inputs;
-
-        const key = args.reduce((previous, current) => previous.concat(+!!current), '');
-        const values = tableDefinition[key].split('');
-        return values.map(c => !!+c);
-    };
-}
-
-const and = createTruthTable({
-    '00': '0',
-    '01': '0',
-    '10': '0',
-    '11': '1'
-});
-
-const p = createTruthTable({
-    '000': '1',
-    '001': '1',
-    '010': '0',
-    '011': '0',
-    '100': '0',
-    '101': '0',
-    '110': '0',
-    '111': '1',
-});
-

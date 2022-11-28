@@ -1,7 +1,8 @@
-import { entityNameList, entityNames, entityTypes, fieldTypes, referringFieldTypes, } from './entityTypes';
+import { entityNameList, entityNames, entityTypes, fieldTypes, referringFieldTypes, } from './globals/entityTypes';
 import { text, now, remote, RequestState, useMountEffect } from './';
 import { useState } from 'react';
-import { errv, logCondition, logv, pathMkr, rootMkr } from '../dev/log';
+import { errv, logCondition, logv, pathMkr } from '../dev/log';
+import { optionalIdValue } from '../components/summaryList';
 
 
 const initialTimestamps = Object.fromEntries(entityNameList.map(name => [name, 0]));
@@ -44,7 +45,8 @@ export function useStorage() {
             for (const fieldName in itemValues) {
                 if (referringFieldTypes.includes(typeFields[fieldName]?.type)) {
                     const targetName = typeFields[fieldName].target;
-                    const logPathGet = pathMkr(rootMkr('Item', entityName, itemValues.id), 'get');
+                    // const logPathGet = pathMkr(rootMkr('Item', entityName, itemValues.id), 'get');
+                    const logPathGet = pathMkr('Item', 'get', entityName, itemValues.id);
                     const doLog = logCondition('Item constructor', entityName, fieldName, targetName);
                     if (typeFields[fieldName].type === fieldTypes.arr) {
                         const idList = itemValues[fieldName].map(targetItem => targetItem.id);
@@ -81,6 +83,18 @@ export function useStorage() {
                 }
             }
         }
+
+        toJSON() {
+            let shallowItem = {};
+            for (const itemKey in this) {
+                if (this[itemKey]?.id)
+                    shallowItem[itemKey] = {id: this[itemKey].id};
+                else
+                    shallowItem[itemKey] = this[itemKey];
+            }
+            return shallowItem;
+        }
+
     }
 
     const [isAllLoaded, setAllLoaded] = useState(null);
@@ -139,10 +153,10 @@ export function useStorage() {
         return null;
     }
 
-    function writeCollection(collectionName, entries, currentState) {
-        // const logPath = pathMkr(logRoot, writeCollection);
-        currentState[collectionName] = entries;
-    }
+    // function writeCollection(collectionName, entries, currentState) {
+    //     // const logPath = pathMkr(logRoot, writeCollection);
+    //     currentState[collectionName] = entries;
+    // }
 
     function writeMoreEntries(collectionName, entries, currentState) {
         // const logPath = pathMkr(logRoot, writeMoreEntries, collectionName);
@@ -160,6 +174,7 @@ export function useStorage() {
 
     function writeItem(collectionName, id, value, currentState) {
         const logPath = pathMkr(logRoot, writeItem);
+        const doLog = logCondition(useStorage, collectionName);
         let prompt = null;
         if (!currentState) prompt = 'no currentState';
         if (collectionName === collectionNames.timestamps) prompt = 'timestamps is no entity';
@@ -168,7 +183,7 @@ export function useStorage() {
             logv(logPath, {currentState, collectionName, id}, prompt);
             return;
         }
-        logv(logPath, {currentState, collectionName, id, value});
+        if (doLog) logv(logPath, {currentState, collectionName, id, value});
         if (value instanceof Item)
             currentState[collectionName][id].item = value;
         else
@@ -190,20 +205,20 @@ export function useStorage() {
         currentState[collectionName][id] = entry;
     }
 
-    function makeItem(collectionName, item, currentState) {
-        const logPath = pathMkr(logRoot, makeItem);
-        let prompt = null;
-        if (!currentState) prompt = 'no currentState';
-        if (collectionName === collectionNames.timestamps) prompt = 'timestamps is no entity';
-        if (hasItem(collectionName, item.id, currentState)) prompt = 'item already present';
-        if (prompt) {
-            logv(logPath, {currentState, collectionName, item}, prompt);
-            return;
-        }
-        if (!(item instanceof Item))
-            item = new Item(collectionName, item);
-        currentState[collectionName][item.id] = {item};
-    }
+    // function makeItem(collectionName, item, currentState) {
+    //     const logPath = pathMkr(logRoot, makeItem);
+    //     let prompt = null;
+    //     if (!currentState) prompt = 'no currentState';
+    //     if (collectionName === collectionNames.timestamps) prompt = 'timestamps is no entity';
+    //     if (hasItem(collectionName, item.id, currentState)) prompt = 'item already present';
+    //     if (prompt) {
+    //         logv(logPath, {currentState, collectionName, item}, prompt);
+    //         return;
+    //     }
+    //     if (!(item instanceof Item))
+    //         item = new Item(collectionName, item);
+    //     currentState[collectionName][item.id] = {item};
+    // }
 
     function removeEntries(collectionName, idList, currentState) {
         // const logPath = pathMkr(logRoot, removeEntries, collectionName);
@@ -213,9 +228,10 @@ export function useStorage() {
     }
 
     function removeEntry(collectionName, id, currentState) {
-        // const logPath =pathMkr(logRoot, removeEntry, collectionName);
+        const logPath = pathMkr(logRoot, removeEntry, collectionName);
         const collection = currentState[collectionName];
         delete collection[id];
+        logv(logPath, {collection}, 'deleted? ');
     }
 
 ////----////----////----////----////----////----////----////----////----////----
@@ -256,7 +272,7 @@ export function useStorage() {
         const logPath = pathMkr(logRoot, retrieveAndStoreChangedItems, entityName);
         const doLog = logCondition(useStorage, entityName);
         const timestamp1 = readEntry(collectionNames.timestamps, entityName);
-        const timestamp2 = timestamp1 || 1640995200000; // 2022-01-01 00:00:00.000
+        const timestamp2 = timestamp1 || 946684800000; // 2000-01-01
         if (doLog) logv(logPath, {timestamp1, timestamp2}, '‼')
         await remote.retrieveChangedItems(
             entityTypes[entityName], timestamp2, requestState,
@@ -350,9 +366,11 @@ export function useStorage() {
     }
 
     async function createAndStoreItem(entityName, item, requestState, dummyStore, onSuccess, onFail) {// ✔✔
-        const doLog = false;// || logCondition(useStorage, entityName);
+        const doLog = logCondition(useStorage, entityName);
         const logPath = pathMkr(logRoot, createAndStoreItem, entityName, '↓↓');
-        // logv(logPath, {item, tree});
+        const isEmpty = (item.id === optionalIdValue);
+        if (doLog) logv(logPath, {item, isEmpty});
+        item.id = -1;// prevent collision in store
         if (!hasEntry(entityName, item.id, store)) {
             await remote.create(
                 entityTypes[entityName], item, requestState,
@@ -361,7 +379,8 @@ export function useStorage() {
                     item.id = extractNewId(response.data, entityName);
                     if (doLog) logv(null, {item_id: item.id});
                     updateState(currentState => {
-                        makeItem(entityName, item, currentState);
+                        makeEntry(entityName, item.id, {item, isEmpty}, currentState);
+                        // makeItem(entityName, item, currentState);
                     }, createAndStoreItem.name);
                     onSuccess?.(item);
                 },
@@ -377,7 +396,7 @@ export function useStorage() {
     async function deleteAndStoreItem(entityName, id, requestState, dummyStore, onSuccess, onFail) {// ✔✔
         const doLog = logCondition(useStorage, entityName);
         const logPath = pathMkr(logRoot, deleteAndStoreItem, entityName, '↓↓');
-        logv(logPath, {id});
+        if (doLog) logv(logPath, {id});
         if (hasEntry(entityName, id, store)) {
             await remote.delete(
                 entityTypes[entityName], id, requestState,
@@ -525,7 +544,6 @@ export function useStorage() {
     async function newItem(entityName, item, onSuccess, onFail) {// ✔✔
         // const logPath = pathMkr(logRoot, newItem, entityName, '↓');
         // logv(logPath, {item});
-        item.id = -1;// prevent collision in store
         const requestState = new RequestState();
         setRsStatus({
             requestState,
@@ -560,12 +578,12 @@ export function useStorage() {
     }
 
     function makeMatcher(probe) {
-        logv(pathMkr(logRoot, makeMatcher), {probe});
+        // logv(pathMkr(logRoot, makeMatcher), {probe});
 
         function matchProbe(candidate) {
-            const logMatch = pathMkr(logRoot, matchProbe);
+            // const logPath = pathMkr(logRoot, matchProbe);
             const properties = Object.entries(probe);
-            logv(logMatch, {probe, candidate, properties});
+            // logv(logPath, {probe, candidate, properties});
             return properties.every(([k, v]) => {
                 const isEmpty = (v == null || v === '');
                 return isEmpty || (!isEmpty && v === candidate[k]);
@@ -576,13 +594,14 @@ export function useStorage() {
     }
 
     function findItems(entityName, probe) {
+        // const logPath = pathMkr(logRoot, findItems);
+        // const doLog = false;// || logCondition(useStorage, entityName);
         const matchProbe = makeMatcher(probe);
-        const logPath = pathMkr(logRoot, findItems);
         const entries = readCollection(entityName);
-        const itemList = Object.values(entries).map(entry => entry.item);
+        const itemList = entries ? Object.values(entries).map(entry => entry.item) : [];
         const filteredList = itemList.filter(matchProbe);
         // const mappedList = filteredList.map(match => store[entityName].state[match.id].item);
-        logv(logPath, {entityName, probe, entries, itemList, filteredList});
+        // if (doLog) logv(logPath, {entityName, probe, entries, itemList, filteredList});
         return filteredList;
     }
 

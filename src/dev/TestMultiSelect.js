@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SummaryListSmall } from '../components/summaryList';
-import { entityTypes } from '../helpers';
+import { entityTypes } from '../helpers/globals/entityTypes';
 import { CommandContextProvider } from '../contexts/CommandContext';
 import { logv, rootMkr } from './log';
 import { Stringify } from './Stringify';

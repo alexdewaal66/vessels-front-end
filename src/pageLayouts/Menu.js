@@ -1,7 +1,8 @@
 import React from 'react';
 import menuStyles from './menu.module.css';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
-import { text, sessionConfig } from '../helpers';
+import { text } from '../helpers';
+import { sessionConfig } from '../helpers/globals/sessionConfig';
 
 export function Menu({menuItems, choice, makeChoice, children, className, ...rest}) {
 

@@ -3,13 +3,32 @@ import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Profile from './Profile';
 import SignOut from './SignOut';
+import Project from './Project';
 
 const pages = {
-    home: {label: 'Home', path: '/', component: Home, exact: true, isVisible: () => true, },
-    profile: {label: {NL:'Profiel', EN:'Profile'}, path: '/profile', component: Profile, isVisible: user => !!user, },
-    signUp: {label: {NL: 'Registreren', EN: 'Register'}, path: '/signup', component: SignUp, isVisible: user => !user, },
-    signIn: {label: {NL: 'Inloggen', EN: 'Log in'}, path: '/signin', component: SignIn, isVisible: user => !user, hints: ['wachtwoorden beschikbaar']},
-    signOut: {label: {NL: 'Uitloggen', EN: 'Log out'}, path: '/signout', component: SignOut, isVisible: user => !!user, },
+    home: {
+        label: 'Home', path: '/', component: Home, exact: true, isVisible: () => true,},
+    profile: {
+        label: {NL: 'Profiel', EN: 'Profile'},
+        path: '/profile', component: Profile, isVisible: user => !!user,
+    },
+    signUp: {
+        label: {NL: 'Registreren', EN: 'Register'},
+        path: '/signup', component: SignUp, isVisible: user => !user,
+    },
+    signIn: {
+        label: {NL: 'Inloggen', EN: 'Log in'},
+        path: '/signin',
+        component: SignIn,
+        isVisible: user => !user,
+        hints: {NL: ['wachtwoorden beschikbaar'], EN: ['passwords available']}
+    },
+    signOut: {
+        label: {NL: 'Uitloggen', EN: 'Log out'},
+        path: '/signout',
+        component: SignOut,
+        isVisible: user => !!user,
+    },
 };
 
 pages.displayOrder = [
@@ -21,5 +40,4 @@ pages.displayOrder = [
 ];
 
 
-
-export { Home, SignUp, SignIn, SignOut, Profile, pages};
+export {Project, Home, SignUp, SignIn, SignOut, Profile, pages };

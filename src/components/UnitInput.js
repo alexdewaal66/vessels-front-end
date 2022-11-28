@@ -1,10 +1,9 @@
 import { CalculatingNumberInput } from './CalculatingNumberInput';
-import { useEffect, useState } from 'react';
-import { useCounter } from '../dev/useCounter';
+import { useState } from 'react';
 import { rootMkr } from '../dev/log';
-import { Sorry } from '../dev/Sorry';
 import { ValidationMessage } from './ValidationMessage';
 import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
+import { useMountEffect } from '../helpers';
 
 export const conversions = {
     length: [
@@ -23,8 +22,11 @@ export const conversions = {
     ],
     volume: [
         {name: 'm³', calc: x => x, inv: x => x},
-        {name: 'ft³', calc: x => 0.3048 ** 3 * x, inv: x => x / 0.3048 ** 3},
-        {name: 'dm³', label: ['kubieke decimeter', 'liter'], calc: x => x / 10 ** 3, inv: x => 10 ** 3 * x},
+        {name: 'bbl', label: ['US barrel of oil'], calc: x => (42 * 231 * 0.0254 ** 3) * x, inv: x => x / (42 * 231 * 0.0254 ** 3)},
+        {name: 'ft³', label: {NL: 'kubieke voet', EN: 'cubic feet'}, calc: x => 0.3048 ** 3 * x, inv: x => x / 0.3048 ** 3},
+        {name: 'gal', label: 'US gallon', calc: x => (231 * 0.0254 ** 3) * x, inv: x => x / (231 * 0.0254 ** 3)},
+        {name: 'dm³', calc: x => x / 10 ** 3, inv: x => 10 ** 3 * x,
+            label: {NL: ['kubieke decimeter', 'liter'], EN: ['cubic decimeter', 'liter']}},
         {name: 'inch³', calc: x => 0.0254 ** 3 * x, inv: x => x / 0.0254 ** 3},
         {name: 'cm³', calc: x => x / 100 ** 3, inv: x => 100 ** 3 * x},
     ],
@@ -55,9 +57,7 @@ export function UnitInput({
     const baseUnitName = conversions[typeField.quantity][0].name;
 
     const {register, trigger, setValue, formState: {errors}, getValues} = entityForm;
-    useEffect(() => {
-        trigger(fieldName).then();
-    }, []);
+    useMountEffect(() => {trigger(fieldName).then();});
 
     const borderStyle = !!errors[fieldName] && !readOnly ? {border: '1px solid black'} : null;
 
@@ -72,8 +72,8 @@ export function UnitInput({
         return Number(x).toFixed(2);
     }
 
-    const counter = useCounter(logRoot, fieldName, 1000);
-    if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
+    // const counter = useCounter(logRoot, fieldName, 100);
+    // if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
 
 
     return (

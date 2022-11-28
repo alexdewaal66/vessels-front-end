@@ -1,21 +1,14 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
-import { getRequest, persistentVars, useRequestState, useMountEffect, endpoints } from '../helpers';
+import { endpoints, getRequest, persistentVars, useMountEffect, useRequestState } from '../helpers';
+import { levels } from '../helpers/globals/levels';
 import { pages } from '../pages';
 import { Statusbar } from '../pageLayouts';
 import { logv, pathMkr, rootMkr } from '../dev/log';
 import { StorageContext } from './StorageContext';
-import { entityNames } from '../helpers';
 
 export const AuthContext = createContext({});
-
-const levels = {
-    ROLE_MEMBER: 1,
-    ROLE_EXPERT: 2,
-    ROLE_ADMIN: 3,
-    ROLE_DEMIURG: 4,
-}
 
 
 export function AuthContextProvider({children}) {
@@ -33,7 +26,10 @@ export function AuthContextProvider({children}) {
         ...authState,
         fetchUserData,
         logout,
-        isEligibleToChange
+        isEligibleToChange,
+        isAdmin,
+        getHighestLevel,
+        getRoles,
     };
 
     function fetchUserData() {
@@ -90,7 +86,7 @@ export function AuthContextProvider({children}) {
         } else {
             if (!authState.user) {
                 // wel geldige JWT, geen user
-                fetchUserData(Jwt);
+                fetchUserData();
             } else {
                 // wel geldige JWT en user
                 setAuthState({
@@ -100,24 +96,20 @@ export function AuthContextProvider({children}) {
         }
     });
 
-    // function isEligibleToChange(item) {
-    //     return !(item?.owner && authState?.user)
-    //         || authState.user.username === item.owner
-    //         || hasUserHigherRoleThan(item.owner);
-    // }
 
-/*
-    owner       user        U == O      higherRole      ||      eligible
-    --------------------------------------------------------------------
-      *         null           *             *          ||         0
-    null          X            *             *          ||         1
-      Y           X            0             0          ||         0
-      Y           X            *             1          ||         1
-      Y           Y            1             *          ||         1
-*/
+    /*
+         owner  │  user   │  u == o  │  higherRole  ║  eligible
+        ────────┼─────────┼──────────┼──────────────╫───────────
+          *     │  null   │    *     │       *      ║     0
+         null   │  Alice  │    *     │       *      ║     1
+         Bob    │  Alice  │    0     │       0      ║     0
+         Bob    │  Alice  │    *     │       1      ║     1
+         Bob    │  Bob    │    1     │       *      ║     1
+    */
     function isEligibleToChange(item) {
-        // logv(pathMkr(logRoot, isEligibleToChange), {item, authState}, '🔎🔎🔎');
-        return  !!authState.user && (
+        // const logPath = pathMkr(logRoot, isEligibleToChange);
+        // logv(logPath, {item, authState}, '🔎🔎🔎');
+        return !!authState.user && (
             !item?.owner
             || authState.user.username === item.owner
             || hasUserHigherRoleThan(item.owner)
@@ -125,32 +117,46 @@ export function AuthContextProvider({children}) {
     }
 
 
+    function hasUserHigherRoleThan(ownerName) {
+        // const logPath = pathMkr(logRoot, hasUserHigherRoleThan);
+        const userLevel = getHighestLevel();
+        const ownerLevel = getHighestLevel(ownerName);
+        // logv(logPath, {userLevel, ownerLevel});
+        return userLevel > ownerLevel;
+    }
 
-    function hasUserHigherRoleThan(username) {
-        return getHighestLevel() > getHighestLevel(username);
+    function isAdmin() {
+        return getHighestLevel() === levels.ROLE_ADMIN;
     }
 
     function getHighestLevel(username) {
         let highest = levels.ROLE_MEMBER;
         // if (!username) return highest;
-        getRoles(username).forEach(role => {
+        getRoles(username)?.forEach(role => {
             if (levels[role] > highest) highest = levels[role];
         });
         return highest;
     }
 
     function getRoles(username) {
-        const logPath = pathMkr(logRoot, getRoles, username);
-        const user = !username
-            ? (console.log('👀authstate'), authState.user)
-            : (console.log('👀findItems()'), storage.findItems(entityNames.user, {username})[0]);
-        logv(logPath, {user});
-        // return user.authorities.map(a => a.role);// before roles as entity
-        const roleList = user.roles.map(role => role.name);
-        logv(pathMkr(logRoot, getRoles), {username, user, roleList});
+        // const logPath = pathMkr(logRoot, getRoles, username);
+        // let logPrompt;
+        let user;
+        if (!username) {
+            user = authState.user;
+            // logPrompt = 'authstate';
+        } else {
+            user = storage.findItems('user', {username})[0];
+            // logPrompt = 'findItems()';
+        }
+        // logv(logPath, {user}, logPrompt);
+        const roleList = user?.roles.map(role => role.name);
+        // logv(logPath, {username, user, roleList});
         return roleList;
     }
 
+    // const counter = useCounter(logRoot, '', 1000,  50);
+    // if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
 
     return (
         <AuthContext.Provider value={authData}>

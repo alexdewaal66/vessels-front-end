@@ -1,20 +1,17 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { entityTypes } from '../helpers/globals/entityTypes';
 import {
-    capitalizeLabel,
+    capitalizeLabel, languageSelector, text,
     endpoints,
-    entityTypes,
-    languageSelector,
-    postRequest,
-    text,
-    useRequestState
+    postRequest, useRequestState, persistentVars
 } from '../helpers';
 import { pages } from './index';
-import { Content, Main, Menu } from '../pageLayouts';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
 import { ShowRequestState } from '../components';
 import { logv, pathMkr, rootMkr } from '../dev/log';
+import { Page } from './Page';
 
 const messages = {
     NL: {
@@ -35,7 +32,7 @@ const messages = {
     },
 };
 
-function SignUp() {
+export default function SignUp() {
     const logRoot = rootMkr(SignUp);
     const {handleSubmit, register} = useForm();
     const requestState = useRequestState();
@@ -47,6 +44,7 @@ function SignUp() {
     function onSubmit(formData) {
         const logPath = pathMkr(logRoot, onSubmit, '↓')
         logv(logPath, {formData});
+        localStorage.removeItem(persistentVars.JWT);
         postRequest({
             endpoint: endpoints.signUp,
             payload: formData,
@@ -60,73 +58,64 @@ function SignUp() {
     const TXT = messages[languageSelector()];
 
     return (
-        <Content>
-            <Main>
-                <h1>{TXT.signUp}</h1>
-                <p>{TXT.purpose}</p>
-                <ShowRequestState requestState={requestState}
-                                  description={text({NL: 'het registreren ', EN: 'registration '})}
-                                  advice={text({NL: 'Probeer het opnieuw. ', EN: 'try again '})}
-                />
-                {!requestState.isSuccess && (
-                    <Form onSubmit={handleSubmit(onSubmit)}><Fieldset>
-                        <FieldRow>
-                            <FieldDesc>{capitalizeLabel(userFields.email)}:</FieldDesc>
-                            <FieldEl>
-                                <input
-                                    type="email"
-                                    id="email-field"
-                                    name="email"
-                                    {...register("email", userFields.email.validation)}
-                                />
-                            </FieldEl>
-                        </FieldRow>
-                        <FieldRow>
-                            <FieldDesc>{capitalizeLabel(userFields.username)}:</FieldDesc>
-                            <FieldEl>
-                                <input
-                                    type="text"
-                                    id="username-field"
-                                    name="username"
-                                    {...register("username", userFields.username.validation)}
-                                />
-                            </FieldEl>
-                        </FieldRow>
+        <Page>
+            <h1>{TXT.signUp}</h1>
+            <p>{TXT.purpose}</p>
+            <ShowRequestState requestState={requestState}
+                              description={text({NL: 'het registreren ', EN: 'registration '})}
+                              advice={text({NL: 'Probeer het opnieuw. ', EN: 'try again '})}
+            />
+            {!requestState.isSuccess && (
+                <Form onSubmit={handleSubmit(onSubmit)}><Fieldset>
+                    <FieldRow>
+                        <FieldDesc>{capitalizeLabel(userFields.email)}:</FieldDesc>
+                        <FieldEl>
+                            <input
+                                type="email"
+                                id="email-field"
+                                name="email"
+                                {...register("email", userFields.email.validation)}
+                            />
+                        </FieldEl>
+                    </FieldRow>
+                    <FieldRow>
+                        <FieldDesc>{capitalizeLabel(userFields.username)}:</FieldDesc>
+                        <FieldEl>
+                            <input
+                                type="text"
+                                id="username-field"
+                                name="username"
+                                {...register("username", userFields.username.validation)}
+                            />
+                        </FieldEl>
+                    </FieldRow>
 
-                        <FieldRow>
-                            <FieldDesc>{capitalizeLabel(userFields.password)}:</FieldDesc>
-                            <FieldEl>
-                                <input
-                                    type="password"
-                                    id="password-field"
-                                    name="password"
-                                    {...register("password", userFields.password.validation)}
-                                />
-                            </FieldEl>
-                        </FieldRow>
-                        <FieldRow>
-                            <FieldEl>
-                                <button
-                                    type="submit"
-                                    className="form-button"
-                                    disabled={requestState.isPending || requestState.isSuccess}
-                                >
-                                    {TXT.make}
-                                </button>
-                            </FieldEl>
-                        </FieldRow>
-                    </Fieldset></Form>
-                )}
+                    <FieldRow>
+                        <FieldDesc>{capitalizeLabel(userFields.password)}:</FieldDesc>
+                        <FieldEl>
+                            <input
+                                type="password"
+                                id="password-field"
+                                name="password"
+                                {...register("password", userFields.password.validation)}
+                            />
+                        </FieldEl>
+                    </FieldRow>
+                    <FieldRow>
+                        <FieldEl>
+                            <button
+                                type="submit"
+                                className="form-button"
+                                disabled={requestState.isPending || requestState.isSuccess}
+                            >
+                                {TXT.make}
+                            </button>
+                        </FieldEl>
+                    </FieldRow>
+                </Fieldset></Form>
+            )}
 
-                <p>{TXT.preLink}<Link to={pages.signIn.path}>{TXT.linkText}</Link>{TXT.postLink}</p>
-            </Main>
-            <Menu>
-            </Menu>
-            {/*<Aside>*/}
-            {/*    ASIDE*/}
-            {/*</Aside>*/}
-        </Content>
+            <p>{TXT.preLink}<Link to={pages.signIn.path}>{TXT.linkText}</Link>{TXT.postLink}</p>
+        </Page>
     );
 }
-
-export default SignUp;

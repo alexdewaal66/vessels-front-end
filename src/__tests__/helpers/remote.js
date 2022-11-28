@@ -312,39 +312,39 @@ describe('remote.* functions', () => {
             });
     });
 
-    describe('remote.retrieveAllSummaries()', () => {
-
-        test.each(
-            readAllXCases()
-        )('entityName=%s',
-            async (
-                entityName,
-                requestState, resultingState,
-                onSuccess, onFail,
-                concludePromise
-            ) => {
-                const extend = 'summaries';
-                let response = undefined, error = undefined;
-                if (concludePromise === resolve)
-                    response = remoteTestcases[extend];
-                else
-                    error = errorSchema;
-                const entityType = entityTypes[entityName];
-                const expectedConfig = {
-                    method: 'get',
-                    baseURL: endpoints.baseURL,
-                    url: entityType.endpoint + '/' + extend,
-                    headers: addJwtToHeaders(),
-                    timeout: 15_000,
-                };
-                axios.mockImplementationOnce(concludePromise(response || error));
-                await remote.retrieveAllSummaries(entityType, requestState, onSuccess.saveArg, onFail.saveArg);
-                expect(axios).toHaveBeenCalledWith(expectedConfig);
-                expect(requestState.value).toBe(resultingState);
-                expect(onSuccess.arg).toEqual(response);
-                expect(onFail.arg).toEqual(error);
-            });
-    });
+    // describe('remote.retrieveAllSummaries()', () => {
+    //
+    //     test.each(
+    //         readAllXCases()
+    //     )('entityName=%s',
+    //         async (
+    //             entityName,
+    //             requestState, resultingState,
+    //             onSuccess, onFail,
+    //             concludePromise
+    //         ) => {
+    //             const extend = 'summaries';
+    //             let response = undefined, error = undefined;
+    //             if (concludePromise === resolve)
+    //                 response = remoteTestcases[extend];
+    //             else
+    //                 error = errorSchema;
+    //             const entityType = entityTypes[entityName];
+    //             const expectedConfig = {
+    //                 method: 'get',
+    //                 baseURL: endpoints.baseURL,
+    //                 url: entityType.endpoint + '/' + extend,
+    //                 headers: addJwtToHeaders(),
+    //                 timeout: 15_000,
+    //             };
+    //             axios.mockImplementationOnce(concludePromise(response || error));
+    //             await remote.retrieveAllSummaries(entityType, requestState, onSuccess.saveArg, onFail.saveArg);
+    //             expect(axios).toHaveBeenCalledWith(expectedConfig);
+    //             expect(requestState.value).toBe(resultingState);
+    //             expect(onSuccess.arg).toEqual(response);
+    //             expect(onFail.arg).toEqual(error);
+    //         });
+    // });
 
     describe('remote.retrieveAllItems()', () => {
 

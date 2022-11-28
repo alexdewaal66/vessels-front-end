@@ -1,12 +1,7 @@
 import {
-    exportedForTesting,
-    getFieldFromPath,
-    entityTypes,
-    fieldTypes,
-    // initializeEntityTypes,
-    createEmptySummary,
-    createEmptyItem
-} from '../../helpers/entityTypes';
+    entityTypes, referringFieldTypes, fieldTypes, exportedForTesting,
+    getTypeFieldFromPath, createEmptySummary, createEmptyItem
+} from '../../helpers/globals/entityTypes';
 import { dotCount } from '../../helpers';
 
 
@@ -23,13 +18,6 @@ const {
 
 const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
-// const entityTypesCopy = deepCopy(entityTypes);
-
-// const entityEntries = (entityTypesCopy = deepCopy(entityTypes)) =>
-//     Object.entries(entityTypesCopy).map(
-//         ([entityName, entityType]) =>
-//             [entityName, entityType, entityTypesCopy]
-//     );
 
 const fieldEntries = (entityTypesCopy = deepCopy(entityTypes)) =>
     Object.entries(entityTypesCopy).map(
@@ -40,24 +28,27 @@ const fieldEntries = (entityTypesCopy = deepCopy(entityTypes)) =>
             )
     ).flat();
 
-const referringFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === fieldTypes.obj || field.type === fieldTypes.file);
+const referringFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => referringFieldTypes.includes(field.type));
 
 const textFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === fieldTypes.str);
 
-// const numFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === fieldTypes.num);
+const numFieldEntries = () => fieldEntries().filter(([entityName, fieldName, field, entityTypesCopy]) => field.type === fieldTypes.num);
 
 describe('validation support functions', () => {
     describe('expansions', () => {
-        test('dot notation', () => {
-            const actual = expansions.max(10);
-            expect(actual).toEqual({value: 10, message: 'niet groter dan 10'});
-        });
+        test('dot notation',
+            () => {
+                const actual = expansions.max(10);
+                expect(actual).toEqual(
+                    {value: 10, message: {EN: 'not larger than 10', NL: 'niet groter dan 10',},}
+                );
+            });
         test.each([
-            ['required', null, {value: null, message: 'verplicht veld'}],
-            ['maxLength', 30, {value: 30, message: 'maximaal 30 karakters'}],
-            ['minLength', 10, {value: 10, message: 'minimaal 10 karakters'}],
-            ['max', 4321, {value: 4321, message: 'niet groter dan 4321'}],
-            ['min', 1234, {value: 1234, message: 'niet kleiner dan 1234'}]
+            ['required', null, {value: null, message: {EN: 'required field', NL: 'verplicht veld',},}],
+            ['maxLength', 30, {value: 30, message: {EN: '30 characters maximum', NL: 'maximaal 30 karakters',},}],
+            ['minLength', 10, {value: 10, message: {EN: '10 characters minimum', NL: 'minimaal 10 karakters',},}],
+            ['max', 4321, {value: 4321, message: {EN: 'not larger than 4321', NL: 'niet groter dan 4321',},}],
+            ['min', 1234, {value: 1234, message: {EN: 'not smaller than 1234', NL: 'niet kleiner dan 1234',},}]
         ])('criterion=%s', (criterion, value, expected) => {
             const actual = expansions[criterion](value);
             expect(actual).toEqual(expected);
@@ -66,10 +57,21 @@ describe('validation support functions', () => {
 
     describe('expandValidation', () => {
         test.each([
-            [['required', null], ['required', {value: null, message: 'verplicht veld'}]],
-            [['required', {a: 1, b: 'bb'}], ['required', {a: 1, b: 'bb'}]],
-            [['maxLength', 30], ['maxLength', {value: 30, message: 'maximaal 30 karakters'}]],
-            [['min', 1234], ['min', {value: 1234, message: 'niet kleiner dan 1234'}]]
+            [
+                ['required', null],
+                ['required', {value: null, message: {EN: 'required field', NL: 'verplicht veld',},}]
+            ],
+            [
+                ['required', {a: 1, b: 'bb'}], ['required', {a: 1, b: 'bb'}]
+            ],
+            [
+                ['maxLength', 30],
+                ['maxLength', {value: 30, message: {EN: '30 characters maximum', NL: 'maximaal 30 karakters',},}]
+            ],
+            [
+                ['min', 1234],
+                ['min', {value: 1234, message: {EN: 'not smaller than 1234', NL: 'niet kleiner dan 1234',},}]
+            ]
         ])('unexpanded=%o', (unexpanded, expected) => {
             const actual = expandValidation(unexpanded);
             expect(actual).toEqual(expected);
@@ -96,14 +98,24 @@ describe('validation support functions', () => {
                 {a: 1, b: 2, c: 3, validation: {min: 314159}},
                 {
                     a: 1, b: 2, c: 3,
-                    validation: {min: {value: 314159, message: 'niet kleiner dan 314159'}}
+                    validation: {
+                        min: {
+                            value: 314159,
+                            message: {EN: 'not smaller than 314159', NL: 'niet kleiner dan 314159',},
+                        }
+                    }
                 }
             ],
             ['unexpanded validation, maxLength',
                 {a: 1, b: 2, validation: {maxLength: 100}, c: 3},
                 {
                     a: 1, b: 2, c: 3,
-                    validation: {maxLength: {value: 100, message: 'maximaal 100 karakters'}}
+                    validation: {
+                        maxLength: {
+                            value: 100,
+                            message: {EN: '100 characters maximum', NL: 'maximaal 100 karakters',},
+                        }
+                    }
                 }
             ],
             ['multiple validations, required + max',
@@ -111,8 +123,13 @@ describe('validation support functions', () => {
                 {
                     a: 1, b: 2, c: 3,
                     validation: {
-                        required: {value: true, message: 'verplicht veld'},
-                        max: {value: 123.456, message: 'niet groter dan 123.456'}
+                        required: {value: true, message: {NL: 'verplicht veld', EN: 'required field'}},
+                        max: {
+                            value: 123.456, message: {
+                                EN: 'not larger than 123.456',
+                                NL: 'niet groter dan 123.456',
+                            },
+                        }
                     }
                 }
             ],
@@ -144,19 +161,28 @@ describe('validation support functions', () => {
 
 describe('internal reference support functions', () => {
 
-    describe('getFieldFromPath', () => {
+    describe('getTypeFieldFromPath', () => {
 
         test('return directly referenced field', () => {
             const entityTypesCopy = deepCopy(entityTypes);
-            const actual = getFieldFromPath(entityTypesCopy, entityTypesCopy.hull, entityTypesCopy.hull.summary[1]);
-            const expected = {type: 'string', label: 'rompnummer', validation: {maxLength: 20}};
+            const actual = getTypeFieldFromPath(entityTypesCopy, entityTypesCopy.hull, entityTypesCopy.hull.summary[1]);
+            const expected = {
+                    type: 'string',
+                    label: {EN: 'hull number', NL: 'rompnummer',},
+                    validation: {maxLength: 20}
+                }
+            ;
             expect(actual).toEqual(expected);
         });
 
         test('find target of prop referring to entity', () => {
             const entityTypesCopy = deepCopy(entityTypes);
-            const actual = getFieldFromPath(entityTypesCopy, entityTypesCopy.relation, entityTypesCopy.relation.summary[2]);
-            const expected = {type: 'string', label: 'naam', validation: {maxLength: 50}};
+            const actual = getTypeFieldFromPath(entityTypesCopy, entityTypesCopy.relation, entityTypesCopy.relation.summary[2]);
+            const expected = {
+                type: 'string',
+                label: {EN: 'name', NL: 'naam',},
+                validation: {maxLength: 50}
+            };
             expect(actual).toEqual(expected);
         });
     });
@@ -188,12 +214,13 @@ describe('internal reference support functions', () => {
         test('reference w/o target prop, target & label should be inserted', () => {
             const entityTypesCopy = deepCopy(entityTypes);
             const expected = {
-                hasNull: true,
-                isMulti: false,
-                label: 'romp',
-                target: 'hull',
-                type: 'object'
-            };
+                    hasNull: true,
+                    isMulti: false,
+                    label: {EN: 'hull', NL: 'romp',},
+                    target: 'hull',
+                    type: 'object'
+                }
+            ;
             setInternalReference(entityTypesCopy, 'vessel', 'hull');
             expect(entityTypesCopy.vessel.fields.hull).toEqual(expected);
         });
@@ -217,9 +244,9 @@ describe('internal reference support functions', () => {
             // fieldsCopy.hull = {...fieldsCopy.hull, label: 'romp', target: 'hull'};
             // fieldsCopy.vesselType = {...fieldsCopy.vesselType, label: 'scheepstype', target: 'vesselType'};
             addSubProps(fieldsCopy, {
-                hull: {label: 'romp', target: 'hull'},
-                vesselType: {label: 'scheepstype', target: 'vesselType'},
-                image: {label: 'afbeelding', target: 'image'},
+                hull: {label: {EN: 'hull', NL: 'romp',}, target: 'hull'},
+                vesselType: {label: {EN: 'ship type', NL: 'scheepstype',}, target: 'vesselType'},
+                image: {label: {EN: 'image', NL: 'afbeelding',}, target: 'image'},
             });
             setEveryFieldsInternalReferences(entityTypesCopy, entityName);
             expect(fields).toEqual(fieldsCopy);
@@ -241,7 +268,7 @@ describe('internal reference support functions', () => {
             const entityType = entityTypesCopy[entityName];
             // console.log('fields.country (before)=', entityType.fields.country)
             const fieldsCopy = deepCopy(entityType.fields);
-            fieldsCopy.country = {...fieldsCopy.country, label: 'land', target: 'country'};
+            fieldsCopy.country = {...fieldsCopy.country, label: {EN: 'country', NL: 'land',}, target: 'country'};
             // console.log('fieldsCopy.country=', fieldsCopy.country);
             setEveryFieldsInternalReferences(entityTypesCopy, entityName);
             // console.log('fields.country (after)=', entityType.fields.country)
@@ -328,6 +355,9 @@ describe('internal reference support functions', () => {
 });
 
 describe('initializeEntityTypes()', () => {
+    test('failure suppression placeholder test', () => {
+        expect(true).toBe(true);
+    });
 });
-
-
+//
+//

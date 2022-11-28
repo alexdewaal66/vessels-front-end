@@ -1,7 +1,9 @@
 import React, { Fragment, useContext, useState } from 'react';
 import { logv, pathMkr, rootMkr } from '../dev/log';
 // import { Stringify } from '../dev/Stringify';
-import { endpoints, entityTypes, languageSelector } from '../helpers';
+import { entityTypes } from '../helpers/globals/entityTypes';
+import { sessionConfig } from '../helpers/globals/sessionConfig';
+import { endpoints, languageSelector } from '../helpers';
 import { StorageContext } from '../contexts';
 import {formStyles} from '../formLayouts';
 import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
@@ -37,6 +39,10 @@ export function InputImageFile({
     );
     // const hiddenFieldName = 'hidden_' + fieldName + '_' + typeField.target + '_id';
     const hiddenFieldName = fieldName;
+
+    const hiddenFieldStyle = sessionConfig.showHiddenFields.value
+        ? {opacity: '50%', cursor: 'default'} : {opacity: '0', position: 'absolute', width: 0};
+
     setValue(hiddenFieldName, imageId);
 
     const isFileSelected = '0' in selectedFiles;
@@ -92,14 +98,14 @@ export function InputImageFile({
         loadItem(entityTypes.image.name, imageItem.id, onReloadSuccess, onReloadFail);
     }
 
-    function onReloadFail(imageItem) {
+    function onReloadFail() {
         // const logPath = pathMkr(logRoot, onReloadSuccess);
         // logv(logPath, {imageItem});
         // setImageFeedback(current => current + ', R:❌');
         setImageFeedback('❌');
     }
 
-    function onReloadSuccess(imageItem) {
+    function onReloadSuccess() {
         // const logPath = pathMkr(logRoot, onReloadSuccess);
         // logv(logPath, {imageItem});
         // setImageFeedback(current => current + ', R:✔');
@@ -113,8 +119,9 @@ export function InputImageFile({
                 <div>
                     <input
                         type={'number'}
+                        style={hiddenFieldStyle}
                         // style={{opacity: '0', position: 'absolute'}}
-                        style={{opacity: '50%'}}
+                        // style={{opacity: '50%'}}
                         name={fieldName}
                         defaultValue={defaultValue}
                         readOnly={readOnly}

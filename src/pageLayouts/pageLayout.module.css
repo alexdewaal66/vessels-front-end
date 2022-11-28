@@ -23,6 +23,7 @@ html, body {
     align-items: center;
     border-top: 1px solid;
     height: 2em;
+    font-size: smaller;
 }
 
 .header, .footer {
@@ -184,16 +185,20 @@ html, body {
 .firstPart, .secondPart {
     /*border: 1px solid red;*/
     /*box-sizing: border-box;*/
-    /*width: calc(fit-content - 20px);*/
+    --width-value: calc(fit-content - 20px);
+    width: var(--width-value); /* variable introduced to avoid "Mismatched property value" */
+    min-width: 35vw;
     height: 100%;
-    width: 100%;
+    /*width: 100%;*/
     display: flex;
 }
 
 .secondPart {
     /*border: 1px solid green;*/
     overflow-y: auto;
-    padding-right: 10px;
+    /*padding-right: 10px;*/
+    padding: 0 10px;
+    flex-grow: 2;
 }
 
 .credentials {
@@ -206,7 +211,6 @@ html, body {
 
 .link {
     color: var(--color-normal);
-    font-size: smaller;
     /*margin-left: 2em;*/
     text-decoration: none;
 }

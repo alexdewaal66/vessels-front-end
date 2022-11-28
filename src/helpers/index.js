@@ -1,6 +1,5 @@
 export * from './customHooks';
-export * from './endpoints';
-export * from './entityTypes';
+export * from './globals/endpoints';
 export * from './multipleStyles';
 export * from './RequestState';
 export * from './remote';

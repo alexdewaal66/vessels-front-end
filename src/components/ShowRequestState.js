@@ -1,6 +1,7 @@
 import React from 'react';
 import { Statusbar } from '../pageLayouts/Statusbar';
-import { languageSelector } from '../helpers';
+import { languageSelector, text } from '../helpers';
+import { rootMkr } from '../dev/log';
 
 const messages = {
     NL: {
@@ -23,27 +24,32 @@ function capitalize(string) {
 }
 
 export function ShowRequestState({requestState, description = defaultDesc, advice}) {
-
+    const logRoot = rootMkr(ShowRequestState, description);
     const TXT = messages[languageSelector()];
+
+    // const counter = useCounter(logRoot, '', 1000, 50);
+    // if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
 
     return (
         <>
             {requestState?.isPending && (
                 <Statusbar>
                     {TXT.patience}&nbsp;
-                    {capitalize(description)}
+                    {capitalize(text(description))}
                     {TXT.processing}
                 </Statusbar>
             )}
             {requestState?.isError && (
-                <Statusbar>{TXT.error}{description}.
+                <Statusbar>
+                    {TXT.error}
+                    {description}.
                     {advice}
                     ({requestState.errorMsg})
                 </Statusbar>
             )}
             {requestState?.isSuccess && (
                 <Statusbar>
-                    {capitalize(description)}{TXT.executed}
+                    {capitalize(text(description))}{TXT.executed}
                 </Statusbar>
             )}
         </>

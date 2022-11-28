@@ -1,7 +1,6 @@
-import { keys, requestStates, useKeyPressed, useMountEffect, useRequestState } from '../../helpers';
-import { createEvent, fireEvent, render, screen } from '@testing-library/react';
+import { useRequestState } from '../../helpers';
+import { render} from '@testing-library/react';
 import { actual, setActual, TestHook } from '../__resources__/testHook';
-import userEvent from '@testing-library/user-event';
 
 describe('customHooks.js', () => {
     describe('useRequestState', () => {
@@ -12,10 +11,10 @@ describe('customHooks.js', () => {
             ('testcase=%s', (testcase) => {
                 render(<TestHook
                     useHook={useRequestState}
-                    onMount={(hook, local) => {
+                    onMount={(hook) => {
                         hook.setErrorMsg(testcase);
                     }}
-                    onRender={(hook, local) => {
+                    onRender={(hook) => {
                         setActual(hook.errorMsg);
                     }}
                 />);
@@ -26,7 +25,7 @@ describe('customHooks.js', () => {
 
         describe('set State', () => {
 
-            function onRender(hook, local) {
+            function onRender(hook) {
                 setActual([
                     hook.isIdle, hook.isPending, hook.isSuccess, hook.isError
                 ]);
@@ -45,7 +44,7 @@ describe('customHooks.js', () => {
                 render(<TestHook
                     useHook={useRequestState}
                     initialValue={Infinity}
-                    onMount={(hook, local) => {
+                    onMount={(hook) => {
                         hook.setAtIdle();
                     }}
                     onRender={onRender}
@@ -57,7 +56,7 @@ describe('customHooks.js', () => {
                 render(<TestHook
                     useHook={useRequestState}
                     initialValue={Infinity}
-                    onMount={(hook, local) => {
+                    onMount={(hook) => {
                         hook.setAtSuccess();
                     }}
                     onRender={onRender}

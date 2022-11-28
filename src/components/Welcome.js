@@ -7,15 +7,15 @@ const messages = {
     NL: {
         welcome: 'Welkom',
         guest: 'gast',
-        menu: 'Hier links vind je het menu met vnl. de gegevenssoorten.',
-        options: 'Aan de onderkant wat opties die de interne werking meer inzichtelijk maken, inloggegevens en links naar GitHub.',
+        menu: 'Hier links vind je het menu met vooral de gegevenssoorten.',
+        footer: 'Aan de onderkant o.a. wat opties voor taal en tooltips en die de interne werking meer inzichtelijk maken, inloggegevens en links naar GitHub.',
         status: 'Helemaal rechts onderin is de status te zien van de laatste gegevensaanvraag.',
     },
     EN: {
         welcome: 'Welcome',
         guest: 'guest',
         menu: 'On the left you find the menu with mostly data types.',
-        options: 'At the bottom some options clarifying the inner workings, user credentials and links to GitHub.',
+        footer: 'At the bottom some options for language and tooltips etc. and those clarifying the inner workings, user credentials and links to GitHub.',
         status: 'At the bottom right there\'s the status of the latest data request',
     }
 };
@@ -42,7 +42,7 @@ export function Welcome() {
                 {TXT.menu}
             </p>
             <p>
-                {TXT.options}
+                {TXT.footer}
             </p>
             <p>
                 {TXT.status}

@@ -1,14 +1,17 @@
 import { entityNameList, entityTypes } from '../../helpers';
-import { useStorage } from '../../helpers';
+import { useStorage } from '../../helpers/useStorage';
 import { render } from '@testing-library/react';
-import {actual, setActual, TestHook } from '../__resources__/testHook';
+import { actual, setActual, TestHook } from '../__resources__/testHook';
+import { act } from 'react-dom/test-utils';
 
 describe('useStorage', () => {
     describe('store-entityTypes consistency', () => {
-        render(<TestHook
-            useHook={useStorage}
-            getHook={setActual}
-        />);
+        act(() => {
+            render(<TestHook
+                useHook={useStorage}
+                getHook={setActual}
+            />);
+        });
 
         const {store} = actual;
         const storeKeys = Object.keys(store);
@@ -23,7 +26,7 @@ describe('useStorage', () => {
         });
 
         test('timestamps', () => {
-          expect(store).toHaveProperty('timestamps');
+            expect(store).toHaveProperty('timestamps');
         });
     });
 });

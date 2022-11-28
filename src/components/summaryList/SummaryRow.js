@@ -3,17 +3,12 @@ import { optionalIdValue, summaryStyle } from './index';
 import { errv, logCondition, logv } from '../../dev/log';
 import { pathMkr } from '../../dev/log';
 import { rootMkr } from '../../dev/log';
+import { entityTypes, getTypeFieldFromPath, fieldTypes } from '../../helpers/globals/entityTypes';
 import {
-    cx,
-    endpoints,
-    entityTypes,
-    getFieldFromPath,
-    hints,
-    fieldTypes,
-    languageSelector,
-    text
+    cx, devHints, endpoints,
+    hints, languageSelector, text
 } from '../../helpers';
-import { ChoiceContext } from '../../contexts';
+import { ChoiceContext, StorageContext } from '../../contexts';
 import { EntityN } from '../../pages/homeMenuItems';
 
 const keys = {
@@ -40,7 +35,7 @@ const messages = {
 
 export function SummaryRow({
                                item, index, entityType, chooseItem,
-                               rowFocus, UICues, elKey, // tableBodyRef
+                               rowFocus, UICues, elKey, parentName
                            }) {
     const entityName = entityType.name;
     const logRoot = rootMkr(SummaryRow, entityName, item?.id);
@@ -57,6 +52,9 @@ export function SummaryRow({
         isNullRow ? summaryStyle.nullRow : null
     );
     const {makeChoice} = useContext(ChoiceContext);
+    const storage = useContext(StorageContext);
+    const entry = storage.getEntry(entityName, item.id);
+    const arrowStyle = entry?.isEmpty ? {color: 'red', fontSize: 'larger'} : null;
     elKey += `/SRow`;
 
     const TXT = messages[languageSelector()];
@@ -133,13 +131,12 @@ export function SummaryRow({
 
     function renderProperty(object, fieldPath) {
         const logPath = pathMkr(logRoot, renderProperty);
-        const doLog = fieldPath.includes('image');
+        // const doLog = fieldPath.includes('image');
         const field = getProperty(object, fieldPath);
-        if (!field && doLog) {
-            logv(logPath, {object, fieldPath, field});
-            return null;
-        }
-        let fieldType = getFieldFromPath(entityTypes, entityType, fieldPath).type;
+        if (doLog) logv(logPath, {object, fieldPath, field});
+        if (!field) return null;
+
+        let fieldType = getTypeFieldFromPath(entityTypes, entityType, fieldPath).type;
         // if (doLog) logv(null, {fieldType});
         if (fieldType === fieldTypes.img || fieldType === fieldTypes.file) {
             // logv(null, {object, fieldPath, field});
@@ -159,23 +156,28 @@ export function SummaryRow({
             tabIndex={0}
             key={elKey}
             className={selectedStyle}
+            style={readOnly ? {cursor: 'default'} : {cursor: 'pointer'}}
+            title={devHints('readOnly='+readOnly)}
+            // aria-readonly={readOnly}
         >
-            {entityType.summary.map((fieldPath) =>
-                <td key={elKey + fieldPath}>
-                    {(isNullRow)
-                        ? '➖➖'
-                        : (isRowOptional)
-                            ? TXT.new
-                            : renderProperty(item, fieldPath)
-                    }
-                </td>
-            )}
+            {entityType.summary.map((fieldPath) => {
+                if (fieldPath.split('.')[0] !== parentName)
+                    return (<td key={elKey + fieldPath}>
+                        {(isNullRow)
+                            ? '➖➖'
+                            : (isRowOptional)
+                                ? TXT.new
+                                : renderProperty(item, fieldPath)
+                        }
+                    </td>);
+                else return null;
+            })}
             {(small && item.id && item.id !== optionalIdValue) ? (
                 <td>
                     <span onClick={makeChoice({component: EntityN(entityType, item.id)})}
                           title={hints(`${TXT.goto} ${text(entityType.label)}(${item.id})`)}
                     >
-                        ➡
+                        <span style={arrowStyle}>➡</span>
                     </span>
                 </td>
             ) : (

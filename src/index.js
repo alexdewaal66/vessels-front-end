@@ -4,11 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { MessageContextProvider } from './contexts/MessageContext';
-import { StorageContextProvider } from './contexts/StorageContext';
-import { AuthContextProvider } from './contexts/AuthContext';
-import { ChoiceContextProvider } from './contexts/ChoiceContext';
-import { entityTypes, initializeEntityTypes } from './helpers';
+import {
+    MessageContextProvider, StorageContextProvider,
+    AuthContextProvider, ChoiceContextProvider
+} from './contexts';
+import { entityTypes, initializeEntityTypes } from './helpers/globals/entityTypes';
 
 initializeEntityTypes(entityTypes);
 

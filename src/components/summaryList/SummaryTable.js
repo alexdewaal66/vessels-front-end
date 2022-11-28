@@ -1,19 +1,23 @@
 import React, { useState, useRef } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
-import { cx, languageSelector } from '../../helpers';
+import { cx, hints} from '../../helpers';
 import { useFilters } from './useFilters';
 
 // const messages = {NL: {}, EN: {}};
 
+const multiSelectHint = {
+    NL: 'Meervoudige selectie mogelijk mbv Ctrl-toets',
+    EN: 'Multiple selection possible using Ctrl key',
+};
 
 export function SummaryTable({
                                  list, entityType, selectedIds, chooseItem, small,
-                                 UICues, elKey, sorting, setFiltering }) {
+                                 UICues, elKey, sorting, setFiltering, toggleCollapsed, parentName }) {
     const sizeStyle = (small) ? summaryStyle.small : summaryStyle.tall;
     elKey += '/STable';
 
     const entityName = entityType.name;
-    const {hasFocus, borderStyle, readOnly} = UICues;
+    const {hasFocus, borderStyle, readOnly, isMulti} = UICues;
     const idName = entityType.id[0];
     // const logRoot = rootMkr(SummaryTable, entityName);
     // logv(logRoot, {list});
@@ -70,6 +74,8 @@ export function SummaryTable({
         }
     }
 
+    // useEffect(() => handleFocus({}), toggleCollapsed);
+
     function handleBlur(event) {
         // const logPath = pathMkr(logRoot, handleBlur);
         if (!event.currentTarget.contains(event.relatedTarget)) {
@@ -109,9 +115,12 @@ export function SummaryTable({
                                     sorting={sorting}
                                     setFiltering={setFiltering}
                                     mergeConstraints={mergeConstraints}
+                                    small={small}
+                                    toggleCollapsed={toggleCollapsed}
+                                    parentName={parentName}
                     />
                     </thead>
-                    <tbody ref={tableBodyRef}>
+                    <tbody ref={tableBodyRef} title={isMulti ? hints(multiSelectHint): null}>
                     {displayList.map((listItem, index) => (
                         <SummaryRow item={listItem}
                                     index={index}
@@ -122,6 +131,7 @@ export function SummaryTable({
                                     rowFocus={rowFocus}
                                     UICues={UIRowCues(index)}
                                     tableBodyRef={tableBodyRef}
+                                    parentName={parentName}
                         />
                     ))}
                     </tbody>

@@ -1,7 +1,10 @@
-import { logCondition, logv, pathMkr } from '../dev/log';
-import { quantityNames } from '../components/UnitInput';
+import { logCondition, logv, pathMkr } from '../../dev/log';
+import { quantityNames } from '../../components/UnitInput';
+import { authorities } from './levels';
 
 const logRoot = 'entityTypes.js';
+
+export const hiddenProps = ['timestamp', 'owner', 'updater'];
 
 export const fieldTypes = {
     str: 'string',
@@ -109,7 +112,19 @@ entityTypes.user = {
             //     text: {NL: 'gebruikersnaam of email is nodig', EN: 'username or email required'},
             // }],
         },
+        roles: {
+            access: {
+                read: authorities.USER, create: authorities.ROLE_DEMIURG,
+                update: authorities.ROLE_ADMIN, delete: authorities.ROLE_DEMIURG,
+                forbidden: {update: authorities.SELF},
+            },
+            type: fieldTypes.arr, target: 'role', label: {NL: 'rollen', EN: 'roles'},
+            hasNull: false, isMulti: true, validation: {required: true,}
+        },
+        // },
+        // restrictedFields: {
         email: {
+            access: [authorities.ROLE_ADMIN, authorities.SELF],
             label: 'email', type: fieldTypes.str, subtype: subtypes.email,
             validation: {required: true, maxLength: 254},
             // crossFieldChecks: [{
@@ -120,21 +135,18 @@ entityTypes.user = {
             //     text: {NL: 'gebruikersnaam of email is nodig', EN: 'username or email required'},
             // }],
         },
-        roles: {
-            type: fieldTypes.arr, target: 'role', label: {NL: 'rollen', EN: 'roles'},
-            hasNull: false, isMulti: true, validation: {required: true,}
-        },
-    },
-    restrictedFields: {
         password: {
+            access: authorities.SELF,
             label: {NL: 'wachtwoord', EN: 'password'}, type: fieldTypes.str, validation: {
                 required: true, maxLength: 256,
             }
         },
         enabled: {
+            access: authorities.ROLE_ADMIN,
             label: {NL: 'ingeschakeld', EN: 'enabled'}, type: fieldTypes.bool,
         },
         apikey: {
+            access: [authorities.ROLE_ADMIN, authorities.SELF],
             label: 'apikey', type: fieldTypes.str, validation: {maxLength: 256},
         },
     },
@@ -193,6 +205,12 @@ entityTypes.country = {
         },
     },
     summary: ['id', 'shortNameNL', 'alpha2Code', 'alpha3Code'],
+    sumAlt: ['id', {NL: 'shortNameNL', EN: 'shortNameEN'}, 'alpha2Code', 'alpha3Code'],
+    sumObj: {
+        id: 'id',
+        shortName: {NL: 'shortNameNL', EN: 'shortNameEN'},
+        alpha2Code: 'alpha2Code', alpha3Code: 'alpha3Code',
+    },
     methods: 'R',
     findItem: {
         endpoint: '/find',
@@ -299,6 +317,11 @@ entityTypes.unLocode = {
         },
     },
     summary: ['id', 'alpha2Code', 'locationCode', 'nameWoDiacritics'],
+    sumAlt: ['id', 'alpha2Code', 'locationCode', ['nameWODiacritics', 'nameDiacritics']],
+    sumObj: {
+        id: 'id', alpha2Code: 'alpha2Code', locationCode: 'locationCode',
+        name: ['nameWODiacritics', 'nameDiacritics'],
+    },
     methods: 'R',
     findItem: {
         endpoint: '/find',
@@ -502,6 +525,11 @@ entityTypes.vessel = {
             hasNull: true,
             isMulti: false,
         },
+        propulsionType: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
+        operations: {
+            type: fieldTypes.arr, target: 'operation',
+            hasNull: true, isMulti: true, readOnly: true,
+        },
         lengthOA: {
             type: fieldTypes.num, label: {NL: 'lengte o.a.', EN: 'length o.a.'}, validation: {
                 min: {
@@ -550,7 +578,7 @@ entityTypes.vessel = {
             crossFieldChecks: [{
                 name: 'sequence',
                 otherFieldName: 'startDate',
-                validate: (thisField, otherField) => +thisField > +otherField,
+                validate: (thisField, otherField) => +thisField >= +otherField || !thisField,
                 message: 'De einddatum mag niet voor de startdatum liggen',
             }],
         },
@@ -591,6 +619,9 @@ entityTypes.organisation = {
         url: {type: fieldTypes.str, subtype: subtypes.url, label: 'url', validation: {maxLength: 2000},},
         email: {type: fieldTypes.str, subtype: subtypes.email, label: 'email', validation: {maxLength: 320},},
         address: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
+        operations: {
+            type: fieldTypes.arr, target: 'operation', hasNull: true, isMulti: true, readOnly: true,
+        },
     },
     methods: 'CRUD',
     summary: ['id', 'shortName'],
@@ -748,13 +779,74 @@ entityTypes.propulsionType = {
     },
 };
 
+entityTypes.operation = {
+    label: {NL: 'Beheer', EN: 'Management'},
+    endpoint: '/operations',
+    id: ['id'],
+    fields: {
+        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        vessel: {type: fieldTypes.obj, hasNull: true, isMulti: false},
+        operationType: {type: fieldTypes.obj, hasNull: true, isMulti: false},
+        organisation: {type: fieldTypes.obj, hasNull: true, isMulti: false},
+    },
+    methods: 'CRUD',
+    summary: [
+        'id',
+        'vessel.name', 'operationType.nameNL', 'organisation.shortName'],
+    summaryLabel: {
+        'vessel.name': {NL: 'vaartuig', EN: 'vessel'},
+        'operationType.nameNL': {NL: 'betrokkenheid', EN: 'involvement'},
+        'organisation.shortName': {NL: 'organisatie', EN: 'organisation'},
+    },
+    findItem: {
+        endpoint: '/find',
+        params: {}
+    },
+};
+
+entityTypes.operationType = {
+    label: {NL: 'Beheerrol', EN: 'Management role'},
+    endpoint: '/operationtypes',
+    id: ['id'],
+    // hasBulkLoading: true,
+    fields: {
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+        },
+        nameNL: {
+            type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},
+        },
+        nameEN: {
+            type: fieldTypes.str, label: {NL: 'naam (EN)', EN: 'name (EN)'}, validation: {maxLength: 100},
+        },
+        descNL: {
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving (NL)', EN: 'description (NL)'},
+            validation: {maxLength: 1000},
+        },
+        descEN: {
+            type: fieldTypes.str,
+            label: {NL: 'beschrijving (EN)', EN: 'description (EN)'},
+            validation: {maxLength: 1000},
+        },
+    },
+    methods: 'CRUD',
+    summary: [
+        'id',
+        'nameNL', 'nameEN'],
+    findItem: {
+        endpoint: '/find',
+        params: {},
+    },
+};
+
 export const entityNameList = Object.keys(entityTypes);
 
 // logv(null, {entityNameList});
 
-export function getFieldFromPath(entityTypes, entityType, fieldPath) { // ✔✔
-    const logPath = pathMkr(logRoot, getFieldFromPath);
-    const doLog = logCondition(getFieldFromPath, entityType.name, fieldPath)
+export function getTypeFieldFromPath(entityTypes, entityType, fieldPath) { // ✔✔
+    const logPath = pathMkr(logRoot, getTypeFieldFromPath);
+    const doLog = logCondition(getTypeFieldFromPath, entityType.name, fieldPath)
     // depends on presence of internal reference
     const parts = fieldPath.split('.');
     const directField = entityType.fields[parts[0]];
@@ -775,7 +867,7 @@ export function initializeEntityTypes(entityTypes) { // ✔✔
         setEveryFieldsInternalReferences(entityTypes, entityName);
         expandEveryFieldsValidations(entityTypes, entityName);
     }
-    logv(pathMkr(logRoot, initializeEntityTypes), {entityNameList});
+    // logv(pathMkr(logRoot, initializeEntityTypes), {entityNameList});
 }
 
 
@@ -790,36 +882,35 @@ function setEveryFieldsInternalReferences(entityTypes, entityName) { // ✔✔
 function setInternalReference(entityTypes, entityName, fieldName) { // ✔✔
     // const logPath = pathMkr(logRoot, setInternalReference);
     const entityType = entityTypes[entityName];
-    const field = entityType.fields[fieldName];
-    if (!field.target) field.target = fieldName;
-    if (field.target in entityTypes) {
-        if (!field.label) {
-            const targetLabel = entityTypes[field.target].label;
+    const typeField = entityType.fields[fieldName];
+    if (!typeField.target) typeField.target = fieldName;
+    if (typeField.target in entityTypes) {
+        if (!typeField.label) {
+            const targetLabel = entityTypes[typeField.target].label;
             if (typeof targetLabel === 'string')
-                field.label = targetLabel.toLowerCase();
+                typeField.label = targetLabel.toLowerCase();
             else {
-                field.label = {};
+                typeField.label = {};
                 for (const targetLabelKey in targetLabel) {
-                    field.label[targetLabelKey] = targetLabel[targetLabelKey].toLowerCase();
+                    typeField.label[targetLabelKey] = targetLabel[targetLabelKey].toLowerCase();
                 }
             }
         }
     }
-    addToTargets(entityType, {fieldName, targetName: field.target});
-    reorderEntityNames(entityName, field.target);
-    addToOwners(entityTypes[field.target], {fieldName, ownerName: entityName});
+    addToTargets(entityName, {fieldName, targetName: typeField.target});
+    reorderEntityNames(entityName, typeField.target);
+    // addToOwners(entityTypes[typeField.target], {fieldName, ownerName: entityName});
 }
 
-function addToTargets(entityType, targetEntityName) {
-    addNameToArraySet(entityType.targets, targetEntityName);
-}
+function addToTargets(entityName, targetDetails) {
+    function hasEqualDetails(obj1, obj2) {
+        return obj1.fieldName === obj2.fieldName && obj1.targetName === obj2.targetName;
+    }
 
-function addToOwners(targetType, ownerEntityName) {
-    // addNameToArraySet(targetType.owners, ownerEntityName);
-}
-
-function addNameToArraySet(arraySet, name) {
-    if (!arraySet.includes(name)) arraySet.push(name);
+    const entityType = entityTypes[entityName];
+    if (!entityType.targets) entityType.targets = [];
+    if (!entityType.targets.some(e => hasEqualDetails(e, targetDetails)))
+        entityType.targets.push(targetDetails);
 }
 
 function wrapAround(arr, lo, hi, count = 1) {
@@ -912,7 +1003,7 @@ function createEmptyObject(entityTypes, entityType, fieldPaths) { // ✔✔
     // logv(logPath, {entityName: entityType.name, fieldPaths});
     const item = {};
     fieldPaths.forEach(fieldPath => {
-        const field = getFieldFromPath(entityTypes, entityType, fieldPath);
+        const field = getTypeFieldFromPath(entityTypes, entityType, fieldPath);
         // logv(null, {fieldPath, field});
         switch (field?.type) {
             case fieldTypes.str:
@@ -928,7 +1019,6 @@ function createEmptyObject(entityTypes, entityType, fieldPaths) { // ✔✔
 export const entityNames = Object.fromEntries(entityNameList.map(name => [name, name]));
 
 export const exportedForTesting = {
-    initializeEntityTypes,
     setEveryFieldsInternalReferences,
     expandEveryFieldsValidations,
     setInternalReference,

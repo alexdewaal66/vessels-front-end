@@ -1,12 +1,10 @@
-import React, {useState} from 'react';
-import { entityTypes } from '../helpers';
-import { CommandContextProvider } from '../contexts/CommandContext';
+import React from 'react';
+import { entityTypes } from '../helpers/globals/entityTypes';
+import { CommandContextProvider } from '../contexts';
 import { EditEntity } from './EditEntity';
 import { SummaryListTall } from './summaryList';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
-import { useCounter } from '../dev/useCounter';
 import { rootMkr } from '../dev/log';
-import { Sorry } from '../dev/Sorry';
 import { useLoggingState } from '../dev/useLoggingState';
 // import { logv } from '../dev/log';
 
@@ -15,7 +13,7 @@ import { useLoggingState } from '../dev/useLoggingState';
 
 export function Entity({entityType = entityTypes.vessel, initialId}) {
     const logRoot = rootMkr(Entity, entityType.name);
-    const elKey =` Entity(${entityType.name},${initialId?.toString()})`;
+    const elKey = `Entity(${entityType.name},${initialId?.toString()})`;
     const [item, setItem] = useLoggingState(null, 'item', logRoot, entityType.name);
     // logv(logRoot, {initialId, item});
 
@@ -23,8 +21,8 @@ export function Entity({entityType = entityTypes.vessel, initialId}) {
 
     // const TXT = messages[languageSelector()];
 
-    const counter = useCounter(logRoot, entityType.name, 1000);
-    if (counter.passed) return <Sorry context={Entity.name} counter={counter}/>;
+    // const counter = useCounter(logRoot, entityType.name, 1000, 50);
+    // if (counter.passed) return <Sorry context={Entity.name} counter={counter}/>;
 
     return (
         <CommandContextProvider>
@@ -36,7 +34,7 @@ export function Entity({entityType = entityTypes.vessel, initialId}) {
                                      receiver={EditEntity.name}
                                      key={elKey}
                                      elKey={elKey}
-                                     UICues={{hasFocus:true}}
+                                     UICues={{hasFocus: true}}
                     />
                 </span>
                 <span className={pageLayout.secondPart}>
@@ -45,8 +43,8 @@ export function Entity({entityType = entityTypes.vessel, initialId}) {
                                 receiver={SummaryListTall.name}
                                 key={elKey + ` / EditEntity(${item?.id})`}
                                 elKey={elKey + ` / EditEntity(${item?.id})`}
-                                // submitTime={submitTime}
-                                // setSubmitTime={setSubmitTime}
+                        // submitTime={submitTime}
+                        // setSubmitTime={setSubmitTime}
                     />
                 </span>
             </div>

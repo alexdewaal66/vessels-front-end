@@ -28,10 +28,13 @@ function TestHook({useHook, initialValue, onMount, onRender, onDismount, buttons
     getHook?.(hook);
 
     useEffect(() => {
+        // act(()=>{ //must the onMount call be wrapped in act ??
         onMount?.(hook, local);
         if (onDismount) return () => {
             onDismount(hook, local);
         }
+        // });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return <div>
@@ -94,16 +97,18 @@ describe('useState() using <TestHook/>', () => {
             [-1, {}],
             [{}, undefined]
         ])('testcase=%s', (initialValue, testcase) => {
-            render(<TestHook
-                useHook={useState}
-                initialValue={initialValue}
-                onMount={(hook, local) => {
-                    hook[1](testcase);
-                }}
-                onRender={(hook, local) => {
-                    setActual(hook[0]);
-                }}
-            />);
+            act(() => {
+                render(<TestHook
+                    useHook={useState}
+                    initialValue={initialValue}
+                    onMount={(hook, local) => {
+                        hook[1](testcase);
+                    }}
+                    onRender={(hook, local) => {
+                        setActual(hook[0]);
+                    }}
+                />);
+            });
             expect(actual).toBe(testcase);
         });
 

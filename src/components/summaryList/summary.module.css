@@ -50,6 +50,10 @@
     cursor: pointer;
 }
 
+/*.table tbody tr:read-only {*/
+/*    cursor: default;*/
+/*}*/
+
 .table tr:first-child {
     border-top: transparent solid 0;
 }
@@ -168,3 +172,20 @@ tr img {
     /*max-width: 75px;*/
     max-height: 50px;
 }
+
+.hidden {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+}
+
+.exposed {
+    opacity: 50%;
+    color: darkred;
+    cursor: crosshair !important;
+}
+
+
+/**:read-only {*/
+/*    cursor: pointer;*/
+/*}*/

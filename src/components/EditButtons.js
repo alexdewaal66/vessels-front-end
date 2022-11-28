@@ -1,20 +1,26 @@
 import React from 'react';
 import { FieldEl, formStyles, ButtonRow } from '../formLayouts';
-import { hints, languageSelector } from '../helpers';
+import { devHints, languageSelector } from '../helpers';
 
 const messages = {
     NL: {
-        invalid: 'formulier niet juist ingevuld',
-        pending: 'formulier wordt verzonden',
-        ineligible: 'geen autorisatie om te wijzigen/verwijderen',
+        valid: '• formulier juist ingevuld',
+        invalid: '• formulier foutief ingevuld',
+        pending: '• bezig met verzenden formulier',
+        notPending: '• niet bezig met verzenden formulier',
+        eligible: '• autorisatie om te wijzigen/verwijderen',
+        ineligible: '• geen autorisatie om te wijzigen/verwijderen',
         update: 'Wijzig',
         create: 'Maak nieuw',
         delete: 'Verwijder',
     },
     EN: {
-        invalid: 'form has invalid inputs',
-        pending: 'sending form',
-        ineligible: 'no authorisation to update/delete',
+        valid: '• form entered correctly',
+        invalid: '• form entered incorrectly',
+        pending: '• sending form now',
+        notPending: '• not sending form now',
+        eligible: '• authorisation to update/delete',
+        ineligible: '• no authorisation to update/delete',
         update: 'Update',
         create: 'Create',
         delete: 'Delete',
@@ -22,33 +28,28 @@ const messages = {
 };
 
 
-export function EditButtons({requestState, setRequestMethod, readOnly, isEligible, form}) {
+export function EditButtons({requestState, setRequestMethod, readOnly, isEligible, form, onlyUpdate}) {
     // const logRoot = rootMkr(EditButtons);
     const TXT = messages[languageSelector()];
 
     const {isValid} = form.formState;
-    const hintValid = !isValid && TXT.invalid;
+    const hintValid = isValid ? TXT.valid : TXT.invalid;
     const {isPending} = requestState;
-    const hintPending = isPending && TXT.pending;
+    const hintPending = isPending ? TXT.pending : TXT.notPending;
     const isDisabled = isPending || !isValid;
-    const hintEligible = !isEligible && TXT.ineligible;
+    const hintEligible = isEligible ? TXT.eligible : TXT.ineligible;
 
     function style(condition) {
         return condition ? formStyles.disabled : formStyles.enabled;
     }
 
     return (
-        <ButtonRow title={hints('Pending: ' + isPending,
-            'Eligible: ' + isEligible,
-            'Valid: ' + isValid,
-            'Disabled: ' + isDisabled
-        )}>
+        <ButtonRow title={devHints(hintEligible, hintPending, hintValid)}>
             <FieldEl/>
             <FieldEl>
                 {!readOnly && (
                     <>
                         <button
-                            title={hints(hintEligible, hintPending, hintValid)}
                             type="submit"
                             className={style(isDisabled || !isEligible)}
                             disabled={isDisabled || !isEligible}
@@ -59,30 +60,32 @@ export function EditButtons({requestState, setRequestMethod, readOnly, isEligibl
                         >
                             {TXT.update}
                         </button>
-                        <button
-                            title={hints(hintPending, hintValid)}
-                            type="submit"
-                            className={style(isDisabled)}
-                            disabled={isDisabled}
-                            onClick={setRequestMethod('post')}
-                            id="submit_post"
-                            key="submit_post"
-                            // accessKey={'n'}
-                        >
-                            {TXT.create}
-                        </button>
-                        <button
-                            title={hints(hintEligible, hintPending, hintValid)}
-                            type="submit"
-                            className={style(isDisabled || !isEligible)}
-                            disabled={isDisabled || !isEligible}
-                            onClick={setRequestMethod('delete')}
-                            id="submit_del"
-                            key="submit_del"
-                            // accessKey={'v'}
-                        >
-                            {TXT.delete}
-                        </button>
+                        {!onlyUpdate && (
+                            <>
+                                <button
+                                    type="submit"
+                                    className={style(isDisabled)}
+                                    disabled={isDisabled}
+                                    onClick={setRequestMethod('post')}
+                                    id="submit_post"
+                                    key="submit_post"
+                                    // accessKey={'n'}
+                                >
+                                    {TXT.create}
+                                </button>
+                                <button
+                                    type="submit"
+                                    className={style(isDisabled || !isEligible)}
+                                    disabled={isDisabled || !isEligible}
+                                    onClick={setRequestMethod('delete')}
+                                    id="submit_del"
+                                    key="submit_del"
+                                    // accessKey={'v'}
+                                >
+                                    {TXT.delete}
+                                </button>
+                            </>
+                        )}
                     </>
                 )}
             </FieldEl>
@@ -98,9 +101,4 @@ export function EditButtons({requestState, setRequestMethod, readOnly, isEligibl
                 >
                     Zoek
                 </button>
-
- ----------------------------------------------------------------------------------------
-
-                                 {...onHoverHint(true, wijzigHint)}
-
  */

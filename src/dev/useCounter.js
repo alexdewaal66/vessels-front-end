@@ -1,14 +1,14 @@
 import { useRef } from 'react';
-import { logCondition, logv, pathMkr } from './log';
+import { logCondition, logv} from './log';
 
-export function useCounter(logRoot, label = '', limit) {
+export function useCounter(logRoot, label = '', limit, every=1) {
     const counter = useRef(0);
 
     const logPath = `${logRoot} » renderCount[${label}] = `;
     const doLog = logCondition(useCounter, label);
 
     counter.current++;
-    if (doLog) logv(logPath + counter.current);
+    if (doLog && counter.current % every === 0) logv(logPath + counter.current);
 
     return ({
         value: counter.current,

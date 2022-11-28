@@ -1,21 +1,28 @@
 import React, { useContext, Fragment, useMemo } from 'react';
 import { CommandContext, operationNames, StorageContext, AuthContext } from '../contexts';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
-import { Input, ShowRequestState, Details, EditButtons, Welcome } from './';
-import { entityTypes, fieldTypes, referringFieldTypes, text, useRequestState } from '../helpers';
+import { Input, ShowRequestState, Details, EditButtons } from './';
+import { fieldTypes, referringFieldTypes } from '../helpers/globals/entityTypes';
+import { text, useRequestState } from '../helpers';
 import { useForm } from 'react-hook-form';
-import { useCounter } from '../dev/useCounter';
 import { logCondition, logv, pathMkr, rootMkr } from '../dev/log';
-import { Sorry } from '../dev/Sorry';
+import { hasAccess, authorities, accessPurposes } from '../helpers/globals/levels';
 // import { Value } from '../dev/Value';
 // import { Stringify } from '../dev';
 
 // const messages = {NL: {}, EN: {}};
 
+function getUserAuthorities(auth, item) {
+    if (!auth.user) return;
+    const userAuthorities = auth.getRoles();
+    if (auth.user.username === item?.username) userAuthorities.push(authorities.SELF);
+    return userAuthorities;
+}
 
 export function EditEntity(
     {
         entityType, item, setItem, receiver, elKey,
+        onlyUpdate
         // submitTime, setSubmitTime
     }) {
     // const containerTop = useRef(null);
@@ -30,10 +37,16 @@ export function EditEntity(
     const entityForm = useForm({
         mode: 'onChange'
     });
-    const {handleSubmit, setValue, getValues} = entityForm;
+    const {handleSubmit, setValue} = entityForm;
     const requestState = useRequestState();
-    const readOnly = (entityType.methods === 'R') || !auth.user;
-    const isEligible = useMemo(() => auth.isEligibleToChange(item), [item]);
+    const isEligible = useMemo(() => auth.isEligibleToChange(item), [item, auth]);
+    // const isEligible = auth.isEligibleToChange(item);
+    const userAuthorities = useMemo(() => getUserAuthorities(auth, item), [item, auth]);
+    const readOnly = (entityType.methods === 'R') || !auth.user;// || !isEligible;
+
+    // const isSelfOrAdmin = (auth.isAdmin() || auth.user.username === item.username);
+    // const typeFields = isSelfOrAdmin ? {...entityType.fields, ...entityType.restrictedFields} : entityType.fields;
+    const typeFields = entityType.fields;
 
     // const TXT = messages[languageSelector()];
 
@@ -54,14 +67,15 @@ export function EditEntity(
     //     element.current.scrollTop = 0;
     // }
 
-    function extractDataFromHelpField(fieldName, formData) {
-        const logPath = pathMkr(logRoot, extractDataFromHelpField, fieldName);
+    function extractDataFromHiddenField(fieldName, formData) {
+        const logPath = pathMkr(logRoot, extractDataFromHiddenField, fieldName);
         if (doLog) logv(logPath, {fieldName, formData}, '📤📤📤📤');
-        const target = entityType.fields[fieldName].target;
-        if (entityType.fields[fieldName].isMulti) {
+        const target = typeFields[fieldName].target;
+        // if (typeFields[fieldName].isMulti) {
+        if (typeFields[fieldName].type === fieldTypes.arr) {
             const ids = formData[fieldName].split(',');
-            const idValues = ids.map(id => getItem(target, id));
-            formData[fieldName] = idValues;
+            const items = ids.map(id => getItem(target, id));
+            formData[fieldName] = items;
         } else {
             const idValue = +formData[fieldName];
             if (doLog) logv(null, {target, idValue, '!!idValue': !!idValue});
@@ -90,6 +104,7 @@ export function EditEntity(
             requestState.setAtError
         );
     }
+
 
     function onPost(formData) {
         // logv(logPath + ` » case 'post'`);
@@ -137,8 +152,8 @@ export function EditEntity(
         //todo: repair datatypes of formData values, for now, just id
         formData.id = +formData.id;
         const hiddenFieldNames = Object.keys(formData)
-            .filter(key => referringFieldTypes.includes(entityType.fields[key].type));
-        hiddenFieldNames.forEach(hiddenFieldName => extractDataFromHelpField(hiddenFieldName, formData));
+            .filter(key => referringFieldTypes.includes(typeFields[key].type));
+        hiddenFieldNames.forEach(hiddenFieldName => extractDataFromHiddenField(hiddenFieldName, formData));
         if (doLog) logv(null, {hiddenFieldNames, formData});
         switch (requestMethod) {
             case 'put':
@@ -161,14 +176,11 @@ export function EditEntity(
     }
 
     const setRequestMethod = (method) => () => {
-        // const logPath = pathMkr(logRoot, setRequestMethod);
-        // logv(logPath, {'requestMethod': getValues('requestMethod')});
         setValue('requestMethod', method);
-        // logv(null, {'requestMethod': getValues('requestMethod')});
     };
 
-    const counter = useCounter(logRoot, entityName, 2000);
-    if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
+    // const counter = useCounter(logRoot, entityName, 1000, 50);
+    // if (counter.passed) return <Sorry context={logRoot} counter={counter}/>;
 
     return <>
         {item && (
@@ -183,41 +195,49 @@ export function EditEntity(
                         {/*       key="requestMethod"*/}
                         {/*/>*/}
                         {/*{Object.entries(item).map(([itemPropName, v]) => (*/}
-                        {Object.keys(entityType.fields).map(fieldName => {
+                        {Object.keys(typeFields).map(fieldName => {
+                                const typeField = typeFields[fieldName];
                                 const value = item[fieldName];
-                                return <Fragment key={elKey + ' / FieldRow() ' + fieldName}>
-                                    {/*{console.log('item, k,v:', item, k, v)}*/}
-                                    {!entityType.fields[fieldName].noEdit && (
-                                        <FieldRow elKey={elKey + ' edit_row ' + fieldName}
-                                                  key={elKey + ' edit_row ' + fieldName}
-                                                  field={fieldName}
-                                        >
-                                            <FieldDesc
-                                                key={elKey + ' edit_desc ' + fieldName}
+                                if (hasAccess(userAuthorities, typeField?.access)) {
+                                    const writeAccess = hasAccess(userAuthorities, typeField?.access, accessPurposes.WRITE);
+                                    // if (fieldName === 'roles') logv(logRoot, {userLevels: userAuthorities, typeField, writeAccess, isEligible});
+                                    return <Fragment key={elKey + ' / FieldRow() ' + fieldName}>
+                                        {/*{console.log('item, k,v:', item, k, v)}*/}
+                                        {!typeField.noEdit && (
+                                            <FieldRow elKey={elKey + ' edit_row ' + fieldName}
+                                                      key={elKey + ' edit_row ' + fieldName}
+                                                      field={fieldName}
                                             >
-                                                {/*{logv('❌❌❌ EditEntity » render()',*/}
-                                                {/*    {entityType, fieldName, prop: entityType.fields[fieldName]}*/}
-                                                {/*), ''}*/}
-                                                {text(entityType.fields[fieldName].label) || fieldName}
-                                            </FieldDesc>
-                                            <FieldEl>
-                                                <Details entityType={entityType} fieldName={fieldName} value={value}
-                                                         item={item}
-                                                         key={elKey + ' edit_details ' + fieldName}
+                                                <FieldDesc
+                                                    key={elKey + ' edit_desc ' + fieldName}
                                                 >
-                                                    <Input entityType={entityType}
-                                                           fieldName={fieldName}
-                                                           defaultValue={value || ''}
-                                                           entityForm={entityForm}
-                                                           readOnly={readOnly}
-                                                           key={elKey + ` / Input(${fieldName}=${value})`}
-                                                    />
-                                                </Details>
-                                            </FieldEl>
-                                        </FieldRow>
-                                    )}
-
-                                </Fragment>
+                                                    {/*{logv('❌❌❌ EditEntity » render()',*/}
+                                                    {/*    {entityType, fieldName, prop: typeField}*/}
+                                                    {/*), ''}*/}
+                                                    {text(typeField.label) || fieldName}
+                                                </FieldDesc>
+                                                <FieldEl>
+                                                    <Details entityType={entityType} fieldName={fieldName} value={value}
+                                                             item={item}
+                                                             key={elKey + ' edit_details ' + fieldName}
+                                                    >
+                                                        <Input entityType={entityType}
+                                                               fieldName={fieldName}
+                                                               defaultValue={value || ''}
+                                                               entityForm={entityForm}
+                                                               isEligible={isEligible}
+                                                               readOnly={readOnly || !writeAccess}
+                                                               key={elKey + ` / Input(${fieldName}=${value})`}
+                                                            // title={'writeAccess=' + writeAccess}
+                                                        />
+                                                    </Details>
+                                                </FieldEl>
+                                            </FieldRow>
+                                        )}
+                                    </Fragment>
+                                } else
+                                    // return <Stringify data={{fieldName, userAuthorities, access: typeField?.access, value}}/> ;
+                                    return null;
                             }
                         )}
                         <EditButtons requestState={requestState}
@@ -225,6 +245,7 @@ export function EditEntity(
                                      readOnly={readOnly}
                                      isEligible={isEligible}
                                      form={entityForm}
+                                     onlyUpdate={onlyUpdate}
                         />
                     </Fieldset>
                 </Form>
