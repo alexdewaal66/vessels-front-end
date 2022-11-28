@@ -43,6 +43,7 @@
     "@testing-library/user-event": "^12.8.3"
   },
   "engines": {
-    "node": "19.x"
+    "node": "19.x",
+    "npm": "9.x"
   }
 }
