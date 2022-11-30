@@ -14,7 +14,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -43,7 +43,7 @@
     "@testing-library/user-event": "^12.8.3"
   },
   "engines": {
-    "node": "19.x",
-    "npm": "9.x"
+    "node": "16.x",
+    "npm": "6.x"
   }
 }
