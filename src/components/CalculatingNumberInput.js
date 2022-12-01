@@ -1,6 +1,5 @@
 import { useState, Fragment } from 'react';
 import { conversions } from './UnitInput';
-import { rootMkr } from '../dev/log';
 import { hints, languageSelector } from '../helpers';
 
 const messages = {
@@ -17,9 +16,10 @@ const messages = {
 export function CalculatingNumberInput({
                                            setResult, quantityName,
                                            defaultValue, valueInBaseUnits,
-                                           elKey, readOnly, fieldName, style
+                                           elKey, readOnly, style,
+                                           // fieldName
                                        }) {
-    const logRoot = rootMkr(CalculatingNumberInput);
+    // const logRoot = rootMkr(CalculatingNumberInput);
     const units = conversions[quantityName];
     const [unitIndex, setUnitIndex] = useState(0);
     const [inputValue, setInputValue] = useState(defaultValue);
@@ -27,12 +27,18 @@ export function CalculatingNumberInput({
 
     const TXT = messages[languageSelector()];
 
+    function setValue(x) {
+        setInputValue(x);
+        setResult(units[unitIndex].calc(x));
+
+    }
+
     function handleInput(e) {
-        if (!readOnly) {
-            setInputValue(+e.target.value);
-            // setInputChanged(true);
-            setResult(units[unitIndex].calc(+e.target.value));
-        }
+        if (!readOnly) setValue(+e.target.value)
+    }
+
+    function clear() {
+        setValue('');
     }
 
     function handleSelectLeft(e) {
@@ -58,6 +64,14 @@ export function CalculatingNumberInput({
                    readOnly={readOnly}
                    style={style}
             />
+            {!readOnly && (
+                <button onClick={clear} style={{
+                    border: 'none',
+                    opacity: '70%',
+                    backgroundColor: 'rgba(255, 255, 255, 0)',
+                    paddingLeft: '1px'
+                }}>␡</button>
+            )}
             &nbsp;
             <span title={hints(TXT.toInput)}>
                 ↢

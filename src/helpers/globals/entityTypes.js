@@ -401,7 +401,7 @@ entityTypes.vesselType = {
             crossFieldChecks: [{
                 name: 'min>max',
                 otherFieldName: 'tonnageMax',
-                validate: (thisField, otherField) => +thisField <= +otherField,
+                validate: (thisField, otherField) => +thisField <= +otherField || !thisField || !otherField,
                 message: 'TEXT:vesselType:tonnageMin:0',
                 text: {NL: 'minimum is groter dan maximum', EN: 'minimum is larger than maximum'},
             }],
@@ -418,7 +418,7 @@ entityTypes.vesselType = {
             crossFieldChecks: [{
                 name: 'max<min',
                 otherFieldName: 'tonnageMin',
-                validate: (thisField, otherField) => +thisField >= +otherField,
+                validate: (thisField, otherField) => +thisField >= +otherField || !thisField || !otherField,
                 message: 'TEXT:vesselType:tonnageMax:0',
                 text: {NL: 'maximum is kleiner dan minimum', EN: 'maximum is smaller than minimum'},
             }],
