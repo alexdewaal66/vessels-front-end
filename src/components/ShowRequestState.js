@@ -1,7 +1,6 @@
 import React from 'react';
 import { Statusbar } from '../pageLayouts/Statusbar';
 import { languageSelector, text } from '../helpers';
-import { rootMkr } from '../dev/log';
 
 const messages = {
     NL: {
@@ -24,7 +23,7 @@ function capitalize(string) {
 }
 
 export function ShowRequestState({requestState, description = defaultDesc, advice}) {
-    const logRoot = rootMkr(ShowRequestState, description);
+    // const logRoot = rootMkr(ShowRequestState, description);
     const TXT = messages[languageSelector()];
 
     // const counter = useCounter(logRoot, '', 1000, 50);

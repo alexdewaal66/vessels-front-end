@@ -1,23 +1,16 @@
-import React, { useContext, Fragment, useMemo } from 'react';
-import { CommandContext, operationNames, StorageContext, AuthContext } from '../contexts';
+import React, { Fragment, useContext, useMemo } from 'react';
+import { AuthContext, CommandContext, operationNames, StorageContext } from '../contexts';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
-import { Input, ShowRequestState, Details, EditButtons } from './';
+import { Details, EditButtons, Input, ShowRequestState } from './';
 import { fieldTypes, referringFieldTypes } from '../helpers/globals/entityTypes';
 import { text, useRequestState } from '../helpers';
 import { useForm } from 'react-hook-form';
 import { logCondition, logv, pathMkr, rootMkr } from '../dev/log';
-import { hasAccess, authorities, accessPurposes } from '../helpers/globals/levels';
+import { accessPurposes, hasAccess } from '../helpers/globals/levels';
 // import { Value } from '../dev/Value';
 // import { Stringify } from '../dev';
 
 // const messages = {NL: {}, EN: {}};
-
-function getUserAuthorities(auth, item) {
-    if (!auth.user) return;
-    const userAuthorities = auth.getRoles();
-    if (auth.user.username === item?.username) userAuthorities.push(authorities.SELF);
-    return userAuthorities;
-}
 
 export function EditEntity(
     {
@@ -31,7 +24,10 @@ export function EditEntity(
     const doLog = logCondition(EditEntity, entityName);
     // logv(logRoot, {item, receiver: receiver.name});
     const {getItem, saveItem, newItem, deleteItem} = useContext(StorageContext);
-    const auth = useContext(AuthContext);
+
+    const authorization = useContext(AuthContext);
+    const isEligible = useMemo(() => authorization.isEligibleToChange(item), [item, authorization]);
+    const userAuthorities = useMemo(() => authorization.getUserAuthorities(item), [item, authorization]);
 
     const {useCommand, setCommand} = useContext(CommandContext);
     const entityForm = useForm({
@@ -39,12 +35,9 @@ export function EditEntity(
     });
     const {handleSubmit, setValue} = entityForm;
     const requestState = useRequestState();
-    const isEligible = useMemo(() => auth.isEligibleToChange(item), [item, auth]);
-    // const isEligible = auth.isEligibleToChange(item);
-    const userAuthorities = useMemo(() => getUserAuthorities(auth, item), [item, auth]);
-    const readOnly = (entityType.methods === 'R') || !auth.user;// || !isEligible;
+    const readOnly = (entityType.methods === 'R') || !authorization.user;// || !isEligible;
 
-    // const isSelfOrAdmin = (auth.isAdmin() || auth.user.username === item.username);
+    // const isSelfOrAdmin = (authorization.isAdmin() || authorization.user.username === item.username);
     // const typeFields = isSelfOrAdmin ? {...entityType.fields, ...entityType.restrictedFields} : entityType.fields;
     const typeFields = entityType.fields;
 

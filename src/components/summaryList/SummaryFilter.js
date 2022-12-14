@@ -21,8 +21,9 @@ const messages = {
 };
 
 
-export function SummaryFilter({entityType, mergeConstraints, elKey, parentName}) {
+export function SummaryFilter({entityType, mergeConstraints, elKey, fieldStatuses}) {
     // const logRoot = rootMkr(SummaryFilter, entityType.name);
+
 
     const TXT = messages[languageSelector()];
 
@@ -85,8 +86,8 @@ export function SummaryFilter({entityType, mergeConstraints, elKey, parentName})
 
     return (
         <tr onKeyDown={enterKeyHandler}>
-            {entityType.summary.map(fieldPath => {
-                    if (fieldPath.split('.')[0] !== parentName)
+            {fieldStatuses.map(({fieldPath, isVisible}) => {
+                if (isVisible)
                         return (
                             <th key={elKey + fieldPath + '_sort'}>
                                 {/*{(text(entityType.fields, fieldPath) || fieldPath).split('').reverse().join('')}*/}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { summaryStyle } from './index';
 import { SummaryFilter } from './SummaryFilter';
-import { entityTypes, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
 import { hints, text, languageSelector } from '../../helpers';
 import { logCondition, logv, rootMkr } from '../../dev/log';
 import { CollapseButton } from './CollapseButton';
@@ -20,7 +19,7 @@ const messages = {
 export function SummaryHeading({
                                    entityType, elKey,
                                    sorting, mergeConstraints,
-                                   small, toggleCollapsed, parentName
+                                   small, toggleCollapsed, fieldStatuses
                                }) {
     const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
     const doLog = logCondition(SummaryHeading, entityType.name);
@@ -45,27 +44,27 @@ export function SummaryHeading({
         return entityType.summaryLabel?.[fieldPath] || field.label;
     }
 
+
     return (
         <>
             <tr>
-                {entityType.summary.map(fieldPath => {
-                        const field = getTypeFieldFromPath(entityTypes, entityType, fieldPath);
-                        if (fieldPath.split('.')[0] !== parentName)
-                        return (
-                            <th key={elKey + fieldPath + '_h'}>
-                                {text(fieldLabel(fieldPath, field)) || fieldPath}
-                                <span>
-                                    {!!field ? (
+                {fieldStatuses.map(({fieldPath, typeField, isVisible}) => {
+                    if (isVisible)
+                            return (
+                                <th key={elKey + fieldPath + '_h'}>
+                                    {text(fieldLabel(fieldPath, typeField)) || fieldPath}
+                                    <span>
+                                    {!!typeField ? (
                                         <>
                                             <button type={'button'}
-                                                    onClick={up(fieldPath, field.type)}
+                                                    onClick={up(fieldPath, typeField.type)}
                                                     className={summaryStyle.sort}
                                                     title={hints('▲ = ' + TXT.sortUp)}
                                             >
                                                 {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
                                             </button>
                                             <button type={'button'}
-                                                    onClick={down(fieldPath, field.type)}
+                                                    onClick={down(fieldPath, typeField.type)}
                                                     className={summaryStyle.sort}
                                                     title={hints('▼ = ' + TXT.sortDn)}
                                             >
@@ -80,8 +79,8 @@ export function SummaryHeading({
                                         </>
                                     )}
                                 </span>
-                            </th>
-                        );
+                                </th>
+                            );
                         else return null;
                     }
                 )}
@@ -92,7 +91,7 @@ export function SummaryHeading({
             <SummaryFilter entityType={entityType}
                            mergeConstraints={mergeConstraints}
                            elKey={elKey}
-                           parentName={parentName}
+                           fieldStatuses={fieldStatuses}
             />
         </>
     );

@@ -35,7 +35,7 @@ const messages = {
 
 export function SummaryRow({
                                item, index, entityType, chooseItem,
-                               rowFocus, UICues, elKey, parentName
+                               rowFocus, UICues, elKey, fieldStatuses
                            }) {
     const entityName = entityType.name;
     const logRoot = rootMkr(SummaryRow, entityName, item?.id);
@@ -157,11 +157,11 @@ export function SummaryRow({
             key={elKey}
             className={selectedStyle}
             style={readOnly ? {cursor: 'default'} : {cursor: 'pointer'}}
-            title={devHints('readOnly='+readOnly)}
+            title={devHints('readOnly=' + readOnly)}
             // aria-readonly={readOnly}
         >
-            {entityType.summary.map((fieldPath) => {
-                if (fieldPath.split('.')[0] !== parentName)
+            {fieldStatuses.map(({fieldPath, isVisible}) => {
+                if (isVisible)
                     return (<td key={elKey + fieldPath}>
                         {(isNullRow)
                             ? '➖➖'

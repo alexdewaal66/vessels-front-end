@@ -5,7 +5,6 @@ import { Stringify } from '../dev/Stringify';
 import { InputObject, InputImageFile, ValidationMessage } from './';
 import { UnitInput } from './UnitInput';
 import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
-import { logCondition, logv, rootMkr } from '../dev/log';
 
 // const messages = {NL: {}, EN: {}};
 
@@ -42,8 +41,8 @@ export function Input({
                           entityType, fieldName, defaultValue,
                           entityForm, readOnly, isEligible, ...rest
                       }) {
-    const logRoot = rootMkr(Input, entityType.name);
-    const doLog = logCondition(Input, entityType, fieldName);
+    // const logRoot = rootMkr(Input, entityType.name);
+    // const doLog = logCondition(Input, entityType, fieldName);
     const typeField = entityType.fields[fieldName];
     const elKey = `Input(${entityType.name},${fieldName},${defaultValue})`;
     const {register, getValues} = entityForm;

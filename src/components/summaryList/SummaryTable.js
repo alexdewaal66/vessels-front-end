@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { cx, hints} from '../../helpers';
 import { useFilters } from './useFilters';
+import { useFieldStatuses } from './useFieldStatuses';
 
 // const messages = {NL: {}, EN: {}};
 
@@ -98,6 +99,8 @@ export function SummaryTable({
         }
     }
 
+    const fieldStatuses = useFieldStatuses(entityName, parentName);
+
     return (
         <div>
             {/*<div>ST: focusIndex={focusIndex} ; selectedIndex={selectedIndex}</div>*/}
@@ -117,7 +120,7 @@ export function SummaryTable({
                                     mergeConstraints={mergeConstraints}
                                     small={small}
                                     toggleCollapsed={toggleCollapsed}
-                                    parentName={parentName}
+                                    fieldStatuses={fieldStatuses}
                     />
                     </thead>
                     <tbody ref={tableBodyRef} title={isMulti ? hints(multiSelectHint): null}>
@@ -131,7 +134,7 @@ export function SummaryTable({
                                     rowFocus={rowFocus}
                                     UICues={UIRowCues(index)}
                                     tableBodyRef={tableBodyRef}
-                                    parentName={parentName}
+                                    fieldStatuses={fieldStatuses}
                         />
                     ))}
                     </tbody>

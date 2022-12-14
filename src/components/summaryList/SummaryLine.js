@@ -4,6 +4,7 @@ import { errv, logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
 import { entityTypes, fieldTypes, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
 import { endpoints, hints, languageSelector } from '../../helpers';
 import { summaryStyle } from './index';
+import { useFieldStatuses } from './useFieldStatuses';
 
 const messages = {
     NL: {
@@ -26,6 +27,7 @@ export function SummaryLine({
     const item = storage.getItem(entityName, initialIdList[0]);
     const isNullRow = (item?.id === 0);
 
+    const fieldStatuses = useFieldStatuses(entityName, parentName);
     const TXT = messages[languageSelector()];
 
     function getProperty(object, propertyPath) {
@@ -75,10 +77,8 @@ export function SummaryLine({
                 style={{cursor: 'pointer'}}
                 title={hints(TXT.toggle)}
             >
-                {entityType.summary.map(fieldPath => {
-                    if (false && fieldPath.split('.')[0] === parentName) {
-                        return null;
-                    } else {
+                {fieldStatuses.map(({fieldPath, isVisible}) => {
+                    if (isVisible)
                         return (
                             <th key={elKey + fieldPath} style={{fontWeight: 'normal'}}
                                 title={hints(fieldLabel(fieldPath))}
@@ -89,7 +89,8 @@ export function SummaryLine({
                                 }
                             </th>
                         )
-                    }
+                    else
+                        return null;
                 })}
                 <th style={{textAlign: 'right'}}>
                     ≣

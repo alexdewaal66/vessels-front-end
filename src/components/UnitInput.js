@@ -1,6 +1,5 @@
 import { CalculatingNumberInput } from './CalculatingNumberInput';
 import { useState } from 'react';
-import { rootMkr } from '../dev/log';
 import { ValidationMessage } from './ValidationMessage';
 import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
 import { useMountEffect } from '../helpers';
@@ -52,7 +51,7 @@ export function UnitInput({
                               fieldName, typeField, defaultValue,
                               entityForm, readOnly, elKey
                           }) {
-    const logRoot = rootMkr(UnitInput, fieldName, readOnly)
+    // const logRoot = rootMkr(UnitInput, fieldName, readOnly)
     const [valueInBaseUnits, setValueInBaseUnits] = useState(defaultValue);
     const baseUnitName = conversions[typeField.quantity][0].name;
 

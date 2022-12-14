@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import { endpoints, getRequest, persistentVars, useMountEffect, useRequestState } from '../helpers';
-import { levels } from '../helpers/globals/levels';
+import { authorities, levels } from '../helpers/globals/levels';
 import { pages } from '../pages';
 import { Statusbar } from '../pageLayouts';
 import { logv, pathMkr, rootMkr } from '../dev/log';
@@ -27,6 +27,7 @@ export function AuthContextProvider({children}) {
         fetchUserData,
         logout,
         isEligibleToChange,
+        getUserAuthorities,
         isAdmin,
         getHighestLevel,
         getRoles,
@@ -116,6 +117,12 @@ export function AuthContextProvider({children}) {
         );
     }
 
+    function getUserAuthorities(item) {
+        if (!authState.user) return;
+        const userAuthorities = getRoles();
+        if (authState.user.username === item?.username) userAuthorities.push(authorities.SELF);
+        return userAuthorities;
+    }
 
     function hasUserHigherRoleThan(ownerName) {
         // const logPath = pathMkr(logRoot, hasUserHigherRoleThan);
@@ -179,3 +186,4 @@ export function AuthContextProvider({children}) {
         </AuthContext.Provider>
     )
 }
+

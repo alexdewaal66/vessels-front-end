@@ -1,6 +1,6 @@
 import { entityTypes, fieldTypes } from '../helpers/globals/entityTypes';
 import { sessionConfig } from '../helpers/globals/sessionConfig';
-import { useMountEffect } from '../helpers';
+import { useImmutableSet, useMountEffect } from '../helpers';
 import React from 'react';
 import { SummaryListSmall } from './summaryList';
 import { rootMkr, pathMkr, logv, logCondition } from '../dev/log';
@@ -47,6 +47,8 @@ export function InputObject({
         : [defaultValue.id];
     const [isCollapsed, toggleCollapsed] = useToggleState(collapseInverter(false));
 
+    const selectedIds = useImmutableSet(initialIdList, 'selectedIds', logRoot, entityType.name);
+
     // logv(null, {initialId});
 
     const {register, trigger, setValue, formState: {errors}, getValues} = entityForm;
@@ -86,7 +88,7 @@ export function InputObject({
             <span style={hiddenFieldStyle()}>
                 {blns({isCollapsed})} ; length: {initialIdList.length}
             </span>
-            {(isCollapsed &&  initialIdList.length < 2) ? (
+            {(isCollapsed && initialIdList.length < 2) ? (
                 <>
                     <SummaryLine entityType={entityTypes[typeField.target]}
                                  initialIdList={initialIdList}
@@ -96,7 +98,7 @@ export function InputObject({
                                  UICues={{hasFocus: false, hasNull, isMulti, borderStyle, readOnly}}
                                  setHiddenField={setHiddenField}
                                  toggleCollapsed={toggleCollapsed}
-                        // parentType={entityType.name}
+                                 parentType={entityType.name}
                     />
                 </>
             ) : (
@@ -110,6 +112,7 @@ export function InputObject({
                                       setHiddenField={setHiddenField}
                                       toggleCollapsed={toggleCollapsed}
                                       parentName={entityType.name}
+                                      selectedIds={selectedIds}
                     />
 
                 </>

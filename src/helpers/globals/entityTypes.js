@@ -39,9 +39,11 @@ entityTypes.xyz = {
     label: 'Xyz',
     endpoint: '/xyzs',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         name: {type: fieldTypes.str, label: {NL: 'naam', EN: 'name'}, validation: {required: true, maxLength: 20},},
         description: {
             type: fieldTypes.str,
@@ -72,10 +74,10 @@ entityTypes.zyx = {
     label: 'Zyx',
     endpoint: '/zyxs',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         name: {
             type: fieldTypes.str, label: {NL: 'naam', EN: 'name'}, validation: {maxLength: 100},
@@ -96,21 +98,14 @@ entityTypes.user = {
     label: {NL: 'Gebruiker', EN: 'User'},
     endpoint: '/users',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         username: {
             label: {NL: 'gebruikersnaam', EN: 'username'}, type: fieldTypes.str,
             validation: {required: true, maxLength: 256},
-            // crossFieldChecks: [{
-            //     name: 'usernameOrEmail',
-            //     otherFieldName: 'email',
-            //     validate: (thisField, otherField) => !!thisField || !!otherField,
-            //     message: 'TEXT:user:username:0',
-            //     text: {NL: 'gebruikersnaam of email is nodig', EN: 'username or email required'},
-            // }],
         },
         roles: {
             access: {
@@ -121,8 +116,6 @@ entityTypes.user = {
             type: fieldTypes.arr, target: 'role', label: {NL: 'rollen', EN: 'roles'},
             hasNull: false, isMulti: true, validation: {required: true,}
         },
-        // },
-        // restrictedFields: {
         email: {
             access: [authorities.ROLE_ADMIN, authorities.SELF],
             label: 'email', type: fieldTypes.str, subtype: subtypes.email,
@@ -162,10 +155,10 @@ entityTypes.role = {
     label: {NL: 'Rol', EN: 'Role'},
     endpoint: '/roles',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
-            type: fieldTypes.num, label: 'id'
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         name: {
             type: fieldTypes.str, label: {NL: 'rol', EN: 'role'}, validation: {required: true, maxLength: 100},
@@ -183,10 +176,10 @@ entityTypes.country = {
     label: {NL: 'Land', EN: 'Country'},
     endpoint: '/countries',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
-            type: fieldTypes.num, label: 'id'
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         shortNameNL: {
             type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},
@@ -228,10 +221,10 @@ entityTypes.subdivision = {
     label: {NL: 'Deelsector', EN: 'Subdivision'},
     endpoint: '/subdivisions',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
-            type: fieldTypes.num, label: 'id',
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         alpha2Code: {
             type: fieldTypes.str, label: {NL: 'Alfa 2 code', EN: 'Alpha 2 code'}, validation: {maxLength: 2},
@@ -263,10 +256,10 @@ entityTypes.unLocode = {
     label: {NL: 'Locatiecode', EN: 'Location code'},
     endpoint: '/un_locode',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
-            type: fieldTypes.num, label: 'id',
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         change: {
             type: fieldTypes.str, label: {NL: 'wijziging', EN: 'change'}, validation: {maxLength: 3},
@@ -333,10 +326,10 @@ entityTypes.address = {
     label: {NL: 'Adres', EN: 'Address'},
     endpoint: '/addresses',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
-            type: fieldTypes.num, label: 'id',
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         address1: {
             type: fieldTypes.str, label: {NL: 'adres1', EN: 'address1'}, validation: {maxLength: 200},
@@ -368,10 +361,10 @@ entityTypes.vesselType = {
     label: {NL: 'Scheepstype', EN: 'Ship type'},
     endpoint: '/vesseltypes',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         nameNL: {
             type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},
@@ -485,9 +478,11 @@ entityTypes.hull = {
     label: {NL: 'Romp', EN: 'Hull'},
     endpoint: '/hulls',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         hullNumber: {
             // type: fieldTypes.str, label: 'rompnummer', validation: {maxLength: 20},
             type: fieldTypes.str, label: {NL: 'rompnummer', EN: 'hull number'}, validation: {maxLength: 20},
@@ -509,9 +504,11 @@ entityTypes.vessel = {
     label: {NL: 'Vaartuig', EN: 'Vessel'},
     endpoint: '/vessels',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         hull: {type: fieldTypes.obj, hasNull: true, isMulti: false,},
         name: {type: fieldTypes.str, label: {NL: 'naam', EN: 'name'}, validation: {maxLength: 100},},
         image: {type: fieldTypes.img,},
@@ -602,9 +599,11 @@ entityTypes.organisation = {
     label: {NL: 'Organisatie', EN: 'Organisation'},
     endpoint: '/organisations',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         shortName: {type: fieldTypes.str, label: {NL: 'naam', EN: 'name'}, validation: {maxLength: 50},},
         longName: {
             type: fieldTypes.str,
@@ -635,9 +634,11 @@ entityTypes.relation = {
     label: {NL: 'Relatie', EN: 'Relation'},
     endpoint: '/relations',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         organisation1: {
             type: fieldTypes.obj, label: {NL: 'organisatie 1', EN: 'organisation 1'}, target: 'organisation',
             hasNull: false, isMulti: false, validation: {required: true,}
@@ -662,9 +663,11 @@ entityTypes.relationType = {
     label: {NL: 'relatietype', EN: 'relation type'},
     endpoint: '/relationtypes',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         nameNL: {type: fieldTypes.str, label: {NL: 'naam (nl)', EN: 'name (NL)'}, validation: {maxLength: 100},},
         nameEN: {type: fieldTypes.str, label: {NL: 'naam (en)', EN: 'name (EN)'}, validation: {maxLength: 100},},
         descNL: {
@@ -692,9 +695,11 @@ entityTypes.file = {
     uploadEndpoint: '/files/upload',
     downloadEndpoint: (id) => `/files/${id}/download`,
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         fileName: {
             type: fieldTypes.str,
             label: {NL: 'bestandsnaam', EN: 'file name'},
@@ -714,10 +719,12 @@ entityTypes.image = {
     label: {NL: 'afbeelding', EN: 'image'},
     endpoint: '/images',
     id: ['id'],
-    // hasBulkLoading: true,
     needsReload: true,
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         fullSizeId: {type: fieldTypes.file, label: {NL: 'volledig', EN: 'full size'}, target: 'file',},
         thumbnailId: {
             type: fieldTypes.file,
@@ -738,10 +745,10 @@ entityTypes.propulsionType = {
     label: {NL: 'voortstuwing', EN: 'propulsion'},
     endpoint: '/propulsiontypes',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         nameNL: {
             type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},
@@ -784,7 +791,10 @@ entityTypes.operation = {
     endpoint: '/operations',
     id: ['id'],
     fields: {
-        id: {type: fieldTypes.num, label: 'id', readOnly: true,},
+        id: {
+            type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
+        },
         vessel: {type: fieldTypes.obj, hasNull: true, isMulti: false},
         operationType: {type: fieldTypes.obj, hasNull: true, isMulti: false},
         organisation: {type: fieldTypes.obj, hasNull: true, isMulti: false},
@@ -808,10 +818,10 @@ entityTypes.operationType = {
     label: {NL: 'Beheerrol', EN: 'Management role'},
     endpoint: '/operationtypes',
     id: ['id'],
-    // hasBulkLoading: true,
     fields: {
         id: {
             type: fieldTypes.num, label: 'id', readOnly: true,
+            access: authorities.ROLE_ADMIN,
         },
         nameNL: {
             type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},

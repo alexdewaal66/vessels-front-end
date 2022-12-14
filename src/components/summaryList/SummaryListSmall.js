@@ -1,4 +1,4 @@
-import React, { useContext, useEffect} from 'react';
+import React, { useContext, useEffect } from 'react';
 import { createEmptyItem } from '../../helpers/globals/entityTypes';
 import { keys, useKeyPressed, useRequestState } from '../../helpers/customHooks';
 import { usePollBackEndForChanges } from '../../helpers/usePollBackEndForChanges';
@@ -6,7 +6,6 @@ import { entityTypes } from '../../helpers/globals/entityTypes';
 import { SummaryTable, useSorting } from './';
 import { ShowRequestState } from '../ShowRequestState';
 import { StorageContext } from '../../contexts';
-import { useImmutableSet } from '../../helpers/useImmutableSet';
 import { logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
 import { Patience } from '../Patience';
 import { useLoggingState } from '../../dev/useLoggingState';
@@ -28,7 +27,8 @@ export const optionalIdValue = -Infinity;
 
 export function SummaryListSmall({
                                      entityType, initialIdList, UICues,
-                                     setHiddenField, elKey, toggleCollapsed, parentName
+                                     setHiddenField, elKey, toggleCollapsed, parentName,
+                                     selectedIds,
                                  }) {
     elKey += '/SListSmall';
     if (!entityType) logv(rootMkr(SummaryListSmall), {elKey}, '❌');
@@ -51,7 +51,7 @@ export function SummaryListSmall({
     const requestListState = useRequestState();
     const [list, setList] = useLoggingState(null, 'list', logRoot, entityName);
     // const selectedIds = useLoggingImmutableSet(initialIdList, 'selectedIds', logRoot, entityName);
-    const selectedIds = useImmutableSet(initialIdList, 'selectedIds', logRoot, entityName);
+    // const selectedIds = useImmutableSet(initialIdList, 'selectedIds', logRoot, entityName);
 
     const {isControlDown, handleOnControlUp, handleOnControlDown} = useKeyPressed(keys.control);
 
