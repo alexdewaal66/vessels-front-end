@@ -1,19 +1,16 @@
 import { now } from '../helpers/utils';
-// eslint-disable-next-line no-unused-vars
-import { EditEntity, Input, InputObject, ValidationMessage } from '../components';
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
+import { EditButtons, EditEntity, Input, InputObject, ValidationMessage } from '../components';
 import { SummaryHeading, SummaryListSmall, SummaryRow } from '../components/summaryList';
-// eslint-disable-next-line no-unused-vars
 import { useStorage } from '../helpers/useStorage';
-// eslint-disable-next-line no-unused-vars
 import { getTypeFieldFromPath } from '../helpers/globals/entityTypes';
-// eslint-disable-next-line no-unused-vars
 import { remote } from '../helpers';
-// eslint-disable-next-line no-unused-vars
 import { useCounter } from './useCounter';
-// eslint-disable-next-line no-unused-vars
 import { ShowObject } from '../components/ShowObject';
-
+import { AuthContextProvider } from '../contexts';
+import { useAccessStatus } from '../helpers/useAccessStatus';
+import { accessPurposes, hasAccess } from '../helpers/globals/levels';
+/* eslint-enable no-unused-vars */
 
 let logCounter = 0;
 
@@ -43,10 +40,8 @@ export function pathMkr(logRoot, currentFunction, ...args) {
 
 export function logv(path, vars, prompt = '') {
     if (path) {
-        // console.log(now(), '\n' + prompt + '  ' + path);
         console.log(prompt + now() + ' [' + logCounter++ + ']  ' + path);
         prompt = '\t';
-        // prompt = '\t' + prompt + ' ';
     } else {
         prompt = '^\t' + prompt + ' ';
     }
@@ -64,13 +59,14 @@ export function errv(path, vars, prompt) {
 
 export function logCondition(context, ...candidates) {
     const contexts = [
-        'dummy context', // just there to prevent WebStrom from whining about "Contents of collection 'contexts' are queried, but never written"
+        'dummy context', // just there to prevent WebStorm/ESLint from whining about "Contents of collection 'contexts' are queried, but never written"
         // Input,
         // InputObject,
         // SummaryListSmall,
         // 'Item constructor',
         // useStorage,
         // EditEntity,
+        // EditButtons,
         // remote,
         // SummaryHeading,
         // SummaryRow,
@@ -78,15 +74,18 @@ export function logCondition(context, ...candidates) {
         // ValidationMessage,
         // useCounter,
         // ShowObject,
+        // AuthContextProvider,
+        // useAccessStatus,
+        // hasAccess,
     ];
 
     const matches = [
-        'dummy match', // just there to prevent WebStrom from whining about "Contents of collection 'matches' are queried, but never written"
+        'dummy match', // just there to prevent WebStorm/EsLint from whining about "Contents of collection 'matches' are queried, but never written"
         //// ENTITIES:
         // 'xyz','/xyzs',
         // 'zyx','/zyxs',
-        // 'user','/users',
-        // 'role','/roles',
+        // 'user', '/users',
+        // 'role', '/roles',
         // 'country', '/countries',
         // 'subdivision','/subdivisions',
         // 'unLocode', 'unLocode',
@@ -108,6 +107,8 @@ export function logCondition(context, ...candidates) {
         // 'endDate',
         //// OTHER:
         // 'hidden_superType_propulsionType_id'
+        // '*',
+        // accessPurposes.UPDATE, accessPurposes.CREATE, accessPurposes.DELETE,
     ];
 
     const isInContext = contexts.includes(context);

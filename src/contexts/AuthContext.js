@@ -5,7 +5,7 @@ import { endpoints, getRequest, persistentVars, useMountEffect, useRequestState 
 import { authorities, levels } from '../helpers/globals/levels';
 import { pages } from '../pages';
 import { Statusbar } from '../pageLayouts';
-import { logv, pathMkr, rootMkr } from '../dev/log';
+import { logCondition, logv, pathMkr, rootMkr } from '../dev/log';
 import { StorageContext } from './StorageContext';
 
 export const AuthContext = createContext({});
@@ -13,6 +13,7 @@ export const AuthContext = createContext({});
 
 export function AuthContextProvider({children}) {
     const logRoot = rootMkr(AuthContextProvider);
+    const doLog = logCondition(AuthContextProvider, '*')
     const storage = useContext(StorageContext);
     const authStates = {PENDING: 'pending', DONE: 'done'};
     const [authState, setAuthState] = useState({});
@@ -118,9 +119,11 @@ export function AuthContextProvider({children}) {
     }
 
     function getUserAuthorities(item) {
+        const logPath = pathMkr(logRoot, getUserAuthorities);
         if (!authState.user) return;
         const userAuthorities = getRoles();
-        if (authState.user.username === item?.username) userAuthorities.push(authorities.SELF);
+        if (!!item && authState.user.username === item?.username) userAuthorities.push(authorities.SELF);
+        if (doLog) logv(logPath,{userAuthorities, item});
         return userAuthorities;
     }
 

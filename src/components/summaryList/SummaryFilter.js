@@ -21,7 +21,7 @@ const messages = {
 };
 
 
-export function SummaryFilter({entityType, mergeConstraints, elKey, fieldStatuses}) {
+export function SummaryFilter({entityType, mergeConstraints, elKey, accessStatus}) {
     // const logRoot = rootMkr(SummaryFilter, entityType.name);
 
 
@@ -86,7 +86,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey, fieldStatuse
 
     return (
         <tr onKeyDown={enterKeyHandler}>
-            {fieldStatuses.map(({fieldPath, isVisible}) => {
+            {accessStatus.fields.map(({fieldPath, isVisible}) => {
                 if (isVisible)
                         return (
                             <th key={elKey + fieldPath + '_sort'}>

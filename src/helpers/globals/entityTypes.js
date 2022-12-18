@@ -120,13 +120,6 @@ entityTypes.user = {
             access: [authorities.ROLE_ADMIN, authorities.SELF],
             label: 'email', type: fieldTypes.str, subtype: subtypes.email,
             validation: {required: true, maxLength: 254},
-            // crossFieldChecks: [{
-            //     name: 'emailOrUsername',
-            //     otherFieldName: 'username',
-            //     validate: (thisField, otherField) => !!thisField || !!otherField,
-            //     message: 'TEXT:user:email:0',
-            //     text: {NL: 'gebruikersnaam of email is nodig', EN: 'username or email required'},
-            // }],
         },
         password: {
             access: authorities.SELF,
@@ -145,6 +138,10 @@ entityTypes.user = {
     },
     summary: ['id', 'username'],
     methods: 'CRUD',
+    access: {
+        read: authorities.USER, create: authorities.ROLE_ADMIN,
+        update: [authorities.ROLE_ADMIN, authorities.SELF], delete: authorities.ROLE_ADMIN,
+    },
     findItem: {
         endpoint: '/find',
         params: {},
@@ -166,6 +163,7 @@ entityTypes.role = {
     },
     summary: ['id', 'name'],
     methods: 'CRUD',
+    access: authorities.ROLE_ADMIN,
     findItem: {
         endpoint: '/find',
         params: {},

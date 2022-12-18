@@ -10,6 +10,9 @@ import { logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
 import { Patience } from '../Patience';
 import { useLoggingState } from '../../dev/useLoggingState';
 import { languageSelector } from '../../helpers';
+import { useToggleState } from '../../helpers/useToggleState';
+import { sessionConfig } from '../../helpers/globals/sessionConfig';
+import { SummaryLine } from './SummaryLine';
 
 const messages = {
     NL: {
@@ -25,10 +28,30 @@ const messages = {
 
 export const optionalIdValue = -Infinity;
 
+function collapseInverter(x) {
+    return sessionConfig.collapseInputObject.value ? !x : x;
+}
+
+function blns(x) {
+    let output = '';
+    for (const xKey in x) {
+        output += xKey + (x ? ':𝐓 ; ' : ':𝐅 ; ');
+    }
+    return output.slice(0, -3);
+}
+
+const hiddenFieldStyle = () =>
+    sessionConfig.showHiddenFields.value
+        ? {opacity: '50%', cursor: 'default'}
+        : {opacity: '0', position: 'absolute', width: 0,};
+
+
 export function SummaryListSmall({
                                      entityType, initialIdList, UICues,
-                                     setHiddenField, elKey, toggleCollapsed, parentName,
-                                     selectedIds,
+                                     setHiddenField, elKey,
+                                     // toggleCollapsed,
+                                     fieldName,
+                                     parentName, selectedIds,
                                  }) {
     elKey += '/SListSmall';
     if (!entityType) logv(rootMkr(SummaryListSmall), {elKey}, '❌');
@@ -36,12 +59,15 @@ export function SummaryListSmall({
     const logRoot = rootMkr(SummaryListSmall, entityName, '↓↓');
     const storage = useContext(StorageContext);
     const {isAllLoaded, store} = storage;
-    const {isMulti, hasNull, readOnly} = UICues;
+    const {isMulti, hasNull, readOnly, borderStyle} = UICues;
     const doLog = logCondition(SummaryListSmall, entityName);
     const entityEntries = storage.getEntries(entityName)
     if (doLog) logv(logRoot, {entityEntries, initialIdList});
 
     // const counter = useCounter(logRoot, entityName, 1000);//todo remove
+
+    // const typeField = entityType.fields[fieldName];
+    const [isCollapsed, toggleCollapsed] = useToggleState(collapseInverter(false));
 
     const TXT = messages[languageSelector()];
 
@@ -50,8 +76,6 @@ export function SummaryListSmall({
 
     const requestListState = useRequestState();
     const [list, setList] = useLoggingState(null, 'list', logRoot, entityName);
-    // const selectedIds = useLoggingImmutableSet(initialIdList, 'selectedIds', logRoot, entityName);
-    // const selectedIds = useImmutableSet(initialIdList, 'selectedIds', logRoot, entityName);
 
     const {isControlDown, handleOnControlUp, handleOnControlDown} = useKeyPressed(keys.control);
 
@@ -150,28 +174,46 @@ export function SummaryListSmall({
     // if (counter.passed) return <Sorry context={SummaryListSmall.name} count={counter.value}/>;
 
     return (
-        <div onKeyDown={handleOnControlDown} onKeyUp={handleOnControlUp} style={{minHeight: '12em'}}>
-            <ShowRequestState requestState={requestListState} description={TXT.rsDesc}/>
-            {list && (
-                <div>
-                    {/*{isMulti && (*/}
-                    {/*    <Stringify data={[...selectedIds.all]}>selectedIds</Stringify>*/}
-                    {/*)}*/}
-                    <SummaryTable entityType={entityType}
-                                  list={list}
-                                  selectedIds={selectedIds}
-                                  chooseItem={chooseItemSmall}
-                                  small={true}
-                                  UICues={UICues}
-                                  elKey={elKey}
-                                  key={elKey}
-                                  sorting={sorting}
-                                  toggleCollapsed={toggleCollapsed}
-                                  parentName={parentName}
-                    />
+        <>
+            <span style={hiddenFieldStyle()}>
+                {blns({isCollapsed})} ; length: {initialIdList.length}
+            </span>
+            {(isCollapsed && initialIdList.length < 2)
+                ? <SummaryLine entityType={entityType}
+                               initialIdList={initialIdList}
+                               receiver={'Input'}
+                               key={elKey + fieldName + '_line'}
+                               elKey={elKey + fieldName + '_line'}
+                               UICues={{hasFocus: false, hasNull, isMulti, borderStyle, readOnly}}
+                               setHiddenField={setHiddenField}
+                               toggleCollapsed={toggleCollapsed}
+                               parentName={parentName}
+                />
+                : <div onKeyDown={handleOnControlDown} onKeyUp={handleOnControlUp} style={{minHeight: '12em'}}>
+                    <ShowRequestState requestState={requestListState} description={TXT.rsDesc}/>
+                    {list && (
+                        <div>
+                            {/*{isMulti && (*/}
+                            {/*    <Stringify data={[...selectedIds.all]}>selectedIds</Stringify>*/}
+                            {/*)}*/}
+                            <SummaryTable entityType={entityType}
+                                          list={list}
+                                          selectedIds={selectedIds}
+                                          chooseItem={chooseItemSmall}
+                                          small={true}
+                                          UICues={UICues}
+                                          elKey={elKey}
+                                          key={elKey}
+                                          sorting={sorting}
+                                          toggleCollapsed={toggleCollapsed}
+                                          parentName={parentName}
+                            />
+                        </div>
+                    )}
+                    {!list && <Patience>, {TXT.building}</Patience>}
                 </div>
-            )}
-            {!list && <Patience>, {TXT.building}</Patience>}
-        </div>
+            }
+
+        </>
     );
 }

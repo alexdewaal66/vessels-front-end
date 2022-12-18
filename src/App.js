@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import './assets/fonts/stylesheet.css'
@@ -6,19 +6,22 @@ import './App.css';
 import { pageLayout } from './pageLayouts';
 import { pages, Project } from './pages';
 import { Footer, Header } from './pageLayouts';
-import { domain, useMountEffect } from './helpers';
+import { domain, languageSelector } from './helpers';
+import { AuthContext } from './contexts';
 
 //TODO README.md
 function App() {
     const [, setX] = useState(0);
+    const auth = useContext(AuthContext);
 
     function forceUpdate() {
         setX(x => ++x & 255);
     }
+    const person = auth?.user?.username || {NL: 'gast', EN:'guest'}[languageSelector()];
 
-    useMountEffect(() => {
-        window.document.title = 'Vessels @ ' + domain;
-    });
+    useEffect(() => {
+        window.document.title = `Vessels @ ${domain} -- ${person}`;
+    }, [person]);
 
     return (
         <div className={"App " + pageLayout.app}>

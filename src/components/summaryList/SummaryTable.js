@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { SummaryHeading, SummaryRow, summaryStyle } from './';
 import { cx, hints} from '../../helpers';
 import { useFilters } from './useFilters';
-import { useFieldStatuses } from './useFieldStatuses';
+import { useAccessStatus } from '../../helpers/useAccessStatus';
 
 // const messages = {NL: {}, EN: {}};
 
@@ -99,7 +99,7 @@ export function SummaryTable({
         }
     }
 
-    const fieldStatuses = useFieldStatuses(entityName, parentName);
+    const accessStatus = useAccessStatus(entityName, parentName);
 
     return (
         <div>
@@ -120,7 +120,7 @@ export function SummaryTable({
                                     mergeConstraints={mergeConstraints}
                                     small={small}
                                     toggleCollapsed={toggleCollapsed}
-                                    fieldStatuses={fieldStatuses}
+                                    accessStatus={accessStatus}
                     />
                     </thead>
                     <tbody ref={tableBodyRef} title={isMulti ? hints(multiSelectHint): null}>
@@ -134,7 +134,7 @@ export function SummaryTable({
                                     rowFocus={rowFocus}
                                     UICues={UIRowCues(index)}
                                     tableBodyRef={tableBodyRef}
-                                    fieldStatuses={fieldStatuses}
+                                    accessStatus={accessStatus}
                         />
                     ))}
                     </tbody>

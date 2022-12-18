@@ -35,7 +35,7 @@ const messages = {
 
 export function SummaryRow({
                                item, index, entityType, chooseItem,
-                               rowFocus, UICues, elKey, fieldStatuses
+                               rowFocus, UICues, elKey, accessStatus
                            }) {
     const entityName = entityType.name;
     const logRoot = rootMkr(SummaryRow, entityName, item?.id);
@@ -160,7 +160,7 @@ export function SummaryRow({
             title={devHints('readOnly=' + readOnly)}
             // aria-readonly={readOnly}
         >
-            {fieldStatuses.map(({fieldPath, isVisible}) => {
+            {accessStatus.fields.map(({fieldPath, isVisible}) => {
                 if (isVisible)
                     return (<td key={elKey + fieldPath}>
                         {(isNullRow)
@@ -174,11 +174,16 @@ export function SummaryRow({
             })}
             {(small && item.id && item.id !== optionalIdValue) ? (
                 <td>
-                    <span onClick={makeChoice({component: EntityN(entityType, item.id)})}
-                          title={hints(`${TXT.goto} ${text(entityType.label)}(${item.id})`)}
-                    >
-                        <span style={arrowStyle}>➡</span>
-                    </span>
+                    {accessStatus.toEntity()
+                        ? (
+                            <span onClick={makeChoice({component: EntityN(entityType, item.id)})}
+                                  title={hints(`${TXT.goto} ${text(entityType.label)}(${item.id})`)}
+                            >
+                                <span style={arrowStyle}>➡</span>
+                            </span>
+                        )
+                        : null
+                    }
                 </td>
             ) : (
                 <td>&nbsp;</td>

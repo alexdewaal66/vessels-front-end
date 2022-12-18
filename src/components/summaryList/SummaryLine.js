@@ -4,7 +4,7 @@ import { errv, logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
 import { entityTypes, fieldTypes, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
 import { endpoints, hints, languageSelector } from '../../helpers';
 import { summaryStyle } from './index';
-import { useFieldStatuses } from './useFieldStatuses';
+import { useAccessStatus } from '../../helpers/useAccessStatus';
 
 const messages = {
     NL: {
@@ -27,7 +27,8 @@ export function SummaryLine({
     const item = storage.getItem(entityName, initialIdList[0]);
     const isNullRow = (item?.id === 0);
 
-    const fieldStatuses = useFieldStatuses(entityName, parentName);
+    const accessStatus = useAccessStatus(entityName, parentName);
+
     const TXT = messages[languageSelector()];
 
     function getProperty(object, propertyPath) {
@@ -77,7 +78,7 @@ export function SummaryLine({
                 style={{cursor: 'pointer'}}
                 title={hints(TXT.toggle)}
             >
-                {fieldStatuses.map(({fieldPath, isVisible}) => {
+                {accessStatus.fields.map(({fieldPath, isVisible}) => {
                     if (isVisible)
                         return (
                             <th key={elKey + fieldPath} style={{fontWeight: 'normal'}}

@@ -1,3 +1,6 @@
+import { logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
+const logRoot = rootMkr('levels');
+
 export const levels = {
     ROLE_MEMBER: 1,
     ROLE_EXPERT: 2,
@@ -26,22 +29,27 @@ export const accessPurposes = {
 
 accessPurposes.WRITE = [accessPurposes.CREATE, accessPurposes.UPDATE];
 
-export const hasAccess = (userAuthorities = [], fieldAccess = [], purpose = 'read') => {
+export const hasAccess = (userAuthorities = [], propertyAccess = [], purpose = 'read') => {
+    const logPath = pathMkr(logRoot, hasAccess);
+    const doLog = logCondition(hasAccess, purpose);
     if (Array.isArray(purpose)) {
         // console.log('multiple accessPurposes:', purpose);
-        return purpose.some(p => hasAccess(userAuthorities, fieldAccess, p))
+        return purpose.some(p => hasAccess(userAuthorities, propertyAccess, p))
     }
-    const requiredAuthorities = (fieldAccess?.[purpose])
-        ? [fieldAccess[purpose]].flat(2)
-        : [fieldAccess].flat(2);
-    const forbiddenAuthorities = [fieldAccess?.forbidden?.[purpose] || []].flat(2);
+    const requiredAuthorities = (propertyAccess?.[purpose])
+        ? [propertyAccess[purpose]].flat(2)
+        : [propertyAccess].flat(2);
+    const forbiddenAuthorities = [propertyAccess?.forbidden?.[purpose] || []].flat(2);
     userAuthorities = [userAuthorities].flat(2);
     const isForbidden = userAuthorities?.some(ul => forbiddenAuthorities.includes(ul));
-    // console.log({requiredAuthorities, forbiddenAuthorities, isForbidden});
-    return !isForbidden && (
+    const zeroLength = !(requiredAuthorities.length > 0);
+    const someMatch = userAuthorities?.some(ul => requiredAuthorities.includes(ul));
+    const canAccess = !isForbidden && (
         !(requiredAuthorities.length > 0)
         ||
         userAuthorities?.some(ul => requiredAuthorities.includes(ul))
     );
+    if (doLog) logv(logPath, {userAuthorities, requiredAuthorities, forbiddenAuthorities, isForbidden, zeroLength, someMatch});
+    return canAccess;
 };
 

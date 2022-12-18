@@ -7,47 +7,62 @@ import { TestCalculatingNumberInput } from '../dev/TestCalculatingNumberInput';
 import { TestMultipartFile } from '../dev/TestMultipartFile';
 import { Test } from '../dev/Test';
 import { TestSorry } from '../dev/TestSorry';
+import { authorities } from '../helpers/globals/levels';
 
-console.log('------------------------------------------------------', {entityTypes}, '------------------------------------------------------');
+// console.log('------------------------------------------------------\n', {entityTypes}, '\n------------------------------------------------------');
 
 const EntityN = (entityType, n) => () => <Entity entityType={entityType} initialId={n}/>;
 
 const dev = true;
 const separator = true;
 
+const makeEntityMenuItem = (entityType, n) => {
+    let label = entityType.label;
+    if (typeof n !== 'undefined')
+        label = {
+            NL: `\u00A0\u00A0- ${label.NL}(${n})`,
+            EN: `\u00A0\u00A0- ${label.EN}(${n})`,
+        };
+    return {
+        label,
+        component: EntityN(entityType, n),
+        access: entityType.access,
+    }
+}
+
 const homeMenuItems = {
-    // sep0: {label: 'sep1', separator, dev},
     default: {label: {NL:'Welkom', EN: 'Welcome'}, component: Welcome},
-    vessel: {label: {NL: 'Vaartuig', EN: 'Vessel'}, component: EntityN(entityTypes.vessel)},
-    vesselType: {label: {NL: 'Scheepstype', EN: 'Ship type'}, component: EntityN(entityTypes.vesselType)},
-    hull: {label: {NL: 'Romp', EN: 'Hull'}, component: EntityN(entityTypes.hull)},
-    user: {label: {NL: 'Gebruiker', EN: 'User'}, component: EntityN(entityTypes.user)},
-    userN2: {label: {NL: '\u00A0\u00A0- Gebruiker(2)', EN: '\u00A0\u00A0- User(2)'}, component: EntityN(entityTypes.user, 2), dev},
-    role: {label: {NL: 'Rol', EN: 'Role'}, component: EntityN(entityTypes.role), dev},
-    country: {label: {NL:'Land', EN: 'Country'}, component: EntityN(entityTypes.country)},
-    address: {label: {NL:'Adres', EN: 'Address'}, component: EntityN(entityTypes.address)},
-    subdivision: {label: {NL:'Deelsector', EN: 'Subdivision'}, component: EntityN(entityTypes.subdivision)},
-    unLocode: {label: {NL: "Locatiecode", EN: 'Location code'}, component: EntityN(entityTypes.unLocode)},
-    unLocodeN360: {label: {NL: '\u00A0\u00A0- Locatiecode(360)', EN: '\u00A0\u00A0- Location code(360)'}, component: EntityN(entityTypes.unLocode, 360), dev},
-    organisation: {label: {NL:'Organisatie', EN: 'Organisation'}, component: EntityN(entityTypes.organisation)},
-    relation: {label: {NL:'Relatie', EN: 'Relation'}, component: EntityN(entityTypes.relation)},
-    relationType: {label: {NL:'Soort Relatie', EN: 'Relation type'}, component: EntityN(entityTypes.relationType)},
-    propulsionType: {label: {NL:'Soort Voortstuwing', EN: 'Propulsion type'}, component: EntityN(entityTypes.propulsionType)},
-    operation: {label: {NL: 'Beheer', EN: 'Management'}, component: EntityN(entityTypes.operation)},
-    operationType: {label: {NL: 'Beheerrol', EN: 'Management role'}, component: EntityN(entityTypes.operationType)},
+    vessel: {...makeEntityMenuItem(entityTypes.vessel)},
+    vesselType: {...makeEntityMenuItem(entityTypes.vesselType)},
+    vesselTypeN21: {...makeEntityMenuItem(entityTypes.vesselType, 21), dev},
+    hull: {...makeEntityMenuItem(entityTypes.hull)},
+    country: {...makeEntityMenuItem(entityTypes.country)},
+    address: {...makeEntityMenuItem(entityTypes.address)},
+    subdivision: {...makeEntityMenuItem(entityTypes.subdivision)},
+    unLocode: {...makeEntityMenuItem(entityTypes.unLocode)},
+    unLocodeN360: {...makeEntityMenuItem(entityTypes.unLocode, 360), dev},
+    organisation: {...makeEntityMenuItem(entityTypes.organisation)},
+    relation: {...makeEntityMenuItem(entityTypes.relation)},
+    relationType: {...makeEntityMenuItem(entityTypes.relationType)},
+    propulsionType: {...makeEntityMenuItem(entityTypes.propulsionType)},
+    operation: {...makeEntityMenuItem(entityTypes.operation)},
+    operationType: {...makeEntityMenuItem(entityTypes.operationType)},
+    sep0: {label: 'sep0', separator, access: authorities.USER},
+    user: {...makeEntityMenuItem(entityTypes.user)},
+    userN2: {...makeEntityMenuItem(entityTypes.user, 2), dev},
+    role: {...makeEntityMenuItem(entityTypes.role), dev},
     sep1: {label: 'sep1', separator, dev},
-    xyz: {label: 'Xyz', component: EntityN(entityTypes.xyz), dev},
-    // xyzN3: {label: '\u00A0\u00A0- Xyz(3)', component: EntityN(entityTypes.xyz, 3), dev},
-    zyx: {label: 'Zyx', component: EntityN(entityTypes.zyx), dev},
-    file: {label: {NL:'Bestand', EN: 'File'}, component: EntityN(entityTypes.file), dev},
-    image: {label: {NL:'Afbeelding', EN: 'Image'}, component: EntityN(entityTypes.image), dev},
-    // search: {label: {NL:'Zoek', EN: 'Search'}, componentName: Search},
+    xyz: {...makeEntityMenuItem(entityTypes.xyz), dev},
+    // xyzN3: {...makeEntityMenuItem(entityTypes.xyz, 3), dev},
+    zyx: {...makeEntityMenuItem(entityTypes.zyx), dev},
+    file: {...makeEntityMenuItem(entityTypes.file), dev},
+    image: {...makeEntityMenuItem(entityTypes.image), dev},
     sep2: {label: 'sep2', separator, dev},
     colors: {label: {NL:'Kleuren', EN: 'Colors'}, component: Colors, dev},
     tms: {label: 'test multi-select', component: TestMultiSelect, dev},
     tstDict: {label: 'test useDict', component: Test, dev},
     TestMultipartFile: {label: {NL:'test bestandsupload', EN: 'test file upload'}, component: TestMultipartFile, dev},
-    calcInput: {label: 'calcInput', component: TestCalculatingNumberInput, dev},
+    calcInput: {label: 'test calcInput', component: TestCalculatingNumberInput, dev},
     sorry: {label:'sorry', component: TestSorry, dev},
     // focus: {label: 'Focus', componentName: OnFocusExample},
 };

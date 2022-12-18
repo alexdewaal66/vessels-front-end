@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import menuStyles from './menu.module.css';
 import pageLayout from '../pageLayouts/pageLayout.module.css';
 import { text } from '../helpers';
 import { sessionConfig } from '../helpers/globals/sessionConfig';
+import { hasAccess } from '../helpers/globals/levels';
+import { AuthContext } from '../contexts';
+
+function isNotDevItemOrEnabledDevItem(menuItem) {
+    return !menuItem.dev || (menuItem.dev && sessionConfig.devComponents.value);
+}
 
 export function Menu({menuItems, choice, makeChoice, children, className, ...rest}) {
+    const authorization = useContext(AuthContext);
+    const userAuthorities = useMemo(() => authorization.getRoles(), [authorization]);
 
     let counter=1;
 
@@ -16,7 +24,7 @@ export function Menu({menuItems, choice, makeChoice, children, className, ...res
 
                 <ul className={menuStyles.ul}>
                     {menuItems?.map(menuItem =>
-                        (!menuItem.dev || (menuItem.dev && sessionConfig.devComponents.value)) &&
+                        (isNotDevItemOrEnabledDevItem(menuItem) && hasAccess(userAuthorities, menuItem.access)) &&
                         (menuItem.separator
                             ? (
                                 <React.Fragment key={menuItem.label + counter++}>

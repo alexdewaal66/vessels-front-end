@@ -6,30 +6,13 @@ import { SummaryListSmall } from './summaryList';
 import { rootMkr, pathMkr, logv, logCondition } from '../dev/log';
 import { ValidationMessage } from './ValidationMessage';
 import { crossFieldExpansion } from '../helpers/crossFieldExpansion';
-import { useToggleState } from '../helpers/useToggleState';
-import { SummaryLine } from './summaryList/SummaryLine';
-
-// import { Value } from '../dev/Value';
 
 // const messages = {NL: {}, EN: {}};
-
-function collapseInverter(x) {
-    return sessionConfig.collapseInputObject.value ? !x : x;
-}
 
 const hiddenFieldStyle = () =>
     sessionConfig.showHiddenFields.value
         ? {opacity: '50%', cursor: 'default'}
         : {opacity: '0', position: 'absolute', width: 0,};
-
-
-function blns(x) {
-    let output = '';
-    for (const xKey in x) {
-        output += xKey + (x ? ':𝐓 ; ' : ':𝐅 ; ');
-    }
-    return output.slice(0, -3);
-}
 
 export function InputObject({
                                 entityType, fieldName, defaultValue, entityForm, isEligible,
@@ -45,11 +28,8 @@ export function InputObject({
     const initialIdList = Array.isArray(defaultValue)
         ? defaultValue.map(item => item.id)
         : [defaultValue.id];
-    const [isCollapsed, toggleCollapsed] = useToggleState(collapseInverter(false));
 
     const selectedIds = useImmutableSet(initialIdList, 'selectedIds', logRoot, entityType.name);
-
-    // logv(null, {initialId});
 
     const {register, trigger, setValue, formState: {errors}, getValues} = entityForm;
 
@@ -85,38 +65,18 @@ export function InputObject({
                    {...loggingRegister()}
                    {...rest}
             />
-            <span style={hiddenFieldStyle()}>
-                {blns({isCollapsed})} ; length: {initialIdList.length}
-            </span>
-            {(isCollapsed && initialIdList.length < 2) ? (
-                <>
-                    <SummaryLine entityType={entityTypes[typeField.target]}
-                                 initialIdList={initialIdList}
-                                 receiver={'Input'}
-                                 key={elKey + fieldName + '_obj'}
-                                 elKey={elKey + fieldName + '_obj'}
-                                 UICues={{hasFocus: false, hasNull, isMulti, borderStyle, readOnly}}
-                                 setHiddenField={setHiddenField}
-                                 toggleCollapsed={toggleCollapsed}
-                                 parentType={entityType.name}
-                    />
-                </>
-            ) : (
-                <>
-                    <SummaryListSmall entityType={entityTypes[typeField.target]}
-                                      initialIdList={initialIdList}
-                                      receiver={'Input'}
-                                      key={elKey + fieldName + '_obj'}
-                                      elKey={elKey + fieldName + '_obj'}
-                                      UICues={{hasFocus: false, hasNull, isMulti, borderStyle, readOnly}}
-                                      setHiddenField={setHiddenField}
-                                      toggleCollapsed={toggleCollapsed}
-                                      parentName={entityType.name}
-                                      selectedIds={selectedIds}
-                    />
-
-                </>
-            )}
+            <SummaryListSmall entityType={entityTypes[typeField.target]}
+                              initialIdList={initialIdList}
+                              receiver={'Input'}
+                              key={elKey + fieldName + '_obj'}
+                              elKey={elKey + fieldName + '_obj'}
+                              UICues={{hasFocus: false, hasNull, isMulti, borderStyle, readOnly}}
+                              setHiddenField={setHiddenField}
+                              // toggleCollapsed={toggleCollapsed}
+                              parentName={entityType.name}
+                              selectedIds={selectedIds}
+                              fieldName={fieldName}
+            />
             &nbsp;
             {!readOnly && (
                 <ValidationMessage form={entityForm} fieldName={fieldName}/>

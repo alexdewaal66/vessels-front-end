@@ -19,7 +19,7 @@ const messages = {
 export function SummaryHeading({
                                    entityType, elKey,
                                    sorting, mergeConstraints,
-                                   small, toggleCollapsed, fieldStatuses
+                                   small, toggleCollapsed, accessStatus
                                }) {
     const logRoot = rootMkr(SummaryHeading, entityType.name, '↓');
     const doLog = logCondition(SummaryHeading, entityType.name);
@@ -48,7 +48,7 @@ export function SummaryHeading({
     return (
         <>
             <tr>
-                {fieldStatuses.map(({fieldPath, typeField, isVisible}) => {
+                {accessStatus.fields.map(({fieldPath, typeField, isVisible}) => {
                     if (isVisible)
                             return (
                                 <th key={elKey + fieldPath + '_h'}>
@@ -91,7 +91,7 @@ export function SummaryHeading({
             <SummaryFilter entityType={entityType}
                            mergeConstraints={mergeConstraints}
                            elKey={elKey}
-                           fieldStatuses={fieldStatuses}
+                           accessStatus={accessStatus}
             />
         </>
     );

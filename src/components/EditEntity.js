@@ -1,5 +1,5 @@
-import React, { Fragment, useContext, useMemo } from 'react';
-import { AuthContext, CommandContext, operationNames, StorageContext } from '../contexts';
+import React, { Fragment, useContext } from 'react';
+import { CommandContext, operationNames, StorageContext } from '../contexts';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
 import { Details, EditButtons, Input, ShowRequestState } from './';
 import { fieldTypes, referringFieldTypes } from '../helpers/globals/entityTypes';
@@ -7,8 +7,7 @@ import { text, useRequestState } from '../helpers';
 import { useForm } from 'react-hook-form';
 import { logCondition, logv, pathMkr, rootMkr } from '../dev/log';
 import { accessPurposes, hasAccess } from '../helpers/globals/levels';
-// import { Value } from '../dev/Value';
-// import { Stringify } from '../dev';
+import { useAccessStatus } from '../helpers/useAccessStatus';
 
 // const messages = {NL: {}, EN: {}};
 
@@ -16,18 +15,16 @@ export function EditEntity(
     {
         entityType, item, setItem, receiver, elKey,
         onlyUpdate
-        // submitTime, setSubmitTime
     }) {
-    // const containerTop = useRef(null);
     const entityName = entityType.name;
     const logRoot = rootMkr(EditEntity, entityName, '↓↓');
     const doLog = logCondition(EditEntity, entityName);
     // logv(logRoot, {item, receiver: receiver.name});
     const {getItem, saveItem, newItem, deleteItem} = useContext(StorageContext);
 
-    const authorization = useContext(AuthContext);
-    const isEligible = useMemo(() => authorization.isEligibleToChange(item), [item, authorization]);
-    const userAuthorities = useMemo(() => authorization.getUserAuthorities(item), [item, authorization]);
+    const accessStatus = useAccessStatus(entityName,undefined, item);
+    const {authorization, userAuthorities, isEligible} = accessStatus;
+    if (doLog) logv(logRoot, {accessStatus});
 
     const {useCommand, setCommand} = useContext(CommandContext);
     const entityForm = useForm({
@@ -37,8 +34,6 @@ export function EditEntity(
     const requestState = useRequestState();
     const readOnly = (entityType.methods === 'R') || !authorization.user;// || !isEligible;
 
-    // const isSelfOrAdmin = (authorization.isAdmin() || authorization.user.username === item.username);
-    // const typeFields = isSelfOrAdmin ? {...entityType.fields, ...entityType.restrictedFields} : entityType.fields;
     const typeFields = entityType.fields;
 
     // const TXT = messages[languageSelector()];
@@ -239,6 +234,7 @@ export function EditEntity(
                                      isEligible={isEligible}
                                      form={entityForm}
                                      onlyUpdate={onlyUpdate}
+                                     toEntity={accessStatus.toEntity}
                         />
                     </Fieldset>
                 </Form>

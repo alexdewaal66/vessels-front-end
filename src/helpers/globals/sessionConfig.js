@@ -1,16 +1,12 @@
+const dev = true;
+
 export const sessionConfig = {
     englishUI: {
         value: false, label: 'EN',
         hint: {NL: 'Select for English', EN: 'Deselecteer voor Nederlands'},
     },
-    showUsageHints: {value: true, label: 'tooltips'},
-    devComponents: {
-        value: true,
-        label: {NL: 'extra\'s', EN: 'extras',},
-        hint: {
-            NL: 'dev/admin componenten',
-            EN: 'dev/admin components',
-        },
+    showUsageHints: {
+        value: true, label: 'tooltips'
     },
     collapseInputObject: {
         value: true,
@@ -20,7 +16,16 @@ export const sessionConfig = {
             EN: 'collapse input tables by default',
         },
     },
+    devComponents: {
+        value: false,
+        label: {NL: 'extra\'s', EN: 'extras',},
+        hint: {
+            NL: 'dev/admin componenten',
+            EN: 'dev/admin components',
+        },
+    },
     showEntities: {
+        dev,
         value: false,
         label: {NL: 'gegevens & definities', EN: 'data & definitions',},
         hint: {
@@ -29,6 +34,7 @@ export const sessionConfig = {
         },
     },
     shortRefresh: {
+        dev,
         value: false,
         label: {NL: 'korte ververstijd', EN: 'fast refresh',},
         hint: {
@@ -37,6 +43,7 @@ export const sessionConfig = {
         },
     },
     showHiddenFields: {
+        dev,
         value: false,
         label: {NL: 'verborgen velden', EN: 'hidden fields',},
         hint: {
