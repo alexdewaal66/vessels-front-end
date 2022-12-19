@@ -34,8 +34,8 @@ function collapseInverter(x) {
 
 function blns(x) {
     let output = '';
-    for (const xKey in x) {
-        output += xKey + (x ? ':𝐓 ; ' : ':𝐅 ; ');
+    for (const key in x) {
+        output += key + (x[key] ? ':𝐓 ; ' : ':𝐅 ; ');
     }
     return output.slice(0, -3);
 }

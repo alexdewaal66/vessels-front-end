@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { logCondition, logv, pathMkr, rootMkr } from '../dev/log';
 import { accessPurposes, hasAccess } from '../helpers/globals/levels';
 import { useAccessStatus } from '../helpers/useAccessStatus';
+import { sessionConfig } from '../helpers/globals/sessionConfig';
 
 // const messages = {NL: {}, EN: {}};
 
@@ -22,7 +23,7 @@ export function EditEntity(
     // logv(logRoot, {item, receiver: receiver.name});
     const {getItem, saveItem, newItem, deleteItem} = useContext(StorageContext);
 
-    const accessStatus = useAccessStatus(entityName,undefined, item);
+    const accessStatus = useAccessStatus(entityName, undefined, item);
     const {authorization, userAuthorities, isEligible} = accessStatus;
     if (doLog) logv(logRoot, {accessStatus});
 
@@ -172,60 +173,49 @@ export function EditEntity(
 
     return <>
         {item && (
-            <div
-                // ref={topIsRendered}
-                key={elKey + '1'}>
+            <div key={elKey + '1'}>
                 <ShowRequestState requestState={requestState}/>
                 <Form onSubmit={handleSubmit(onSubmit)}>
                     <Fieldset border={false}>
-                        {/*<input type="text"*/}
-                        {/*       name="requestMethod"*/}
-                        {/*       key="requestMethod"*/}
-                        {/*/>*/}
-                        {/*{Object.entries(item).map(([itemPropName, v]) => (*/}
                         {Object.keys(typeFields).map(fieldName => {
                                 const typeField = typeFields[fieldName];
                                 const value = item[fieldName];
-                                if (hasAccess(userAuthorities, typeField?.access)) {
-                                    const writeAccess = hasAccess(userAuthorities, typeField?.access, accessPurposes.WRITE);
-                                    // if (fieldName === 'roles') logv(logRoot, {userLevels: userAuthorities, typeField, writeAccess, isEligible});
-                                    return <Fragment key={elKey + ' / FieldRow() ' + fieldName}>
-                                        {/*{console.log('item, k,v:', item, k, v)}*/}
-                                        {!typeField.noEdit && (
-                                            <FieldRow elKey={elKey + ' edit_row ' + fieldName}
-                                                      key={elKey + ' edit_row ' + fieldName}
-                                                      field={fieldName}
-                                            >
-                                                <FieldDesc
-                                                    key={elKey + ' edit_desc ' + fieldName}
+                                const readAccess = hasAccess(userAuthorities, typeField?.access);
+                                const rowStyle = readAccess
+                                    ? {}
+                                    : sessionConfig.showHiddenFields.value
+                                        ? {opacity: '50%', cursor: 'default'}
+                                        : {opacity: '0', position: 'absolute', width: 0,};
+                                const writeAccess = hasAccess(userAuthorities, typeField?.access, accessPurposes.WRITE);
+                                // if (fieldName === 'roles') logv(logRoot, {userLevels: userAuthorities, typeField, writeAccess, isEligible});
+                                return <Fragment key={elKey + ' / FieldRow() ' + fieldName}>
+                                    {!typeField.noEdit && (
+                                        <FieldRow elKey={elKey + ' edit_row ' + fieldName}
+                                                  key={elKey + ' edit_row ' + fieldName}
+                                                  field={fieldName} style={rowStyle}
+                                        >
+                                            <FieldDesc key={elKey + ' edit_desc ' + fieldName}>
+                                                {text(typeField.label) || fieldName}
+                                            </FieldDesc>
+                                            <FieldEl>
+                                                <Details entityType={entityType} fieldName={fieldName} value={value}
+                                                         item={item}
+                                                         key={elKey + ' edit_details ' + fieldName}
                                                 >
-                                                    {/*{logv('❌❌❌ EditEntity » render()',*/}
-                                                    {/*    {entityType, fieldName, prop: typeField}*/}
-                                                    {/*), ''}*/}
-                                                    {text(typeField.label) || fieldName}
-                                                </FieldDesc>
-                                                <FieldEl>
-                                                    <Details entityType={entityType} fieldName={fieldName} value={value}
-                                                             item={item}
-                                                             key={elKey + ' edit_details ' + fieldName}
-                                                    >
-                                                        <Input entityType={entityType}
-                                                               fieldName={fieldName}
-                                                               defaultValue={value || ''}
-                                                               entityForm={entityForm}
-                                                               isEligible={isEligible}
-                                                               readOnly={readOnly || !writeAccess}
-                                                               key={elKey + ` / Input(${fieldName}=${value})`}
-                                                            // title={'writeAccess=' + writeAccess}
-                                                        />
-                                                    </Details>
-                                                </FieldEl>
-                                            </FieldRow>
-                                        )}
-                                    </Fragment>
-                                } else
-                                    // return <Stringify data={{fieldName, userAuthorities, access: typeField?.access, value}}/> ;
-                                    return null;
+                                                    <Input entityType={entityType}
+                                                           fieldName={fieldName}
+                                                           defaultValue={value || ''}
+                                                           entityForm={entityForm}
+                                                           isEligible={isEligible}
+                                                           readOnly={readOnly || !writeAccess}
+                                                           key={elKey + ` / Input(${fieldName}=${value})`}
+                                                        // title={'writeAccess=' + writeAccess}
+                                                    />
+                                                </Details>
+                                            </FieldEl>
+                                        </FieldRow>
+                                    )}
+                                </Fragment>
                             }
                         )}
                         <EditButtons requestState={requestState}
