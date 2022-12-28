@@ -1,6 +1,7 @@
 import React from 'react';
 import { logCondition, logv, rootMkr } from '../dev/log';
 import { text, useMountEffect } from '../helpers';
+import { formStyles } from '../formLayouts';
 
 export function ValidationMessage({form, fieldName}) {
     const logRoot = rootMkr(ValidationMessage);
@@ -17,7 +18,7 @@ export function ValidationMessage({form, fieldName}) {
         },
         '👀');
 
-    return <span style={{color: 'red', fontSize: 'smaller'}}>
+    return <span className={formStyles.error}>
                 {text(errors?.[fieldName]?.message)}
             </span>;
 }

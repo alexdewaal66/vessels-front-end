@@ -57,6 +57,11 @@ button + button {
     color: gray;
 }
 
+.form .pending {
+    background-color: rgba(255, 0, 0, 20%);
+    color: gray;
+}
+
 .form input:read-only,
 .form textarea:read-only {
     border: 0;
@@ -64,7 +69,10 @@ button + button {
     outline: none;
 }
 
-
+.error {
+    color: red;
+    font-size: smaller;
+}
 
 /*todo: add @media (max-width: 760px) {}
         to wrap labels and field in form rows (flex-wrap ??)

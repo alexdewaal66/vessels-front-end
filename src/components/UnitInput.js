@@ -79,6 +79,7 @@ export function UnitInput({
         <>
             <input
                 type={'hidden'}
+                tabIndex={-1}
                 // type={'number'}
                 // style={{opacity: '50%', border: '1px solid green'}}
                 name={fieldName}

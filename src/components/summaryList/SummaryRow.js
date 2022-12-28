@@ -1,34 +1,17 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { optionalIdValue, summaryStyle } from './index';
-import { errv, logCondition, logv } from '../../dev/log';
-import { pathMkr } from '../../dev/log';
-import { rootMkr } from '../../dev/log';
-import { entityTypes, getTypeFieldFromPath, fieldTypes } from '../../helpers/globals/entityTypes';
-import {
-    cx, devHints, endpoints,
-    hints, languageSelector, text
-} from '../../helpers';
-import { ChoiceContext, StorageContext } from '../../contexts';
-import { EntityN } from '../../pages/homeMenuItems';
-
-const keys = {
-    tab: 9,
-    enter: 13,
-    escape: 27,
-    space: 32,
-    arrowUp: 38, arrowDown: 40,
-    home: 36, end: 35,
-    pageUp: 33, pageDown: 34
-};
+import { errv, logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
+import { entityTypes, fieldTypes, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
+import { cx, devHints, endpoints, languageSelector } from '../../helpers';
+import { Goto } from './Goto';
+import { keyCodes } from '../../helpers/globals/keyCodes';
 
 const messages = {
     NL: {
         new: 'nieuw',
-        goto: 'ga naar'
     },
     EN: {
         new: 'new',
-        goto: 'go to'
     }
 };
 
@@ -51,10 +34,6 @@ export function SummaryRow({
         isSelected ? summaryStyle.selected : null,
         isNullRow ? summaryStyle.nullRow : null
     );
-    const {makeChoice} = useContext(ChoiceContext);
-    const storage = useContext(StorageContext);
-    const entry = storage.getEntry(entityName, item.id);
-    const arrowStyle = entry?.isEmpty ? {color: 'red', fontSize: 'larger'} : null;
     elKey += `/SRow`;
 
     const TXT = messages[languageSelector()];
@@ -82,29 +61,29 @@ export function SummaryRow({
         // console.log(`e.key=`, e.key);
         // console.log(`elKey=`, elKey);
         switch (e.keyCode) {
-            case keys.enter:
-            case keys.space:
+            case keyCodes.enter:
+            case keyCodes.space:
                 choose();
                 return;
-            case keys.escape:
+            case keyCodes.escape:
                 row.current?.blur();
                 return;
-            case keys.arrowUp:
+            case keyCodes.arrowUp:
                 rowFocus.up();
                 break;
-            case keys.arrowDown:
+            case keyCodes.arrowDown:
                 rowFocus.down();
                 break;
-            case keys.pageUp:
+            case keyCodes.pageUp:
                 rowFocus.tenUp();
                 break;
-            case keys.pageDown:
+            case keyCodes.pageDown:
                 rowFocus.tenDown();
                 break;
-            case keys.home:
+            case keyCodes.home:
                 rowFocus.first();
                 break;
-            case keys.end:
+            case keyCodes.end:
                 rowFocus.last();
                 break;
             default:
@@ -172,18 +151,9 @@ export function SummaryRow({
                     </td>);
                 else return null;
             })}
-            {(small && item.id && item.id !== optionalIdValue) ? (
+            {(small) ? (
                 <td>
-                    {accessStatus.toEntity()
-                        ? (
-                            <span onClick={makeChoice({component: EntityN(entityType, item.id)})}
-                                  title={hints(`${TXT.goto} ${text(entityType.label)}(${item.id})`)}
-                            >
-                                <span style={arrowStyle}>➡</span>
-                            </span>
-                        )
-                        : null
-                    }
+                    <Goto accessStatus={accessStatus} entityType={entityType} itemId={item?.id}/>
                 </td>
             ) : (
                 <td>&nbsp;</td>
@@ -191,4 +161,5 @@ export function SummaryRow({
         </tr>
     );
 }
+
 

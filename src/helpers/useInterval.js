@@ -22,5 +22,5 @@ export function useInterval(callback, delay, immediate) {
             savedId.current = id;
             return () => clearInterval(id);
         }
-    }, [delay]);
+    }, [delay, immediate]);
 }

@@ -10,6 +10,6 @@ export function usePollBackEndForChanges(storage, entityName) {
     useInterval(() => {
         // logv(usePollBackEndForChanges.name, {speedUp}, '⏲');
         storage.loadChangedItems(entityName);
-    }, pollingInterval, true);
+    }, pollingInterval);
 
 }

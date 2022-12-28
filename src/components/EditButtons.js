@@ -21,6 +21,7 @@ const messages = {
         canNotUpdate: '• mag niet wijzigen',
         canNotCreate: '• mag geen nieuwe maken',
         canNotDelete: '• mag niet verwijderen',
+        error:''
     },
     EN: {
         valid: '• form entered correctly',
@@ -66,7 +67,9 @@ export function EditButtons({
     if (doLog) logv(logRoot, {canUpdate, canCreate, canDelete});
 
     function style(condition) {
-        return condition ? formStyles.disabled : formStyles.enabled;
+        return isPending
+            ? formStyles.pending
+            : condition ? formStyles.disabled : formStyles.enabled;
     }
 
     return (
@@ -112,6 +115,11 @@ export function EditButtons({
                                 </button>
                             </>
                         )}
+                        {requestState.isError && (
+                            <span className={formStyles.error}>
+                                {TXT.error}
+                            </span>
+                        )}
                     </>
                 )}
             </FieldEl>
@@ -119,12 +127,3 @@ export function EditButtons({
     );
 }
 
-/*
-                <button type="submit" className={formStyles.disabled}
-                        disabled={isPending}
-                        onClick={setRequestMethod('search')}
-                        key="submit_search"
-                >
-                    Zoek
-                </button>
- */

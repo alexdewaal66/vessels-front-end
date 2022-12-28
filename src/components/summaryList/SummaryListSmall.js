@@ -175,7 +175,7 @@ export function SummaryListSmall({
 
     return (
         <>
-            <span style={hiddenFieldStyle()}>
+            <span style={hiddenFieldStyle()} tabIndex={-1}>
                 {blns({isCollapsed})} ; length: {initialIdList.length}
             </span>
             {(isCollapsed && initialIdList.length < 2)

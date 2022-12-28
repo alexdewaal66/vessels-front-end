@@ -94,6 +94,7 @@ export function Input({
                                entityForm={entityForm}
                                readOnly={readOnly}
                                elKey={elKey}
+                               {...rest}
                     />
                 );
             else {
@@ -137,6 +138,7 @@ export function Input({
                                 readOnly={readOnly}
                                 isEligible={isEligible}
                                 elKey={elKey}
+                                {...rest}
                 />
             );
         default:
@@ -159,13 +161,13 @@ export function Input({
                 rows={rows}
                 cols={cols}
                 defaultValue={fieldValue}
-                // defaultChecked={defaultValue}
+                defaultChecked={fieldValue}
                 readOnly={readOnly}
                 {...register(fieldName, crossFieldExpansion(typeField, getValues))}
                 {...rest}
             />
             {typeField?.subtype === subtypes.url &&
-                <a href={fieldValue}>⇗</a>
+                <a href={fieldValue} style={{textDecoration: 'none'}} target="_blank" rel="noreferrer">⇗</a>
             }
             &nbsp;
             <ValidationMessage form={entityForm} fieldName={fieldName}/>

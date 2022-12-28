@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { createEmptySummary, entityTypes, fieldTypes } from '../../helpers/globals/entityTypes';
 
+export const range = {
+    token: '--',
+    name: {NL: 'dubbel koppelteken', EN: 'double dash'}
+};
+
 export function useFilters(entityType, initialConstraint) {
     // const logRoot = rootMkr(useFilters, entityType.name);
     const [constraints, setConstraints] = useState(createEmptySummary(entityTypes, entityType));
@@ -23,17 +28,17 @@ export function useFilters(entityType, initialConstraint) {
         Object.entries(constraints).forEach(([fieldName, filterValue]) => {
             if (filterValue) {
                 let newFilter = {};
-                switch (entityType.fields[fieldName].type) {
+                switch (entityType.fields[fieldName]?.type) {
                     case fieldTypes.str:
                         newFilter.matcher = matchers.str;
                         newFilter.value = filterValue.toLowerCase();
                         break;
                     case fieldTypes.num:
-                        const [lo, hi] = filterValue.split('-');
+                        const [lo, hi] = filterValue.split(range.token);
                         newFilter.matcher = matchers.num;
                         newFilter.value = {
                             lo: (!lo) ? -Infinity : +lo,
-                            hi: (!hi) ? +Infinity : +hi
+                            hi: (!hi) ? ( filterValue.includes(range.token) ? +Infinity : + lo ): +hi
                         };
                         break;
                     default:

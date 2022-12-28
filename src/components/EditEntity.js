@@ -48,7 +48,7 @@ export function EditEntity(
                 entityForm.reset();
             },
         },
-    }
+    };
 
     useCommand(conditions);
 
@@ -131,11 +131,15 @@ export function EditEntity(
 
 // function onSearch(formData) {}
 
-    function onSubmit(dummy) {
+    function onSubmit(rawFormData, event) {
         const logPath = pathMkr(logRoot, onSubmit);
-        const {requestMethod, ...formData} = dummy;
-        if (doLog)
-            logv(logPath, {dummy, requestMethod, formData: {...formData}}, '🔎🔎🔎🔎🔎');
+        const {requestMethod, ...formData} = rawFormData;
+        if (event.keyCode === 13) { //13 is the key code for Enter
+            event.preventDefault()
+            return;
+        }
+        if (doLog+1)
+            logv(logPath, {rawFormData, requestMethod, formData: {...formData}}, '🔎🔎🔎🔎🔎');
 
         requestState.setAtPending();
         //todo: repair datatypes of formData values, for now, just id
@@ -157,7 +161,7 @@ export function EditEntity(
             // case 'search': not a useStorage method (yet)
             default:
                 const err = `Unsupported requestMethod: '${requestMethod}'`;
-                console.error(err);
+                logv(logPath, {requestMethod, formData}, err);
                 requestState.setAtError();
                 requestState.setErrorMsg(err);
                 return;
@@ -186,18 +190,19 @@ export function EditEntity(
                                     : sessionConfig.showHiddenFields.value
                                         ? {opacity: '50%', cursor: 'default'}
                                         : {opacity: '0', position: 'absolute', width: 0,};
+                                const tabIndex = readAccess ? 0 : -1;
                                 const writeAccess = hasAccess(userAuthorities, typeField?.access, accessPurposes.WRITE);
                                 // if (fieldName === 'roles') logv(logRoot, {userLevels: userAuthorities, typeField, writeAccess, isEligible});
                                 return <Fragment key={elKey + ' / FieldRow() ' + fieldName}>
                                     {!typeField.noEdit && (
                                         <FieldRow elKey={elKey + ' edit_row ' + fieldName}
                                                   key={elKey + ' edit_row ' + fieldName}
-                                                  field={fieldName} style={rowStyle}
+                                                  field={fieldName}
                                         >
-                                            <FieldDesc key={elKey + ' edit_desc ' + fieldName}>
+                                            <FieldDesc key={elKey + ' edit_desc ' + fieldName}  style={rowStyle}>
                                                 {text(typeField.label) || fieldName}
                                             </FieldDesc>
-                                            <FieldEl>
+                                            <FieldEl  style={rowStyle}>
                                                 <Details entityType={entityType} fieldName={fieldName} value={value}
                                                          item={item}
                                                          key={elKey + ' edit_details ' + fieldName}
@@ -208,6 +213,7 @@ export function EditEntity(
                                                            entityForm={entityForm}
                                                            isEligible={isEligible}
                                                            readOnly={readOnly || !writeAccess}
+                                                           tabIndex={tabIndex}
                                                            key={elKey + ` / Input(${fieldName}=${value})`}
                                                         // title={'writeAccess=' + writeAccess}
                                                     />

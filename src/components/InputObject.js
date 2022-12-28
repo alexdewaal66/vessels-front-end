@@ -25,10 +25,14 @@ export function InputObject({
     // const {hasNull, isMulti} = typeField;
     const {hasNull} = typeField;
     const isMulti = typeField.type === fieldTypes.arr;
-    const initialIdList = Array.isArray(defaultValue)
-        ? defaultValue.map(item => item.id)
-        : [defaultValue.id];
-
+    let initialIdList;
+    try {
+        initialIdList = Array.isArray(defaultValue)
+            ? defaultValue.map(item => item.id)
+            : [defaultValue.id];
+    } catch (error) {
+        logv(logRoot, {defaultValue});
+    }
     const selectedIds = useImmutableSet(initialIdList, 'selectedIds', logRoot, entityType.name);
 
     const {register, trigger, setValue, formState: {errors}, getValues} = entityForm;
@@ -62,6 +66,7 @@ export function InputObject({
                    defaultValue={defaultValue.id}
                    readOnly={readOnly}
                    style={hiddenFieldStyle()}
+                   tabIndex={-1}
                    {...loggingRegister()}
                    {...rest}
             />

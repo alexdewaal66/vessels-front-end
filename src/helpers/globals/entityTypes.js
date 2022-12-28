@@ -621,7 +621,7 @@ entityTypes.organisation = {
         },
     },
     methods: 'CRUD',
-    summary: ['id', 'shortName'],
+    summary: ['id', 'shortName', 'longName'],
     findItem: {
         endpoint: '/find',
         params: {}

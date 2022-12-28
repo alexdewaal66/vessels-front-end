@@ -5,11 +5,11 @@ import { entityTypes } from '../helpers/globals/entityTypes';
 import {
     capitalizeLabel, languageSelector, text,
     endpoints,
-    postRequest, useRequestState, persistentVars
+    postRequest, useRequestState, persistentVars, devHints
 } from '../helpers';
 import { pages } from './index';
-import { FieldDesc, FieldEl, FieldRow, Fieldset, Form } from '../formLayouts';
-import { ShowRequestState } from '../components';
+import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, formStyles } from '../formLayouts';
+import { ShowRequestState, ValidationMessage } from '../components';
 import { logv, pathMkr, rootMkr } from '../dev/log';
 import { Page } from './Page';
 
@@ -21,6 +21,10 @@ const messages = {
         linkText: 'hier',
         postLink: ' inloggen.',
         make: 'Maak account aan',
+        valid: 'formulier juist ingevuld',
+        pending: 'formulier wordt verzonden',
+        success: 'registreren gelukt',
+        error: 'registreren niet gelukt',
     },
     EN: {
         signUp: 'Register',
@@ -29,17 +33,22 @@ const messages = {
         linkText: 'here',
         postLink: '.',
         make: 'Make account',
+        valid: 'all form inputs are valid',
+        pending: 'sending form',
+        success: 'sign up succeeded',
+        error: 'sign up failed',
     },
 };
 
 export default function SignUp() {
     const logRoot = rootMkr(SignUp);
-    const {handleSubmit, register} = useForm();
+    const form = useForm({mode: 'onChange'});
+    const {handleSubmit, register, formState,} = form;
     const requestState = useRequestState();
     const history = useHistory();
-    const userFields = {...entityTypes.user.fields, ...entityTypes.user.restrictedFields};
+    const userFields = entityTypes.user.fields;
 
-    logv(logRoot, {requestState}, 'registration');
+    logv(logRoot, {requestState}, '--- Registration --- \n');
 
     function onSubmit(formData) {
         const logPath = pathMkr(logRoot, onSubmit, '↓')
@@ -56,6 +65,17 @@ export default function SignUp() {
     }
 
     const TXT = messages[languageSelector()];
+
+    const {isValid} = formState;
+    const hintValid = TXT.valid + ' : ' + isValid;
+    const {isPending, isSuccess, isError} = requestState;
+    const hintPending = TXT.pending + ' : ' + isPending;
+    const hintSuccess = TXT.success + ' : ' + isSuccess;
+    const isDisabled = isPending || !isValid || isSuccess;
+
+    function style(condition) {
+        return condition ? formStyles.disabled : formStyles.enabled;
+    }
 
     return (
         <Page>
@@ -76,6 +96,7 @@ export default function SignUp() {
                                 name="email"
                                 {...register("email", userFields.email.validation)}
                             />
+                            <ValidationMessage form={form} fieldName={'email'}/>
                         </FieldEl>
                     </FieldRow>
                     <FieldRow>
@@ -87,6 +108,7 @@ export default function SignUp() {
                                 name="username"
                                 {...register("username", userFields.username.validation)}
                             />
+                            <ValidationMessage form={form} fieldName={'username'}/>
                         </FieldEl>
                     </FieldRow>
 
@@ -99,17 +121,25 @@ export default function SignUp() {
                                 name="password"
                                 {...register("password", userFields.password.validation)}
                             />
+                            <ValidationMessage form={form} fieldName={'password'}/>
                         </FieldEl>
                     </FieldRow>
-                    <FieldRow>
+                    <FieldRow title={devHints(hintPending, hintValid, hintSuccess)}>
                         <FieldEl>
                             <button
                                 type="submit"
-                                className="form-button"
-                                disabled={requestState.isPending || requestState.isSuccess}
+                                className={style(isDisabled)}
+                                disabled={isDisabled}
                             >
                                 {TXT.make}
                             </button>
+                        </FieldEl>
+                        <FieldEl>
+                            {isError && (
+                                <span className={formStyles.error}>
+                                    {TXT.error}
+                                </span>
+                            )}
                         </FieldEl>
                     </FieldRow>
                 </Fieldset></Form>

@@ -5,6 +5,7 @@ import { entityTypes, fieldTypes, getTypeFieldFromPath } from '../../helpers/glo
 import { endpoints, hints, languageSelector } from '../../helpers';
 import { summaryStyle } from './index';
 import { useAccessStatus } from '../../helpers/useAccessStatus';
+import { Goto } from './Goto';
 
 const messages = {
     NL: {
@@ -72,7 +73,8 @@ export function SummaryLine({
     }
 
     return <>
-        <table className={summaryStyle.table}>
+        <table className={summaryStyle.table} tabIndex={0}
+        >
             <thead>
             <tr onClick={toggleCollapsed}
                 style={{cursor: 'pointer'}}
@@ -93,7 +95,10 @@ export function SummaryLine({
                     else
                         return null;
                 })}
+
                 <th style={{textAlign: 'right'}}>
+                    <Goto accessStatus={accessStatus} entityType={entityType} itemId={item?.id}/>
+                    &nbsp;
                     ≣
                 </th>
             </tr>

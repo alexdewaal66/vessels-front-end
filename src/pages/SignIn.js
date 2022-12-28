@@ -27,9 +27,7 @@ const messages = {
         valid: 'formulier juist ingevuld',
         pending: 'formulier wordt verzonden',
         success: 'inloggen gelukt',
-        update: 'Wijzig',
-        create: 'Maak nieuw',
-        delete: 'Verwijder',
+        error: 'inloggen niet gelukt',
     },
     EN: {
         signIn: 'Log in',
@@ -40,30 +38,26 @@ const messages = {
         valid: 'all form inputs are valid',
         pending: 'sending form',
         success: 'login succeeded',
-        update: 'Update',
-        create: 'Create',
-        delete: 'Delete',
+        error: 'login failed',
     }
 };
 
 export default function SignIn() {
     const logRoot = rootMkr(SignIn);
-    const form = useForm({
-        mode: 'onChange'
-    });
+    const form = useForm({mode: 'onChange'});
     const {handleSubmit, register, formState,} = form;
     const authContext = useContext(AuthContext);
     const {fetchUserData} = authContext;
     const storage = useContext(StorageContext);
 
     const requestState = useRequestState();
-    const userFields = {...entityTypes.user.fields, ...entityTypes.user.restrictedFields};
+    const userFields = entityTypes.user.fields;
 
     const TXT = messages[languageSelector()];
 
     const {isValid} = formState;
     const hintValid = TXT.valid + ' : ' + isValid;
-    const {isPending, isSuccess} = requestState;
+    const {isPending, isSuccess, isError} = requestState;
     const hintPending = TXT.pending + ' : ' + isPending;
     const hintSuccess = TXT.success + ' : ' + isSuccess;
     const isDisabled = isPending || !isValid || isSuccess;
@@ -85,7 +79,7 @@ export default function SignIn() {
     }
 
     async function onSubmit(formData) {
-        const logPath =  pathMkr(logRoot, onSubmit, '↓')
+        const logPath = pathMkr(logRoot, onSubmit, '↓')
         logv(logPath, {formData});
         postRequest({
             endpoint: endpoints.signIn,
@@ -155,6 +149,13 @@ export default function SignIn() {
                                 >
                                     {TXT.signIn}
                                 </button>
+                            </FieldEl>
+                            <FieldEl>
+                                {isError && (
+                                    <span className={formStyles.error}>
+                                        {TXT.error}
+                                    </span>
+                                )}
                             </FieldEl>
                         </FieldRow>
                     </Fieldset>

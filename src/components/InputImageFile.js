@@ -120,6 +120,7 @@ export function InputImageFile({
                     <input
                         type={'number'}
                         style={hiddenFieldStyle}
+                        tabIndex={-1}
                         // style={{opacity: '0', position: 'absolute'}}
                         // style={{opacity: '50%'}}
                         name={fieldName}

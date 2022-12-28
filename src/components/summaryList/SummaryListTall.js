@@ -33,7 +33,6 @@ export function SummaryListTall({
                                 }) {
     elKey += '/SListTall';
     const entityName = entityType.name;
-    const idName = entityType.id;
     const logRoot = rootMkr(SummaryListTall, entityName);
     const doLog = logCondition(SummaryListTall, entityName);
     const storage = useContext(StorageContext);
@@ -61,7 +60,7 @@ export function SummaryListTall({
     function chooseItemTall(item) {
         // const logPath = `${logRoot} » ${chooseItemTall.name}()`;
         // logv(logPath, {item});
-        selectedIds.new([item?.[idName]]);
+        selectedIds.new([item?.id]);
         // console.log('>>> setCommand from chooseItemTall()');
         setCommand({operation: operationNames.edit, data: item, entityType: entityType, receiver: receiver});
         // raise({operation: operationNames.edit, entityName}, item);
@@ -76,7 +75,7 @@ export function SummaryListTall({
             // logv(logPath + '|newList|≡0', {selectedItem});
             newList.push(selectedItem);
             // logv(logPath, {newList});
-            selectedIds.new([selectedItem[idName]]);
+            selectedIds.new([selectedItem.id]);
         } else {
             sorting.sort(newList);
             if (singleSelectedId) {
@@ -89,11 +88,11 @@ export function SummaryListTall({
                 const shouldAnIdBeSelected = !!(lastSavedItemId || initialId);
                 // logv(null, {singleSelectedId, initialId, shouldAnIdBeSelected}, '!');
                 selectedItem = shouldAnIdBeSelected
-                    ? newList.find(item => item[idName] === initialId)
+                    ? newList.find(item => item.id === initialId)
                     : newList[0];
                 // logv(null, {selectedItem});
                 if (selectedItem)
-                    selectedIds.add(selectedItem[idName]);
+                    selectedIds.add(selectedItem.id);
             }
         }
         setList(newList);

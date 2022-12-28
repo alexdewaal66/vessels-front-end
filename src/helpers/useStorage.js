@@ -49,7 +49,7 @@ export function useStorage() {
                     const logPathGet = pathMkr('Item', 'get', entityName, itemValues.id);
                     const doLog = logCondition('Item constructor', entityName, fieldName, targetName);
                     if (typeFields[fieldName].type === fieldTypes.arr) {
-                        const idList = itemValues[fieldName].map(targetItem => targetItem.id);
+                        const idList = itemValues[fieldName].map(targetItem => targetItem?.id);
                         this.#ids[fieldName] = idList;
                         Object.defineProperty(this, fieldName, {
                             get: () => {

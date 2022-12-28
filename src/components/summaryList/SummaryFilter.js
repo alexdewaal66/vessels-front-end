@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
 import { summaryStyle } from './index';
+import { range } from './useFilters';
 import filterSymbol from '../../assets/filter.svg';
-import { entityTypes, createEmptySummary, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
-import { languageSelector } from '../../helpers';
-import { hints } from '../../helpers';
-
-const enterKey = 13;
+import { createEmptySummary, entityTypes, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
+import { hints, languageSelector } from '../../helpers';
+import { keyCodes } from '../../helpers/globals/keyCodes';
 
 const messages = {
     NL: {
-        inputHint: ['filter op waarde, activeer met filtersymbool', 'numerieke bereiken met koppelteken', 'bijv. 3-7 of 20-'],
+        inputHint: [
+            'filter op waarde, activeer met filtersymbool',
+            `numerieke bereiken met ${range.name.NL}`,
+            `bijv. 3${range.token}7 of 20${range.token}`,
+        ],
         delFilter: 'wis filter',
         activate: 'activeer filter',
     },
     EN: {
-        inputHint: ['filter by value, activate with filtersymbol', 'use dash for numeric ranges', 'e.g. 3-7 or 20-'],
+        inputHint: [
+            'filter by value, activate with filter symbol',
+            `use ${range.name.EN} for numeric ranges`,
+            `e.g. 3${range.token}7 or 20${range.token}`,
+        ],
         delFilter: 'remove filter',
         activate: 'activate filter',
     }
@@ -42,6 +49,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey, accessStatus
 
     const setInputFieldsHandler = (key) => (e) => {
         // const logPath = pathMkr(logRoot, setInputFieldsHandler, key);
+        // if (e.keyCode === keyCodes.enter) e.preventDefault();
         let changedValue = e.target.value;
         mergeInputFields(key, changedValue);
     }
@@ -62,7 +70,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey, accessStatus
     const enterKeyHandler = (e) => {
         // const logPath = pathMkr(logRoot, enterKeyHandler);
         // logv(logPath, {key: e.keyCode});
-        if (e.keyCode === enterKey) {
+        if (e.keyCode === keyCodes.enter) {
             filterHandler();
         }
     }
@@ -87,7 +95,7 @@ export function SummaryFilter({entityType, mergeConstraints, elKey, accessStatus
     return (
         <tr onKeyDown={enterKeyHandler}>
             {accessStatus.fields.map(({fieldPath, isVisible}) => {
-                if (isVisible)
+                    if (isVisible)
                         return (
                             <th key={elKey + fieldPath + '_sort'}>
                                 {/*{(text(entityType.fields, fieldPath) || fieldPath).split('').reverse().join('')}*/}

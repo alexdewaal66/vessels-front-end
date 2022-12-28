@@ -5,7 +5,11 @@ import { dotCount } from '../../helpers/utils';
 // import { logv, pathMkr, rootMkr } from '../../dev/log';
 
 function initialOrder(entityType) {
-    return Object.fromEntries(entityType.summary.map(fieldPath => [fieldPath, 'up']));
+    return Object.fromEntries(entityType.summary.map(fieldPath => {
+        return (fieldPath === 'id')
+            ? [fieldPath, 'up']
+            : [fieldPath, '--']
+    }));
 }
 
 export function useSorting(operation, list, entityType) {
@@ -24,7 +28,10 @@ export function useSorting(operation, list, entityType) {
 
     function isOrderUp(propertyName) {
         return allOrders[propertyName] === 'up';
-        // return allOrders[propertyName] === 'up';
+    }
+
+    function isOrderDown(propertyName) {
+        return allOrders[propertyName] === 'down';
     }
 
     useConditionalEffect(!!latest && !!list, () => operation([...list]), [latest]);
@@ -60,5 +67,5 @@ export function useSorting(operation, list, entityType) {
         sortList[latest.order](list);
     }
 
-    return {sort, isOrderUp, setOrder};
+    return {sort, isOrderUp, isOrderDown ,setOrder};
 }

@@ -7,11 +7,11 @@ import { CollapseButton } from './CollapseButton';
 
 const messages = {
     NL: {
-        sortUp: 'sorteer omhoog, standaard',
+        sortUp: 'sorteer omhoog',
         sortDn: 'sorteer omlaag',
     },
     EN: {
-        sortUp: 'sort up, default',
+        sortUp: 'sort up',
         sortDn: 'sort down',
     }
 };
@@ -61,14 +61,14 @@ export function SummaryHeading({
                                                     className={summaryStyle.sort}
                                                     title={hints('▲ = ' + TXT.sortUp)}
                                             >
-                                                {sorting.isOrderUp(fieldPath) ? '△' : '▲'}
+                                                {sorting.isOrderUp(fieldPath) ? '▲' : '△'}
                                             </button>
                                             <button type={'button'}
                                                     onClick={down(fieldPath, typeField.type)}
                                                     className={summaryStyle.sort}
                                                     title={hints('▼ = ' + TXT.sortDn)}
                                             >
-                                                {sorting.isOrderUp(fieldPath) ? '▼' : '▽'}
+                                                {sorting.isOrderDown(fieldPath) ? '▼' : '▽'}
                                             </button>
                                         </>
                                     ) : (
