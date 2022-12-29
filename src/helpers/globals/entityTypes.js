@@ -803,7 +803,7 @@ entityTypes.operation = {
         'vessel.name', 'operationType.nameNL', 'organisation.shortName'],
     summaryLabel: {
         'vessel.name': {NL: 'vaartuig', EN: 'vessel'},
-        'operationType.nameNL': {NL: 'betrokkenheid', EN: 'involvement'},
+        'operationType.nameNL': {NL: 'beheerrol', EN: 'management role'},
         'organisation.shortName': {NL: 'organisatie', EN: 'organisation'},
     },
     findItem: {

@@ -1,9 +1,10 @@
 import React from 'react';
 import { formStyles } from './';
+import { cx } from '../helpers';
 
-export function FieldEl({ children, ...rest}) {
+export function FieldEl({ children,className, ...rest}) {
     return (
-        <span className={formStyles.cell} {...rest} >
+        <span className={cx(formStyles.cell, className)} {...rest} >
             {children}
         </span>
     );

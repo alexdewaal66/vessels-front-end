@@ -66,9 +66,9 @@ export function InputObject({
                    defaultValue={defaultValue.id}
                    readOnly={readOnly}
                    style={hiddenFieldStyle()}
-                   tabIndex={-1}
                    {...loggingRegister()}
                    {...rest}
+                   tabIndex={-1}
             />
             <SummaryListSmall entityType={entityTypes[typeField.target]}
                               initialIdList={initialIdList}

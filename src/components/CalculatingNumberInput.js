@@ -33,22 +33,23 @@ export function CalculatingNumberInput({
 
     }
 
-    function handleInput(e) {
-        if (!readOnly) setValue(+e.target.value)
+    function handleInput(event) {
+        if (!readOnly) setValue(+event.target.value);
     }
 
-    function clear() {
+    function clear(event) {
+        event.preventDefault();
         setValue('');
     }
 
-    function handleSelectLeft(e) {
-        const newIndex = e.target.value;
+    function handleSelectLeft(event) {
+        const newIndex = event.target.value;
         setUnitIndex(newIndex);
         setInputValue(units[newIndex].inv(valueInBaseUnits));
     }
 
-    function handleSelectRight(e) {
-        const newIndex = e.target.value;
+    function handleSelectRight(event) {
+        const newIndex = event.target.value;
         setUnitIndex(newIndex);
         if (!readOnly) setResult(units[newIndex].calc(+inputValue));
     }

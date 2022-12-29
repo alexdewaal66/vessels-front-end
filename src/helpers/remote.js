@@ -200,8 +200,10 @@ export const remote = {
     update: async function (entityType, item, requestState, onSuccess, onFail) {
         const logPath = pathMkr(logRoot, remote.update);
         const doLog = logCondition(remote, entityType.name);
-        const json = JSON.stringify(item);
-        if (doLog) logv(logPath, {entityName: entityType.name, item, json});
+        if (doLog) {
+            const json = JSON.stringify(item);
+            logv(logPath, {entityName: entityType.name, item, json});
+        }
         const endpoint = entityType.endpoint + '/' + item.id;
         await putRequest({
             endpoint, payload: item, requestState, onSuccess, onFail

@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { quantityNames, UnitInput } from '../components/UnitInput';
-import { FieldDesc, FieldEl, FieldRow, Form } from '../formLayouts';
+import { FieldDesc, FieldEl, FieldRow, Form, formStyles } from '../formLayouts';
 
 export function TestCalculatingNumberInput() {
     // const [result, setResult] = useState(0);
@@ -22,7 +22,7 @@ export function TestCalculatingNumberInput() {
                     <FieldDesc>
                         {field.q}
                     </FieldDesc>
-                    <FieldEl>
+                    <FieldEl className={formStyles.padding}>
                         <UnitInput fieldName={field.q}
                                    entityForm={entityForm}
                                    defaultValue={field.v}
