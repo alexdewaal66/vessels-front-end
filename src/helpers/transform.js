@@ -1,3 +1,5 @@
+import { languageSelector } from './utils';
+
 const functionClassifiers = {
     EN: {
         1: 'Port, as defined in UN/ECE Recommendation 16.',
@@ -11,7 +13,7 @@ const functionClassifiers = {
         0: 'functional use is not known and is to be specified',
     },
     NL: {
-        1: 'Haven',
+        1: 'Haven, zoals gedefinieerd in UN/ECE Aanbeveling 16.',
         2: 'Treinstation',
         3: 'Wegterminal',
         4: 'Luchthaven',
@@ -37,7 +39,19 @@ const status = {
         QQ: 'Original entry not verified since date indicated',
         XX: 'Entry that will be removed from the next issue of UN/LOCODE»',
     },
-    NL: {},
+    NL: {
+        AA: 'Goedgekeurd door bevoegd agentschap van de nationale regering',
+        AC: 'Goedgekeurd door douaneautoriteit',
+        AF: 'Goedgekeurd door nationale handelsbevorderingsorganisatie',
+        AI: 'Code aangenomen door internationale organisatie (IATA of ECLAC)',
+        AS: 'Goedgekeurd door de nationale normalisatie-instelling',
+        RL: 'Erkende locatie - Bestaan en vertegenwoordiging van locatienaam bevestigd door controle tegen genomineerd plaatsnaamregister of ander naslagwerk',
+        RN: 'Aanvraag van geloofwaardige nationale bronnen voor locaties in hun eigen land',
+        RQ: 'Aanvraag in behandeling',
+        RR: 'Aanvraag afgewezen',
+        QQ: 'Oorspronkelijke vermelding niet geverifieerd sinds aangegeven datum',
+        XX: 'Vermelding die uit het volgende uitgave van UN/LOCODE wordt verwijderd»',
+    },
 };
 
 const transformations = {
@@ -47,12 +61,12 @@ const transformations = {
             let output = {};
             for (const c of value) {
                 if (c !== '-')
-                    output[c] = functionClassifiers.NL[c];
+                    output[c] = functionClassifiers[languageSelector()][c];
             }
             return output;
         },
         status: (value) => {
-            return {[value]: status.EN[value]};
+            return {[value]: status[languageSelector()][value]};
         },
     },
 };

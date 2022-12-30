@@ -315,6 +315,7 @@ export function useStorage() {
     }
 
     async function retrieveAndStoreItemByUniqueFields(entityName, probe, requestState, dummyStore, onSuccess, onFail) {// ✔✔
+        const doLog = logCondition(retrieveAndStoreItemByUniqueFields.name, entityName);
         let foundId = null;
         await remote.findByUniqueField(
             entityTypes[entityName], probe, requestState,
@@ -324,7 +325,7 @@ export function useStorage() {
                     writeItem(entityName, item.id, item, currentState);
                 }, retrieveAndStoreItemByUniqueFields.name);
                 foundId = item.id;
-                logv(pathMkr(logRoot, retrieveAndStoreItemByUniqueFields, entityName), {probe, item});
+                if (doLog) logv(pathMkr(logRoot, retrieveAndStoreItemByUniqueFields, entityName), {probe, item});
                 onSuccess?.(foundId);
             },
             onFail

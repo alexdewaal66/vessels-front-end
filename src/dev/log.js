@@ -60,22 +60,27 @@ export function errv(path, vars, prompt) {
 export function logCondition(context, ...candidates) {
     const contexts = [
         'dummy context', // just there to prevent WebStorm/ESLint from whining about "Contents of collection 'contexts' are queried, but never written"
+        //// COMPONENTS:
         // Input,
         // InputObject,
         // SummaryListSmall,
-        // 'Item constructor',
-        // useStorage,
         // EditEntity,
         // EditButtons,
-        // remote,
         // SummaryHeading,
         // SummaryRow,
-        // getTypeFieldFromPath,
         // ValidationMessage,
-        // useCounter,
         // ShowObject,
         // AuthContextProvider,
+
+        //// HOOKS
+        // useCounter,
+        // useStorage,
         // useAccessStatus,
+
+        //// FUNCTION NAMES
+        // getTypeFieldFromPath,
+        // remote,
+        // 'Item constructor',
         // hasAccess,
     ];
 
@@ -99,12 +104,14 @@ export function logCondition(context, ...candidates) {
         // 'file', '/files',
         // 'image', '/images',
         // 'propulsionType', '/propulsiontypes',
+
         //// FIELDS:
         // 'thumbnailId',
         // 'username',
         // 'password',
         // 'startDate',
         // 'endDate',
+
         //// OTHER:
         // 'hidden_superType_propulsionType_id'
         // '*',
