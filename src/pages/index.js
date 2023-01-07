@@ -4,10 +4,19 @@ import SignIn from './SignIn';
 import Profile from './Profile';
 import SignOut from './SignOut';
 import Project from './Project';
+import { Users } from './Users';
+import { authorities } from '../helpers/globals/levels';
 
 const pages = {
     home: {
-        label: 'Home', path: '/', component: Home, exact: true, isVisible: () => true,},
+        label: {NL: 'Scheepvaart', EN: 'Shipping'},
+        path: '/', component: Home, exact: true, isVisible: () => true,
+    },
+    users: {
+        label: {NL: 'Gebruikers', EN: 'Users'},
+        path: '/users', component: Users, exact: true, isVisible: () => true,
+        access: authorities.USER,
+    },
     profile: {
         label: {NL: 'Profiel', EN: 'Profile'},
         path: '/profile', component: Profile, isVisible: user => !!user,
@@ -33,6 +42,7 @@ const pages = {
 
 pages.displayOrder = [
     pages.home,
+    pages.users,
     pages.signUp,
     pages.signIn,
     pages.signOut,

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { ChoiceContext, StorageContext } from '../../contexts';
 import { hints, languageSelector, text } from '../../helpers';
-import { EntityN } from '../../pages/homeMenuItems';
+import { EntityN } from '../../pages/makeMenuItems';
 import { optionalIdValue } from './SummaryListSmall';
 
 const messages = {

@@ -6,7 +6,7 @@ const defaultItem = {label: Splash.name, component: Splash}
 export const ChoiceContext = createContext(defaultItem);
 
 export function ChoiceContextProvider({children}) {
-    const [choice, setChoice] = useState(defaultItem);//homeMenuItems.default);
+    const [choice, setChoice] = useState(defaultItem);
 
     const makeChoice = item => () => setChoice(item);
 
