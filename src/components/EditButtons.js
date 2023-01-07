@@ -13,6 +13,7 @@ const messages = {
         eligible: '• autorisatie om te wijzigen/verwijderen',
         ineligible: '• geen autorisatie om te wijzigen/verwijderen',
         update: 'Wijzig',
+        propose: 'Stel wijziging voor',
         create: 'Maak nieuw',
         delete: 'Verwijder',
         canUpdate: '• mag wijzigen',
@@ -31,6 +32,7 @@ const messages = {
         eligible: '• authorisation to update/delete',
         ineligible: '• no authorisation to update/delete',
         update: 'Update',
+        propose: 'Propose update',
         create: 'Create',
         delete: 'Delete',
         canUpdate: '• can update',
@@ -78,17 +80,30 @@ export function EditButtons({
             <FieldEl>
                 {!readOnly && (
                     <>
-                        <button
-                            type="submit"
-                            className={style(isDisabled || !isEligible || !canUpdate)}
-                            disabled={isDisabled || !isEligible || !canUpdate}
-                            onClick={setRequestMethod('put')}
-                            id="submit_put"
-                            key="submit_put"
-                            // accessKey={'w'}
-                        >
-                            {TXT.update}
-                        </button>
+                        {isEligible ? (
+                            <button
+                                type="submit"
+                                className={style(isDisabled || !isEligible || !canUpdate)}
+                                disabled={isDisabled || !isEligible || !canUpdate}
+                                onClick={setRequestMethod('put')}
+                                id="submit_put"
+                                key="submit_put"
+                                // accessKey={'w'}
+                            >
+                                {TXT.update}
+                            </button>
+                        ) : (
+                            <button
+                                type="submit"
+                                className={style(isDisabled || !canCreate)}
+                                disabled={isDisabled || !canCreate}
+                                onClick={setRequestMethod('propose')}
+                                id="submit_propose"
+                                key="submit_propose"
+                            >
+                                {TXT.propose}
+                            </button>
+                        )}
                         {!onlyUpdate && (
                             <>
                                 <button

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { optionalIdValue, summaryStyle } from './index';
-import { errv, logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
+import { errv, logv, pathMkr, rootMkr } from '../../dev/log';
 import { entityTypes, fieldTypes, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
 import { cx, devHints, endpoints, languageSelector } from '../../helpers';
 import { Goto } from './Goto';
@@ -22,7 +22,6 @@ export function SummaryRow({
                            }) {
     const entityName = entityType.name;
     const logRoot = rootMkr(SummaryRow, entityName, item?.id);
-    const doLog = logCondition(SummaryRow, entityName);
     const {hasFocus, isSelected, hasVisualPriority, small, readOnly} = UICues;
     const row = useRef(null);
 
@@ -110,17 +109,18 @@ export function SummaryRow({
 
     function renderProperty(object, fieldPath) {
         const logPath = pathMkr(logRoot, renderProperty);
-        // const doLog = fieldPath.includes('image');
+        const doLog = fieldPath.includes('image');
         const field = getProperty(object, fieldPath);
         if (doLog) logv(logPath, {object, fieldPath, field});
         if (!field) return null;
 
-        let fieldType = getTypeFieldFromPath(entityTypes, entityType, fieldPath).type;
-        // if (doLog) logv(null, {fieldType});
+        const typeField = getTypeFieldFromPath(entityTypes, entityType, fieldPath);
+        let fieldType = typeField.type;
+        if (doLog) logv(null, {typeField});
         if (fieldType === fieldTypes.img || fieldType === fieldTypes.file) {
-            // logv(null, {object, fieldPath, field});
+            if (doLog) logv(null, {object, fieldPath, field});
             return (field
-                    ? <img src={endpoints.baseURL + entityTypes.file.downloadEndpoint(field)}
+                    ? <img src={endpoints.baseURL + entityTypes.file.downloadEndpoint(field.id)}
                            alt="thumbnail"/>
                     : <>--</>
             );

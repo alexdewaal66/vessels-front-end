@@ -95,6 +95,12 @@ export function EditEntity(
     }
 
 
+    function onPropose(formData) {
+        // logv(logPath + ` » case 'propose'`);
+        formData.original = item;
+        onPost(formData);
+    }
+
     function onPost(formData) {
         // logv(logPath + ` » case 'post'`);
         newItem(entityName, formData,
@@ -138,7 +144,7 @@ export function EditEntity(
             event.preventDefault()
             return;
         }
-        if (doLog+1)
+        if (doLog)
             logv(logPath, {rawFormData, requestMethod, formData: {...formData}}, '🔎🔎🔎🔎🔎');
 
         requestState.setAtPending();
@@ -158,7 +164,9 @@ export function EditEntity(
             case 'delete':
                 onDelete(formData);
                 break;
-            // case 'search': not a useStorage method (yet)
+            case 'propose':
+                onPropose(formData);
+                break;
             default:
                 const err = `Unsupported requestMethod: '${requestMethod}'`;
                 logv(logPath, {requestMethod, formData}, err);

@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useState } from 'react';
 import { logv, pathMkr, rootMkr } from '../dev/log';
 // import { Stringify } from '../dev/Stringify';
-import { entityTypes } from '../helpers/globals/entityTypes';
+import { entityNames, entityTypes } from '../helpers/globals/entityTypes';
 import { sessionConfig } from '../helpers/globals/sessionConfig';
 import { endpoints, languageSelector } from '../helpers';
 import { StorageContext } from '../contexts';
@@ -69,47 +69,47 @@ export function InputImageFile({
     function onUploadFail(error) {
         const logPath = pathMkr(logRoot, onUploadFail);
         logv(logPath, {error}, 'fail ');
-        // setImageFeedback('F:❌');
-        setImageFeedback('❌');
+        setImageFeedback('F:❌');
+        // setImageFeedback('❌');
     }
 
-    function onUploadSuccess(fileItem) {
+    function onUploadSuccess(fullSize) {
         const logPath = pathMkr(logRoot, onUploadSuccess);
-        logv(logPath, {fileItem}, 'succes ');
-        logv(null, {fileItem_id: fileItem.id}, 'Succes');
-        // setImageFeedback('F:✔ id=' + fileItem.id);
-        newItem('image', {id: null, fullSizeId: fileItem.id}, onImageSuccess, onImageFail);
+        logv(logPath, {fileItem: fullSize}, 'succes ');
+        logv(null, {fileItem: fullSize}, 'Succes');
+        setImageFeedback('F:✔ id=' + fullSize.id + ' / ' + ' name=' + fullSize.name);
+        newItem(entityNames.image, {id: null, fullSize}, onImageSuccess, onImageFail);
     }
 
     function onImageFail(error) {
         const logPath = pathMkr(logRoot, onImageFail);
         logv(logPath, {error}, 'fail ');
-        // setImageFeedback(current => current + ', I:❌');
-        setImageFeedback('❌');
+        setImageFeedback(current => current + ', I:❌');
+        // setImageFeedback('❌');
     }
 
     function onImageSuccess(imageItem) {
         // const logPath = pathMkr(logRoot, onImageSuccess);
         // logv(logPath, {imageItem});
         setImageId(imageItem.id);
-        setFullSizeImageId(imageItem.fullSizeId);
+        setFullSizeImageId(imageItem.fullSize.id);
         setValue(hiddenFieldName, imageItem.id);
-        // setImageFeedback(current => current + ', I:✔ id=' + imageItem.id);
+        setImageFeedback(current => current + ', I:✔ id=' + imageItem.id);
         loadItem(entityTypes.image.name, imageItem.id, onReloadSuccess, onReloadFail);
     }
 
     function onReloadFail() {
         // const logPath = pathMkr(logRoot, onReloadSuccess);
         // logv(logPath, {imageItem});
-        // setImageFeedback(current => current + ', R:❌');
-        setImageFeedback('❌');
+        setImageFeedback(current => current + ', R:❌');
+        // setImageFeedback('❌');
     }
 
     function onReloadSuccess() {
         // const logPath = pathMkr(logRoot, onReloadSuccess);
         // logv(logPath, {imageItem});
-        // setImageFeedback(current => current + ', R:✔');
-        setImageFeedback('✔');
+        setImageFeedback(current => current + ', R:✔');
+        // setImageFeedback('✔');
     }
 
 

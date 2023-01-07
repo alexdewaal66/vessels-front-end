@@ -1,10 +1,10 @@
 import { now } from '../helpers/utils';
 /* eslint-disable no-unused-vars */
-import { EditButtons, EditEntity, Input, InputObject, ValidationMessage } from '../components';
+import { EditButtons, EditEntity, Input, InputImageFile, InputObject, ValidationMessage } from '../components';
 import { SummaryHeading, SummaryListSmall, SummaryRow } from '../components/summaryList';
 import { useStorage } from '../helpers/useStorage';
 import { getTypeFieldFromPath } from '../helpers/globals/entityTypes';
-import { remote } from '../helpers';
+import { makeRequest, remote } from '../helpers';
 import { useCounter } from './useCounter';
 import { ShowObject } from '../components/ShowObject';
 import { AuthContextProvider } from '../contexts';
@@ -63,6 +63,7 @@ export function logCondition(context, ...candidates) {
         //// COMPONENTS:
         // Input,
         // InputObject,
+        // InputImageFile,
         // SummaryListSmall,
         // EditEntity,
         // EditButtons,
@@ -77,11 +78,13 @@ export function logCondition(context, ...candidates) {
         // useStorage,
         // useAccessStatus,
 
-        //// FUNCTION NAMES
+        //// FUNCTIONS
         // getTypeFieldFromPath,
         // remote,
+        // makeRequest,
         // 'Item constructor',
         // hasAccess,
+
     ];
 
     const matches = [

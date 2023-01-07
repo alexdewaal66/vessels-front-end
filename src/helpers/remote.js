@@ -5,7 +5,6 @@ import { logCondition, logv, pathMkr } from '../dev/log';
 import { entityTypes } from './globals/entityTypes';
 
 const logRoot = 'remote.js';
-
 // enumeration of state names of a request
 export const requestStates = {IDLE: 'idle', PENDING: 'pending', SUCCESS: 'success', ERROR: 'error'};
 
@@ -177,10 +176,12 @@ export const remote = {
     },
 
     fileUpload: async function (file, requestState, onSuccess, onFail) {
+        const doLog = logCondition(remote, 'file');
         const endpoint = entityTypes.file.uploadEndpoint;
         const headers = {'Content-Type': 'multipart/form-data'};
         const payload = new FormData();
         payload.append('file', file);
+        if (doLog) logv(pathMkr(logRoot, this.fileUpload), {file, requestState});
         await postRequest({
             endpoint, payload, headers, requestState, onSuccess, onFail
         });

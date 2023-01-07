@@ -543,13 +543,14 @@ export function useStorage() {
     }
 
     async function newItem(entityName, item, onSuccess, onFail) {// ✔✔
-        // const logPath = pathMkr(logRoot, newItem, entityName, '↓');
-        // logv(logPath, {item});
+        const logPath = pathMkr(logRoot, newItem, entityName, '↓');
+        const doLog  = logCondition(useStorage, entityName);
+        if (doLog) logv(logPath, {item}, '\n NEW-ITEM \n');
         const requestState = new RequestState();
         setRsStatus({
             requestState,
             description: text({
-                NL: 'het maken van een nieuwe ',
+                NL: 'het maken van een nieuw ',
                 EN: 'creating a new '
             }) + text(entityTypes[entityName].label) + ' ',
             advice: '',

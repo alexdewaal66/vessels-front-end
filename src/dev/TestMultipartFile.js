@@ -48,7 +48,7 @@ export function TestMultipartFile() {
                 <input type="file" accept="image/jpeg"
                        onChange={onFileSelect}
                 />
-                <button type="submit">Verstuur</button>
+                <button type="submit">Verstuur Multipart File</button>
                 &nbsp;{feedback}
             </form>
             <img src={endpoints.baseURL + 'files/1'} alt="1"/>

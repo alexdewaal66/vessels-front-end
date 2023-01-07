@@ -5,13 +5,13 @@ import { languageSelector, text } from '../helpers';
 const messages = {
     NL: {
         patience: 'Even geduld a.u.b.',
-        processing: ' wordt verwerkt.',
+        processing: '-item wordt verwerkt.',
         error: 'Er is iets fout gegaan met ',
         executed: ' is geslaagd.',
     },
     EN: {
         patience: 'Patience please',
-        processing: ' is being processed.',
+        processing: ' item is being processed.',
         error: 'An error occurred while processing ',
         executed: ' is successful.',
     },
