@@ -6,11 +6,12 @@ import SignOut from './SignOut';
 import Project from './Project';
 import { Users } from './Users';
 import { authorities } from '../helpers/globals/levels';
+import { Account } from './Account';
 
 const pages = {
     home: {
         label: {NL: 'Scheepvaart', EN: 'Shipping'},
-        path: '/', component: Home, exact: true, isVisible: () => true,
+        path: '/shipping', component: Home, exact: true, isVisible: () => true,
     },
     users: {
         label: {NL: 'Gebruikers', EN: 'Users'},
@@ -20,6 +21,10 @@ const pages = {
     profile: {
         label: {NL: 'Profiel', EN: 'Profile'},
         path: '/profile', component: Profile, isVisible: user => !!user,
+    },
+    account: {
+        label: 'Account',
+        path: '/account', component: Account, isVisible: user => !!user,
     },
     signUp: {
         label: {NL: 'Registreren', EN: 'Register'},
@@ -45,8 +50,9 @@ pages.displayOrder = [
     pages.users,
     pages.signUp,
     pages.signIn,
-    pages.signOut,
-    pages.profile,
+    // pages.signOut,
+    pages.account,
+    // pages.profile,
 ];
 
 
