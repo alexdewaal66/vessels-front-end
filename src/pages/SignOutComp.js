@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../contexts/AuthContext";
-import { pages } from './index';
 import { languageSelector } from '../helpers';
 
 const messages = {
@@ -17,7 +16,7 @@ const messages = {
 
 export function SignOutComp() {
     // const logRoot = rootMkr(SignOut2);
-    const history = useHistory();
+    const navigate = useNavigate();
     const authContext = useContext(AuthContext);
     const {logout} = authContext;
 
@@ -26,7 +25,7 @@ export function SignOutComp() {
 
     function onSubmit() {
         logout();
-        history.push(pages.home.path + '/0');
+        navigate('/');
     }
 
     const TXT = messages[languageSelector()];

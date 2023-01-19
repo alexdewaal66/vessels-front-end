@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import {
     MessageContextProvider, StorageContextProvider,
     AuthContextProvider, ChoiceContextProvider
@@ -11,10 +11,11 @@ import {
 import { entityTypes, initializeEntityTypes } from './helpers/globals/entityTypes';
 
 initializeEntityTypes(entityTypes);
+console.log('\n--------------------------------------\n',{entityTypes},'\n--------------------------------------\n');
 
 ReactDOM.render(
     <React.StrictMode>
-        <Router>
+        <BrowserRouter>
             <MessageContextProvider>
                 <StorageContextProvider>
                     <AuthContextProvider>
@@ -24,7 +25,7 @@ ReactDOM.render(
                     </AuthContextProvider>
                 </StorageContextProvider>
             </MessageContextProvider>
-        </Router>
+        </BrowserRouter>
     </React.StrictMode>,
     document.getElementById('root')
 );

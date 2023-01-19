@@ -190,6 +190,13 @@ export function useStorage() {
             currentState[collectionName][id].item = new Item(collectionName, value);
     }
 
+    function updateItem(collectionName, id, value) {
+        updateState(currentState => {
+            writeItem(collectionName, id, value, currentState);
+        }, updateAndStoreItem.name);
+
+    }
+
     function makeEntry(collectionName, id, entry, currentState) {
         const logPath = pathMkr(logRoot, makeEntry);
         let prompt = null;
@@ -613,6 +620,7 @@ export function useStorage() {
         getEntry: readEntry,
         getEntries: readCollection,
         writeItem,
+        updateItem,
         isAllLoaded,
         rsStatus, setRsStatus,
         store,

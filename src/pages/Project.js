@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { pages } from './index';
 import { languageSelector } from '../helpers';
 import React from 'react';
 import { Page } from './Page';
@@ -72,14 +71,14 @@ const messages = {
     }
 };
 
-export default function Project() {
+export function Project() {
 
     const TXT = messages[languageSelector()];
 
     return (
         <Page>
             {TXT.requirements}
-            <p>{TXT.back}<Link to={pages.home.path}>{TXT.home}</Link>.</p>
+            <p>{TXT.back}<Link to="/">{TXT.home}</Link>.</p>
         </Page>
     );
 }

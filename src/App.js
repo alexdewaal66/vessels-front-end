@@ -1,46 +1,50 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import React, { Fragment, useContext, useEffect, useMemo, useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import './assets/fonts/stylesheet.css'
 import './App.css';
 import { pageLayout } from './pageLayouts';
-import { pages, Project } from './pages';
+import { appNamePage, pages } from './pages/pages';
 import { Footer, Header } from './pageLayouts';
 import { domain, languageSelector } from './helpers';
 import { AuthContext } from './contexts';
 
+const allPages = pages.displayOrder.concat(appNamePage);
+
 //TODO README.md
 function App() {
     const [, setX] = useState(0);
-    const auth = useContext(AuthContext);
+    const authorization = useContext(AuthContext);
+    // const userAuthorities = useMemo(() => authorization.getRoles(), [authorization]);
 
     function forceUpdate() {
         setX(x => ++x & 255);
     }
-    const person = auth?.user?.username || {NL: 'gast', EN:'guest'}[languageSelector()];
+
+    const person = authorization?.user?.username || {NL: 'gast', EN: 'guest'}[languageSelector()];
 
     useEffect(() => {
         window.document.title = `Vessels @ ${domain} -- ${person}`;
     }, [person]);
 
     return (
-        <div className={"App " + pageLayout.app}>
-            <Header/>
-            <Switch>
-                <Route exact={true} path="/project" key="/project">
-                    <Project/>
-                </Route>
-                {pages.displayOrder.map(page =>
-                    <Route exact={page.exact}
-                           path={page.path}
-                           key={page.path}
-                    >
-                        <page.component/>
-                    </Route>
-                )}
-            </Switch>
-            <Footer forceUpdate={forceUpdate}/>
-        </div>
+        <>
+            <div className={"App " + pageLayout.app}>
+                <Header/>
+                <Routes>
+                    {allPages.map(({path, Component, menu, isDefault}) => {
+                        return (
+                            <Fragment key={path + '-fragment'}>
+                                <Route path={path + (menu ? '/*' : '')} element={<Component/>} key={path}/>
+                                {isDefault &&
+                                    <Route path="*" element={<Navigate to={path} replace />} key={path + '-default'}/>}
+                            </Fragment>
+                        )
+                    })}
+                </Routes>
+                <Footer forceUpdate={forceUpdate}/>
+            </div>
+        </>
     );
 }
 

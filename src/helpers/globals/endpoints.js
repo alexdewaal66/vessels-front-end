@@ -9,6 +9,7 @@ export const endpoints = {
     signUp: '/signup',
     users: '/users/username/',
     profile: '/profile',
-    files: '/files'
+    files: '/files',
+    findItem: '/find',
 };
 

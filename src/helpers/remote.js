@@ -60,7 +60,7 @@ export async function makeRequest({method, endpoint, payload, headers, requestSt
     headers = addJwtToHeaders(headers);
 
     requestState?.setAtPending();
-    if (doLog) logv(logPath, {method, endpoint, payload, requestState, onSuccess}, '👀');
+    if (doLog) logv(logPath, {method, endpoint, payload, headers, requestState, onSuccess}, '👀');
     try {
         const response = await axios({
             baseURL: endpoints.baseURL,
@@ -154,13 +154,13 @@ export const remote = {
         // logv(logPath, {probe});
         const entries = Object.entries(probe);
         // logv(logPath, {entries});
-        const hits = entries.filter(([k, v]) => !!v && (k in entityType.findItem.params));
+        const hits = entries.filter(([k, v]) => !!v && (k in entityType.findParams));
         // logv(null, hits);
         if (hits) {
-            let endpoint = entityType.endpoint + entityType.findItem.endpoint;
+            let endpoint = entityType.endpoint + endpoints.findItem;
             hits.forEach((hit, i) => {
                 const [key, value] = hit;
-                const param = entityType.findItem.params[key];
+                const param = entityType.findParams[key];
                 endpoint += (i === 0 ? '?' : '&') + param + '=' + value;
             });
             // logv(logPath, {endpoint});
@@ -181,7 +181,7 @@ export const remote = {
         const headers = {'Content-Type': 'multipart/form-data'};
         const payload = new FormData();
         payload.append('file', file);
-        if (doLog) logv(pathMkr(logRoot, this.fileUpload), {file, requestState});
+        if (doLog) logv(pathMkr(logRoot, this.fileUpload), {file, requestState, endpoint, headers});
         await postRequest({
             endpoint, payload, headers, requestState, onSuccess, onFail
         });

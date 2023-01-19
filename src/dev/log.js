@@ -10,6 +10,9 @@ import { ShowObject } from '../components/ShowObject';
 import { AuthContextProvider } from '../contexts';
 import { useAccessStatus } from '../helpers/useAccessStatus';
 import { accessPurposes, hasAccess } from '../helpers/globals/levels';
+import { Menu } from '../pageLayouts';
+import { Goto } from '../components/summaryList/Goto';
+import { SummaryListTall } from '../components/summaryList/SummaryListTall';
 /* eslint-enable no-unused-vars */
 
 let logCounter = 0;
@@ -38,7 +41,13 @@ export function pathMkr(logRoot, currentFunction, ...args) {
         return `${logRoot} » ${rootMkr(currentFunction, args)}`;
 }
 
+function typeDescription(value) {
+    let type = typeof value;
+    return (value == null || type !== 'object') ? type : value.constructor.name;
+}
+
 export function logv(path, vars, prompt = '') {
+    if (logCounter === undefined) logCounter=0
     if (path) {
         console.log(prompt + now() + ' [' + logCounter++ + ']  ' + path);
         prompt = '\t';
@@ -47,7 +56,7 @@ export function logv(path, vars, prompt = '') {
     }
     if (vars) {
         for (let [key, value] of Object.entries(vars)) {
-            console.log(prompt + key + '=', value);
+            console.log(`${prompt} ${key} ‹${typeDescription(value)}›=`, value);
         }
     }
 }
@@ -65,6 +74,7 @@ export function logCondition(context, ...candidates) {
         // InputObject,
         // InputImageFile,
         // SummaryListSmall,
+        // SummaryListTall,
         // EditEntity,
         // EditButtons,
         // SummaryHeading,
@@ -72,6 +82,8 @@ export function logCondition(context, ...candidates) {
         // ValidationMessage,
         // ShowObject,
         // AuthContextProvider,
+        // Menu,
+        // Goto,
 
         //// HOOKS
         // useCounter,
@@ -84,11 +96,13 @@ export function logCondition(context, ...candidates) {
         // makeRequest,
         // 'Item constructor',
         // hasAccess,
+        'makeMenu',
 
     ];
 
     const matches = [
         'dummy match', // just there to prevent WebStorm/EsLint from whining about "Contents of collection 'matches' are queried, but never written"
+        '*', // to have an 'always' matching candidate when only the log context matters
         //// ENTITIES:
         // 'xyz','/xyzs',
         // 'zyx','/zyxs',
@@ -117,8 +131,13 @@ export function logCondition(context, ...candidates) {
 
         //// OTHER:
         // 'hidden_superType_propulsionType_id'
-        // '*',
         // accessPurposes.UPDATE, accessPurposes.CREATE, accessPurposes.DELETE,
+        // 'shipping', 'Shipping',
+        // 'Account',
+
+        //// SPECIFIC ITEMS
+        // 'country9',
+        // 'vesselType3',
     ];
 
     const isInContext = contexts.includes(context);

@@ -67,5 +67,5 @@ export function useSorting(operation, list, entityType) {
         sortList[latest.order](list);
     }
 
-    return {sort, isOrderUp, isOrderDown ,setOrder};
+    return {sort, isOrderUp, isOrderDown, setOrder};
 }

@@ -34,7 +34,7 @@ export function InputImageFile({
     const [imageFeedback, setImageFeedback] = useState('—');
     const [fullSizeImageId, setFullSizeImageId] = useState(
         typeof defaultValue === 'object'
-            ? defaultValue.fullSizeId
+            ? defaultValue.fullSize.id
             : defaultValue
     );
     // const hiddenFieldName = 'hidden_' + fieldName + '_' + typeField.target + '_id';
@@ -63,29 +63,29 @@ export function InputImageFile({
         event.preventDefault();
         const file = selectedFiles[0];
         // logv(logPath, {file});
-        newItem('file', file, onUploadSuccess, onUploadFail);
+        newItem(entityNames.file, file, onUploadSuccess, onUploadFail);
     }
 
     function onUploadFail(error) {
         const logPath = pathMkr(logRoot, onUploadFail);
         logv(logPath, {error}, 'fail ');
-        setImageFeedback('F:❌');
-        // setImageFeedback('❌');
+        // setImageFeedback('F:❌');
+        setImageFeedback('❌');
     }
 
     function onUploadSuccess(fullSize) {
         const logPath = pathMkr(logRoot, onUploadSuccess);
         logv(logPath, {fileItem: fullSize}, 'succes ');
         logv(null, {fileItem: fullSize}, 'Succes');
-        setImageFeedback('F:✔ id=' + fullSize.id + ' / ' + ' name=' + fullSize.name);
+        setImageFeedback('F:✔ id=' + fullSize.id + ' / name=' + fullSize.name);
         newItem(entityNames.image, {id: null, fullSize}, onImageSuccess, onImageFail);
     }
 
     function onImageFail(error) {
         const logPath = pathMkr(logRoot, onImageFail);
         logv(logPath, {error}, 'fail ');
-        setImageFeedback(current => current + ', I:❌');
-        // setImageFeedback('❌');
+        // setImageFeedback(current => current + ', I:❌');
+        setImageFeedback('❌');
     }
 
     function onImageSuccess(imageItem) {
@@ -94,22 +94,22 @@ export function InputImageFile({
         setImageId(imageItem.id);
         setFullSizeImageId(imageItem.fullSize.id);
         setValue(hiddenFieldName, imageItem.id);
-        setImageFeedback(current => current + ', I:✔ id=' + imageItem.id);
+        // setImageFeedback(current => current + ', I:✔ id=' + imageItem.id);
         loadItem(entityTypes.image.name, imageItem.id, onReloadSuccess, onReloadFail);
     }
 
     function onReloadFail() {
         // const logPath = pathMkr(logRoot, onReloadSuccess);
         // logv(logPath, {imageItem});
-        setImageFeedback(current => current + ', R:❌');
-        // setImageFeedback('❌');
+        // setImageFeedback(current => current + ', R:❌');
+        setImageFeedback('❌');
     }
 
     function onReloadSuccess() {
         // const logPath = pathMkr(logRoot, onReloadSuccess);
         // logv(logPath, {imageItem});
-        setImageFeedback(current => current + ', R:✔');
-        // setImageFeedback('✔');
+        // setImageFeedback(current => current + ', R:✔');
+        setImageFeedback('✔');
     }
 
 

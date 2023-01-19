@@ -3,7 +3,7 @@ import {
     keys, useKeyPressed,
     usePollBackEndForChanges,
     useConditionalEffect,
-    useRequestState,  languageSelector
+    useRequestState, languageSelector
 } from '../../helpers';
 import { entityTypes, createEmptyItem } from '../../helpers/globals/entityTypes';
 import { SummaryTable, useSorting } from './';
@@ -78,7 +78,9 @@ export function SummaryListTall({
             selectedIds.new([selectedItem.id]);
         } else {
             sorting.sort(newList);
-            if (singleSelectedId) {
+            if (singleSelectedId != null) {
+                if (singleSelectedId === 0) singleSelectedId = newList[0].id;
+                if (doLog) logv(logPath, {newList, singleSelectedId, type_ssId: typeof singleSelectedId}, '👀👀👀');
                 // if (singleSelectedId < 0) logv(null, {singleSelectedId}, '< 0');
                 if (!isAllLoaded) logv('❌❌❌❌' + logPath, {isAllLoaded, newList});
                 selectedItem = getItem(entityName, singleSelectedId);
@@ -90,7 +92,7 @@ export function SummaryListTall({
                 selectedItem = shouldAnIdBeSelected
                     ? newList.find(item => item.id === initialId)
                     : newList[0];
-                // logv(null, {selectedItem});
+                logv(logPath, {selectedItem});
                 if (selectedItem)
                     selectedIds.add(selectedItem.id);
             }
@@ -106,8 +108,8 @@ export function SummaryListTall({
         const entries = Object.entries(entityEntries);
         // logv(null, {entries});
         const list = entries.map(e => e[1].item);
-        // logv(null, {list});
-        updateListTall(list, (lastSavedItemId || initialId));
+        if (doLog) logv(null, {list, initialId}, '👀👀👀');
+        updateListTall(list, +(lastSavedItemId || initialId));
     }
 
     useConditionalEffect(isAllLoaded, makeList, [entityEntries, isAllLoaded, lastSavedItemId]);
@@ -156,4 +158,5 @@ export function SummaryListTall({
         </div>
     );
 }
+
 

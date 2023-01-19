@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-// import { pageLayout } from '../pageLayouts';
 import { AuthContext } from '../contexts/AuthContext';
 import { languageSelector } from '../helpers';
 

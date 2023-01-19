@@ -1,32 +1,27 @@
-import React, { useContext } from 'react';
-import { ChoiceContext } from '../contexts';
-import { Welcome } from '../components';
-import { useMountEffect } from '../helpers';
-import { Page } from './Page';
+import React from 'react';
 import { ProfileComp } from './ProfileComp';
 import { SignOutComp } from './SignOutComp';
+import { Page } from './Page';
+import { makeMenu } from './makeMenu';
+import { PageRoutes } from './PageRoutes';
 
 // const dev = true;
 // const separator = true;
+const isDefault = true;
 
-const menuItems = [
-    {label: {NL: 'Profiel', EN: 'Profile'}, component: ProfileComp},
+export const accountMenu = makeMenu('account', [
+    {name: 'profile', label: {NL: 'Profiel', EN: 'Profile'}, Component: ProfileComp, isDefault},
     // {label: {NL: 'Voorkeuren', EN: 'Preferences'}, component: Preferences}, // someday...
-    // {label: 'sep1', separator},
-    {label: {NL: 'Log uit', EN: 'Log out'}, component: SignOutComp},
-    // {label: 'sep2', separator, dev},
-];
+    // {separator},
+    {name: 'sign-out', label: {NL: 'Log uit', EN: 'Log out'}, Component: SignOutComp},
+    // {separator, dev},
+]);
 
 export function Account() {
-    const {choice, makeChoice, initChoice} = useContext(ChoiceContext);
-    const ChosenComponent = choice.component || Welcome;
-
-
-    useMountEffect(initChoice(menuItems[0]));
 
     return (
-        <Page menuItems={menuItems} choice={choice} makeChoice={makeChoice}>
-            <ChosenComponent/>
+        <Page menuItems={accountMenu}>
+            <PageRoutes menuItems={accountMenu}/>
         </Page>
     );
 }

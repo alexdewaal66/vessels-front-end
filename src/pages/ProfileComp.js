@@ -24,7 +24,7 @@ export function ProfileComp() {
 
     function storeEmail() {
         // batch loading of users does not contain email addresses
-        storage.writeItem(entityNames.user, user.id, user);
+        storage.updateItem(entityNames.user, user.id, user);
     }
 
     useConditionalEffect(!!user, storeEmail, [user]);

@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
-import { pages } from '../pages';
+import { pages, appNamePage } from '../pages/pages';
 import headerStyles from './header.module.css'
 import { pageLayout } from './';
 import { AuthContext } from '../contexts';
@@ -11,10 +11,8 @@ import { hasAccess } from '../helpers/globals/levels';
 
 const CondLi = withCondition('li');
 
-const projectHints = {
-  NL: 'Eisen aan Frontend Eindopdracht',
-  EN: 'Requirements on Final Assignment',
-};
+
+const activeClassName = ({isActive}) => isActive ? headerStyles.selected : undefined;
 
 export function Header({className}) {
     const authorization = useContext(AuthContext);
@@ -24,8 +22,9 @@ export function Header({className}) {
     return (
         <nav className={cx(pageLayout.header, className)}>
             <div className={headerStyles.nav}>
-                <NavLink to="/project" exact={true} activeClassName={headerStyles.selected}
-                         title={hints(projectHints)}
+                <NavLink to={appNamePage.path}
+                         className={activeClassName}
+                         title={hints(appNamePage.hints)}
                 >
                     <h3 className={headerStyles.title}>Vessels</h3>
                 </NavLink>
@@ -36,7 +35,7 @@ export function Header({className}) {
                                 key={text(page.label)}
                         >
                             <NavLink to={page.path} exact={page.exact}
-                                     activeClassName={headerStyles.selected}
+                                     className={activeClassName}
                                      title={hints(page.hints)}
                             >
                                 {text(page.label)}

@@ -33,8 +33,6 @@ export const subtypes = {
     week: 'week',
 };
 
-export const entityTypes = {};
-
 const commonFieldsFirst = {
     id: {
         type: fieldTypes.num, label: 'id', readOnly: true,
@@ -49,6 +47,10 @@ const commonFieldsLast = {
         validation: {maxLength: 5000},
     },
 }
+
+export const entityTypes = {};
+
+let isEntityTypesInitialized = false;
 
 entityTypes.xyz = {
     label: 'Xyz',
@@ -75,10 +77,8 @@ entityTypes.xyz = {
     },
     summary: ['id', 'name', 'xyzString', 'image.thumbnail'],
     methods: 'CRUD',
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
+    hints: {NL: 'een verzonnen gegevenstype om dingen uit te proberen', EN: 'a made up data type to try things',}
 };
 
 entityTypes.zyx = {
@@ -95,10 +95,7 @@ entityTypes.zyx = {
     },
     summary: ['id', 'name'],
     methods: 'CRUD',
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.user = {
@@ -126,9 +123,8 @@ entityTypes.user = {
         },
         password: {
             access: authorities.SELF,
-            label: {NL: 'wachtwoord', EN: 'password'}, type: fieldTypes.str, validation: {
-                required: true, maxLength: 256,
-            }
+            label: {NL: 'wachtwoord', EN: 'password'}, type: fieldTypes.str,
+            validation: {maxLength: 256,}
         },
         enabled: {
             access: authorities.ROLE_ADMIN,
@@ -145,10 +141,7 @@ entityTypes.user = {
         read: authorities.USER, create: authorities.ROLE_ADMIN,
         update: [authorities.ROLE_ADMIN, authorities.SELF], delete: authorities.ROLE_ADMIN,
     },
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.role = {
@@ -163,10 +156,7 @@ entityTypes.role = {
     summary: ['id', 'name'],
     methods: 'CRUD',
     access: authorities.ROLE_ADMIN,
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.country = {
@@ -198,15 +188,12 @@ entityTypes.country = {
         alpha2Code: 'alpha2Code', alpha3Code: 'alpha3Code',
     },
     methods: 'R',
-    findItem: {
-        endpoint: '/find',
-        params: {
-            shortNameNL: 'name',
-            shortNameEN: 'name',
-            alpha2Code: 'code',
-            alpha3Code: 'code',
-            numericCode: 'code'
-        },
+    findParams: {
+        shortNameNL: 'name',
+        shortNameEN: 'name',
+        alpha2Code: 'code',
+        alpha3Code: 'code',
+        numericCode: 'code'
     },
 };
 
@@ -232,12 +219,9 @@ entityTypes.subdivision = {
     summary: ['id', 'name', 'alpha2Code', 'subdivisionCode'],
     // selectors: ['name', 'alpha2Code'],
     methods: 'R',
-    findItem: {
-        endpoint: '/find',
-        params: {
-            subdivisionCode: 'subcode',
-            alpha2Code: 'alpha2code',
-        },
+    findParams: {
+        subdivisionCode: 'subcode',
+        alpha2Code: 'alpha2code',
     },
 };
 
@@ -301,10 +285,7 @@ entityTypes.unLocode = {
         name: ['nameWODiacritics', 'nameDiacritics'],
     },
     methods: 'R',
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.address = {
@@ -331,10 +312,7 @@ entityTypes.address = {
     },
     methods: 'CRUD',
     summary: ['id', 'address1', 'address2', 'city', 'country.alpha2Code'],
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 }
 
 
@@ -343,6 +321,9 @@ entityTypes.vesselType = {
     endpoint: '/vesseltypes',
     id: ['id'],
     fields: {
+        original: {
+            type: fieldTypes.obj, label: '*', target: 'vesselType',
+        },
         nameNL: {
             type: fieldTypes.str, label: {NL: 'naam (NL)', EN: 'name (NL)'}, validation: {maxLength: 100},
         },
@@ -442,11 +423,8 @@ entityTypes.vesselType = {
         },
     },
     methods: 'CRUD',
-    summary: ['id', 'nameNL', 'nameEN'],
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    summary: ['original', 'id', 'nameNL', 'nameEN'],
+    findParams: {},
 };
 
 
@@ -466,10 +444,7 @@ entityTypes.hull = {
     },
     methods: 'CRUD',
     summary: ['id', 'hullNumber'],
-    findItem: {
-        endpoint: '/find',
-        params: {}
-    },
+    findParams: {}
 };
 
 entityTypes.vessel = {
@@ -555,10 +530,7 @@ entityTypes.vessel = {
     },
     methods: 'CRUD',
     summary: ['id', 'name', 'image.thumbnail'],
-    findItem: {
-        endpoint: '/find',
-        params: {}
-    },
+    findParams: {}
 };
 
 entityTypes.organisation = {
@@ -586,10 +558,7 @@ entityTypes.organisation = {
     },
     methods: 'CRUD',
     summary: ['id', 'shortName', 'longName'],
-    findItem: {
-        endpoint: '/find',
-        params: {}
-    },
+    findParams: {}
 };
 
 entityTypes.relation = {
@@ -611,10 +580,7 @@ entityTypes.relation = {
         // 'relationType'
     ],
     methods: 'CRUD',
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.relationType = {
@@ -637,10 +603,7 @@ entityTypes.relationType = {
     },
     summary: ['id', 'nameNL', 'nameEN'],
     methods: 'CRUD',
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.file = {
@@ -659,10 +622,7 @@ entityTypes.file = {
     },
     summary: ['id', 'fileName', 'fileType'],
     methods: 'CRUD',
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.image = {
@@ -685,10 +645,7 @@ entityTypes.image = {
     },
     summary: ['id', 'thumbnail'],
     methods: 'CRUD',
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.propulsionType = {
@@ -726,10 +683,7 @@ entityTypes.propulsionType = {
     },
     methods: 'CRUD',
     summary: ['id', 'nameNL', 'nameEN'],
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 entityTypes.operation = {
@@ -750,10 +704,7 @@ entityTypes.operation = {
         'operationType.nameNL': {NL: 'beheerrol', EN: 'management role'},
         'organisation.shortName': {NL: 'organisatie', EN: 'organisation'},
     },
-    findItem: {
-        endpoint: '/find',
-        params: {}
-    },
+    findParams: {}
 };
 
 entityTypes.operationType = {
@@ -782,10 +733,7 @@ entityTypes.operationType = {
     summary: [
         'id',
         'nameNL', 'nameEN'],
-    findItem: {
-        endpoint: '/find',
-        params: {},
-    },
+    findParams: {},
 };
 
 export const entityNameList = Object.keys(entityTypes);
@@ -808,6 +756,8 @@ export function getTypeFieldFromPath(entityTypes, entityType, fieldPath) { // �
 }
 
 export function initializeEntityTypes(entityTypes) { // ✔✔
+    if (isEntityTypesInitialized) return;
+    isEntityTypesInitialized = true;
     for (const entityName in entityTypes) {
         const entityType = entityTypes[entityName];
         entityType.name = entityName;

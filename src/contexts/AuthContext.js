@@ -1,10 +1,9 @@
 import React, { createContext, useContext, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import jwt_decode from 'jwt-decode';
 import { endpoints, getRequest, persistentVars, useMountEffect, useRequestState } from '../helpers';
 import { authorities, levels } from '../helpers/globals/levels';
-import { pages } from '../pages';
-import { Statusbar } from '../pageLayouts';
+import { Statusbar } from '../pageLayouts/Statusbar';
 import { logCondition, logv, pathMkr, rootMkr } from '../dev/log';
 import { StorageContext } from './StorageContext';
 
@@ -22,7 +21,7 @@ export function AuthContextProvider({children}) {
     //     status: authStates.PENDING,
     // });
     const requestState = useRequestState();
-    const history = useHistory();
+    const navigate = useNavigate();
     const authData = {
         ...authState,
         fetchUserData,
@@ -47,7 +46,7 @@ export function AuthContextProvider({children}) {
                     user: response.data,
                     status: authStates.DONE,
                 });
-                history.push(pages.home.path);
+                navigate('/');
             },
             onFail: (error) => {
                 logv(logPath, {error}, '❌');

@@ -73,8 +73,7 @@ export function SummaryLine({
     }
 
     return <>
-        <table className={summaryStyle.table} tabIndex={0}
-        >
+        <table className={summaryStyle.table} tabIndex={0}>
             <thead>
             <tr onClick={toggleCollapsed}
                 style={{cursor: 'pointer'}}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { optionalIdValue, summaryStyle } from './index';
-import { errv, logv, pathMkr, rootMkr } from '../../dev/log';
+import { errv, logCondition, logv, pathMkr, rootMkr } from '../../dev/log';
 import { entityTypes, fieldTypes, getTypeFieldFromPath } from '../../helpers/globals/entityTypes';
 import { cx, devHints, endpoints, languageSelector } from '../../helpers';
 import { Goto } from './Goto';
@@ -109,7 +109,7 @@ export function SummaryRow({
 
     function renderProperty(object, fieldPath) {
         const logPath = pathMkr(logRoot, renderProperty);
-        const doLog = fieldPath.includes('image');
+        const doLog = logCondition(renderProperty.name, fieldPath);
         const field = getProperty(object, fieldPath);
         if (doLog) logv(logPath, {object, fieldPath, field});
         if (!field) return null;

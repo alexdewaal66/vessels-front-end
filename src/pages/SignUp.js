@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { entityTypes } from '../helpers/globals/entityTypes';
 import {
@@ -7,7 +7,7 @@ import {
     endpoints,
     postRequest, useRequestState, persistentVars, devHints
 } from '../helpers';
-import { pages } from './index';
+import { pages } from './pages';
 import { FieldDesc, FieldEl, FieldRow, Fieldset, Form, formStyles } from '../formLayouts';
 import { ShowRequestState, ValidationMessage } from '../components';
 import { logv, pathMkr, rootMkr } from '../dev/log';
@@ -40,12 +40,12 @@ const messages = {
     },
 };
 
-export default function SignUp() {
+export function SignUp() {
     const logRoot = rootMkr(SignUp);
     const form = useForm({mode: 'onChange'});
     const {handleSubmit, register, formState,} = form;
     const requestState = useRequestState();
-    const history = useHistory();
+    const navigate = useNavigate();
     const userFields = entityTypes.user.fields;
 
     logv(logRoot, {requestState}, '--- Registration --- \n');
@@ -59,7 +59,7 @@ export default function SignUp() {
             payload: formData,
             requestState: requestState,
             onSuccess: () => {
-                setTimeout(() => history.push(pages.signIn.path), 2000);
+                setTimeout(() => navigate(pages.signIn.path), 2000);
             },
         }).then();
     }

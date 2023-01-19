@@ -42,7 +42,7 @@ const messages = {
     }
 };
 
-export default function SignIn() {
+export function SignIn() {
     const logRoot = rootMkr(SignIn);
     const form = useForm({mode: 'onChange'});
     const {handleSubmit, register, formState,} = form;

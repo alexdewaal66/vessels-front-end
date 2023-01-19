@@ -1,3 +1,3 @@
 export function Splash() {
-    return <div></div>
+    return <div>splash</div>
 }
